@@ -37,9 +37,11 @@ Select a recommendation based on the evidence:
 
 ---
 
-## 4. Next Implementation Prompt Generation
+## 4. Next Implementation Prompt & Evidence Requirements
 
 **Draft the next implementation prompt only after the decision above is finalized.**
+Ensure that the mandatory run record under `projects/score2gp/runs/<date>-<slug>.md` has been successfully created and checked. Under the **Mandatory Evidence Record Rule**, if no report file was written to `score2gp-agentops`, the task is incomplete and cannot be approved.
+
 Use the standard implementation template and specify:
 - Current verified state.
 - Target branch name.

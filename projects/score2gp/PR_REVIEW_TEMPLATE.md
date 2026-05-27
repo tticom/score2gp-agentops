@@ -55,5 +55,13 @@ Reviewer/architect agents must copy, paste, and complete this exact template whe
 
 ---
 
-## 7. Next Required Evidence
+## 7. Mandatory Evidence Verification
+
+- **Durable evidence record written to `score2gp-agentops`?**: `yes` / `no`
+  - **Record Path**: [e.g. projects/score2gp/runs/<date>-<slug>.md]
+  - *Note: If no report file was written, the review status must remain Keeping Draft or Requesting Changes; the task is incomplete.*
+
+---
+
+## 8. Next Required Evidence
 - [Define exactly what evidence is required to advance this PR or the next branch]
