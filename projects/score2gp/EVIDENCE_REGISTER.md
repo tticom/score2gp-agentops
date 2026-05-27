@@ -29,3 +29,15 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Private-Safe Summary**: The raw visual PDF inspection of the printed pages clearly shows that Measures 15 and 16 exist and feature visible tab fret numbers. The diagnostic parser failed to capture or associate the candidates, leading to a false "omitted measures" claim.
 - **Review Decision**: **keep_draft** (PR remains in Draft state).
 - **Next Required Evidence**: Investigation of visual PDF coordinate mapping, string line detection boundaries, or system barlines on the final page of the PDF to determine why these measures were ignored by the extraction engine.
+
+### EV-002: Major Triads Lesson 3 Edge Boundary Fallback Rejection Resolved
+
+- **Claim**: Minimal Stage 1 Geometry-Normalizer successfully snaps truncated staves and clears all edge-boundary fallback rejections (pdf_bar_box_edge_boundary_fallback_rejected) for Major Triads Lesson 3 without soft pitch gates.
+- **Source**: branch `bugfix/pipeline-geometry-normalizer-slice-v0.1`, PR draft #4
+- **Evidence Type**: `logs` / `diagnostic_tables`
+- **Status**: **verified**
+- **Artifact Location**: `work/roundtrip_eval_clean_normalizer_v4/warnings.json`
+- **Private-Safe Summary**: The normalizer projected margins dynamically using median coordinate columns and ignored outside noise/boundary-double-barlines. The fatal `pdf_bar_box_edge_boundary_fallback_rejected` was reduced to exactly `0` across the entire document, resolving the extraction blocker and increasing successfully boxed candidates to `399`.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Implement robust visual segmentation to correctly align the remaining unboxed systems (e.g. Page 2 System 13, Page 4 System 1) that feature complex multi-system layouts.
+
