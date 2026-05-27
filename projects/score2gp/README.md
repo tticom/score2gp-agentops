@@ -28,6 +28,20 @@ This directory contains the canonical agent-governance, review rubrics, prompt t
 
 ---
 
+## Durable Agent State
+
+Durable agent state for ScoreToGP lives here, not in the product repository:
+
+- Handoffs live under [`handoffs/`](handoffs/).
+- Review decisions live under [`reviews/`](reviews/).
+- Task and benchmark state lives under [`tasks/`](tasks/).
+
+Product PRs should not be cluttered with agent-control prose. Keep product PRs focused on product code, product tests, schemas, fixtures, and product-facing documentation.
+
+The product repository `AGENTS.md` is only a bootstrap pointer. It should identify `score2gp` as the product repository, route agents to this governance project, state local private-safety and verification commands, and stop if `score2gp-agentops` is unavailable.
+
+---
+
 ## The Core Product Quality Principle
 
 > [!IMPORTANT]
