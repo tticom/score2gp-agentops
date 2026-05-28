@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-28-major-triads-active-grouping-blocker",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "research/major-triads-active-grouping-blocker-v0.1",
+  "agentops_branch": "research/major-triads-active-grouping-blocker-v0.1",
+  "operative_prompt_id": "001",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-investigation-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Initial investigation prompt to find the active grouping blocker on Major Triads Lesson 3."
+    }
+  ],
+  "result_record": "RUN.md"
+}
