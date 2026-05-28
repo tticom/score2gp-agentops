@@ -239,7 +239,7 @@ $env:PYTHONPATH="src"; .venv\Scripts\python -m score2gp.cli extract-tab fixtures
 The safe logical boundary clustering for rightmost parallel double-barlines was successfully implemented and verified:
 
 * **Implementation Branch**: `research/major-triads-active-grouping-blocker-v0.2`
-* **Implementation Commit (Product)**: `2f875626739fbc130d0fd36e1d07c56e91044fe2`
+* **Implementation Commit (Product)**: `546d222735f2931a50886369b43ed2bb1caa3909`
 * **Unit & Integration Tests**: 100% of all 391 tests passed successfully under `pytest` with `PYTHONPATH="src"`. This includes the new `test_double_barline_ambiguity_resolution` proving that:
   - Parallel end barlines separated by `< 6.0` pixels at the right system edge are clustered horizontally.
   - The rightmost is selected as the accepted representative, while the other is flagged as non-fatal `pdf_barline_double_secondary`.
