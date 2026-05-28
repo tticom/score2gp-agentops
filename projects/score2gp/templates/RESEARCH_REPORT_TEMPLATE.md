@@ -1,5 +1,10 @@
 # ScoreToGP Research Report
 
+## Prompt Chain
+- Prompt manifest: [e.g. prompts/prompt-manifest.json or None for simple runs]
+- Operative prompt: [e.g. prompts/001-initial-human-prompt.md]
+- Prompt files: [e.g. prompts/001-initial-human-prompt.md]
+
 ## Summary Verdict
 
 ## Verified Metrics
