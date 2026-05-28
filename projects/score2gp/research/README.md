@@ -1,6 +1,6 @@
-# ScoreToGP Review Records
+# ScoreToGP Research Records
 
-This directory contains durable review decisions and assessments drafted by reviewer/architect agents.
+This directory contains durable, evidence-backed research reports and analyses for the ScoreToGP agent executions.
 
 ## Mandatory Evidence Record Rule
 
