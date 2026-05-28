@@ -27,10 +27,16 @@ git ls-files fixtures/private work
 - **Output**: `work/paired_staff_tab_grid_detection_20260528_084944/lesson_3`
 
 ## Universal Separate Reporting Statuses
-- **Strict Conversion Status**: `fail`
+- **Strict Conversion Status**: `fail` (strict conversion still fails)
 - **Remediation / Diagnostic Status**: `pass`
-- **Generated File Existence**: `ScoreIR written (no)` / `GP written (no)`
+- **Generated File Existence**: `ScoreIR written (no)` / `GP written (no)` (ScoreIR/GP still not written)
 - **Semantic Round-Trip Status**: `unverified`
+
+## Implementation Status Summary
+- **Strict Conversion**: Still fails.
+- **ScoreIR/GP Writing**: Still not written.
+- **Private Lesson 3 Smoke Test**: Did not yet demonstrate OMR conversion progress.
+- **PR Purpose**: This PR serves strictly as public fixture and guardrail infrastructure for the next OMR layout change.
 
 ## Blocker and Diagnostics
 - **Exact Blocker Category**: `missing_pdf_grouping` (as expected, global gates are intentionally kept strict)
