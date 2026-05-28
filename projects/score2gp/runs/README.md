@@ -27,3 +27,18 @@ The record must include:
 - next required evidence
 
 If no report file was written, the task is incomplete.
+
+## Mandatory Prompt Chain Rule
+
+Every agent run must record the exact explicit prompt chain used for that run.
+
+If the run includes multiple prompts, each prompt must be stored as a numbered immutable file under a `prompts/` directory.
+
+The final run/research/review record must state which prompt was operative for the final commit or conclusion.
+
+A PR body is not sufficient.
+A final chat response is not sufficient.
+Console output is not sufficient.
+A report without the prompt chain is incomplete.
+
+Agents cannot reliably record hidden platform/system instructions. They must record the explicit prompt text they received, plus the governance docs and repository refs they were instructed to read.
