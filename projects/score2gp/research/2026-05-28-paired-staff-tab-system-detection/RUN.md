@@ -46,7 +46,7 @@ python scratch/analyze_warnings.py
 
 ## Input Availability
 
-All mandatory Lesson 3 diagnostic inputs were located and utilized locally from [work/roundtrip_eval_clean_normalizer_v4](file:///c:/Users/niall/src/Python/score2gp/work/roundtrip_eval_clean_normalizer_v4):
+All mandatory Lesson 3 diagnostic inputs were located and utilized locally from [work/roundtrip_eval_clean_normalizer_v4](../../../../../score2gp/work/roundtrip_eval_clean_normalizer_v4):
 - `summary.json`
 - `warnings.json`
 - `extracted.tabraw.json` (used as `tab_raw.json`)

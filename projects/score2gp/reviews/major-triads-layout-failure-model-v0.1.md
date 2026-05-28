@@ -28,7 +28,7 @@ graph TD
 ```
 
 ### Pipeline Details:
-1. **Entry Point**: `extract_tab(path, out_dir)` in [pdf.py](file:///c:/Users/niall/src/Python/score2gp/src/score2gp/pdf.py#L86).
+1. **Entry Point**: `extract_tab(path, out_dir)` in [pdf.py](../../../../score2gp/src/score2gp/pdf.py#L86).
 2. **Text Candidate Extraction**:
    - `_extract_pdf_text_candidates` parses word tokens from PDF pages.
    - `_split_technique_mixed_words` separates digits from techniques (e.g., `7h9` $\to$ `7` and `h9`).
