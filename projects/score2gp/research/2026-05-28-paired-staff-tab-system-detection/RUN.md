@@ -2,15 +2,25 @@
 
 ## Summary Verdict
 
-**Supported.** Definitive geometric and statistical evidence proves that the layout grouping failure in Major Triads Lesson 3 is caused by the lack of a paired-staff model. The PDF parser conflates standard notation staves and note stems with authoritative TAB string staves and barlines, resulting in duplicate horizontal pseudo-system splitting, vertical overlap conflicts, and fatal bar box telemetry rejections.
+**Strongly supported.** The available private-safe geometry evidence supports the hypothesis that the current detector lacks a paired notation+TAB model. The strongest evidence is inflated inferred-system counts, partial horizontal spans, fragmented TAB candidates, and vertical candidate pollution from notation/TAB stems. This is sufficient to justify a public synthetic fixture and a narrow implementation slice, but it is not yet a fully proven production fix.
+
+The detector fragments TAB rows into partial pseudo-systems and allows notation/TAB stems to enter barline-candidate telemetry. The evidence does not show that five-line notation staves are being successfully promoted as TAB systems.
+
+## Review Caveats
+
+- The report is based on local scratch analysis of private Lesson 3 artifacts.
+- The private artifacts are not committed.
+- The findings are strong enough to justify a public synthetic reproduction fixture.
+- The findings are not yet a production fix.
+- Public fixture coverage is required before implementing production parsing changes.
 
 ---
 
 ## Prompt Chain
 
 - Manifest: `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompt-manifest.json`
-- Operative prompt: `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompts/001-initial-prompt.md`
-- Prompt files: `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompts/001-initial-prompt.md`
+- Operative prompt: `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompts/002-overconfidence-correction.md`
+- Prompt files: `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompts/001-initial-prompt.md`, `projects/score2gp/research/2026-05-28-paired-staff-tab-system-detection/prompts/002-overconfidence-correction.md`
 
 ---
 
@@ -80,8 +90,8 @@ We classify all detected horizontal line groups across the four pages:
 - **Ambiguous / cannot classify safely**: **0**.
 
 ### Spacing Discriminator (How to distinguish Notation vs Damaged TAB)
-- **Standard Notation Staff**: Always has a line-to-line gap of **`8.5` points**. It is paired vertically above a TAB staff and does not contain fret digit intersections.
-- **Damaged/Incomplete TAB Staff**: Always has a line-to-line gap of **`6.4` points**. It aligns horizontally with adjacent complete 6-line TAB staves and directly intersects fret digit bboxes.
+- **Standard Notation Staff**: In this benchmark run, likely notation staves cluster around a line-to-line gap of **`8.5` points**. It is paired vertically above a TAB staff and does not contain fret digit intersections.
+- **Damaged/Incomplete TAB Staff**: In this benchmark run, likely TAB staves cluster around a line-to-line gap of **`6.4` points**. It aligns horizontally with adjacent complete 6-line TAB staves and directly intersects fret digit bboxes.
 - **Rule**: Distinguish them using the **median line spacing gap** (`6.4` vs `8.5`) rather than a simple line count check.
 
 ---
@@ -94,13 +104,13 @@ For Page 1's 177 vertical drawing segments (height $\ge 10.0$ points), we classi
 - **Spanning both notation and TAB staves (barlines)**: **6** (Likely true shared barlines).
 - **Outside both staves**: **79** (Ambiguous line segments / noise).
 
-This proves that **56 standard notation stems** and **36 TAB rhythm stems** are treated as candidate barlines. While correctly rejected, they pollute the validator telemetry and cause vertical conflicts.
+This supports the hypothesis that notation/TAB stems pollute candidate telemetry; the classification is private-artifact-derived and should be validated by a public synthetic fixture. While correctly rejected, they pollute the validator telemetry and cause vertical conflicts.
 
 ---
 
 ## First Mechanical Failure
 
-The mechanical root-cause of the layout failure is:
+The first supported mechanical explanation is:
 
 > [!IMPORTANT]
 > The detector identifies horizontal-line groups locally and does not first classify TAB-vs-notation staves, so it splits one paired notation+TAB row into multiple partial TAB systems.
@@ -111,20 +121,21 @@ Because the system grouping engine operates purely locally on individual horizon
 
 ## Supported Hypotheses
 
-1. **Paired-Staff Conflation**: The parser treats note stems and beams inside the standard notation staff as candidate barlines, creating vertical overlap and ambiguity rejections.
-2. **Collinear Line Splitting**: collinear horizontal lines at the same Y-coordinate are not merged prior to grouping, causing unified score rows to split into fragmented left and right pseudo-systems.
+- **Collinear Horizontal Line Splitting / Partial X-Span Fragmentation**: The current grouping logic splits single visual rows horizontally across page margins due to a lack of pre-grouping line segment merging.
+- **Vertical Candidate Telemetry Pollution**: Stems and beams from both standard notation staves and TAB rhythm staves populate vertical candidate lists and trigger high counts of vertical overlap warnings.
 
----
+## Strongly Supported (Fixture-Required) Hypotheses
+
+- **Lack of Explicit Paired Notation+TAB Model**: The parser lacks an unified model that pairs standard notation staves with authoritative TAB string grids. This hypothesis is strongly supported by telemetry and fragmentations but requires validation via a public synthetic fixture before implementing a production parser change.
 
 ## Unverified Hypotheses
 
-1. **Standard Staff TAB Promotion**: The hypothesis that five-line standard notation staves are being successfully grouped and promoted as competing 5-line TAB staves is unverified. In reality, standard notation staves are too fragmented in the vector drawings to form grouped staves.
-
----
+- **Five-Line Standard Notation Staff Promotion**: The hypothesis that five-line standard notation staves are successfully promoted as competing TAB systems is unverified (0 notation-overlap staves were detected in this run).
+- **Single-Bypass Success**: The hypothesis that resolving this paired-staff grouping mechanism alone will fully resolve every remaining layout blocker across all benchmarks is unverified.
 
 ## Contradicted Hypotheses
 
-None.
+- **Standard Notation Staves Grouping**: The hypothesis that standard notation staves are directly grouped as competing TAB staves is contradicted (or at least not supported) by current evidence, as standard notation staves are too fragmented in the vector drawings to satisfy the grouping tolerances.
 
 ---
 
@@ -151,10 +162,12 @@ We recommend adding a synthetic fixture `fixtures/public/generated_paired_notati
 
 ## Recommended Implementation Slice
 
-We recommend the following implementation task:
-1. Refactor `_tab_line_groups` in `pdf.py` to first classify six-line groups (authoritative TAB staves) and strictly exclude five-line standard notation staves from TAB geometry using the spacing gap discriminator.
-2. Implement horizontal segment merging for collinear line segments at the same Y-coordinate before grouping to prevent left/right system splitting.
-3. Update candidate barline filtering to match vertical lines strictly based on their intersection with the authoritative six-string TAB grid, ignoring notation-only note stems and TAB rhythm stems.
+We recommend the following phased implementation slice:
+1. **Add Public Synthetic Fixture**: First, add a public synthetic paired notation+TAB fixture (`generated_paired_notation_tab_system.json`) to establish a safe reproduction environment.
+2. **Horizontal Segment Merging**: Implement horizontal segment merging for collinear line segments at the same Y-coordinate before grouping to prevent left/right system splitting.
+3. **Spacing-Aware Classification**: Implement spacing-aware TAB-vs-notation staff classification using line spacing gaps as the primary discriminator.
+4. **Authoritative Grid Filtering**: Update candidate barline filtering to match and filter vertical candidates strictly against the authoritative TAB grid, ignoring notation note stems.
+5. **Incomplete Staff Guardrail**: Include a guardrail for damaged/incomplete TAB rows to ensure that a damaged 5-line TAB candidate is not automatically discarded as standard notation.
 
 ---
 
