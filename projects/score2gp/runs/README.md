@@ -1,6 +1,6 @@
-# ScoreToGP Review Records
+# ScoreToGP Run Records
 
-This directory contains durable review decisions and assessments drafted by reviewer/architect agents.
+This directory contains durable, evidence-backed run records for the ScoreToGP agent pipeline executions.
 
 ## Mandatory Evidence Record Rule
 

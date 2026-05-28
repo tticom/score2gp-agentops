@@ -63,7 +63,8 @@ git status --branch
 
 ---
 
-## 7. Handoff & PR Requirements
+## 7. Handoff, PR & Durable Evidence Requirements
 
-- **HANDOFF.md**: Must be updated to reflect the actual final pushed state (latest local/pushed commit hash and subject, clean working tree status, and checks run) with absolutely zero placeholders.
-- **Draft PR**: Open a Draft PR on the product repository. The PR title must clearly declare either a `Fix`, `Research-Isolation`, or `Infrastructure` status.
+- **Mandatory Evidence Record Rule**: Every agent task must create or update one durable markdown file in `score2gp-agentops` before reporting completion. You must write a run record under `projects/score2gp/runs/<date>-<slug>.md` documenting the execution before concluding.
+- **HANDOFF.md**: Must be updated to reflect the actual final pushed state (latest local/pushed commit hash and subject, clean working tree status, and checks run) with absolutely zero placeholders. Note that product-repo HANDOFF.md is not the canonical long-term evidence store.
+- **Draft PR**: Open a Draft PR on the product repository. The PR title must clearly declare either a `Fix`, `Research-Isolation`, or `Infrastructure` status. The PR body must state that no private assets or work outputs were committed, and no unauthorized conversion success is claimed.
