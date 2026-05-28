@@ -4,16 +4,25 @@
   "agentops_repo": "tticom/score2gp-agentops",
   "product_branch": "research/paired-staff-tab-system-detection-v0.2",
   "agentops_branch": "research/paired-staff-tab-system-detection-v0.2",
-  "operative_prompt_id": "001",
+  "operative_prompt_id": "002",
   "prompts": [
     {
       "id": "001",
       "file": "prompts/001-initial-prompt.md",
       "source": "human",
       "target_agent": "antigravity",
-      "status": "executed",
+      "status": "superseded",
       "supersedes": null,
       "notes": ""
+    },
+    {
+      "id": "002",
+      "file": "prompts/002-overconfidence-correction.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": "001",
+      "notes": "Corrects overclaiming and overconfidence in research report wording."
     }
   ],
   "result_record": "RUN.md"
