@@ -1,0 +1,10 @@
+{
+  "research_id": "2026-05-28-post-double-barline-next-blocker",
+  "prompts": [
+    {
+      "step": "001-investigation",
+      "path": "prompts/001-investigation-prompt.md",
+      "role": "investigation"
+    }
+  ]
+}
