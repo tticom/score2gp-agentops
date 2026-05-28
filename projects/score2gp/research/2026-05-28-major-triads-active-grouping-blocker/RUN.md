@@ -234,11 +234,24 @@ $env:PYTHONPATH="src"; .venv\Scripts\python -m score2gp.cli extract-tab fixtures
 * No MusicXML or GP pitch data is used to drive PDF geometry.
 * No private PDFs or diagnostic files will be committed to the repository (verified by `git ls-files`).
 
-## Verification Results
+## Verification & Execution Results
 
-* **Unit Tests**: All product tests passed successfully in the virtual environment.
-* **Schema Export**: Executed and validated matching schema successfully.
-* **IR Validation**: Validated `fixtures/public/tiny_score.ir.json` against the schema with `valid: true`.
+The safe logical boundary clustering for rightmost parallel double-barlines was successfully implemented and verified:
+
+* **Implementation Branch**: `research/major-triads-active-grouping-blocker-v0.2`
+* **Implementation Commit (Product)**: `546d222735f2931a50886369b43ed2bb1caa3909`
+* **Unit & Integration Tests**: 100% of all 391 tests passed successfully under `pytest` with `PYTHONPATH="src"`. This includes the new `test_double_barline_ambiguity_resolution` proving that:
+  - Parallel end barlines separated by `< 6.0` pixels at the right system edge are clustered horizontally.
+  - The rightmost is selected as the accepted representative, while the other is flagged as non-fatal `pdf_barline_double_secondary`.
+  - Non-edge parallel barlines (middle measures) still trigger the expected `pdf_barline_ambiguous` warning correctly.
+  - Exactly 2 bar boxes are successfully constructed and candidates in the rightmost measure are successfully assigned.
+* **Manual Smoke Test (Lesson 3)**:
+  - This implementation resolves the tested rightmost double-barline ambiguity case and improves Lesson 3 bar assignment by 32 candidates; strict grouping remains partial and further blockers remain.
+  - Strict grouping remains partial: yes
+  - ScoreIR written: no
+  - GP written: no
+  - semantic round-trip attempted: no
+  - This is a targeted layout blocker improvement, not conversion success.
 
 ## Private-Safety Audit
 
@@ -247,6 +260,5 @@ A complete directory audit was executed using Git tracking commands.
 `fixtures/private/.gitkeep`
 No private pdfs, GP files, JSON intermediates, or work files have been staged or tracked.
 
-## Next Required Evidence
 
-We await reviewer/human approval of this research report. Once approved, the implementation agent will checkout `bugfix/double-barline-ambiguity-resolution-v0.1`, add the synthetic fixture, implement the double-barline merge logic, and verify that the Lesson 3 strict grouping metrics move to `complete` and `ScoreIR` is successfully written.
+
