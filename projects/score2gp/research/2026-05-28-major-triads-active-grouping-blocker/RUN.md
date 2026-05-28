@@ -246,8 +246,12 @@ The safe logical boundary clustering for rightmost parallel double-barlines was 
   - Non-edge parallel barlines (middle measures) still trigger the expected `pdf_barline_ambiguous` warning correctly.
   - Exactly 2 bar boxes are successfully constructed and candidates in the rightmost measure are successfully assigned.
 * **Manual Smoke Test (Lesson 3)**:
-  - Fret candidates assigned to bars increased significantly from **391** to **423** (an increase of 32 candidates!).
-  - Grouping status remains `partial` due to other downstream blockages (compact-staff snapping, optical bounds confidence), but this specific rightmost double-barline ambiguity blocker has been completely resolved.
+  - This implementation resolves the tested rightmost double-barline ambiguity case and improves Lesson 3 bar assignment by 32 candidates; strict grouping remains partial and further blockers remain.
+  - Strict grouping remains partial: yes
+  - ScoreIR written: no
+  - GP written: no
+  - semantic round-trip attempted: no
+  - This is a targeted layout blocker improvement, not conversion success.
 
 ## Private-Safety Audit
 
