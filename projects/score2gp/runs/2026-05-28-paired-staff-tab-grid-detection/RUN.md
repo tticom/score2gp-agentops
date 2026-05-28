@@ -5,10 +5,10 @@
 - **Branch**: bugfix/paired-staff-tab-grid-detection-v0.1
 
 ## Prompt Chain
-- Prompt manifest: [prompt-manifest.json](file:///c:/Users/niall/src/Python/score2gp-agentops/projects/score2gp/runs/2026-05-28-paired-staff-tab-grid-detection/prompt-manifest.json)
-- Operative prompt: [prompts/001-implementation-prompt.md](file:///c:/Users/niall/src/Python/score2gp-agentops/projects/score2gp/runs/2026-05-28-paired-staff-tab-grid-detection/prompts/001-implementation-prompt.md)
+- Prompt manifest: [prompt-manifest.json](prompt-manifest.json)
+- Operative prompt: [prompts/001-implementation-prompt.md](prompts/001-implementation-prompt.md)
 - Prompt files:
-  - [prompts/001-implementation-prompt.md](file:///c:/Users/niall/src/Python/score2gp-agentops/projects/score2gp/runs/2026-05-28-paired-staff-tab-grid-detection/prompts/001-implementation-prompt.md)
+  - [prompts/001-implementation-prompt.md](prompts/001-implementation-prompt.md)
 
 ## Command(s) Run
 ```bash
