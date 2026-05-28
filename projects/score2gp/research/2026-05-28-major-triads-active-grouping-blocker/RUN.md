@@ -14,17 +14,17 @@ Specifically, the pipeline fails to construct the final (rightmost) bar box on e
 ## Repositories and Branches
 
 - **Product Repository**: `score2gp`
-  - **Branch**: `research/major-triads-active-grouping-blocker-v0.1`
-  - **Parent Commit**: `fe4c34fc01eebc88a51f8485653aa9e1ad67cd63` (Merge pull request #147: paired TAB row fragment normalization)
+  - **Branch**: `research/major-triads-active-grouping-blocker-v0.2`
+  - **Parent Commit**: `f0fb4902528c9b02cefbe87145956e1874ee14bf` (PR #148 merge: Expose active grouping blocker diagnostics)
 - **Agent Governance Repository**: `score2gp-agentops`
-  - **Branch**: `research/major-triads-active-grouping-blocker-v0.1`
-  - **Parent Commit**: `667a12d01ff65def28a6f62624c7c11d065e5c83` (Merge pull request #10: paired staff row normalization run record)
+  - **Branch**: `research/major-triads-active-grouping-blocker-v0.2`
+  - **Parent Commit**: `a4f1753858529bc8ba51e87ee3f3eee663dfc1d5` (PR #11 merge: Record Major Triads active grouping blocker research)
 
 ## Commands Run
 
 Fresh private-safe Lesson 3 extraction and diagnostic command:
 ```powershell
-$env:PYTHONPATH="src"; .venv\Scripts\python -m score2gp.cli extract-tab fixtures/private/Lesson-3.pdf --out work/major_triads_active_grouping_blocker_20260528_1215/lesson_3
+$env:PYTHONPATH="src"; .venv\Scripts\python -m score2gp.cli extract-tab fixtures/private/Lesson-3.pdf --out work/major_triads_active_grouping_blocker_20260528_1240/lesson_3
 ```
 
 Diagnostic scratch analyzer scripts run inside the workspace:
@@ -39,9 +39,9 @@ $env:PYTHONPATH="src"; .venv\Scripts\python scratch/analyze_candidates.py
 
 - **Input File**: `fixtures/private/Lesson-3.pdf` (private birth-digital PDF benchmark file, verified present).
 - **Extracted Diagnostics**:
-  - `work/major_triads_active_grouping_blocker_20260528_1215/lesson_3/tab_raw.json`
-  - `work/major_triads_active_grouping_blocker_20260528_1215/lesson_3/warnings.json`
-  - `work/major_triads_active_grouping_blocker_20260528_1215/lesson_3/grouping-diagnostics.html`
+  - `work/major_triads_active_grouping_blocker_20260528_1240/lesson_3/tab_raw.json`
+  - `work/major_triads_active_grouping_blocker_20260528_1240/lesson_3/warnings.json`
+  - `work/major_triads_active_grouping_blocker_20260528_1240/lesson_3/grouping-diagnostics.html`
 
 ## Artifact Coherence
 
@@ -140,6 +140,9 @@ Unique warnings extracted from `warnings.json` categorized by pipeline component
 * **Hypothesis 4**: *Bar boxes are still incomplete despite row normalization.*
   - **Status**: **Supported**
   - **Evidence**: Directly verified by examining `tab_raw.json` coordinate data and candidate `raw` parameters. Perfect, full-height double barlines at the end of systems (e.g. at x=572.57 and x=574.95) are rejected as `pdf_barline_ambiguous`. This prevents the rightmost bar box from being drawn, leaving 32 playable candidates unassigned.
+* **Hypothesis 9**: *Bar assignment is failing because candidates fall outside reconstructed bar boxes.*
+  - **Status**: **Supported**
+  - **Evidence**: Candidate bbox `x` values (ranging from `439.5` to `549.5`) sit beyond the last constructed bar box boundary (`430.16`), causing them to fall in the unassigned bar region.
 
 ## Unverified Hypotheses
 
@@ -155,6 +158,9 @@ Unique warnings extracted from `warnings.json` categorized by pipeline component
 * **Hypothesis 7**: *Diagnostic counters are inconsistent across stages.*
   - **Status**: **Unverified**
   - **Evidence**: Counters are highly consistent: 548 total playable candidates = 430 assigned to system/string + 118 page/legend numbers.
+* **Hypothesis 8**: *Line grouping has improved, but token-to-string assignment is still too conservative.*
+  - **Status**: **Unverified**
+  - **Evidence**: The token-to-string snapping pipeline is successfully assigning a string to all 430 playable candidates (100% of those belonging to active systems). Snapping is not acting as the blocker.
 
 ## Contradicted Hypotheses
 
