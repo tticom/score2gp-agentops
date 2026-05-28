@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-28-pdf-to-gp-smoke-v1-architect",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "agent/pdf-to-gp-smoke-v1/architect",
+  "agentops_branch": "main",
+  "operative_prompt_id": "001",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-architect-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": ""
+    }
+  ],
+  "result_record": "RUN.md"
+}
