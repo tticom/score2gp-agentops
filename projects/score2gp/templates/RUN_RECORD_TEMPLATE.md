@@ -4,6 +4,11 @@
 - **Repository**: score2gp
 - **Branch**: [e.g. feature/my-feature]
 
+## Prompt Chain
+- Prompt manifest: [e.g. prompts/prompt-manifest.json or None for simple runs]
+- Operative prompt: [e.g. prompts/001-initial-human-prompt.md]
+- Prompt files: [e.g. prompts/001-initial-human-prompt.md, prompts/002-followup-prompt.md]
+
 ## Command(s) Run
 ```bash
 [e.g. python -m pytest]
