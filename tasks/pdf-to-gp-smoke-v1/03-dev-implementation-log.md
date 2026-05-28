@@ -58,7 +58,7 @@ Every verification command mandated by `AGENTS.md` was executed and verified:
 7. **`git status --short`**:
    * **Result**: Clean working tree (all changes successfully staged and committed).
 8. **`git status --branch`**:
-   * **Result**: Clean and active on developer branch `agent/pdf-to-gp-smoke-v1/developer`.
+   * **Result**: Clean and active on feature branch `feature/pdf-to-gp-smoke-v1`.
 
 ---
 
