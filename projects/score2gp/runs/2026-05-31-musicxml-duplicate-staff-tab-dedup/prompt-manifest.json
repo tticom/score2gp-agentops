@@ -4,7 +4,7 @@
   "agentops_repo": "tticom/score2gp-agentops",
   "product_branch": "feature/musicxml-duplicate-staff-tab-dedup-v0.1",
   "agentops_branch": "agent/pdf-to-gp-smoke-v1/tpo",
-  "operative_prompt_id": "001",
+  "operative_prompt_id": "002",
   "prompts": [
     {
       "id": "001",
@@ -14,6 +14,15 @@
       "status": "executed",
       "supersedes": null,
       "notes": "Implemented duplicate staff/TAB voice deduplication and resolved timing gate blockers."
+    },
+    {
+      "id": "002",
+      "file": "prompts/002-refinement-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Refined duplicate voice deduplication: enforced stable pitch offset across voice pairs, chose notation/TAB roles using staff evidence, added 2 new edge-case tests, and updated PR formatting."
     }
   ],
   "result_record": "RUN.md"
