@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-31-domain-knowledge-stage-tests",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "research/domain-knowledge-stage-tests-v1",
+  "agentops_branch": "agent/pdf-to-gp-smoke-v1/tpo",
+  "operative_prompt_id": "001",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-domain-knowledge-stage-tests-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Domain knowledge and integration tests foundation prompt."
+    }
+  ],
+  "result_record": "RUN.md"
+}
