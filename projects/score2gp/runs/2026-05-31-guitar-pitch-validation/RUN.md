@@ -20,17 +20,19 @@
 
 1. **Semantic Pitch Bounds Check:** Added a validation check to `ScoreIR.semantic_errors()` in [ir.py](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\src\score2gp\ir.py). If standard 6-string guitar tuning is detected, any note with sounding pitch `< 40` or `> 88` triggers a clear semantic error message.
 2. **Octave clef transposition correction:** Modified `_aligned_note()` in [build_ir.py](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\src\score2gp\build_ir.py) to calculate mismatch differences modulo 12. If a pitch mismatch is exactly a multiple of 12 semitones, it is treated as a standard clef transposition offset. The compiler automatically logs a lightweight `musicxml-transposition-corrected` info/warning and aligns it with the physical tab-derived sounding pitch.
-3. **Robust Test Suite Integration:**
+3. **Stave Display Transposition Fix:** Corrected relational XML `<ConcertPitch>` and `<TransposedPitch>` octave formulas in [gpif.py](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\src\score2gp\gpif.py) to set `octave = note.pitch // 12` (with TransposedPitch using `octave + 1`). This maps physical MIDI sounding pitches (e.g. fret 3 on 6th string G2=43) to correct standard written treble stave octaves (G3, space below 2nd ledger line, which is exactly 5 staff positions below bottom line E4), preventing the note-stave representation from displaying a full octave lower (G2, space below 5th ledger line).
+4. **Robust Test Suite Integration:**
    - Created [impossible_guitar_pitch_low.ir.json](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\fixtures\public\invalid\impossible_guitar_pitch_low.ir.json) (pitch 39)
    - Created [impossible_guitar_pitch_high.ir.json](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\fixtures\public\invalid\impossible_guitar_pitch_high.ir.json) (pitch 89)
    - Parameterized both in `tests/test_ir.py` to ensure they raise precise, readable semantic errors under the automated test suite.
+   - Added `test_gpif_standard_guitar_pitch_stave_display` in [test_gp_writer.py](file:///\\wsl.localhost\Ubuntu-24.04\home\tticom\work\score2gp-workspace\score2gp\tests\test_gp_writer.py) as a highly specific, narrow test. It programmatically maps key guitar sounding pitches (E2 to E6) to their exact written steps, accidentals, and Concert/Transposed octave XML tags, asserting visual/stave displaying correctness and preventing any future stave-drawing regressions.
 
 ---
 
 ## 3. Verification & Compliance
 
 ### Automated Tests
-Ran pytest successfully, achieving **393/393 passed** (including the two new validation cases):
+Ran pytest successfully, achieving **394/394 passed** (including the new visual stave display tests):
 ```bash
 wsl .venv/bin/python -m pytest
 ```
