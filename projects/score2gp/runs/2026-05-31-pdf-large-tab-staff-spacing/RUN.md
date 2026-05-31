@@ -3,7 +3,7 @@
 ## Session Summary
 
 - **Product Branch:** `feature/pdf-large-tab-staff-spacing-v0.1`
-- **Product Commit:** `73fb9be65b2d606dc234d2c8e17641df729eb5c0`
+- **Product Commit:** `319db5a54167a540a441f0fb7059bce691cc106b`
 - **Task Overview:** Implement dynamic large-spaced TAB staff detection and safely preserve guitar technique text to resolve the empty-staff blocker for melodic guitar soloing PDF scores.
 
 ---
