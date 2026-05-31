@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-31-fix-first-stage-pitch-correctness",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "research/domain-knowledge-stage-tests-v1",
+  "agentops_branch": "agent/pdf-to-gp-smoke-v1/tpo",
+  "operative_prompt_id": "001",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-diagnose-and-fix-pitch-correctness-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Diagnose and fix first stage pitch correctness defect prompt."
+    }
+  ],
+  "result_record": "RUN.md"
+}
