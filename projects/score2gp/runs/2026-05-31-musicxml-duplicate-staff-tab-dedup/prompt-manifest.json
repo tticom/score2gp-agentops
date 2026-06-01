@@ -4,7 +4,7 @@
   "agentops_repo": "tticom/score2gp-agentops",
   "product_branch": "feature/musicxml-duplicate-staff-tab-dedup-v0.1",
   "agentops_branch": "agent/pdf-to-gp-smoke-v1/tpo",
-  "operative_prompt_id": "002",
+  "operative_prompt_id": "003",
   "prompts": [
     {
       "id": "001",
@@ -23,6 +23,15 @@
       "status": "executed",
       "supersedes": null,
       "notes": "Refined duplicate voice deduplication: enforced stable pitch offset across voice pairs, chose notation/TAB roles using staff evidence, added 2 new edge-case tests, and updated PR formatting."
+    },
+    {
+      "id": "003",
+      "file": "prompts/003-request-changes.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Addressed requested changes: suppressed duplicate TAB rests/events, added rests suppression regression test, mapped dedup_tab_note_source_path to duplicate TAB note provenance, cleaned PR body overclaims, and verified via pytest & private e2e smoke tests."
     }
   ],
   "result_record": "RUN.md"
