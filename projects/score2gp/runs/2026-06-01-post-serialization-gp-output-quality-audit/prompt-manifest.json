@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-06-01-post-serialization-gp-output-quality-audit",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "research/post-serialization-gp-output-quality-audit-v0.1",
+  "agentops_branch": "agent/post-serialization-gp-output-quality-audit-v0.1",
+  "operative_prompt_id": "001",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-implementation-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Post-serialization GP output quality audit task instruction."
+    }
+  ],
+  "result_record": "RUN.md"
+}
