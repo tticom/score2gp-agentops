@@ -23,9 +23,9 @@ We implemented a new post-serialization quality audit engine to systematically v
    - Directly loads the generated `.gp` zip package using `inspect_gp` to read the compiled relational GPIF measures and notes counts, and parses `<Beat>` elements to count beats.
 2. **Quality Classifications**:
    - `gp_output_empty_or_near_empty`: Generated GP packages with zero notes or missing structural notes.
-   - `gp_output_bar_alignment_suspect`: Shifts, skipped bars, or mismatches flagged by OMR alignment warnings.
+   - `gp_output_bar_alignment_suspect`: Shifts, skipped bars, or mismatches flagged by OMR alignment warnings or a strict bar-count mismatch between GPIF and ScoreIR (`gpif_measure_count != scoreir_bar_count`).
    - `gp_output_fret_matching_suspect`: Low fret match rates (< 40%) against playable candidates.
-   - `gp_output_note_coverage_low`: Note match rates between 40% and 70%.
+   - `gp_output_note_coverage_low`: Note match rates between 40% and 70%, or low serialized GP notes vs ScoreIR notes / candidates (< 70%).
    - `gp_output_technique_loss_expected`: High note coverage (70%+) and plausible bar alignment, but containing un-serialized technique text candidates.
    - `gp_output_quality_pass_basic`: Non-empty, highly matching, and fully aligned without outstanding limitations.
 
@@ -42,36 +42,38 @@ The quality audit was executed successfully across all private scores under defa
 | `private_input_1` | `fail` | `gp_output_empty_or_near_empty` | 0 | 0 | 0 | No | No |
 | `private_input_2` | `fail` | `gp_output_empty_or_near_empty` | 0 | 0 | 0 | No | No |
 | `private_input_custom` | `fail` | `gp_output_empty_or_near_empty` | 0 | 0 | 0 | No | No |
-| `private_input_custom_lesson_3` | `pass` | `gp_output_technique_loss_expected` | 451 | 451 | 451 | No | No |
-| `private_input_custom_lesson_4` | `pass` | `gp_output_technique_loss_expected` | 546 | 546 | 546 | No | No |
-| `private_input_custom_lesson_5` | `pass` | `gp_output_technique_loss_expected` | 295 | 295 | 295 | No | No |
-| `private_input_custom_lesson_6` | `pass` | `gp_output_technique_loss_expected` | 115 | 115 | 115 | No | No |
-| `private_input_custom_lesson_7` | `pass` | `gp_output_technique_loss_expected` | 624 | 624 | 624 | No | No |
+| `private_input_custom_lesson_3` | `pass` | `gp_output_bar_alignment_suspect` | 451 | 451 | 451 | No | No |
+| `private_input_custom_lesson_4` | `pass` | `gp_output_bar_alignment_suspect` | 546 | 546 | 546 | No | No |
+| `private_input_custom_lesson_5` | `pass` | `gp_output_bar_alignment_suspect` | 295 | 295 | 295 | No | No |
+| `private_input_custom_lesson_6` | `pass` | `gp_output_bar_alignment_suspect` | 115 | 115 | 115 | No | No |
+| `private_input_custom_lesson_7` | `pass` | `gp_output_bar_alignment_suspect` | 624 | 624 | 624 | No | No |
 | `private_input_custom_melodic_soloing` | `pass` | `gp_output_empty_or_near_empty` | 0 | 0 | 0 | No | Yes |
 
 *Output Directory Summary Path:* `work/private_gp_quality_audit_v0_1/summary.json`
 
 ### Crucial Findings
 1. **Custom Lessons (Lessons 3 to 7)**:
-   - **Classification:** `gp_output_technique_loss_expected`
-   - **Plausibility:** Outstanding note coverage (**99.3%+ to 100%**) and plausible bar alignments (exactly 4 cover-page booklet bars added).
-   - **Next Blocker:** **Guitar technique serialization**. Since note and bar alignment are extremely stable, the next correctness blocker is the loss of advanced playability features (slides, bends, slurs, hammer-ons, pull-offs).
+   - **Classification:** `gp_output_bar_alignment_suspect`
+   - **Diagnosis:** The strict bar-count check successfully flags the custom lesson scores due to the exactly 4 cover-page booklet bars added by the booklet template, which causes a mismatch against primary score movement bars.
+   - **Next Blocker:** **Bar alignment quality gate / booklet cover-page bar alignment**. Reconciling and aligning movement/booklet cover page bars is the next blocker.
 2. **Melodic Soloing Score (`private_input_custom_melodic_soloing`)**:
    - **Classification:** `gp_output_empty_or_near_empty`
-   - **Plausibility:** Note count is 0. 59 fret candidates are 100% unmatched.
-   - **Next Blocker:** **Note matching & barline construction**. While serialization succeeded in bypass mode, the score is empty. Alignment/mapping drift prevents fret-matching inside `build_ir`.
+   - **Quality:** Note count is 0. 59 fret candidates are 100% unmatched.
+   - **Next Blocker:** **Note matching & barline construction**.
 
 ---
 
 ## 3. Public Test Verification
 
-We added 4 new unit tests in `tests/test_gp_quality_audit.py` to cover all quality classification logic:
+We added 6 new unit tests in `tests/test_gp_quality_audit.py` to cover all quality classification logic:
 1. `test_classify_gp_quality_basic_pass`: Verifies highly populated, non-empty, and aligned scores without technique candidates pass basic validation.
 2. `test_classify_gp_quality_empty_or_near_empty`: Confirms that GP outputs with zero notes are flagged.
 3. `test_classify_gp_quality_fret_matching_suspect`: Asserts that a low fret match rate (< 40%) is flagged as suspect.
 4. `test_classify_gp_quality_technique_loss_expected`: Confirms that scores with excellent note coverage but un-serialized technique candidates are flagged as technique-loss-expected.
+5. `test_classify_gp_quality_serialized_coverage_low` (NEW): Asserts that high ScoreIR notes but low GPIF notes (< 70%) is classified as `gp_output_note_coverage_low`.
+6. `test_classify_gp_quality_measure_mismatch` (NEW): Asserts that a GPIF/ScoreIR measure count mismatch is classified as `gp_output_bar_alignment_suspect`.
 
-**All 428 public unit and integration tests in the repository pass perfectly.**
+**All 430 public unit and integration tests in the repository pass perfectly.**
 
 ---
 
@@ -85,5 +87,5 @@ We added 4 new unit tests in `tests/test_gp_quality_audit.py` to cover all quali
 
 ## 5. Recommended Next Branch
 
-`feature/guitar-technique-preservation-v0.1`
-Given that the custom lessons (Lessons 3 to 7) show **outstanding note coverage (99.3%+ to 100%)** and **highly plausible bar alignment**, the next logical progression is to implement the serialization of advanced guitar techniques (bends, slides, slurs, hammer-ons, pull-offs) in the output relational GPIF track databases.
+`feature/bar-alignment-quality-gate-v0.1`
+Given that the strict checks flag the custom lessons as `gp_output_bar_alignment_suspect` due to the cover-page booklet bar setup, the recommended next branch is `feature/bar-alignment-quality-gate-v0.1` to build a clean alignment gate and movement-aware booklet compiler to resolve cover-page mismatches.
