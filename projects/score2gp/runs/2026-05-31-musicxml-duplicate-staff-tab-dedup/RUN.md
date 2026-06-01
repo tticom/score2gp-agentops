@@ -18,8 +18,7 @@ We resolved the polyphony timing blocker without resorting to bypassing the safe
 ### Rhythmic Authority & Playability Merger
 1. **Deduplication Hook**: Hooked `deduplicate_suspected_staff_tab_voices(musicxml)` at the beginning of `build_ir_with_diagnostics_from_imports` before any timing/preflight checks.
 2. **Identification & Classification**:
-   - `classify_musicxml_voice_duplication` checks for voice note sets measure by measure.
-   - Requires 100% duplicate evidence across active measures: same active measures, identical pitched-note count per measure, identical note onset/duration sequences, stable same-voice timing, and no chord-stack confusion.
+   - `classify_musicxml_voice_duplication` scans candidate voice pairs and requires 100% duplicate evidence across active measures: same active measures, identical pitched-note count per measure, identical note onset/duration sequences, stable same-voice timing, and no chord-stack confusion.
    - **Enforced Stable Pitch Offset**: Enforces a strict consistent transposition pitch offset (exactly `0` or `12` semitones) across *every single aligned pitched note* in the entire pair. If the pitch differences are not perfectly uniform, the duplicate pair is rejected.
    - Protects against ambiguity: if multiple competing voices could potentially qualify as a duplicate, deduplication is rejected.
    - Emits private-safe diagnostics warnings (e.g., `musicxml_duplicate_staff_tab_detected`, `musicxml_duplicate_staff_tab_dedup_applied`, etc.)
@@ -28,14 +27,14 @@ We resolved the polyphony timing blocker without resorting to bypassing the safe
    - Only falls back to voice numbers (`min`/`max` voice number) if staff attributes are absent or ambiguous.
    - Copies techniques (slides, bends, vibratos, hammer-ons, pull-offs, slurs) and ties from the duplicate TAB voice note into the standard notation note.
    - Stores rich duplicate TAB note metadata (`dedup_tab_note_id`, `dedup_tab_note_voice`, `dedup_tab_note_staff`, etc.) on the notation note for downstream alignment.
-   - Sets `n2.is_suppressed = True` on the duplicate TAB voice notes.
+   - **Full Suppress (including rests/events)**: Sets `n.is_suppressed = True` on all duplicate TAB voice notes and rests/events, preventing them from contaminating timing streams or poisoning target-staff selection.
 4. **Preflight Timing Safety**:
    - `analyze_musicxml_timing` ignores suppressed notes, completely bypassing cross-voice timeline overlaps and avoiding gate refusals under default `allow_remediation=False`.
 5. **Rhythmic Timelines & Target Staff**:
-   - Suppressed notes are ignored during target staff selection in `build_ir.py`.
-   - The standard notation staff (Staff 1) is automatically chosen as `target_staff` and serves as the rhythmic authority.
+   - Suppressed notes/rests are completely ignored during target staff selection in `build_ir.py`.
+   - The standard notation staff (Staff 1) is automatically chosen as `target_staff` and serves as the rhythmic authority, completely unpoisoned by suppressed TAB rests.
 6. **ScoreIR Double-Provenance**:
-   - `_aligned_note` appends both the standard notation note provenance and the TAB-voice note provenance alongside the matched `TabCandidate` provenance, preserving a complete paper trail.
+   - `_aligned_note` appends both the standard notation note provenance and the duplicate TAB note provenance (with the source path correctly resolving to `dedup_tab_note_source_path` or `source_path` respectively) alongside the matched `TabCandidate` provenance, preserving a complete paper trail.
 
 ---
 
@@ -60,7 +59,7 @@ Running the E2E smoke tests on the private melodic soloing guitar score yielded 
 
 ## 3. Public Test Verification
 
-We added 9 comprehensive synthetic test cases in `tests/test_musicxml_polyphony_diagnostics_edge_cases.py` verifying all boundary conditions:
+We added 11 comprehensive synthetic test cases in `tests/test_musicxml_polyphony_diagnostics_edge_cases.py` verifying all boundary conditions:
 
 1. `test_duplicate_staff_tab_voice_detected`: Verifies duplicate voice pairs are correctly identified.
 2. `test_duplicate_staff_tab_voice_unified`: Confirms single ScoreIR timeline is generated, techniques/ties are merged, and double-provenance is present.
@@ -71,8 +70,10 @@ We added 9 comprehensive synthetic test cases in `tests/test_musicxml_polyphony_
 7. `test_multiple_candidate_duplicate_pairs_refuse_as_ambiguous`: Down-grades and rejects deduplication if more than one matching duplicate pair exists to prevent layout ambiguity.
 8. `test_duplicate_staff_tab_unstable_pitch_offset_rejected`: Verifies voice pairs with inconsistent transposition pitch offsets are rejected from deduplication.
 9. `test_duplicate_staff_tab_roles_selected_by_staff_evidence`: Verifies notation and TAB roles are correctly identified based on `staff` attributes rather than voice numbers.
+10. `test_duplicate_staff_tab_voice_rest_suppressed` (NEW): Verifies duplicate TAB rests/events are suppressed, preventing target-staff poisoning and ensuring correct standard notation rests survive.
+11. Provenance Verification (NEW): Confirms separate source path attributes are successfully linked and asserted in double-provenance.
 
-**All 423 tests in the repository pass perfectly.**
+**All 424 tests in the repository pass perfectly.**
 
 ---
 
