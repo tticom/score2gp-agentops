@@ -145,26 +145,24 @@ We recommend creating the following branch:
 **Branch name**: `feature/gpif-hammer-pull-slide-minimal-v0.1`
 
 ### Why this is the next smallest useful step:
-Hammer-on, pull-off, and slide evidence is already successfully extracted from PDFs as text candidates and exists in ScoreIR and GPIF serialization. However, we cannot claim end-to-end preservation because of two gaps:
+Hammer-on, pull-off, and slide evidence is already successfully extracted from PDFs as text candidates and exists in ScoreIR and GPIF serialization. However, we cannot claim end-to-end preservation because of the parser gap:
 1. **GPIF Parser Gap**: `gp_package.py` does not deserialize `<HO>` and `<PO>` back to ScoreIR.
-2. **Proximity Attachment Gap**: `build_ir.py` attaches techniques purely based on note counts in a bar rather than visual `x` proximity, failing in bars with multiple notes.
 
-Fixing these two gaps is the smallest safe step to unlock end-to-end technique preservation.
+Fixing this gap is the smallest safe step to unlock end-to-end technique preservation. PDF x-proximity assignment is not part of this prompt and is deferred to the next separate branch.
 
 ### Likely files:
 - `src/score2gp/gp_package.py` (Add `<HO>` and `<PO>` relational extraction under `_extract_score_ir_from_relational_gpif_root`).
-- `src/score2gp/build_ir.py` (Refine `_attach_symbols_and_techniques` to use visual `x` coordinate proximity to assign technique text to notes, rather than bar note count limits).
 
 ### Non-goals:
+- Do not implement PDF proximity assignment (Visual x-proximity note attachment is the next separate branch, not part of this implementation).
 - Do not extract visual curves/slurs from PDF vector drawings.
 - Do not change ScoreIR models or schemas.
 - Do not implement complex bends or vibrato curve extraction.
 
 ### Acceptance criteria:
 1. `gp_package.py` successfully recovers `HammerOnTechnique` and `PullOffTechnique` from relational GPIF XML.
-2. `build_ir.py` uses proximity `x` alignment to attach technique candidates to notes in bars containing more than 2 notes.
-3. All 442 public tests pass cleanly.
-4. Private audit reports stable statuses and no regressions on Lessons 3–7.
+2. All 442 public tests pass cleanly.
+3. Private audit reports stable statuses and no regressions on Lessons 3–7.
 
 ### Validation commands:
 ```bash
