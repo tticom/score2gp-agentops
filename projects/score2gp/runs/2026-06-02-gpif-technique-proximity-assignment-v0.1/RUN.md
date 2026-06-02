@@ -6,8 +6,8 @@ Durable record of the PDF-to-ScoreIR technique visual x-proximity attachment log
 - **Run ID**: `2026-06-02-gpif-technique-proximity-assignment-v0.1`
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
-- **Product Branch**: `feature/gpif-technique-proximity-assignment-v0.1`
-- **Agentops Branch**: `agent/gpif-technique-proximity-assignment-v0.1`
+- **Product Branch**: `feature/pdf-technique-x-proximity-assignment-v0.1`
+- **Agentops Branch**: `agent/pdf-technique-x-proximity-assignment-v0.1`
 
 ---
 
