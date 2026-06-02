@@ -97,18 +97,51 @@ The quality audit was successfully executed across all private inputs under defa
 
 ## 4. Verification & Testing
 
-### Public Unit Tests
-We added `tests/test_pdf_melodic_refinements.py` which includes 4 comprehensive unit tests:
-1. `test_ambiguous_bar_tolerance_cap`: Asserts tolerance bounds on small, normal, and large staff spacing.
-2. `test_tab_line_groups_horizontal_overlap`: Asserts horizontal overlap resolution of collinear segments.
-3. `test_notation_to_tab_barline_inheritance`: Asserts vertical and horizontal alignment constraints for inheriting barlines.
-4. `test_OMR_warnings_guarding_and_downgrading`: Asserts prefixing and downgrading of blocker warnings when `len(system.barlines) >= 2`.
+### Executed Validation Command Block & Outcomes
+We executed the following validation command block locally to verify the correctness of the changes:
 
-All 442 public tests in the codebase pass cleanly in `353.97s`.
+```bash
+# 1. Run unit and integration tests
+python -m pytest tests/test_pdf_melodic_refinements.py
+python -m pytest
 
-### Private-Safety Audit
-We verified that `git ls-files fixtures/private work` outputs exactly:
-```text
-fixtures/private/.gitkeep
+# 2. Run private pipeline and quality audit
+python scripts/private_e2e_smoke.py
+python scripts/private_gp_quality_audit.py
+
+# 3. Export and diff schemas
+python -m score2gp.cli export-schema --out schemas
+git diff -- schemas
+
+# 4. Validate output IR files
+python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json
+
+# 5. Check workspace whitespace/diff check
+git diff --check
+
+# 6. Verify git tracked private files
+git ls-files fixtures/private work
 ```
-No private materials or local build artifacts are tracked under version control.
+
+### Outcomes & Evidence:
+1. **Specific Refinement Tests**: `python -m pytest tests/test_pdf_melodic_refinements.py`
+   - **Result**: `4 passed` in `7.72s`.
+2. **Full Public Test Suite**: `python -m pytest`
+   - **Result**: `442 passed` in `329.42s`.
+3. **Private E2E Smoke Tests**: `python scripts/private_e2e_smoke.py`
+   - **Result**: Successfully ran all pipelines. Generated local artifacts under `work/private_e2e_smoke_v0_1/` including `score.ir.json` and `smoke.gp` for `private_input_custom_melodic_soloing`.
+4. **Quality Audit**: `python scripts/private_gp_quality_audit.py`
+   - **Result**: Wrote master quality audit summary JSON and Markdown. Verified that melodic soloing moved out of `gp_output_empty_or_near_empty` into `gp_output_fret_matching_suspect` with `16` matched notes/frets and a valid produced GP package. Zero regressions occurred on Lessons 3–7.
+5. **Schema Export**: `python -m score2gp.cli export-schema --out schemas`
+   - **Result**: Executed successfully. `git diff -- schemas` produced zero differences.
+6. **IR Format Validation**: `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
+   - **Result**: Validated successfully with no format errors.
+7. **Git Whitespace Check**: `git diff --check`
+   - **Result**: Completed successfully with no trailing whitespace or format errors in source/test files.
+8. **Private-Safety Invariant Audit**: `git ls-files fixtures/private work`
+   - **Result**: Output is exactly:
+     ```text
+     fixtures/private/.gitkeep
+     ```
+     No private inputs, generated GP packages, or intermediate JSON files are tracked in version control.
+
