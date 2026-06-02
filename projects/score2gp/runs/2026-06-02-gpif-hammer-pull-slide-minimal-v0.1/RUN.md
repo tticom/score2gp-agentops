@@ -27,12 +27,13 @@ We implemented the round-trip preservation of hammer-on and pull-off note techni
    - For any note containing a `HammerOnTechnique` or `PullOffTechnique` with `target_event_id=None`, looks ahead chronologically inside the same voice and track to find the next event containing a note on the same string, then resolves `target_event_id` to that event's ID.
 
 3. **Roundtrip Note Techniques Validation**:
-   - Updated `_validate_score_ir_roundtrip` to assert equality for `slide`, `hammer-on`, and `pull-off` note techniques, verifying that their presence and resolved target event IDs match the original ScoreIR.
+   - Updated `_validate_score_ir_roundtrip` to assert equality for `slide`, `hammer-on`, and `pull-off` note techniques, verifying that their presence and exact resolved target event IDs match the original ScoreIR.
 
 ### Key Additions in `tests/test_gp_writer.py`
 
 1. **`test_gpif_hammer_pull_roundtrip`**:
    - Verifies that `fixtures/public/test_gpif_hammer_pull.ir.json` roundtrips successfully, checking that the reconstructed ScoreIR has identical techniques and target event IDs.
+   - Asserts that `validate_roundtrip` correctly fails with a `"hammer-on target_event_id mismatch"` error when the target_event_id is mismatched.
 
 ---
 
