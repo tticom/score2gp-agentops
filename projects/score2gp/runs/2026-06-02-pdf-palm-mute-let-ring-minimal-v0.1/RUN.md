@@ -7,6 +7,7 @@ Durable record of the PDF-to-ScoreIR palm mute and let ring technique classifica
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
 - **Product Branch**: `feature/pdf-palm-mute-let-ring-minimal-v0.1`
+- **Product Commit**: `e5e42902977ae2bb6967fbefc662c1a8fe43b51f`
 - **Agentops Branch**: `agent/pdf-palm-mute-let-ring-minimal-v0.1`
 
 ---
