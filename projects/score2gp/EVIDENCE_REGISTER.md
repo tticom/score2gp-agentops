@@ -41,3 +41,15 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Implement robust visual segmentation to correctly align the remaining unboxed systems (e.g. Page 2 System 13, Page 4 System 1) that feature complex multi-system layouts.
 
+### EV-003: Melodic Soloing Safe Barline Recovery Pass
+
+- **Claim**: Safe barline recovery pass recovered System 1 and System 3, improving matched fret candidate count from 16 to 41 for `private_input_custom_melodic_soloing` while maintaining perfect stability on Lessons 3-7.
+- **Source**: branch `feature/melodic-soloing-safe-barline-recovery-v0.1`
+- **Evidence Type**: `logs` / `diagnostic_tables`
+- **Status**: **verified**
+- **Artifact Location**: `work/private_gp_quality_audit_v0_1/summary.json`
+- **Private-Safe Summary**: `private_input_custom_melodic_soloing` matched notes improved from 16 to 41. ScoreIR and GPIF note counts are equal. Lessons 3-7 are stable.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Implement fragmented-line grouping to resolve the remaining middle system (System 2) and recover the remaining notes.
+
+
