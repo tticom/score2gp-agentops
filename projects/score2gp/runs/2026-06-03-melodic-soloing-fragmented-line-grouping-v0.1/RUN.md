@@ -58,11 +58,16 @@ The quality audit was successfully executed across all private inputs:
 | `private_input_custom_lesson_7` | `pass` | `gp_output_technique_loss_expected` | 624 | 624 | 624 |
 | `private_input_custom_melodic_soloing` | `pass` | `gp_output_note_coverage_low` | 50 | 50 | 50 |
 
-### Observations:
-- **`private_input_custom_melodic_soloing` matched-note count improved from 41 to 50!** Inferred system count increased from 2 to 3, proving the highly fragmented middle system was successfully recovered and grouped.
-- **Lesson 3 matched count increased from 451 to 459**, representing legitimate recovery of staff lines fragmented by fret digits on system boundaries.
-- **Lesson 6 matched count increased from 115 to 235**, successfully resolving highly fragmented drawing geometry and doubling the constructed bar box count from 5 to 10.
-- Lessons 4, 5, and 7 remained stable at 546, 295, and 624.
+### Observations & Reviewer Deltas Verification:
+- **`private_input_custom_melodic_soloing` matched-note count improved from 41 to 50!** Inferred system count increased from 2 to 3, proving the highly fragmented middle system was successfully recovered and grouped by merging its horizontal staff line segments.
+  - *Known Limitation*: Melodic soloing matched notes improved to 50 but is still below expected full coverage. A follow-up active-blocker audit is needed to identify whether the remaining note loss is caused by timing/bar assignment, candidate extraction, MusicXML alignment, or another grouping limitation.
+- **Lesson 3 matched count increased from 451 to 459**:
+  - *Reviewer Conclusion*: This delta represents a **legitimate recovery** of staff lines that were fragmented by fret digits on system boundaries. By merging them under the neighbor constraint, these candidates are correctly assigned to string lines, with no warnings or category regressions.
+- **Lesson 6 matched count increased from 115 to 235**:
+  - *Reviewer Conclusion*: This delta represents a **legitimate recovery** of highly fragmented horizontal lines. System-detection warnings like `pdf-tab-system-not-detected` disappeared completely, and constructed bar boxes doubled from 5 to 10. These notes are correctly aligned and assigned to TAB staves with no false-positive geometry merging.
+- **Lessons 4, 5, and 7 remained stable** at 546, 295, and 624 matched notes respectively.
+- **Quality Categories**: All Lessons 3–7 remain as `pass` status under category `gp_output_technique_loss_expected`. Warning categories showed no new fatal grouping, ambiguous grouping, or false-positive system/bar assignment.
+- **ScoreIR and GPIF note counts**: Remained perfectly equal across all files (Lesson 3: 459/459, Lesson 6: 235/235, Melodic Soloing: 50/50).
 
 ---
 
