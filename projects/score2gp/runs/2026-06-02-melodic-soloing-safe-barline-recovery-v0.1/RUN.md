@@ -7,7 +7,10 @@ Durable record of the melodic soloing safe barline recovery implementation and v
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
 - **Product Branch**: `feature/melodic-soloing-safe-barline-recovery-v0.1`
-- **Product Commit**: `1097c43659e806e3c6a2a8e348cc8ffd6923d473`
+- **Product PR**: #162
+- **Product Base Commit**: `1097c43659e806e3c6a2a8e348cc8ffd6923d473`
+- **Product Implementation Commit**: `056cb2387713741aa16b8872667100a2ee3d4761`
+- **Product Merge Commit**: `2198eb0331ca9ce8ff4df233c8c0847f4fe71e12`
 - **Agentops Branch**: `agent/melodic-soloing-safe-barline-recovery-v0.1`
 
 ---
