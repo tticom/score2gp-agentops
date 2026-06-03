@@ -19,7 +19,7 @@ We implemented a batch/anchored notation-to-TAB inherited barline closeness filt
 ### Key Refinements in `src/score2gp/pdf.py`
 
 1. **Closeness Threshold** (`MIN_INHERITED_INTERNAL_BAR_WIDTH`):
-   - Added constant `MIN_INHERITED_INTERNAL_BAR_WIDTH = 130.0` points. 
+   - Added constant `MIN_INHERITED_INTERNAL_BAR_WIDTH = 130.0` points.
    - Audited Lessons 3–7 measure widths and verified that all measures < 130.0 points are created by explicit barlines (`inh=False`), so 130.0 is non-regressive.
 
 2. **Batch/Anchored Filtering**:
