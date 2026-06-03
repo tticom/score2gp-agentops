@@ -52,4 +52,13 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Implement fragmented-line grouping to resolve the remaining middle system (System 2) and recover the remaining notes.
 
+### EV-004: Melodic Soloing Fragmented TAB Staff-Line Grouping
 
+- **Claim**: Fragmented staff-line grouping recovered additional valid TAB evidence by safely merging horizontal staff-line fragments only when supported by neighbouring staff-line geometry. `private_input_custom_melodic_soloing` improved from 41 to 50 matched notes while public tests passed and private safety remained clean. Lesson 3 and Lesson 6 count increases were reviewed and classified as legitimate recoveries of highly fragmented staff lines.
+- **Source**: branch `feature/melodic-soloing-fragmented-line-grouping-v0.1`, PR #163, merge commit `1ce31296b5589a7c8ebd45a350ab4aab4f5640c6`
+- **Evidence Type**: `logs` / `diagnostic_tables` / `source`
+- **Status**: **verified**
+- **Artifact Location**: `work/private_gp_quality_audit_v0_1/summary.json`
+- **Private-Safe Summary**: `private_input_custom_melodic_soloing` matched notes improved from 41 to 50. Lessons 3 and 6 increased to 459 and 235 matched notes respectively. ScoreIR and GPIF note counts are equal. Lessons 4, 5, and 7 are stable.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Run the next private-safe active-blocker audit after PR #163 merge to identify whether the remaining melodic soloing note loss is caused by timing/bar assignment, candidate extraction, MusicXML alignment, or another grouping limitation.
