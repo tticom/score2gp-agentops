@@ -8,7 +8,7 @@
   "prompts": [
     {
       "id": "001",
-      "file": "prompts/001-review-and-record-prompt.md",
+      "file": "prompts/001-record-run-prompt.md",
       "source": "human",
       "target_agent": "antigravity",
       "status": "executed",
