@@ -73,3 +73,14 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Private-Safe Summary**: `private_input_custom_melodic_soloing` matched notes improved from 56 to 82. Lessons 3–7 are stable. ScoreIR and GPIF note counts are equal at 82.
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Run a fresh post-milestone private-safe baseline audit from product main to classify the next active blocker across all private fixtures, now that melodic soloing has reached full note coverage.
+
+### EV-006: MusicXML Quadruplet and Quintuplet Preflight Support
+
+- **Claim**: Narrow preflight support for quadruplet (4:3) and quintuplet (5:3) tuplets prevents fatal `musicxml_tuplet_unsupported` errors for Derek Trucks BB King (`private_input_1`), decreasing its unsupported tuplet issue count from 67 to 0 without regressing Lessons 3-7 or Melodic Soloing.
+- **Source**: branch `feature/musicxml-tuplet-quintuplet-quadruplet-support-v0.1`, commit `191e8204af0145e1a5c2e9e8770483aed592ef1f`
+- **Evidence Type**: `logs` / `diagnostic_tables` / `source`
+- **Status**: **verified**
+- **Artifact Location**: `work/private_e2e_smoke_v0_1/private_input_1/summary.json`
+- **Private-Safe Summary**: `private_input_1` unsupported tuplet error count reduced to 0. Lessons 3–7 and Melodic Soloing matched counts are perfectly stable.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Address the remaining fatal `musicxml_unbalanced_backup_forward` (backup-forward cursor drift) timing preflight blocker for `private_input_1`.
