@@ -62,3 +62,14 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Private-Safe Summary**: `private_input_custom_melodic_soloing` matched notes improved from 41 to 50. Lessons 3 and 6 increased to 459 and 235 matched notes respectively. ScoreIR and GPIF note counts are equal. Lessons 4, 5, and 7 are stable.
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Run the next private-safe active-blocker audit after PR #163 merge to identify whether the remaining melodic soloing note loss is caused by timing/bar assignment, candidate extraction, MusicXML alignment, or another grouping limitation.
+
+### EV-005: Melodic Soloing Internal Double-Barline Recovery
+
+- **Claim**: Internal size-2 TAB double-barline clusters are now conservatively resolved by accepting one representative and marking the secondary line as `pdf_barline_double_secondary`, while larger internal clusters remain ambiguous. This recovered the missing melodic soloing bar boxes from 5 to 8 and increased matched notes from 56 to 82 without regressing Lessons 3–7.
+- **Source**: branch `feature/melodic-soloing-internal-double-barline-recovery-v0.1`, PR #165, merge commit `47cf92c52408e8c1f2d08400f7e8a075d14ff266`
+- **Evidence Type**: `logs` / `diagnostic_tables` / `source`
+- **Status**: **verified**
+- **Artifact Location**: `work/private_gp_quality_audit_v0_1/summary.json`
+- **Private-Safe Summary**: `private_input_custom_melodic_soloing` matched notes improved from 56 to 82. Lessons 3–7 are stable. ScoreIR and GPIF note counts are equal at 82.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Run a fresh post-milestone private-safe baseline audit from product main to classify the next active blocker across all private fixtures, now that melodic soloing has reached full note coverage.
