@@ -7,6 +7,7 @@ Durable record of the MusicXML timing preflight remediation implementation for u
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
 - **Product Branch**: `feature/musicxml-backup-forward-remediation-v0.1`
+- **Product PR**: #167 (https://github.com/tticom/score2gp/pull/167)
 - **Product Head SHA**: `93e19d7`
 - **Agentops Branch**: `agent/musicxml-backup-forward-remediation-v0.1`
 
