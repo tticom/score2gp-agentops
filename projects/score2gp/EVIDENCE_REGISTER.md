@@ -77,7 +77,7 @@ This register catalogues and tracks all agentic claims and their corresponding v
 ### EV-006: MusicXML Quadruplet and Quintuplet Preflight Support
 
 - **Claim**: Narrow preflight support for quadruplet (4:3) and quintuplet (5:3) tuplets prevents fatal `musicxml_tuplet_unsupported` errors for Derek Trucks BB King (`private_input_1`), decreasing its unsupported tuplet issue count from 67 to 0 without regressing Lessons 3-7 or Melodic Soloing.
-- **Source**: branch `feature/musicxml-tuplet-quintuplet-quadruplet-support-v0.1`, commit `191e8204af0145e1a5c2e9e8770483aed592ef1f`
+- **Source**: branch `feature/musicxml-tuplet-quintuplet-quadruplet-support-v0.1`, PR #166, commit `191e8204af0145e1a5c2e9e8770483aed592ef1f`
 - **Evidence Type**: `logs` / `diagnostic_tables` / `source`
 - **Status**: **verified**
 - **Artifact Location**: `work/private_e2e_smoke_v0_1/private_input_1/summary.json`
