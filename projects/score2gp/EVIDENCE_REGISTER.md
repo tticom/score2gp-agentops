@@ -84,3 +84,15 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Private-Safe Summary**: `private_input_1` unsupported tuplet error count reduced to 0. Lessons 3–7 and Melodic Soloing matched counts are perfectly stable.
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Address the remaining fatal `musicxml_unbalanced_backup_forward` (backup-forward cursor drift) timing preflight blocker for `private_input_1`.
+
+### EV-007: MusicXML Backup/Forward Cursor Drift Investigation
+
+- **Claim**: The fatal `musicxml_unbalanced_backup_forward` blocker in `private_input_1` is caused by minor underflow in OMR-exported measures (e.g. stopping at 45 instead of 48 divisions), which combines with standard multi-staff backup/forward elements to create a false global parsing cursor mismatch. A narrow timing remediation can safely downgrade this error to a warning when allow_remediation is active, as per-voice timelines are completely coherent and free of overlaps.
+- **Source**: branch `research/musicxml-backup-forward-cursor-drift-v0.1` in `score2gp-agentops`
+- **Evidence Type**: `logs` / `diagnostic_tables`
+- **Status**: **verified**
+- **Artifact Location**: `projects/score2gp/research/musicxml-backup-forward-cursor-drift-v0.1.md`
+- **Private-Safe Summary**: Cursor drift analyzed across all 15 measures. Deltas range from -1 to -201 divisions. No backup-before-zero, forward-after-end, or same-voice overlaps are present. Lessons 3-7 and Melodic Soloing custom fixtures use perfectly balanced backups with 0 unbalanced measures.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Implement and verify the recommended timing remediation task in the product repository under branch `feature/musicxml-backup-forward-remediation-v0.1`.
+
