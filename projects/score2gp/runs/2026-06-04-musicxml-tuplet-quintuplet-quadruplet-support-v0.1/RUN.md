@@ -7,6 +7,7 @@ Durable record of the MusicXML timing preflight support implementation for quadr
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
 - **Product Branch**: `feature/musicxml-tuplet-quintuplet-quadruplet-support-v0.1`
+- **Product PR**: #166 (https://github.com/tticom/score2gp/pull/166)
 - **Product Head SHA**: `191e8204af0145e1a5c2e9e8770483aed592ef1f`
 - **Agentops Branch**: `agent/musicxml-tuplet-quintuplet-quadruplet-support-v0.1`
 
