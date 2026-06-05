@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-05-musicxml-grace-note-support-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-musicxml-grace-note-support-v0.1.md",
+      "description": "Proceed with the MusicXML Grace Note Support v0.1 implementation."
+    }
+  ],
+  "operative_prompt_index": 1
+}
