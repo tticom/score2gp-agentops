@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-05-layout-class-and-missing-sidecar-safety-gates-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-layout-class-and-sidecar-refusal-gates.md",
+      "description": "Proceed with the Layout Class and Missing Sidecar Safety Gates v0.1 implementation using the revised plan."
+    }
+  ],
+  "operative_prompt_index": 1
+}
