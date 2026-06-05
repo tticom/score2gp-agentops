@@ -96,3 +96,13 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Implement and verify the recommended timing remediation task in the product repository under branch `feature/musicxml-backup-forward-remediation-v0.1`.
 
+### EV-010: MusicXML Grace Note Support
+
+- **Claim**: MusicXML grace notes are now parsed, deduplicated between notation and TAB voices, compiled as zero-duration pre-host events, aligned to PDF candidates, and serialized in stable event order before host notes. This increased private_input_1 from 137 / 153 matched candidates to 153 / 153, reducing unmatched PDF candidates from 16 to 0 without regressing Lessons 3–7 or Melodic Soloing.
+- **Source**: branch `feature/grace-note-support-v0.1`, PR #170, merge commit `3c1941d5c8166ef3443367102ce6b25f1bd8dfef`
+- **Evidence Type**: `source` / `tests` / `private-safe audit`
+- **Status**: **verified**
+- **Artifact Location**: `projects/score2gp/runs/2026-06-05-musicxml-grace-note-support-v0.1`
+- **Private-Safe Summary**: `private_input_1` matched notes improved from 137 to 153, and unmatched PDF candidates reduced from 16 to 0. Lessons 3–7 and Melodic Soloing custom fixtures remain stable.
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Run a fresh post-grace-note active-blocker audit from product main to determine the next highest-value project task now that private_input_1 has reached full candidate coverage.
