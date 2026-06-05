@@ -7,7 +7,9 @@ Durable record of the fret candidate width refinement, digit-merge heuristic tig
 - **Product Repository**: `tticom/score2gp`
 - **Governance Repository**: `tticom/score2gp-agentops`
 - **Product Branch**: `feature/private-input-1-fret-refinement-tolerances-v0.1`
-- **Product Head SHA**: `7fb22eadcaf73d12928abfc7e2921da1348e5b9e`
+- **Product PR**: #168 (https://github.com/tticom/score2gp/pull/168)
+- **Product Head SHA**: `d423ce4d0620cee0a376f804eead9d2812fc4326`
+- **Product Merge Commit**: `ef3a397c5650b0ac2c5bf6ff8d49a39910b4002e`
 
 ---
 
