@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-06-ascii-sidecar-diagnostics-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-ascii-sidecar-diagnostics-v0.1.md",
+      "description": "Fix the remediation hint key mismatch so ASCII sidecar gate refusals surface the specific remediation in CLI stderr and --json-report."
+    }
+  ],
+  "operative_prompt_index": 1
+}
