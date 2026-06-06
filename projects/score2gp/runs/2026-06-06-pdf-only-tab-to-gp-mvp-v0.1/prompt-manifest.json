@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-06-pdf-only-tab-to-gp-mvp-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-pdf-only-tab-to-gp-mvp-v0.1.md",
+      "description": "Fix agentops PR #50 mergeability, then review draft product PR #176."
+    }
+  ],
+  "operative_prompt_index": 1
+}
