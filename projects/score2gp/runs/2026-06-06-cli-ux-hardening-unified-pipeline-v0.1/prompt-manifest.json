@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-06-cli-ux-hardening-unified-pipeline-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-cli-ux-hardening-unified-pipeline-v0.1.md",
+      "description": "Harden score2gp convert CLI with unified pipeline orchestration, explicit options, strict exit-code propagation, atomic GP output, and private-safe JSON reporting."
+    }
+  ],
+  "operative_prompt_index": 1
+}
