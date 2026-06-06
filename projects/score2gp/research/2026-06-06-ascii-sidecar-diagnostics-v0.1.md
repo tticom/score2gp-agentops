@@ -40,30 +40,34 @@ Verdict: **Implement diagnostics improvement now**. Addressing the key mismatch 
   - `tests/test_cli_convert.py`
 - **Test Names to Add/Update**:
   - `test_cli_convert_hash_refusal_contains_specific_remediation_hint`
+  - `test_cli_convert_hash_refusal_displays_correct_active_hash`
 - **Acceptance Criteria**:
   - `remediation_hint` is populated in the exception details for all ASCII gate refusals.
-  - The CLI convert command outputs the specific hint on stderr.
-  - The `--json-report` output contains the correct hint.
+  - If a hash mismatch or missing hash error occurs, the actual computed (correct) hash of the active file is included in the diagnostics details (under `pdf_actual_hash` and/or `musicxml_actual_hash`) and printed as part of the recommended action on CLI stderr.
+  - The CLI convert command outputs the specific hint and correct active hash on stderr.
+  - The `--json-report` output contains the correct hint and active hash status.
   - All public and private tests continue to pass.
 - **Stop Conditions**: Stop if the task requires changing the sidecar schema version or altering non-ASCII conversion paths.
 
 ## Developer Prompt
 ```text
-Title: Fix ASCII sidecar gate remediation hint key mismatch
+Title: Fix ASCII sidecar gate remediation hint key mismatch and print correct active hashes
 
 Context:
-In build_ir.py, ASCII ScoreIR gate refusals populate the details dictionary with expected_next_remediation. However, cli.py attempts to read remediation_hint. This mismatch causes the convert CLI output and --json-report to default to a generic fallback.
+In build_ir.py, ASCII ScoreIR gate refusals populate the details dictionary with expected_next_remediation. However, cli.py attempts to read remediation_hint. This mismatch causes the convert CLI output and --json-report to default to a generic fallback. Furthermore, when a sidecar hash mismatch occurs, the user does not see the correct active hash on stderr to fix the sidecar.
 
 Goal:
-Unify the remediation keys so that the specific remediation hint is correctly surfaced.
+Unify the remediation keys and expose the correct active hashes on mismatch.
 
 Requirements:
 1. In src/score2gp/build_ir.py, inside _apply_ascii_gate_refusal_details, add "remediation_hint": _ascii_gate_remediation(primary) to the details update payload.
-2. In tests/test_cli_convert.py, add a test test_cli_convert_hash_refusal_contains_specific_remediation_hint using tmp_path that triggers a stale hash refusal and asserts:
+2. In src/score2gp/build_ir.py, inside _ascii_scoreir_gate, if a mismatch or missing hash is found in the sidecar, include the correct active file's computed SHA-256 hash in details as "pdf_actual_hash" and/or "musicxml_actual_hash".
+3. Dynamically append the correct active hash(es) to the remediation hint or CLI stderr message so that the user receives an actionable prompt containing the exact correct hash (e.g. "Expected PDF hash <hash> in sidecar, but active file hash is <actual_hash>").
+4. In tests/test_cli_convert.py, add a test test_cli_convert_hash_refusal_displays_correct_active_hash using tmp_path that triggers a stale hash refusal and asserts:
    - exit_code is 4
-   - recommended_action in the JSON report matches the expected remediation hint
-   - recommended_action printed to CLI stderr matches the expected remediation hint
-3. Run all tests and verify they pass.
+   - recommended_action in the JSON report matches the expected remediation hint and contains the correct active hash
+   - recommended_action printed to CLI stderr contains the correct active hash
+5. Run all tests and verify they pass.
 
 Non-goals:
 - Do not implement ASCII conversion or rhythm inference.
@@ -73,3 +77,4 @@ Non-goals:
 
 ## Non-Goals
 No ASCII conversion, rhythm inference, or OCR is part of this increment.
+
