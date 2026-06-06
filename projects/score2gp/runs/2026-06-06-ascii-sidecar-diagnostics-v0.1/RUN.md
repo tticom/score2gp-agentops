@@ -6,8 +6,8 @@
 - **Agentops Branch**: `run/ascii-sidecar-diagnostics-v0.1`
 - **Product PR**: #175 (https://github.com/tticom/score2gp/pull/175)
 - **Product Head SHA**: `cc8c7ba3a62a5f14fd2f3dfc91ee99ba751177e6` (Initial commit: `281a23e57125d3f8ea4ce822583ab3730a8e8d0a`)
-- **Product Merge Commit**: `5dbc57d81a942cf7b02db709f1816e885d518ce3`
-- **Merged Timestamp**: `2026-06-06T18:50:04Z`
+- **Product Merge Commit**: `5dbc57d09380b9f8cb74aae630d0cacb3693fdf4`
+- **Merged Timestamp**: `2026-06-06T18:49:47Z`
 
 ## Prompt Chain
 - Prompt manifest: [prompt-manifest.json](prompt-manifest.json)
