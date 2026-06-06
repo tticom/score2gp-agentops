@@ -27,7 +27,7 @@
 - `projects/score2gp/runs/2026-06-06-cli-ux-hardening-unified-pipeline-v0.1/prompts/001-cli-ux-hardening-unified-pipeline-v0.1.md` (NEW)
 
 ## Input Availability
-- **Inputs**: All standard private PDFs under `fixtures/private/` (e.g. `Lesson-3.pdf`, `Melodic Soloing Masterclass.pdf`, etc.)
+- **Inputs**: Private benchmark inputs are referenced only by anonymized labels in the private-safe audit summaries. No private PDF, MusicXML, GP package, score title, or generated artifact is committed or named here.
 
 ## Output Directory Path
 - **Outputs Directory**: `work/private_e2e_smoke_v0_1` and `work/private_gp_quality_audit_v0_1`
