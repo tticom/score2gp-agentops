@@ -30,8 +30,6 @@
 ## Input Availability
 - **Inputs**: Private benchmark inputs are referenced only by anonymized labels in the private-safe audit summaries. No private PDF, MusicXML, GP package, score title, or generated artifact is committed or named here.
 
-## Output Directory Path
-- **Outputs Directory**: `work/private_e2e_smoke_v0_1` and `work/private_gp_quality_audit_v0_1`
 
 ## Universal Separate Reporting Statuses
 - **Strict Conversion Status**: `pass` (All staves, measures, beats, and notes compile cleanly for playable inputs)
@@ -53,18 +51,10 @@
 - No private/generated artifacts committed
 
 ## Private-Safe E2E Smoke Metrics
+- `private_input_1`: stable at `153 / 153`
+- Lessons 3–7: stable
+- Melodic Soloing: stable at `82 / 82`
 
-| Input Label | Status | Quality Category | Notes | Matched | First Blocker / Refusal Code |
-| :--- | :---: | :--- | :---: | :---: | :--- |
-| `private_input_1` | `pass` | `gp_output_technique_loss_expected` | 153 | 153 | `none` |
-| `private_input_2` | `fail` | `gp_output_empty_or_near_empty` | 0 | 0 | `pdf_input_class_ascii_tab_requires_alignment` |
-| `private_input_custom` | `fail` | `gp_output_empty_or_near_empty` | 0 | 0 | `pdf_input_class_missing_musicxml_sidecar` |
-| `private_input_custom_lesson_3` | `pass` | `gp_output_technique_loss_expected` | 459 | 459 | `none` |
-| `private_input_custom_lesson_4` | `pass` | `gp_output_technique_loss_expected` | 546 | 546 | `none` |
-| `private_input_custom_lesson_5` | `pass` | `gp_output_technique_loss_expected` | 295 | 295 | `none` |
-| `private_input_custom_lesson_6` | `pass` | `gp_output_technique_loss_expected` | 235 | 235 | `none` |
-| `private_input_custom_lesson_7` | `pass` | `gp_output_technique_loss_expected` | 624 | 624 | `none` |
-| `private_input_custom_melodic_soloing` | `pass` | `gp_output_technique_loss_expected` | 82 | 82 | `none` |
 
 ## Test Coverage
 The following unit tests are added or updated to cover hash validation:
