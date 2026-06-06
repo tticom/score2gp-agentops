@@ -106,3 +106,14 @@ This register catalogues and tracks all agentic claims and their corresponding v
 - **Private-Safe Summary**: `private_input_1` matched notes improved from 137 to 153, and unmatched PDF candidates reduced from 16 to 0. Lessons 3–7 and Melodic Soloing custom fixtures remain stable.
 - **Review Decision**: **approve**
 - **Next Required Evidence**: Run a fresh post-grace-note active-blocker audit from product main to determine the next highest-value project task now that private_input_1 has reached full candidate coverage.
+
+### EV-011: CLI UX Hardening and Unified Convert Pipeline
+
+- **Claim**: The `score2gp convert` command now provides a unified, user-facing conversion pipeline for the documented release scope, with explicit input/output options, strict/refusal exit-code propagation, atomic GP output handling, stale-output protection, and private-safe JSON reporting. The product remains stable with 478 public tests passing, private_input_1 at 153 / 153, stable Lessons 3–7, stable Melodic Soloing at 82 / 82, and clean private-safety output.
+- **Source**: branch `feature/cli-ux-hardening-unified-pipeline-v0.1`, PR #172, merge commit `df3b328540af2bff2ff9e39e433fe44d2211b582`
+- **Evidence Type**: `source / tests / private-safe audit`
+- **Status**: **verified**
+- **Artifact Location**: `projects/score2gp/runs/2026-06-06-cli-ux-hardening-unified-pipeline-v0.1`
+- **Private-Safe Summary**: The `score2gp convert` command validates options, processes PDF extraction and MusicXML preflight sequentially, and atomically updates the target output. Exit codes map refusal reasons correctly (1 for invalid inputs, 2 for PDF layout, 3 for MusicXML timing, 4 for ASCII/MusicXML alignment, and 5 for GP write). Public tests pass (478 passed). Private audit results are stable (private_input_1: 153/153, Lessons 3–7 stable, Melodic Soloing: 82/82).
+- **Review Decision**: **approve**
+- **Next Required Evidence**: Run a fresh post-CLI release-readiness audit from product main to confirm the documented CLI contract, product docs, smoke tests, private quality audit, exit-code behaviour, and private-safety invariant all remain aligned.
