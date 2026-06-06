@@ -27,15 +27,15 @@
 - `tests/test_pdf_only_tab.py` (NEW)
 
 ### Agentops Repository (`score2gp-agentops`):
-- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/RUN.md` (NEW)
-- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/prompt-manifest.json` (NEW)
-- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/prompts/001-pdf-only-tab-to-gp-mvp-v0.1.md` (NEW)
+- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/RUN.md` (MODIFY)
+- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/prompt-manifest.json` (UNCHANGED)
+- `projects/score2gp/runs/2026-06-06-pdf-only-tab-to-gp-mvp-v0.1/prompts/001-pdf-only-tab-to-gp-mvp-v0.1.md` (UNCHANGED)
 
 ## Universal Separate Reporting Statuses
-- **Strict Conversion Status**: `pass` (The PDF-only pathway successfully extracts and compiles GP output without a MusicXML timing source)
-- **Remediation / Diagnostic Status**: `pass` (All tests pass cleanly)
-- **Generated File Existence**: `yes` (A structurally valid `.gp` package is written)
-- **Semantic Round-Trip Status**: `verified` (Basic notes and inferred layout timing validate correctly)
+- **Strict Conversion Status**: `fail` (PDF-only pathway builds valid GP structure but suffers from a global ordering defect that merges unrelated pages, systems, and local bars into false chords)
+- **Remediation / Diagnostic Status**: `pass` (All unit and integration tests pass cleanly)
+- **Generated File Existence**: `yes` (A structurally valid `.gp` package is written for Lesson 3 Page 1 and Full-score)
+- **Semantic Round-Trip Status**: `blocked` (Generated output is musically invalid due to incorrect bar/event ordering and duplicate strings)
 
 ## Key Implementation Summary
 - **Direct Conversion Build**: Added `build_ir_from_tabraw_only` to parse a PDF's `TabRaw` candidate coordinates directly.
@@ -54,7 +54,7 @@
 - No private/generated artifacts committed to either repository
 
 ## Test Coverage
-- **Fret and Layout Safety Gates**: Tests in `tests/test_pdf_only_tab.py` assert that unsafe geometries (e.g., missing system, string, or bar line coordinates) trigger appropriate refusals.
+- **Fret and Layout Safety Gates**: Tests assert that unsafe geometries (e.g., missing system, string, or bar line coordinates) trigger appropriate refusals.
 - **Rhythm Inference Policy**: Asserts that spacing density boundaries are mapped to correct musical grid tick intervals.
 - **CLI Orchestration & JSON Report**: Asserts that `convert` outputs correct fields, warnings, and exit codes under both successful and refused conversions.
 
@@ -96,22 +96,30 @@ git diff --check
 
 ---
 
-## Private Lesson 3 Page-1 Smoke Test Summary
+## Private Lesson 3 Smoke Test Summaries
 
+### Page-1 Smoke Test (Structural Success)
 The PDF-only convert pipeline was executed locally on Page 1 of the private Lesson 3 score with the `--pdf-only-tab` flag and no MusicXML sidecar input.
-
-### Sanitized Performance Metrics
 - **Exit Code**: `0`
 - **Status**: `success`
-- **Refusal Code**: `null` (not refused)
 - **Output Written**: `true` (valid GP file successfully written)
 - **GP Validate**: `pass` (structure validation has no errors)
-- **XML Well-Formed**: `true`
-- **Master Bar Count**: `21`
-- **Playable Candidate Count**: `461`
-- **Event-Note Breakdown**: `461` matched notes across `395` events in `21` bars
-- **Inferred Timing Warning Present**: `true` (warning code `pdf_only_tab_inferred_timing` is recorded in warnings output)
-- **Optional Reference GP Comparison**: `matches: false` (as expected, since Page 1 actual output containing 21 bars/461 notes was compared against the full-score 66 bars/30 notes reference GP with Clean Guitar track name)
+- **Playable Candidate Count**: `461` (mapped to 461 notes across 395 events in 21 bars)
+- **Inferred Timing Warning Present**: `true` (warning code `pdf_only_tab_inferred_timing` is recorded in warnings)
+
+### Full-Score Smoke Test & Ordering Defect
+The PDF-only convert pipeline was executed on the full Lesson 3 score, successfully producing a structurally valid GP package.
+- **Exit Code**: `0`
+- **Status**: `success`
+- **GP Validate**: `pass` (XML well-formed and package valid zip)
+- **Findings**:
+  - Full-score inspection exposed a **serious global ordering defect**:
+    - Events merge notes from multiple source pages, systems, and local bars (e.g. `bar-1-event-1` contains notes from pages 1, 2, 3, and 4 collapsed into the same event).
+    - Events contain duplicate strings (multiple notes on the same string in a single event).
+    - The generated score is musically unacceptable.
+- **Conclusion**:
+  - This run is **not a finished MVP success**.
+  - It represents a structural breakthrough plus a newly identified blocker.
 
 ### Evidence Caveat
 > [!NOTE]
@@ -122,16 +130,16 @@ The PDF-only convert pipeline was executed locally on Page 1 of the private Less
 ## Current Status and Limitations
 
 ### Current Status
-This is the first working PDF-only MVP pathway in `score2gp`. Given a born-digital PDF tab layout with safe geometry, it produces a structurally valid, playable Guitar Pro package using layout-inferred timing.
+The direct PDF-only pathway successfully bypasses the MusicXML requirement and compiles structurally valid GP packages, but the musical output is currently invalid due to global ordering collapsing.
 
 ### Known Limitations
+- **Global Bar Ordering**: Fret candidates from different pages, systems, and local bars are collapsed into the same bars/events because the builder groups by local bar index and x-coordinate without preserving page and system vertical reading order.
+- **Duplicate Strings**: Multiple candidates on the same string are incorrectly stacked into single events.
 - **Approximate Timing**: Rhythmic durations are approximate and inferred from visual horizontal placement density.
-- **Reference Comparison**: A direct comparison between a single-page output and a full-score reference GP is mathematically non-matching.
 - **Rhythm Policy**: The density-grid mapping does not capture musical spacing nuances and needs layout-aware refinement.
 - **Techniques**: Expressive guitar technique support remains limited.
-- **Safety Gates**: Layout safety thresholds still need more real-world calibration.
 
 ---
 
 ## Next Recommended Task
-Run a full-score Lesson 3 private smoke using `--pdf-only-tab`. Validate the output GP structure, inspect the bar and event layout, and evaluate semantic note metrics. If it compiles successfully, investigate rhythm alignment options and resolve the bar/event count mismatch against the reference GP.
+Develop a product fix in the `feature/pdf-only-global-bar-ordering-v0.1` branch under the task `fix: preserve PDF-only source bar ordering`. The fix must group and sort candidates by page index, vertical system vertical order, and local bar index before assigning global output bars 1..N. Duplicate-string candidates in the same x-group should be split into adjacent events or trigger a clean refusal.
