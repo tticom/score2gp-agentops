@@ -3,7 +3,7 @@
 ## Repo and Branches
 - **Repository**: `tticom/score2gp` and `tticom/score2gp-agentops`
 - **Product Branch**: `test/pdf-staff-notation-diagnostics-contract-v0.1` (created from product `main`)
-- **Agent-ops Branch**: `run/2026-06-07-pdf-staff-notation-diagnostics-contract-v0.1`
+- **Agent-ops Branch**: `run/2026-06-07-test-pdf-staff-notation-diagnostics-contract-v0.1`
 - **Commit Hash**: `1a2e7ad801fecc1d21f877e330f580bb20ed0fad`
 
 ## Prompt Chain
@@ -21,7 +21,7 @@
 - `tests/test_pdf_staff_geometry_diagnostics.py` (MODIFY)
 
 ### Agent-ops Repository (`score2gp-agentops`):
-- `projects/score2gp/runs/2026-06-07-pdf-staff-notation-diagnostics-contract-v0.1/` (NEW directory containing RUN.md, prompt-manifest.json, prompts, implementation_plan.md, task.md, and walkthrough.md)
+- `projects/score2gp/runs/2026-06-07-test-pdf-staff-notation-diagnostics-contract-v0.1/` (NEW directory containing RUN.md, prompt-manifest.json, prompts, implementation_plan.md, task.md, and walkthrough.md)
 
 ## Universal Separate Reporting Statuses
 - **Strict Conversion Status**: `pass` (No change to output generation; diagnostics contract strengthened to prevent false claims)

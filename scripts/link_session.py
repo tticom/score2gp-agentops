@@ -39,6 +39,16 @@ def get_active_run_dir(repo_root):
     os.makedirs(run_dir, exist_ok=True)
     return run_dir
 
+def get_windows_resolvable_target(link_path, target_path):
+    link_path = os.path.abspath(link_path)
+    target_path = os.path.abspath(target_path)
+    if link_path.startswith("/mnt/") and target_path.startswith("/home/"):
+        distro = "Ubuntu-24.04"
+        rel_path = os.path.relpath(target_path, "/")
+        unc_target = f"\\\\wsl.localhost\\{distro}\\{rel_path}"
+        return unc_target.replace("/", "\\")
+    return target_path
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python3 link_session.py <session_brain_dir>", file=sys.stderr)
@@ -53,41 +63,54 @@ def main():
     repo_root = os.path.dirname(script_dir)
     
     run_dir = get_active_run_dir(repo_root)
-    print(f"Linking session {session_dir} -> {run_dir}")
+    print(f"Synchronizing session {session_dir} <-> {run_dir}")
     
-    files_to_link = ["implementation_plan.md", "task.md", "walkthrough.md"]
+    files_to_sync = ["implementation_plan.md", "task.md", "walkthrough.md"]
     
-    for filename in files_to_link:
+    for filename in files_to_sync:
         session_file = os.path.join(session_dir, filename)
         repo_file = os.path.join(run_dir, filename)
         
-        # 1. If file exists locally but not in repo, move it to repo
-        if os.path.exists(session_file) and not os.path.islink(session_file):
-            if not os.path.exists(repo_file):
-                print(f"Moving local {filename} to repository...")
-                shutil.copy2(session_file, repo_file)
-            os.remove(session_file)
-            
-        # 2. If it exists in repo but not locally, ensure local is clear
-        elif os.path.exists(session_file) and os.path.islink(session_file):
-            # Already a link, verify target
+        # Clean up symlink if it exists
+        if os.path.islink(session_file):
+            print(f"Removing old symlink for {filename}...")
             try:
-                target = os.readlink(session_file)
-                if os.path.abspath(target) == os.path.abspath(repo_file):
-                    continue
-            except Exception:
                 os.remove(session_file)
+            except Exception as e:
+                print(f"Warning: Could not remove symlink {session_file}: {e}", file=sys.stderr)
                 
-        # 3. Create symlink from session_file to repo_file
-        if os.path.exists(repo_file):
+        session_exists = os.path.exists(session_file)
+        repo_exists = os.path.exists(repo_file)
+        
+        if session_exists and repo_exists:
+            session_mtime = os.path.getmtime(session_file)
+            repo_mtime = os.path.getmtime(repo_file)
+            
+            # Use 1.0s threshold to avoid redundant copying due to clock skew or float precision
+            if session_mtime - repo_mtime > 1.0:
+                print(f"Syncing {filename}: local -> repository")
+                try:
+                    shutil.copy2(session_file, repo_file)
+                except Exception as e:
+                    print(f"Warning: Failed to copy {session_file} to {repo_file}: {e}", file=sys.stderr)
+            elif repo_mtime - session_mtime > 1.0:
+                print(f"Syncing {filename}: repository -> local")
+                try:
+                    shutil.copy2(repo_file, session_file)
+                except Exception as e:
+                    print(f"Warning: Failed to copy {repo_file} to {session_file}: {e}", file=sys.stderr)
+        elif session_exists:
+            print(f"Copying {filename} to repository")
             try:
-                print(f"Creating symlink: {session_file} -> {repo_file}")
-                # Use absolute Windows path or relative path depending on platform
-                os.symlink(repo_file, session_file)
-            except OSError as e:
-                print(f"Warning: Could not create symlink ({e}). Falling back to file copy sync.", file=sys.stderr)
-                # Fallback: copy file
+                shutil.copy2(session_file, repo_file)
+            except Exception as e:
+                print(f"Warning: Failed to copy {session_file} to {repo_file}: {e}", file=sys.stderr)
+        elif repo_exists:
+            print(f"Copying {filename} to local session")
+            try:
                 shutil.copy2(repo_file, session_file)
+            except Exception as e:
+                print(f"Warning: Failed to copy {repo_file} to {session_file}: {e}", file=sys.stderr)
 
 if __name__ == "__main__":
     main()
