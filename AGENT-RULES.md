@@ -1,5 +1,11 @@
 # Agent Rules
 
+## Bootstrapping and Agent Loading
+
+At the very start of any conversation session, the agent MUST:
+1. Run `./scripts/bootstrap.py` to verify that the repository is up to date or ahead of its origin tracking branch. If the script fails, the agent must stop and report the error to the user.
+2. Read the output of `./scripts/bootstrap.py` and register the custom subagents (`architect`, `developer`, `reviewer`) using the `define_subagent` tool before invoking them.
+
 ## Global rules
 
 1. Keep private copyrighted or licence-unclear fixtures local and untracked.
@@ -10,6 +16,7 @@
 6. Do not let multiple agents edit the same source worktree.
 7. Do not allow documentation-only churn to masquerade as implementation progress.
 8. Every proposed implementation slice must have a test or a clear explanation of why no test is possible.
+
 
 ## Role ownership
 
