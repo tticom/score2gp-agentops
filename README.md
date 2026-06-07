@@ -6,6 +6,19 @@ This repository is for control-plane artifacts only. It defines how implementati
 
 It does not claim conversion progress, does not alter ScoreToGP source code, and must not contain private benchmark assets.
 
+## Bootstrapping
+
+To ensure that agent runs are executed on up-to-date control planes, this repository includes a bootstrap script at `./scripts/bootstrap.py`.
+
+At the start of a conversation, the agent runs:
+```bash
+./scripts/bootstrap.py
+```
+This script:
+1. Fetches from origin and checks if the local `agentops` repository is behind its remote tracking branch. If behind, it aborts with a non-zero exit code.
+2. Reads the JSON agent definitions from `.agents/agents/` and outputs them as a formatted JSON array to stdout, which the parent agent can read and use to register the subagents via the `define_subagent` tool.
+
+
 ## Separation Of Responsibilities
 
 ### Product Repository
