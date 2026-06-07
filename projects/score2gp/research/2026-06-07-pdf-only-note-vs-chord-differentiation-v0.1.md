@@ -67,11 +67,11 @@ Extraction and spacing analysis on adjacent private lesson PDFs reveals that vis
 ## 7. Fixed tolerance versus adaptive tolerance assessment
 * **Current Fixed Tolerance (1.5 points)**: Too narrow. It fails to group chord notes with minor horizontal offsets (like the 9.59 pt offsets in Lesson 5).
 * **Too Wide Fixed Tolerance (e.g. 15.0 points)**: Too wide. It introduces false chord grouping for fast arpeggiated runs (like the 11.66 pt adjacent notes in Lesson 4).
-* **Adaptive / Layout-Aware Spacing**:
+* **Calibration of Threshold**:
   * Chord offset gaps are typically $\le 10.0$ points.
   * Sequential note gaps are typically $\ge 11.5$ points.
-  * Therefore, a layout-aware fixed threshold of **10.0 points** is the optimal boundary to successfully group offset chords in Lesson 5 while preserving sequential notes in Lesson 4.
-  * Making the threshold relative to the staff size (e.g., `0.2 * staff_height` or `1.5 * staff_line_spacing`) is even more robust against PDF scaling.
+  * Therefore, a fixed threshold of **10.0 points** is the optimal empirically calibrated boundary to successfully group offset chords in Lesson 5 while preserving sequential notes in Lesson 4.
+  * While this v0.1 change is a simple change of a fixed tolerance value rather than true layout-aware scaling (relative to staff height, space size, or bar width), it is an essential first step to unblock chord formation.
 
 ## 8. Duplicate-string and false-chord regression risks
 Any updated chord-grouping policy must protect the regression tests added in PR #177:
@@ -85,15 +85,15 @@ Any updated chord-grouping policy must protect the regression tests added in PR 
 
 ## 10. Specific event-formation gaps
 1. **Visual Column Grouping is Over-Strict**: The 1.5-point tolerance splits offset chord notes into separate events.
-2. **Lack of Layout Scale Sensitivity**: A fixed coordinate value does not adapt to PDF resolution or scaling.
+2. **Lack of Layout Scale Sensitivity**: A fixed coordinate value does not adapt to PDF resolution or scaling. This remains an open issue for layout-aware scaling (e.g. relative to staff height or space size) in future increments.
 
 ## 11. Privacy assessment
-* No private files, generated `.gp` packages, raw coordinates, or local machine paths are committed.
+* No private PDFs, generated `.gp` packages, raw coordinates, or local machine paths are committed.
 * Privacy invariant holds: `git ls-files fixtures/private work` outputs only `fixtures/private/.gitkeep`.
 
 ## 12. Recommendation
-We recommend implementing **Layout-Aware Visual Column Grouping for Chord Formation**:
-* Increase the visual grouping tolerance in `_candidate_x_groups` from `1.5` to a configurable chord grouping threshold of **10.0 points** (or `0.2 * staff_height` if staff height is available).
+We recommend implementing **Empirically Tuned Visual Column Grouping for Chord Formation**:
+* Increase the visual grouping tolerance in `_candidate_x_groups` from `1.5` to an empirically tuned chord grouping threshold of **10.0 points**.
 * Strictly preserve the duplicate-string splitting logic (`split_duplicate_strings`) and source-bar isolation. This ensures that any candidates on the same string within the 10.0-point group are safely split into adjacent sequential events.
 * Preserve all page-system-bar ordering safeguards from PR #177.
 
@@ -102,7 +102,7 @@ We recommend implementing **Layout-Aware Visual Column Grouping for Chord Format
 ## 13. Smallest developer-ready implementation prompt
 
 ### Title
-feat: implement layout-aware chord event grouping for PDF-only conversion
+feat: implement empirically tuned chord event grouping for PDF-only conversion
 
 ### Context
 In the PDF-only tab conversion pathway, simultaneous notes in a chord are sometimes split into separate sequential events because their visual x-coordinates have minor horizontal offsets (up to 10 points) due to double-digit numbers or font widths, exceeding the current strict 1.5-point tolerance.
@@ -113,9 +113,10 @@ In the PDF-only tab conversion pathway, simultaneous notes in a chord are someti
 * Duplicate strings inside visual columns are split sequentially.
 
 ### Goal
-Allow fret candidates on different strings within the same source bar to group into a single chord event when their visual x-distance is within a layout-aware chord grouping threshold of **10.0 points**, while preserving sequential arpeggio notes and duplicate-string splitting.
+Allow fret candidates on different strings within the same source bar to group into a single chord event when their visual x-distance is within an empirically tuned chord grouping threshold of **10.0 points**, while preserving sequential arpeggio notes and duplicate-string splitting.
 
 ### Non-goals
+* Do not implement relative/layout-aware scaling (staff-height relative or bar-width relative) in this PR.
 * Do not change the duration/rhythm policy.
 * Do not infer rests.
 * Do not use reference GP as an input dependency.
