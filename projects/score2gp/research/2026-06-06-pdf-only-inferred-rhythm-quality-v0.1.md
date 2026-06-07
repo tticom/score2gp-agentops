@@ -73,7 +73,7 @@ Comparing the generated GP package to the reference GP (`fixtures/private/Lesson
 
 ## 8. Specific rhythm-quality gaps
 1. **Lack of Layout-Aware Spacing**: Visual distance is a direct proxy for duration in born-digital engraving, but the code ignores it.
-2. **Fixed 1.5 Point Tolerance**: A fixed coordinate tolerance fails when PDFs are scaled or have varying layout densities.
+2. **Fixed 1.5 Point Tolerance**: A fixed coordinate tolerance is simple but needs to remain untouched for this first rhythmic increment to avoid regressing PR #177.
 3. **No Minimum Quantization Threshold**: Visual noises or misalignments can force a bar into a dense 64th grid, causing chaotic rhythm notation.
 
 ## 9. Privacy assessment
@@ -85,7 +85,9 @@ We recommend **Proportional Visual-Spacing Rhythm Inference** as the smallest sa
 * Rather than spacing onsets uniformly, the visual horizontal distances (x-coordinates) of events inside a bar should determine their proportional onset times.
 * The visual bar width can be estimated by extending the notes' bounding boxes by the average visual note distance.
 * Visual onsets are mapped to raw ticks and then quantized to the nearest step on the grid (eighth, 16th, 32nd).
-* The x-group tolerance should be made relative to the staff line spacing or bar width rather than a fixed 1.5 points.
+* **Scope Guardrail**: Preserve the current source-ordering and grouping behavior from PR #177. Do not change the fixed 1.5-point x-group/chord tolerance in the first rhythm PR.
+* **Warning Policy**: Keep the `pdf_only_tab_inferred_timing` warning because rhythm remains layout-inferred rather than authoritatively annotated.
+* **Diagnostics**: Add duration distribution diagnostics (e.g. counts of generated durations per category) to the JSON execution report.
 
 ---
 
@@ -103,15 +105,17 @@ In the PDF-only tab conversion pathway, event durations and onsets are currently
 * GP output validation passes, but rhythmic structures are musically uniform.
 
 ### Goal
-Implement a layout-aware rhythm inference policy that estimates event onsets proportionally to their visual x-positions inside the bar, and quantizes them to a clean musical grid.
+Implement a layout-aware rhythm inference policy that estimates event onsets proportionally to their visual x-positions inside the bar, and quantizes them to a clean musical grid. Preserve the current source-ordering and grouping behavior from PR #177, including the fixed 1.5-point x-group tolerance.
 
 ### Non-goals
+* Do not change the visual x-group tolerance of 1.5 points.
 * Do not introduce any dependency on MusicXML or external OMR libraries.
 * Do not change the CLI interface.
 * Do not use reference GP files as an input dependency.
 
 ### Constraints
 * Ensure that all public regression tests in `tests/test_pdf_only_tab.py` continue to pass.
+* Keep the `pdf_only_tab_inferred_timing` warning active.
 * Do not commit or expose any private score contents or paths.
 
 ### Required pre-flight checks
@@ -138,10 +142,13 @@ Modify `src/score2gp/build_ir.py` inside `build_ir_from_tabraw_only`:
    * Enforce boundary conditions: $Q_0 = 0$, and $Q_i < Q_{i+1}$ (adjusting or collapsing if necessary to prevent overlapping/out-of-order onsets).
 4. **Duration Assignment**:
    * Set `duration_ticks` of event $i$ to $Q_{i+1} - Q_i$, and the last event to $3840 - Q_{N-1}$.
-   * Ensure `notated_duration` is assigned to match the quantized duration value.
+   * Ensure `notated_duration` is assigned to match the quantized duration value (e.g. if duration is 960 ticks, assign "quarter"; if 480 ticks, assign "eighth", etc.).
+5. **Diagnostics**:
+   * Report duration distribution metrics (histogram of generated note values) in the `pdf_only_diagnostics` block of the JSON execution report.
 
 ### Validation
 * Write a new unit test `test_pdf_only_proportional_rhythm` in `tests/test_pdf_only_tab.py` using a mock TabRaw with non-uniform visual spacings (e.g. a wide gap followed by narrow gaps) to assert that the generated event onsets correspond to proportional tick values (e.g. a quarter note followed by eighth notes).
+* Assert that the current grouping behavior and 1.5-point tolerances are untouched.
 * Execute the test suite:
   ```bash
   PYTHONPATH=src .venv/bin/python3 -m pytest tests/test_pdf_only_tab.py
