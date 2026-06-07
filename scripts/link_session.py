@@ -74,10 +74,7 @@ def main():
         # Clean up symlink if it exists
         if os.path.islink(session_file):
             print(f"Removing old symlink for {filename}...")
-            try:
-                os.remove(session_file)
-            except Exception as e:
-                print(f"Warning: Could not remove symlink {session_file}: {e}", file=sys.stderr)
+            os.remove(session_file)
                 
         session_exists = os.path.exists(session_file)
         repo_exists = os.path.exists(repo_file)
@@ -89,28 +86,16 @@ def main():
             # Use 1.0s threshold to avoid redundant copying due to clock skew or float precision
             if session_mtime - repo_mtime > 1.0:
                 print(f"Syncing {filename}: local -> repository")
-                try:
-                    shutil.copy2(session_file, repo_file)
-                except Exception as e:
-                    print(f"Warning: Failed to copy {session_file} to {repo_file}: {e}", file=sys.stderr)
+                shutil.copy2(session_file, repo_file)
             elif repo_mtime - session_mtime > 1.0:
                 print(f"Syncing {filename}: repository -> local")
-                try:
-                    shutil.copy2(repo_file, session_file)
-                except Exception as e:
-                    print(f"Warning: Failed to copy {repo_file} to {session_file}: {e}", file=sys.stderr)
+                shutil.copy2(repo_file, session_file)
         elif session_exists:
             print(f"Copying {filename} to repository")
-            try:
-                shutil.copy2(session_file, repo_file)
-            except Exception as e:
-                print(f"Warning: Failed to copy {session_file} to {repo_file}: {e}", file=sys.stderr)
+            shutil.copy2(session_file, repo_file)
         elif repo_exists:
             print(f"Copying {filename} to local session")
-            try:
-                shutil.copy2(repo_file, session_file)
-            except Exception as e:
-                print(f"Warning: Failed to copy {repo_file} to {session_file}: {e}", file=sys.stderr)
+            shutil.copy2(repo_file, session_file)
 
 if __name__ == "__main__":
     main()

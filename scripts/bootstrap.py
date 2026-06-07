@@ -123,7 +123,8 @@ def main():
             sys.argv = [sys.argv[0], args.session_dir]
             link_main()
         except Exception as e:
-            print(f"Warning: Failed to link session: {e}", file=sys.stderr)
+            print(f"Error: Failed to link session: {e}", file=sys.stderr)
+            sys.exit(1)
             
     agents = load_agents(repo_root)
     print(json.dumps(agents, indent=2))
