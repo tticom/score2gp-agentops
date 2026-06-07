@@ -17,9 +17,9 @@ This task is purely research, diagnostic, and architectural.
 * **Goals**:
   * Analyze the code-level logic for PDF-only duration assignment.
   * Identify remaining rhythm readability issues after visual chord grouping improvements.
-  * Evaluate visual-spacing duration inference options and quantization rules.
-  * Define the architectural seam for duration inference (`pdf_only_duration_inferer.py`).
-  * Recommend the smallest safe product increment and write a developer-ready prompt.
+  * Evaluate visual-spacing duration inference options and their limitations as fallback timing models.
+  * Define the conceptual boundaries between visual spacing and standard staff timing extraction.
+  * Recommend the next correct architectural timing model and author a follow-up investigation prompt.
 * **Non-goals**:
   * Implementing code changes in the product repo (`score2gp`).
   * Changing the visual x-grouping tolerance value.
@@ -28,7 +28,7 @@ This task is purely research, diagnostic, and architectural.
   * Introducing scanned PDF, OCR, or Audiveris dependencies.
   * Committing raw coordinates, private PDFs, or generated GP files.
 
-## 3. Current PDF-only duration policy in code
+## 3. Current PDF-only rhythm policy in code
 
 In `src/score2gp/build_ir.py` (lines 1769-1825), the current duration policy in the PDF-only path operates as follows:
 1. **Grid Density Selection**: The number of visual event subgroups $N$ in a bar determines a uniform grid spacing $G$ and notated duration name:
@@ -51,7 +51,7 @@ Sanitized metrics for a full Lesson 3 PDF-only conversion show:
 * **Events generated**: 461
 * **Inferred timing warning**: Present (`pdf_only_tab_inferred_timing`)
 * **Visual distances**: All event pairs inside bars have visual horizontal gaps $\ge 15.33$ pt, indicating sequential single-note lines (arpeggios).
-* ** Rhythmic results**: Uniformly assigned eighth notes with the final event of each bar stretched (e.g., to 2880 ticks in a 3-event bar), which is visually and musically disjointed.
+* **Rhythmic results**: Uniformly assigned eighth notes with the final event of each bar stretched (e.g., to 2880 ticks in a 3-event bar), which is visually and musically disjointed.
 
 ## 5. Remaining rhythm-quality problems
 
@@ -62,11 +62,11 @@ Sanitized metrics for a full Lesson 3 PDF-only conversion show:
 
 ## 6. Visual-spacing inference options
 
-Visual x-spacing provides a strong proxy for relative onset timing in digital engraving. We assess the following options:
-* **Option A: Uniform division (Current)**: Ignores visual coordinates. Low quality.
-* **Option B: Pure proportional visual spacing**: Calculate visual gaps $\Delta_i = X_{i+1} - X_i$, project onto a total bar width $W$, and scale to 3840 ticks. This reflects visual spacing accurately but results in raw, non-quantized tick values (e.g., 473 ticks) that fail Guitar Pro's strict musical quantization.
-* **Option C: Proportional spacing with soft quantization (Recommended)**: Calculate raw proportional onsets $T_i = \frac{X_i - X_1}{W} \times 3840$, and round them to the nearest multiple of a grid spacing $G$.
-  * *Risks*: Misalignments and layout artifacts can distort visual gaps, leading to incorrect quantization. A fallback policy or monotonicity correction is required to keep onsets in reading order.
+We assess how visual horizontal spacing should be treated:
+* **Limitations of Visual Spacing**: Visual spacing is **NOT** a reliable or authoritatively correct timing model. In born-digital engravers, horizontal spacing is adjusted for visual readability (fret numbers, fingerings, margins) and does not map linearly to musical durations. Relying on visual spacing as a primary duration proxy is musically incorrect.
+* **Role as Fallback Evidence**: Visual spacing should only be treated as a weak fallback model when no standard staff notation can be extracted. In dual-staff scores (standard staff + TAB), the authoritative source of timing is the standard notation: time signature, note/rest symbols, beams, dots, ties, and tuplets.
+* **Option A: Uniform division (Current)**: Low quality fallback.
+* **Option B: Proportional visual spacing**: Calculate raw proportional onsets $T_i = \frac{X_i - X_1}{W} \times 3840$, and round them to the nearest multiple of a grid spacing $G$. Useful only as a weak fallback timing model when standard staff elements are entirely missing.
 
 ## 7. End-of-bar and final-event handling
 
@@ -80,14 +80,14 @@ The current final-event stretch causes bad notation.
 
 ## 8. Rest inference assessment
 
-Heuristic rest inference (e.g. inserting a rest for a visual gap $> 30.0$ pt) is highly risky for v0.1:
+Heuristic rest inference (e.g. inserting a rest for a visual gap $> 30.0$ pt) is highly risky:
 * Tabs do not contain visual rest symbols.
 * Gaps can represent sustained notes (let ring) or engraver adjustments rather than rests.
-* *Recommendation*: **Defer rest inference** to a future stage and focus purely on proportional note event spacing.
+* *Recommendation*: Defer rest inference in the fallback pathway. True rests must be extracted from the standard staff notation.
 
 ## 9. Quantization policy assessment
 
-The safest v0.1 quantization policy is:
+The safest fallback quantization policy is:
 1. Distribute raw proportional onsets: $T_i = \frac{X_i - X_1}{W} \times 3840$.
 2. Choose a grid spacing $G$ (e.g., $120$ ticks for 32nd notes, or select $G$ based on $N$ as currently done).
 3. Quantize each onset: $Q_i = \text{round}(T_i / G) \times G$.
@@ -106,7 +106,7 @@ We recommend adding the following to the JSON diagnostics:
 
 ## 11. Architecture seam for duration inference
 
-Introduce a new dedicated module to handle this responsibility:
+Even though the primary rhythm should come from standard staff extraction, a dedicated duration inferer is still valuable to decouple from orchestration:
 * **File name**: `src/score2gp/pdf_only_duration_inferer.py`
 * **Class name**: `PdfOnlyDurationInferer`
 * **Test file name**: `tests/test_pdf_only_duration_inferer_visual_spacing.py`
@@ -120,83 +120,65 @@ Introduce a new dedicated module to handle this responsibility:
 
 ## 13. Recommendation
 
-Implement **Proportional Visual-Spacing Rhythm Inference** as a product feature.
-* Extract the current grid duration logic from `build_ir.py` into a new `PdfOnlyDurationInferer` class in `src/score2gp/pdf_only_duration_inferer.py`.
-* Implement the proportional visual-spacing calculation and quantization inside this class.
-* Add focused unit tests in `tests/test_pdf_only_duration_inferer_visual_spacing.py` using synthetic tab candidates.
+Do not implement proportional visual-spacing duration inference as the primary timing model.
+* Visual spacing is not musically correct or authoritative for rhythm. It must remain a weak fallback timing model.
+* The authoritative rhythm must come from standard staff notation.
+* **Recommended Next Step**: Investigate PDF-only standard staff timing extraction and alignment. We need to analyze how standard staff notation elements (beams, flags, dots, rests, note duration shapes, time signatures) can be extracted directly from the PDF tab coordinate geometries and aligned with the TAB fret candidates.
 
 ---
 
 ## 14. Smallest developer-ready implementation prompt
 
 ### Title
-feat: implement proportional visual-spacing duration inference for PDF-only tab
+research: investigate PDF-only staff-to-TAB timing extraction and alignment
 
 ### Context
-PDF-only timing is currently uniform, ignoring visual gaps and causing extreme final note stretch. Visual spacing in digital engraving is a direct proxy for musical duration.
+Authoritative rhythm in a standard PDF score comes from the standard staff notation (time signature, note and rest heads, flags, beams, dots, tuplets, ties, barlines). The TAB staff only provides fret, string, and visual groupings. Relying on visual spacing is a weak fallback.
 
 ### Current verified state
-* Visual chord event grouping is refactored into `PdfOnlyChordEventGrouper`.
-* Timing uses a mechanical uniform grid in `build_ir.py`.
-* All tests pass, but rhythm is visually/musically poor.
+* Visual grouping is refactored into `PdfOnlyChordEventGrouper`.
+* Timing uses a uniform grid in `build_ir.py` with a timing warning.
 
 ### Goal
-Extract duration inference into `src/score2gp/pdf_only_duration_inferer.py` and implement a visual-spacing duration policy that maps relative horizontal positions to quantized musical durations, preserving exact bar duration (3840 ticks) and preventing pathological final note stretch.
+Investigate how standard staff notation elements can be extracted from the born-digital PDF TabRaw geometries and aligned with TAB candidates inside the same system.
 
 ### Non-goals
-* Do not change chord grouping logic or the `10.0 pt` tolerance.
-* Do not change source-bar ordering.
-* Do not introduce rest inference in v0.1.
-* Do not use reference GP files as an input dependency.
+* Do not modify product code or change current duration inference.
 * Do not introduce OCR or scanned PDF support.
+* Do not use reference GP as an input dependency.
 
 ### Constraints
-* All existing tests in `tests/test_pdf_only_tab.py` must continue passing.
-* Keep the `pdf_only_tab_inferred_timing` warning active.
-* Do not commit private files or machine paths.
+* The investigation must be private-safe.
+* No private PDFs or Machine paths should be committed.
 
 ### Required pre-flight checks
-Ensure the workspace is clean and the privacy invariant holds:
+Ensure only `fixtures/private/.gitkeep` is tracked inside private directories:
 ```bash
 git status
 git ls-files fixtures/private work
 ```
 
-### Implementation guidance
-1. Create `src/score2gp/pdf_only_duration_inferer.py` and define `PdfOnlyDurationInferer`.
-2. Extract the duration grid logic:
-   * Estimate the visual end of the bar: $\Delta_{\text{avg}} = \frac{X_N - X_1}{N - 1}$ for $N > 1$ events (default to 20.0 pt for $N = 1$). Set $X_{\text{end}} = X_N + \Delta_{\text{avg}}$.
-   * Total visual width is $W = X_{\text{end}} - X_1$.
-   * For each event $i$, compute raw proportional onset: $T_i = \frac{X_i - X_1}{W} \times 3840$.
-   * Select grid spacing $G$ based on $N$ (e.g., $N \le 8 \Rightarrow G = 480$).
-   * Quantize onsets: $Q_i = \text{round}(T_i / G) \times G$.
-   * Enforce monotonicity: $Q_0 = 0$ and $Q_i < Q_{i+1}$ (if $Q_{i+1} \le Q_i$, shift to $Q_i + G$).
-   * Calculate durations: $\text{duration}_i = Q_{i+1} - Q_i$ for $i < N - 1$ and $\text{duration}_{N-1} = 3840 - Q_{N-1}$.
-   * Map `notated_duration` based on the resulting tick duration (e.g. 960 -> quarter, 480 -> eighth, 240 -> 16th, etc.).
-3. Update `src/score2gp/build_ir.py` to call `PdfOnlyDurationInferer`.
+### Investigation guidance
+1. **Structure Analysis**:
+   * Inspect how standard staff lines, noteheads, beams, stems, and flags are represented in `TabRaw` candidate geometries.
+   * Determine if the extractor outputs standard staff symbols or if we need to expand `TabRaw` parser support.
+2. **Alignment Strategy**:
+   * Analyze vertical coordinate alignment (y-positions) to identify standard staff vs. TAB staff.
+   * Map standard staff note/rest onsets (using horizontal x-coordinates) to TAB fret candidates.
+   * Assess how tuplets, ties, and rests are visually aligned in the standard staff relative to the TAB numbers.
+3. **Recommendation**:
+   * Formulate a conceptual model to build a timing map from standard staff note/rest durations and assign them to vertical columns of TAB frets.
+   * Recommend how the standard staff timing can be parsed and aligned.
 
 ### Validation
-* Implement unit tests in `tests/test_pdf_only_duration_inferer_visual_spacing.py`:
-  * `test_pdf_only_duration_inferer_evenly_spaced_events_get_uniform_durations`
-  * `test_pdf_only_duration_inferer_uneven_spacing_produces_proportional_durations`
-  * `test_pdf_only_duration_inferer_prevents_final_note_stretch`
-  * `test_pdf_only_duration_inferer_preserves_monotonicity`
-* Run:
-  ```bash
-  env PYTHONPATH=src .venv/bin/python3 -m pytest -q
-  ```
-
-### Acceptance criteria
-* Onsets scale to relative visual position proportions.
-* Total bar duration is exactly 3840 ticks.
-* All tests pass.
-
-### Stop conditions
-* If quantization causes negative or overlapping durations that cannot be resolved via monotonicity shifting, fallback to the uniform grid.
+Produce a research note under `projects/score2gp/research/` detailing:
+* PDF standard staff element availability in the active TabRaw extractor.
+* Proposed coordinate alignment algorithm.
+* Proposed diagnostic metrics.
 
 ### Reporting format
 ```markdown
-## Implementation complete
+## Investigation complete
 * Branch:
 * Commit:
 * PR:
@@ -208,10 +190,8 @@ git ls-files fixtures/private work
 
 ```bash
 wsl sh -c "cd /home/tticom/work/score2gp-workspace/score2gp-agentops && git status && git switch main && git pull --ff-only origin main"
-wsl sh -c "cd /home/tticom/work/score2gp-workspace/score2gp && git switch main && git pull --ff-only origin main"
 ```
 
 ## 16. Limitations / what was not verified
 
-* Expressive visual technique coordinates (e.g., slides/bends) were not integrated into the visual-spacing estimation.
-* Engraver spacing rules are assumed to be reasonably proportional, which might fail on complex multi-voice scores.
+* Standard staff element extraction has not been implemented or verified in the current codebase parser; the availability of these layout elements needs audit.
