@@ -18,3 +18,7 @@ generated/
 
 logs/private*
 evidence/private*
+
+.antigravitycli/
+__pycache__/
+*.pyc
