@@ -9,5 +9,6 @@ Success Criteria:
 
 Scope & Privacy Boundaries:
 * Do **not** commit private PDFs, generated GP/GPIF/MusicXML, raw diagnostics JSONs, screenshots, overlays, raw coordinate dumps, local absolute paths, or private fixture names.
+* Use neutral, private-safe identifiers (e.g. `input_001`, `input_002`, ..., `input_012`). Do not use any prefixes or custom suffixes indicating the contents of the files.
 * Maintain strict privacy: only aggregate counts and warning codes are safe to commit.
 * Stop at the Pull Request stage; never commit directly to or merge into `main` in either repository.

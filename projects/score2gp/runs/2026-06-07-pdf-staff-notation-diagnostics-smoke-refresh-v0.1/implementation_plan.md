@@ -9,8 +9,8 @@ This plan describes how we run the private-safe smoke inspection across all real
 * Store the aggregated, anonymized results in `RUN.md` to prevent private data leakage.
 
 ## Method
-1. Write a scratch script `run_smoke_diagnostics.py` to inspect all PDFs located in `fixtures/private/` of the `score2gp` product repository.
-2. Anonymize file names to private-safe labels (e.g. `private_input_1`, `private_input_custom_lesson_3`).
+1. Write a scratch script to inspect all PDFs located in `fixtures/private/` of the `score2gp` product repository.
+2. Anonymize file names to private-safe neutral labels (`input_001` through `input_012`).
 3. Invoke `inspect_pdf` for each file, outputting temporary reports locally in `work/` (git-ignored).
 4. Aggregate metadata from the resulting summaries (total pages, layout classes, diagnostics status, notation staff geometry counts, primitives, and fonts).
-5. Document everything in `RUN.md`.
+5. Document everything in `RUN.md`. For scanned-or-raster inputs, document classification metadata only (as scanned PDFs are not supported for extraction).

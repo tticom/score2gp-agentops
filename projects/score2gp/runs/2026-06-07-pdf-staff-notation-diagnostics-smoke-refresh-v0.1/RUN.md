@@ -25,27 +25,30 @@
 
 ## Smoke Test Inspection Metrics
 
-Below are the aggregated metrics collected across all 12 private PDFs in `fixtures/private/` using the `inspect_pdf` pipeline:
+Below are the aggregated metrics collected across all 12 private PDFs in `fixtures/private/` using the `inspect_pdf` pipeline, mapped to neutral IDs:
 
 | Label | Kind | Layout Class | Pages | Diags Status | Notation Staves | Line Count | Curve Count | Rect Count | Font Counts |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `private_input_1` | `born-digital` | `vector_tab_with_barlines` | 2 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_rock_ballads` | `scanned-or-raster` | `scanned_no_extractable_text` | 177 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_jazz_classics` | `scanned-or-raster` | `scanned_no_extractable_text` | 105 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_practice_every_day` | `born-digital` | `vector_tab_with_barlines` | 2 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_legato_licks` | `born-digital` | `mixed_unknown_layout` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_lesson_3` | `born-digital` | `vector_tab_with_barlines` | 4 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_lesson_4` | `born-digital` | `vector_tab_with_barlines` | 5 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_lesson_5` | `born-digital` | `vector_tab_with_barlines` | 3 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_lesson_6` | `born-digital` | `vector_tab_with_barlines` | 6 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_lesson_7` | `born-digital` | `vector_tab_with_barlines` | 5 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_2` | `born-digital` | `born_digital_ascii_tab` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
-| `private_input_custom_melodic_soloing` | `born-digital` | `vector_tab_with_barlines` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_001` | `born-digital` | `vector_tab_with_barlines` | 2 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_002` | `scanned-or-raster` | `scanned_no_extractable_text` | 177 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_003` | `scanned-or-raster` | `scanned_no_extractable_text` | 105 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_004` | `born-digital` | `vector_tab_with_barlines` | 2 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_005` | `born-digital` | `mixed_unknown_layout` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_006` | `born-digital` | `vector_tab_with_barlines` | 4 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_007` | `born-digital` | `vector_tab_with_barlines` | 5 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_008` | `born-digital` | `vector_tab_with_barlines` | 3 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_009` | `born-digital` | `vector_tab_with_barlines` | 6 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_010` | `born-digital` | `vector_tab_with_barlines` | 5 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_011` | `born-digital` | `born_digital_ascii_tab` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
+| `input_012` | `born-digital` | `vector_tab_with_barlines` | 1 | `success` | 0 | 0 | 0 | 0 | `none` |
+
+> [!NOTE]
+> Scanned-or-raster inputs (`input_002`, `input_003`) were classified and summarized for metadata and schema integrity check purposes only. No scanned-PDF or OCR support is implied.
 
 ### Summary Statistics
 - **Total Files**: 12
 - **Born-digital**: 10
-- **Scanned**: 2
+- **Scanned**: 2 (classified/summarized only; scanned-PDF/OCR support not implied)
 - **Total Pages**: 312
 - **Diagnostics Success Rate**: 100% (All 12 files returned status `success`)
 - **Notation Staves detected**: 0 (Expected as these files contain guitar tablature/layout classes, and standard staff detection correctly found no standard-staff notation groups matching spacing requirements)
@@ -59,10 +62,13 @@ Below are the aggregated metrics collected across all 12 private PDFs in `fixtur
 ## Validation Commands Run
 ```bash
 env PYTHONPATH=src:. .venv/bin/pytest -q
+git diff --check
+find . -path "./.git" -prune -o -type f -size +10M -print
 git status
 git ls-files fixtures/private work
 ```
 
 ## Private-Safety Audit
 * Checked and verified that no private PDF assets, generated `.gp` packages, or inspection JSON reports are committed.
+* Checked and verified that all private-style input labels (such as `private_input_1`, `private_input_custom_*`) and local absolute scratch script paths are completely removed from the committed git history and replaced with neutral IDs (`input_001` to `input_012`).
 * Local directories `work/` and `scratch/` are correctly git-ignored in both repositories.
