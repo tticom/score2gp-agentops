@@ -5,6 +5,7 @@
 - **Product Branch**: `test/pdf-staff-notation-diagnostics-contract-v0.1` (created from product `main`)
 - **Agent-ops Branch**: `run/2026-06-07-test-pdf-staff-notation-diagnostics-contract-v0.1`
 - **Commit Hash**: `1a2e7ad801fecc1d21f877e330f580bb20ed0fad`
+- **Product PR #183**: [Closed] (Note: PR #183 is closed and is NOT the accepted final state. The contract tests and exception handling improvements are carried forward and refactored under branch `refactor/pdf-staff-notation-diagnostics-exceptions-v0.1` / PR #185).
 
 ## Prompt Chain
 - **Prompt Manifest**: [prompt-manifest.json](prompt-manifest.json)
