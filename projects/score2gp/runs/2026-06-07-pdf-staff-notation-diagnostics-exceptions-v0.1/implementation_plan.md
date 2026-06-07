@@ -5,14 +5,14 @@ This plan describes how we will refactor standard-staff notation diagnostics exc
 ## Proposed Changes
 
 ### Product Code changes (`score2gp`):
-* **Pydantic Schema ([pdf_staff_geometry.py](file:///home/tticom/work/score2gp-workspace/score2gp/src/score2gp/pdf_staff_geometry.py))**:
+* **Pydantic Schema (`src/score2gp/pdf_staff_geometry.py`)**:
   * Add `status: str | None = "success"` to `PdfStaffNotationGeometryDiagnostics` class.
-* **Exceptions Propagation ([pdf.py](file:///home/tticom/work/score2gp-workspace/score2gp/src/score2gp/pdf.py))**:
+* **Exceptions Propagation (`src/score2gp/pdf.py`)**:
   * Propagate exceptions from `_detect_notation_staff_groups` by removing the try-except wrapper.
   * In `inspect_pdf()`, wrap both standard staff detection and diagnostics building inside a single `try-except` block.
   * When an exception is caught, set `diags_dict = {"staves": [], "status": "pdf_notation_geometry_diagnostics_failed"}`.
 
-### Tests ([test_pdf_staff_geometry_diagnostics.py](file:///home/tticom/work/score2gp-workspace/score2gp/tests/test_pdf_staff_geometry_diagnostics.py)):
+### Tests (`tests/test_pdf_staff_geometry_diagnostics.py`):
 * Re-use the contract tests from PR #183 (safety, filtering, and schema shape).
 * Replace the two silent-exception tests with tests asserting the new status behavior:
   * `test_silent_exception_handling_behavior`: Verifies that a failure during `build_notation_diagnostics` is caught, records `pdf_notation_geometry_diagnostics_failed` in status, and ensures no exception text or sensitive path substrings leak.
