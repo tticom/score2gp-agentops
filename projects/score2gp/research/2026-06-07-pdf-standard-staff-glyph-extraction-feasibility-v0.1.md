@@ -3,8 +3,8 @@
 ## 1. Current verified state
 
 We verified that PR #180 has been successfully merged into `main` in `score2gp` (commit `38471a4`), introducing:
-* An internal standard-staff timing event model: [PdfStaffTimingEvent](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/pdf_staff_timing.py)
-* An alignment orchestration layer: [PdfStaffTabTimingAligner](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/pdf_staff_tab_timing_aligner.py)
+* An internal standard-staff timing event model: [PdfStaffTimingEvent](src/score2gp/pdf_staff_timing.py)
+* An alignment orchestration layer: [PdfStaffTabTimingAligner](src/score2gp/pdf_staff_tab_timing_aligner.py)
 * Synthetic unit tests covering boundaries, unmatched events, rest alignments, and reverse/forward ambiguities.
 
 All 510 tests pass successfully.
@@ -22,7 +22,7 @@ The scope is restricted to investigating the feasibility of standard staff glyph
 
 ## 3. Current PyMuPDF extraction usage
 
-Currently, `score2gp` uses PyMuPDF (`fitz`) APIs in [pdf.py](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/pdf.py) as follows:
+Currently, `score2gp` uses PyMuPDF (`fitz`) APIs in [pdf.py](src/score2gp/pdf.py) as follows:
 * `page.get_drawings()`: To extract vector graphic primitives (lines `l`, rectangles `re`, and Bezier curves `c`).
 * `page.get_text("blocks")` / `page.get_text("words")`: To retrieve text blocks and words (specifically digit characters representing fret numbers).
 * `page.get_text("dict")`: To obtain block/line/span dictionaries (specifically for ASCII tab parsing).
@@ -46,13 +46,13 @@ In `score2gp/pdf.py`, lines are parsed and grouped into 5-line and 6-line staves
 
 An audit of the private PDF test fixtures reveals that born-digital PDFs in the dataset fall into two distinct evidence classes:
 
-### Class A: SMuFL Font-Based Notation (e.g. `Derek Trucks BB King.pdf`)
+### Class A: SMuFL Font-Based Notation (e.g. `Class A SMuFL-font fixture`)
 * **Text Spans**: Standard notation symbols are encoded as actual text characters mapped to a music font (e.g., `GPBravuraRegular` which is a Standard Music Font Layout (SMuFL) font).
 * **Glyph Codepoints**: Codepoints are stored in the SMuFL Private Use Area (PUA) range (e.g., `\ue050` for treble clef, `\ue081\ue082\ue088` for time signature components, `\ue0a4` for black noteheads, `\ue1e7` for eighth rests).
 * **Extraction Feasibility**: Highly feasible. PyMuPDF's `page.get_text("dict")` extracts these spans with precise bounding boxes, text strings, and font names.
 
-### Class B: Pure Vector-Drawn Notation (e.g. `Lesson-3.pdf`, `Lesson-7.pdf`)
-* **Vector Primitives**: There are zero text spans or music fonts for standard notation. Instead, noteheads, stems, rests, clefs, flags, and beams are drawn using raw Bezier curves (`c`), lines (`l`), and rectangles (`re`). For example, in `Lesson-3.pdf` Page 1, there are 343 drawings consisting of `{'c': 1152, 'l': 821, 're': 36}` primitives.
+### Class B: Pure Vector-Drawn Notation (e.g. `Class B vector-drawn fixture`, `Class B secondary vector-drawn fixture`)
+* **Vector Primitives**: There are zero text spans or music fonts for standard notation. Instead, noteheads, stems, rests, clefs, flags, and beams are drawn using raw Bezier curves (`c`), lines (`l`), and rectangles (`re`). For example, in the Class B vector-drawn fixture Page 1, there are 343 drawings consisting of `{'c': 1152, 'l': 821, 're': 36}` primitives.
 * **Extraction Feasibility**: Complex. Extracting timing requires clustering lines (stems, beams), curves (oval noteheads, rests), and rectangles (rests, half/whole rests), which is highly dependent on coordinate heuristic matching.
 
 ## 6. First feasible notation evidence target
