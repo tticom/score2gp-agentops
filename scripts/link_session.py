@@ -18,23 +18,33 @@ def get_active_run_dir(repo_root):
     except Exception:
         branch = "main"
         
+    # Strip common branch type prefixes
+    for prefix in ["refactor/", "run/", "feature/", "bugfix/", "test/", "agent/"]:
+        if branch.startswith(prefix):
+            branch = branch[len(prefix):]
+            break
+
     # Standardize branch name to run slug (replace slash and underscores)
     slug = branch.replace("/", "-").replace("_", "-")
-    
+
     # We prefix with date if possible, otherwise just use slug
     import datetime
     today = datetime.date.today().strftime("%Y-%m-%d")
-    
+
     # Search for an existing runs folder matching the slug
     runs_base = os.path.join(repo_root, "projects", "score2gp", "runs")
     os.makedirs(runs_base, exist_ok=True)
-    
+
     for entry in os.listdir(runs_base):
         if entry.endswith(slug) and os.path.isdir(os.path.join(runs_base, entry)):
             return os.path.join(runs_base, entry)
-            
+
     # Default new directory
-    new_dir_name = f"{today}-{slug}"
+    import re
+    if re.match(r"^\d{4}-\d{2}-\d{2}", slug):
+        new_dir_name = slug
+    else:
+        new_dir_name = f"{today}-{slug}"
     run_dir = os.path.join(runs_base, new_dir_name)
     os.makedirs(run_dir, exist_ok=True)
     return run_dir
