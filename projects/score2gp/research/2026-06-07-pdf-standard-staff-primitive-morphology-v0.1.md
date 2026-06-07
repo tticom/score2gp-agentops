@@ -54,16 +54,18 @@ Primitives are counted if their bounding boxes intersect this padded staff zone:
 
 ## Proposed morphology taxonomy
 
+> [!NOTE]
+> `out_of_zone_ignored` is omitted from the staff-level morphology model for v0.1. Because it is page-level by nature, putting it in staff objects creates ambiguity and duplication.
+
 | Category | Meaning | Safe to serialize? | Non-goal boundary |
 |---|---|---|---|
-| `staff_line_horizontal` | Horizontal segments whose Y-coordinates match one of the 5 staff lines. | Yes (integer count) | Never interpret as musical lines or pitches. |
-| `non_staff_horizontal` | Horizontal segments inside the staff zone that do not match the 5 staff lines (e.g. ledger lines). | Yes (integer count) | Never infer note pitch, ledger line number, or duration. |
-| `vertical_stroke_candidate` | Vertical line segments inside the staff zone (could represent stems or barlines). | Yes (integer count) | Never classify as stems, barlines, or standard note markings. |
-| `diagonal_stroke_candidate` | Slanted/diagonal line segments inside the staff zone. | Yes (integer count) | Never classify as beams, glissandi, or ties. |
-| `rectangle_candidate` | Rectangle primitives (`re` items) inside the staff zone. | Yes (integer count) | Never interpret as rests or noteheads. |
-| `curve_candidate` | Bezier or other curve primitives (`c` items) inside the staff zone. | Yes (integer count) | Never interpret as noteheads, slurs, ties, or flags. |
-| `text_span_by_font` | Text spans inside the staff zone, grouped by font name. | Yes (font name and integer count) | Never serialize raw character texts or unicode characters. |
-| `out_of_zone_ignored` | Primitives and text spans on the page that do not fall into any padded staff zone. | Yes (integer count at page level) | Never dump coordinates of noise. |
+| `staff_line_horizontal` | Horizontal line segments matching the vertical coordinates of the 5 staff lines. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `non_staff_horizontal` | Horizontal line segments inside the staff zone that do not match the 5 staff lines. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `vertical_stroke_candidate` | Vertical line segments inside the staff zone, counted only by orientation and zone membership. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `diagonal_stroke_candidate` | Diagonal line segments inside the staff zone, counted only by orientation and zone membership. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `rectangle_candidate` | Rectangle primitives inside the staff zone, counted only by shape and zone membership. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `curve_candidate` | Curve primitives inside the staff zone, counted only by shape and zone membership. | Yes (integer count) | Never infer musical role, duration, timing, voice, or ScoreIR meaning. |
+| `text_span_by_font` | Text spans inside the staff zone, grouped by font name. | Yes (font name and integer count) | Never serialize raw character text or unicode code points; never infer musical role, duration, timing, voice, or ScoreIR meaning. |
 
 ## Proposed JSON compatibility extension
 To preserve compatibility with existing diagnostics consumers, the detailed morphology counts must be placed in a new, optional Pydantic model `NotationStaffMorphology` added as a field under `NotationStaffDiagnostics`.
@@ -79,7 +81,6 @@ class NotationStaffMorphology(BaseModel):
     rectangle_candidate: int
     curve_candidate: int
     text_span_by_font: dict[str, int]
-    out_of_zone_ignored: int
 ```
 
 Then `NotationStaffDiagnostics` is updated to:
@@ -146,7 +147,6 @@ Instructions:
    - `rectangle_candidate`: int
    - `curve_candidate`: int
    - `text_span_by_font`: dict[str, int]
-   - `out_of_zone_ignored`: int
 
 2. Add `morphology: NotationStaffMorphology | None = None` to `NotationStaffDiagnostics`.
 
@@ -156,7 +156,6 @@ Instructions:
    - Classify drawing lines as `diagonal_stroke_candidate` if they are neither horizontal nor vertical.
    - Count curves as `curve_candidate` and rectangles as `rectangle_candidate`.
    - Count text spans inside the zone by font name in `text_span_by_font`.
-   - Count all drawing segments and text spans on the page that do not fall within *any* detected padded staff zone under `out_of_zone_ignored` (recorded identically for all staves on the page, or divided accordingly).
 
 4. Ensure no raw text content or coordinates are serialized.
 
