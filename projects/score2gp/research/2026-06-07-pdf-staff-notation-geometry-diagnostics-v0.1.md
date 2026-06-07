@@ -26,10 +26,10 @@ This record covers two distinct phases:
   ```bash
   git checkout feature/pdf-staff-notation-geometry-diagnostics-v0.1
   ```
-- Created the Pydantic schema in [pdf_staff_geometry.py](../../../../score2gp/src/score2gp/pdf_staff_geometry.py).
-- Created drawing counting logic in [pdf_staff_notation_diagnostics.py](../../../../score2gp/src/score2gp/pdf_staff_notation_diagnostics.py).
-- Modified [pdf.py](../../../../score2gp/src/score2gp/pdf.py) to extract and format standard staff notation geometry.
-- Created unit tests in [test_pdf_staff_geometry_diagnostics.py](../../../../score2gp/tests/test_pdf_staff_geometry_diagnostics.py).
+- Created the Pydantic schema in `tticom/score2gp:src/score2gp/pdf_staff_geometry.py`.
+- Created drawing counting logic in `tticom/score2gp:src/score2gp/pdf_staff_notation_diagnostics.py`.
+- Modified `tticom/score2gp:src/score2gp/pdf.py` to extract and format standard staff notation geometry.
+- Created unit tests in `tticom/score2gp:tests/test_pdf_staff_geometry_diagnostics.py`.
 - Executed local pytest validation:
   ```bash
   env PYTHONPATH=src .venv/bin/python3 -m pytest tests/test_pdf_staff_geometry_diagnostics.py -v
