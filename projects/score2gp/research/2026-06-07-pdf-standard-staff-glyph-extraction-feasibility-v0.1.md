@@ -172,3 +172,37 @@ wsl sh -c "cd /home/tticom/work/score2gp-workspace/score2gp && env PYTHONPATH=sr
 
 * The exact mapping from Bravura unicode characters to musical durations remains to be constructed.
 * Vector drawings curve-fitting heuristics for notehead shapes are not verified in code yet.
+
+## 16. Mandatory Evidence Record
+
+* **Repository and Branch**:
+  * `score2gp-agentops`: `research/pdf-standard-staff-glyph-extraction-feasibility-v0.1`
+  * `score2gp`: `main`
+* **Command(s) Run**:
+  * `wsl sh -c "cd /home/tticom/work/score2gp-workspace/score2gp-agentops && git diff --check main...HEAD"`
+  * `wsl sh -c "cd /home/tticom/work/score2gp-workspace/score2gp && env PYTHONPATH=src .venv/bin/python3 -m pytest"`
+* **Input Availability**:
+  * `Class A SMuFL-font fixture`
+  * `Class B vector-drawn fixture`
+  * `Class B secondary vector-drawn fixture`
+* **Output Directory Path**: None (research only)
+* **Strict Conversion Status**: `unverified`
+* **Remediation / Diagnostic Status**: `unverified`
+* **Generated File Existence**: `no`
+* **Semantic Round-Trip Status**: `unverified`
+* **Exact Blocker Category**: `PDF standard-staff glyph extraction feasibility`
+* **Private-Safe Metrics**:
+  * Count of Bravura-font spans and drawing primitives audited across Class A and Class B fixtures.
+* **Public Tests Run**:
+  * `tests/test_pdf_staff_tab_timing_aligner_alignment.py` (all 7 passed, 510/510 passed overall)
+* **Private-Safety Audit**:
+  * `git ls-files fixtures/private work` outputs only `fixtures/private/.gitkeep` in both repos: `yes`
+  * No raw coordinates, score details, or unapproved names committed: `yes`
+* **Next Required Evidence**:
+  * Output diagnostics in the inspection JSON showing notation staff preservation coordinates and local primitive counts.
+
+## 17. Prompt Chain Reference
+
+* **Operative Prompt**: `projects/prompts/04-reviewer.md`
+* **Prompt Chain Context**: This run/research record was finalized and verified under the reviewer role instructions in `projects/prompts/04-reviewer.md` to satisfy evidence and prompt metadata rules.
+
