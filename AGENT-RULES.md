@@ -3,8 +3,8 @@
 ## Bootstrapping and Agent Loading
 
 At the very start of any conversation session, the agent MUST:
-1. Run `./scripts/bootstrap.py` to verify that the repository is up to date or ahead of its origin tracking branch. If the script fails, the agent must stop and report the error to the user.
-2. Read the output of `./scripts/bootstrap.py` and register the custom subagents (`architect`, `developer`, `reviewer`) using the `define_subagent` tool before invoking them.
+1. Run `./scripts/bootstrap.py --session-dir <session_brain_dir>` (using the active conversation/brain folder) to verify that the repository is up to date and link local session planning files (`implementation_plan.md`, `task.md`, `walkthrough.md`) to the repository's active run folder. If the script fails, the agent must stop and report the error to the user.
+2. Read the output of `./scripts/bootstrap.py --session-dir <session_brain_dir>` and register the custom subagents (`architect`, `developer`, `reviewer`) using the `define_subagent` tool before invoking them.
 
 ## Global rules
 
