@@ -114,7 +114,7 @@ We will add two new unit tests to `tests/test_pdf_staff_geometry_diagnostics.py`
 ---
 
 ## Privacy / Artifact Risks
-* **No Path Leaks**: Never include raw absolute system paths (`/home/tticom/`, `/mnt/`, etc.) in test assertions or documentation files.
+* **No Path Leaks**: Never include raw absolute system paths (such as user home directories or standard mount points) in test assertions or documentation files.
 * **No Private File Names**: Never include actual private filenames in documentation or test outputs.
 * **Redaction Verification**: Verify that the JSON output does not leak raw text or PUA characters.
 
