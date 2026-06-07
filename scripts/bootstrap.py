@@ -106,11 +106,26 @@ def load_agents(repo_root):
     return agents
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Bootstrap ScoreToGP Agent Session")
+    parser.add_argument("--session-dir", help="Local session brain directory to link and sync with repository runs")
+    args = parser.parse_args()
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.dirname(script_dir)
     
     check_repo_status()
     
+    if args.session_dir:
+        sys.path.insert(0, script_dir)
+        try:
+            from link_session import main as link_main
+            sys.argv = [sys.argv[0], args.session_dir]
+            link_main()
+        except Exception as e:
+            print(f"Error: Failed to link session: {e}", file=sys.stderr)
+            sys.exit(1)
+            
     agents = load_agents(repo_root)
     print(json.dumps(agents, indent=2))
 
