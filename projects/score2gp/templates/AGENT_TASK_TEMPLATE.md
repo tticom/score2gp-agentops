@@ -38,6 +38,10 @@ Concrete expected outcome.
 
 What must not be attempted.
 
+## Forbidden Actions
+
+Explicitly disallowed actions for this task (e.g., merging PRs, modifying certain files).
+
 ## Allowed Repositories
 
 List allowed repositories.
@@ -78,11 +82,13 @@ When to stop and report instead of continuing.
 
 Report:
 
-- branch
-- files changed
 - commands run
+- files changed
+- tests/checks run
 - validation results
-- commit hash, if human-approved
-- PR link, if human-created
-- limitations
+- commit hash
+- branch name
+- PR link if opened
+- known limitations
+- what was not tested
 - next recommended task

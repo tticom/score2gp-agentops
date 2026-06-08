@@ -12,6 +12,10 @@ Agents must stop after preflight and report proposed next action until a new tas
 
 Current Permission Tier: Tier 2 branch and PR work.
 
+## Permission Tier
+
+Tier 2
+
 ## Title
 
 Relax Agent Control Gate to Allow Branch and PR Workflow
@@ -31,6 +35,11 @@ The intended operating model is:
 
 Update the governance model so agents can perform approved branch-and-PR work while preserving human control over merges to `main`.
 
+## Current Verified State
+
+The `ag-control-check` and wrapper scripts have already been verified to allow push to `human` remote.
+The task queue and agent control documentation currently do not reflect full Tier 2 permission policies.
+
 ## Non-goals
 
 Do not modify product implementation code.
@@ -40,6 +49,17 @@ Do not push directly to `main`.
 Do not use `hgh`.
 Do not start a product backlog task.
 Do not mark unmerged work as merged.
+
+## Forbidden Actions
+
+- Do not modify product implementation code.
+- Do not modify product `AGENTS.md`.
+- Do not merge PRs.
+- Do not approve PRs.
+- Do not delete branches.
+- Do not force-push.
+- Do not use `hgh`.
+- Do not start product backlog work.
 
 ## Allowed Repositories
 
@@ -70,3 +90,36 @@ git status --short
 git branch --show-current
 git fetch --all --prune
 git log --oneline --decorate --max-count=20
+```
+
+## Implementation Guidance
+
+Update `AGENT_CONTROL.md`, `AGENT_TASK_TEMPLATE.md`, and potentially `ACTIVE_TASK.md` to ensure they include all required role descriptions, Tier 2 definitions, permission models, and required task shape headers.
+
+## Validation
+
+- git diff --check
+- git status --short
+- confirm no product files changed
+- inspect changed governance text and confirm it is self-sufficient
+
+## Acceptance Criteria
+
+All required governance components (roles, Tier 2 permissions, task shapes, status models) are explicitly defined. PR is open against main.
+
+## Stop Conditions
+
+Stop if any wrapper scripts strictly prohibit pushing to `human` without being able to be overridden, or if product code is required to be touched.
+
+## Reporting Format
+
+- commands run
+- files changed
+- tests/checks run
+- validation results
+- commit hash
+- branch name
+- PR link if opened
+- known limitations
+- what was not tested
+- next recommended task
