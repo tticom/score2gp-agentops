@@ -11,6 +11,12 @@ Product PR #203 is merged. The product baseline for the next queue segment is:
 
 This governance update adds a long, ordered, bounded product backlog after the diagnostics schema snapshot gate. The queue deliberately stays inside geometry diagnostics, fixture coverage, schema contracts, geometry candidate models, candidate extraction, and diagnostic reporting.
 
+A later human design discussion added a longer playability-oriented recognition roadmap. That roadmap is recorded separately in:
+
+`projects/score2gp/reviews/2026-06-08-playability-oriented-recognition-backlog.md`
+
+The roadmap is intentionally not treated as immediate permission to implement broad musical semantics. It records the future direction: visual evidence capture, candidate grouping, interpretation, reconciliation, recovery search, playable export, and human-facing reporting.
+
 ## Verified premise
 
 - Product PR #203: `test(pdf): add schema snapshot gate for staff geometry diagnostics`
@@ -25,9 +31,25 @@ This governance update adds a long, ordered, bounded product backlog after the d
 - Conditional tasks remain explicitly gated by their written prerequisites and stop conditions.
 - Human merge remains required for every PR.
 
+## Playability roadmap summary
+
+The roadmap records Tasks 36-100 as planned future work, grouped by priority:
+
+- Priority 0: benchmark observations and playability target.
+- Priority 1: structural and layout recognition.
+- Priority 2: note-event evidence layer.
+- Priority 3: duration and rhythm interpretation.
+- Priority 4: pitch, TAB, simultaneity, and chords.
+- Priority 5: guitar articulations and performance techniques.
+- Priority 6: dynamics, expression, text, and navigation.
+- Priority 7: reconciliation, recovery, and export.
+- Priority 8: long-term completeness coverage.
+
+The roadmap is shaped by observed current failures: whole/full-bar duration loss, double-barline section breaks, terminal crotchet-after-quavers duration handling, and same-x stacked/chord event recognition.
+
 ## Deferred boundaries
 
-The following remain explicitly not approved:
+The following remain explicitly not approved for immediate implementation by this PR:
 
 - pitch inference
 - duration inference
