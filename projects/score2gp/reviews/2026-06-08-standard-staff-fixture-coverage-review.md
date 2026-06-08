@@ -2,6 +2,11 @@
 **Date:** 2026-06-08
 **Reviewer:** Antigravity
 
+> [!WARNING]
+> **PROVISIONAL / SUPERSEDED**
+> This review was merged prematurely based on accumulated branch state rather than verified product main after Tasks 1–4. Task 4 was not yet merged at the time of this review.
+> It must not be used to authorize semantic interpretation work. A corrected coverage review is required after Task 4 is merged and verified on product main.
+
 ## Context
 Tasks 1–4 from `APPROVED_TASK_QUEUE.md` established a set of purely geometric standard-staff fixtures designed to test staff geometry parsing without introducing musical semantics. The objective of this review is to determine whether the fixture coverage and the exposed diagnostic schema (`PdfStaffNotationGeometryDiagnostics`) are sufficient to support the next product implementation stage.
 
