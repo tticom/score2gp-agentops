@@ -21,7 +21,7 @@ Agents must not:
 - run `hgh`
 - approve own PR
 - bypass failing checks
-- mark unmerged work as merged
+- mark unmerged work as merged/done
 - start unrelated backlog tasks
 - modify files without explicit approval in `ACTIVE_TASK.md` or the current user session
 

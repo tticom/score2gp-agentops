@@ -28,6 +28,7 @@ Agents must then read, in this order:
 1. `projects/score2gp/AGENT_CONTROL.md`
 2. `projects/score2gp/ACTIVE_TASK.md`
 3. `projects/score2gp/TASKS.md`
+4. Relevant task template(s) under `projects/score2gp/templates/`
 
 If product work is involved, agents must also inspect the product repository:
 
@@ -52,15 +53,38 @@ Agents must not push, create PRs, merge PRs, or modify product code.
 
 ### Tier 2: Branch and PR Work
 
-Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run tests, commit, push the task branch, and open a PR.
+Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run tests, commit, push the task branch to the human remote, and open a PR.
 
 Agents may run an internal architect/developer/reviewer loop for the approved task. Reviewer agents are explicitly permitted to review PRs, make comments on PRs, and review Architect and Developer outputs. The developer may push follow-up commits to the same PR branch.
 
 Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `TODO`, `APPROVED`, `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, `BLOCKED`, or `MERGED`.
 
-Agents must not merge PRs, push directly to `main`, delete branches, force-push, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve own PR, bypass failing checks, start unrelated backlog tasks, or mark unmerged work as merged.
+Agents must not merge PRs, push directly to `main`, delete branches, force-push, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve own PR, bypass failing checks, start unrelated backlog tasks, or mark unmerged work as merged/done.
 
-A task must not be marked `MERGED` or `DONE` until the human has actually merged the PR.
+A task must not be marked `MERGED` or `DONE` until the human has actually merged the PR and it has been verified on main.
+
+## Status Model
+
+Statuses must strictly distinguish:
+
+- `TODO`: backlog or queued work that is not approved for execution.
+- `APPROVED`: explicitly approved for execution in ACTIVE_TASK.md by the human maintainer.
+- `IN_PROGRESS`: approved work currently being executed.
+- `PR_OPEN`: a pull request is open for the approved task.
+- `NEEDS_HUMAN_REVIEW`: waiting for human review or merge decision.
+- `BLOCKED`: cannot proceed without resolving a blocker.
+- `MERGED`: the PR has been merged by a human and verified on main.
+- `NO_ACTIVE_TASK_APPROVED`: no current execution authorized.
+
+## Role Boundaries
+
+Agents operate under the following role boundaries during team operation:
+
+- **Orchestrator**: identifies active blocker, sequences approved work, reports state.
+- **Architect**: defines requirements, assumptions, acceptance criteria, risks.
+- **Developer**: implements smallest useful approved change.
+- **Reviewer**: reviews code/docs/process/evidence and comments, but does not merge or self-approve.
+- **Researcher**: investigates uncertainty and records evidence without changing product implementation unless approved.
 
 ### Human-Only Operations
 
