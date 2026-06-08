@@ -1,87 +1,116 @@
-# Active Task
+# ACTIVE_TASK
 
-Status: PR_OPEN
+Status: APPROVED
 
-Current Permission Tier: Tier 2 branch and PR work.
+Title: Synthetic standard-staff dense-margin fixture MVP
 
-## Title
+Owning repo: `score2gp`
 
-Governance: End-to-End Task PR Workflow
+Branch:
+`feature/standard-staff-dense-margin-fixture-v0.1`
 
-## Context
+PR title:
+`test(pdf): add synthetic standard-staff dense-margin fixture`
 
-We have identified a control-flow problem in the score2gp-agentops governance model. The previous model was too phase-oriented, making agents seek separate approval to move between Architect, Developer, and Reviewer roles, and encouraging multiple PRs per task.
-The intended model is: One approved task = one task branch = one task PR = many allowed cycles of research, architecture, development, review, fixes, testing, and re-review inside the same approved task boundary.
-Durable product knowledge (fixtures, architecture, tests) belongs in the product repo, whereas the governance repo tracks active tasks and policy. The previous task PRs (#79, #80) mixed these concerns and are abandoned/superseded by this policy correction.
+Purpose:
+Implement the first small slice of the standard-staff fixture expansion plan. Prove the product-owned JSON-spec → synthetic PDF → geometry-only diagnostics test loop using one dense left-margin standard-staff fixture.
 
-## Current Verified State
+Prerequisites:
+- Product PR #197 is merged.
+- Governance validation permission is merged.
+- Product repo `main` is clean and up to date.
 
-* Product PR #197 exists separately in `score2gp` for the fixture expansion plan.
-* Governance PR #79 is abandoned.
-* Governance PR #80 is superseded.
-* We are on the `governance/end-to-end-task-pr-flow-v0.1` branch for this correction.
+Allowed product files:
+- `fixtures/public/generated_standard_staff_dense_margin.json`
+- `tests/fixtures/pdf/make_standard_staff_diagnostics_pdfs.py`
+- generated synthetic PDF under `tests/fixtures/pdf/` if this repo convention expects generated PDFs to be committed
+- one focused test file, preferably:
+  `tests/test_pdf_standard_staff_diagnostics_fixtures.py`
+  or an existing relevant diagnostics test file if inspection shows that is the established convention
+- product docs only if a tiny clarification is required:
+  `docs/testing/standard-staff-fixtures.md`
 
-## Goal
+Non-goals:
+- Do not implement all planned fixtures.
+- Do not add sparse, wide-curve, or complex-cluster fixtures yet.
+- Do not infer pitch, duration, key, clef, voice, rhythm, or musical semantics.
+- Do not use real, private, copyrighted, scanned, or OCR PDFs.
+- Do not refactor unrelated diagnostics code.
+- Do not modify parser or ScoreIR behaviour unless a minimal test-facing hook is strictly required and justified.
+- Do not commit large/generated artifacts unless already consistent with existing fixture conventions.
 
-Correct the governance process model in `AGENT_CONTROL.md` and templates to explicitly state that an approved task authorizes the full lifecycle (one task, one branch, one PR), and that human approval is for the task boundary, not role handoffs.
+Implementation guidance:
+- Inspect existing JSON fixture conventions under `fixtures/public/`.
+- Inspect existing PDF fixture generator conventions under `tests/fixtures/pdf/`.
+- Create one JSON spec for a synthetic standard staff with dense left-margin text clusters.
+- Add or extend a fitz-based generator script to render that JSON into a synthetic born-digital PDF.
+- The fixture should include a 5-line standard staff and dense text-like left-margin markers.
+- The markers must be geometric/test symbols only. They must not encode musical semantics.
+- The test should load the generated PDF and assert `NotationStaffDiagnostics` geometry fields.
+- Dense-margin assertions should target text-margin counters such as:
+  - `left_margin.text_span_count`
+  - `left_margin.distinct_font_count`
+  - `left_margin.max_text_spans_for_single_font`
+- Do not assert `curve_candidate_count` for a text-based dense-margin fixture.
 
-## Non-goals
+Validation:
+Agents may run relevant non-destructive validation without per-test approval.
 
-* Do not modify the product repo.
-* Do not modify product PR #197.
-* Do not implement fixture scripts or tests.
-* Do not preserve PR #80 unchanged.
+Required minimum:
+```bash
+git diff --check
+.venv/bin/python -m pytest tests/test_pdf_staff_geometry_diagnostics.py
+```
 
-## Forbidden Actions
+Also run the new focused test:
 
-* Modifying product code or product repo documentation.
-* Pushing directly to `main`.
-* Creating product research files in `score2gp-agentops`.
-* Merging any PR.
-* Approving your own PR.
+```bash
+.venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
+```
 
-## Allowed Repositories
+If the test file name differs, run the actual new/changed targeted test file.
 
-Governance repo: `/home/tticom/work/score2gp-workspace/score2gp-agentops`
+If fixture generation is script-based, run the generator command and report exact command and output.
 
-## Allowed Branches
+Before PR:
 
-`governance/end-to-end-task-pr-flow-v0.1`
+```bash
+git status --short
+git diff --stat
+```
 
-## Allowed Files
+Acceptance criteria:
 
-Governance repo:
-* `projects/score2gp/AGENT_CONTROL.md`
-* `projects/score2gp/ACTIVE_TASK.md`
-* `projects/score2gp/templates/AGENT_TASK_TEMPLATE.md`
-* `projects/score2gp/reviews/2026-06-08-process-flow-correction.md`
+* One dense-margin synthetic standard-staff JSON fixture exists.
+* One generated synthetic PDF exists if generated PDFs are committed by existing convention.
+* One focused test proves the diagnostic behaviour.
+* Test assertions remain geometry-only.
+* No private/copyrighted/scanned/OCR files are used.
+* Relevant tests pass.
+* PR is opened against product `main`.
 
-## Constraints
+Stop conditions:
+Stop and report if:
 
-* The policy updates must clarify the status models, the one-task-one-PR flow, and the distinction between governance tracking and product architecture.
+* existing fixture conventions are unclear
+* the generator would require committing large artifacts
+* PyMuPDF/fitz usage differs from expected repo conventions
+* diagnostics do not expose the required counters
+* implementation would require semantic music inference
+* tests fail for unclear reasons
+* repo is dirty before work starts
+* branch push or PR creation is blocked
 
-## Required Pre-flight Checks
+Reporting:
+Report:
 
-* Fetch `main`, verify the task branch is based on current `main` if required, then switch to `governance/end-to-end-task-pr-flow-v0.1`.
-
-## Implementation Guidance
-
-* Updated `AGENT_CONTROL.md` with explicit sections on "Human approval is for the task boundary", "One task should normally produce one PR", and updated status definitions.
-* Updated `AGENT_TASK_TEMPLATE.md` to reflect the new expected statuses and PR flow.
-
-## Validation
-
-* Run `git diff --check`, `git status --short`, `git diff --stat` to ensure only governance files are touched.
-
-## Acceptance Criteria
-
-* `AGENT_CONTROL.md`, `AGENT_TASK_TEMPLATE.md`, and `ACTIVE_TASK.md` are updated.
-* A governance PR is opened defining the end-to-end task PR workflow.
-
-## Stop Conditions
-
-* Blocked on human review.
-
-## Reporting Format
-
-Report branch name, files changed, commands run, new PR link, and next recommended task.
+* branch name
+* PR link
+* commit hash
+* files changed
+* generated files
+* commands run
+* tests run and results
+* privacy/artifact check result
+* known limitations
+* next recommended task
