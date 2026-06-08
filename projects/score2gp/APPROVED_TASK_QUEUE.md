@@ -262,7 +262,7 @@ Same as Task 1.
 
 ## Task 4 — Repair and merge complex standard-staff primitive-cluster fixture
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: `score2gp`
 
@@ -327,7 +327,7 @@ Stop and report if:
 
 ## Task 5 — Correct standard-staff fixture coverage review from product main
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: `score2gp-agentops`
 
