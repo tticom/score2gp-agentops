@@ -18,6 +18,7 @@ Product `main` passed the post-merge smoke tests:
 - [x] PR #192: Implemented aggregate x-aligned primitive clustering diagnostics.
 - [x] PR #69: Researched left-margin font/text/ink density diagnostics.
 - [x] PR #193: Implemented aggregate left-margin diagnostics.
+- [x] Researched post-PR #193 diagnostics boundary strictness (see `RESEARCH_POST_193_DIAGNOSTICS_BOUNDARY.md`).
 
 *(Note: Both diagnostic paths implemented in PR #192 and PR #193 remain geometry-only and diagnostic-only.)*
 
@@ -39,7 +40,7 @@ To maintain the project's strict architecture and safety boundaries, the followi
 
 The following tasks represent the safe, geometry-first next steps for the project:
 
-- [ ] **Architecture Review:** Conduct a post-PR #193 architecture review focusing on the strictness of current diagnostics boundaries.
+- [x] **Architecture Review:** Conducted a post-PR #193 architecture review focusing on the strictness of current diagnostics boundaries (Findings documented).
 - [ ] **Import Boundary Hardening:** Research import-boundary hardening v0.2. Evaluate if the current geometry guardrails and PDF import boundaries are too narrow.
 - [ ] **Diagnostics Schema Stability:** Research diagnostics schema stability and versioning specifically for the new geometry diagnostics components.
 - [ ] **Fixture Expansion:** Research public fixture expansion for born-digital standard-staff diagnostics to increase coverage without violating privacy boundaries.
