@@ -54,6 +54,7 @@ Governance repo:
 * `projects/score2gp/AGENT_CONTROL.md`
 * `projects/score2gp/ACTIVE_TASK.md`
 * `projects/score2gp/templates/AGENT_TASK_TEMPLATE.md`
+* `projects/score2gp/reviews/2026-06-08-process-flow-correction.md`
 
 ## Constraints
 
@@ -61,7 +62,7 @@ Governance repo:
 
 ## Required Pre-flight Checks
 
-* Ensure starting from governance `main`.
+* Fetch `main`, verify the task branch is based on current `main` if required, then switch to `governance/end-to-end-task-pr-flow-v0.1`.
 
 ## Implementation Guidance
 
