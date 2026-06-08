@@ -44,7 +44,7 @@ Completion basis:
 
 ## Task 7 — Record post-#203 product baseline
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -100,7 +100,7 @@ Stop conditions:
 
 ## Task 8 — Add schema snapshot regeneration helper
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 
