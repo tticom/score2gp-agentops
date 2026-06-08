@@ -44,20 +44,18 @@ and read:
 * `ACTIVE_TASK.md` remains the immediate execution contract.
 * `APPROVED_TASK_QUEUE.md` is an ordered list of pre-approved bounded tasks.
 * The human approves the queue by merging the governance PR that adds or changes it.
-* Agents may promote the next eligible queued task into `ACTIVE_TASK.md` without further human approval only if:
-  * the task is marked `APPROVED`
-  * all prerequisites are satisfied
+* Agents may execute the next eligible APPROVED queue item in order without a new human prompt or governance PR, provided:
   * the previous task PR has been human-merged or explicitly human-closed
-  * the product and governance repos are clean
-  * the next task does not expand beyond its written scope
-* Agents must not skip tasks unless the current task is blocked and the queue explicitly allows a skip condition.
-* Agents must not reorder tasks.
-* Agents must not invent new tasks.
+  * main has been verified after merge
+  * prerequisites are satisfied
+  * repos are clean
+  * the next task remains inside its written scope
+* Agents must stop at READY_FOR_HUMAN_MERGE for each product PR. Human merge is still required for every PR.
+* Agents must not skip, reorder, invent, or materially edit queue items.
 * Agents must stop if a queued task is ambiguous, stale, blocked, conflicts with current repo state, or would require expanding allowed files/repositories.
-* Human merge remains required for every PR.
 * Human approval remains required to add, remove, reorder, or materially change queued tasks.
 
-When a queued task is promoted into `ACTIVE_TASK.md`, agents must copy the full task prompt, including branch name, allowed files, validation, acceptance criteria, stop conditions, and reporting format.
+Queue status updates are operational bookkeeping only. Agents may report local task completion and next-task selection in their run report. Material queue edits, new tasks, reordering, scope changes, or removing tasks still require a governance PR and human merge.
 
 ## Permission Tiers
 

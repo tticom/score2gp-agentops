@@ -20,7 +20,7 @@ Human merge remains required for every PR.
 
 ## Task 1 — Synthetic standard-staff dense-margin fixture MVP
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: `score2gp`
 
