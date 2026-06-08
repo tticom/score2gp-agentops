@@ -17,56 +17,38 @@ Agents must not skip, reorder, invent, or materially edit queue items.
 
 ## Current Active Task
 
-## Task 7 — Record post-#203 product baseline
+## Task 8 — Add schema snapshot regeneration helper
 
 Status: ACTIVE
 
-Owning repo: score2gp-agentops
+Owning repo: score2gp
 
 Branch:
-review/post-schema-snapshot-product-baseline-v0.1
+test/diagnostics-schema-snapshot-regenerator-v0.1
 
 PR title:
-docs(review): record post-schema-snapshot product baseline
+test(pdf): add diagnostics schema snapshot regeneration helper
 
 Purpose:
-Record the exact product baseline after PR #203 so later agents have a durable reference point.
+Add a small script that regenerates `fixtures/public/pdf_staff_geometry_diagnostics_schema.json` from `PdfStaffNotationGeometryDiagnostics`, so intentional schema changes have a reproducible update path.
 
-Allowed governance files:
-- projects/score2gp/reviews/2026-06-08-post-schema-snapshot-product-baseline.md
-- projects/score2gp/APPROVED_TASK_QUEUE.md
-- projects/score2gp/ACTIVE_TASK.md
+Likely product files:
+- tests/fixtures/pdf/make_pdf_staff_geometry_schema_snapshot.py
+- fixtures/public/pdf_staff_geometry_diagnostics_schema.json
+- tests/test_pdf_standard_staff_diagnostics_fixtures.py only if needed
 
-Product repo access:
-Read-only.
-
-Required evidence:
-- product main commit SHA
-- recent merged PRs #197-#203
-- fixture files present
-- schema snapshot file present
-- targeted tests
-- full pytest if reasonable
-- privacy/artifact check
+Non-goals:
+- do not change schema fields
+- do not change diagnostics models
+- do not add semantic candidates
+- do not change parser behaviour
 
 Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-git fetch --all --prune
-git switch main
-git pull --ff-only human main
-git status --short
+git diff --check
+.venv/bin/python tests/fixtures/pdf/make_pdf_staff_geometry_schema_snapshot.py
 .venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
-.venv/bin/python -m pytest tests/test_pdf_staff_geometry_diagnostics.py
-.venv/bin/python -m pytest
 
 Acceptance criteria:
-- baseline review record exists
-- exact commit SHA recorded
-- test evidence recorded
-- known limitations recorded
-- no product files changed
-
-Stop conditions:
-- product main is dirty
-- tests fail
-- product baseline cannot be verified
+- script regenerates the committed schema snapshot byte-for-byte
+- snapshot test remains green
+- anti-semantic schema test remains green
