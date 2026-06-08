@@ -140,23 +140,13 @@ Agents operate under the following role boundaries during team operation:
 - **Reviewer**: reviews code/docs/process/evidence and comments, but does not merge or self-approve.
 - **Researcher**: investigates uncertainty and records evidence without changing product implementation unless approved.
 
+### Forbidden Actions
+
+Agents must not merge PRs, push directly to main, force-push, delete branches, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done.
+
 ### Human-Only Operations
 
-Only the human maintainer may:
-
-- merge PRs
-- push directly to protected branches
-- delete remote branches
-- force-push
-- run `gh pr merge`
-- run commands containing `--delete-branch`
-- use the `hgh` GitHub CLI alias
-- approve own PR
-- bypass failing checks
-- start unrelated backlog work
-- expand scope without human approval
-- mark unmerged work as merged/done
-- approve movement from one backlog task to a different task unless that task is already explicitly listed in `ACTIVE_TASK.md`
+Only the human maintainer may merge PRs, approve scope expansion, approve movement to a different task, close or abandon task PRs, accept a known failing-check risk, or explicitly close a task without merge.
 
 ## Deferred Product Boundaries
 
