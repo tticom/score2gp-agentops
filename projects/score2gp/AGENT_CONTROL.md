@@ -27,8 +27,9 @@ Agents must then read, in this order:
 
 1. `projects/score2gp/AGENT_CONTROL.md`
 2. `projects/score2gp/ACTIVE_TASK.md`
-3. `projects/score2gp/TASKS.md`
-4. Relevant task template(s) under `projects/score2gp/templates/`
+3. `projects/score2gp/APPROVED_TASK_QUEUE.md`
+4. `projects/score2gp/TASKS.md`
+5. Relevant task template(s) under `projects/score2gp/templates/`
 
 If product work is involved, agents must also inspect the product repository:
 
@@ -37,6 +38,24 @@ If product work is involved, agents must also inspect the product repository:
 and read:
 
 `AGENTS.md`
+
+## Approved Task Queue
+
+* `ACTIVE_TASK.md` remains the immediate execution contract.
+* `APPROVED_TASK_QUEUE.md` is an ordered list of pre-approved bounded tasks.
+* The human approves the queue by merging the governance PR that adds or changes it.
+* Agents may execute the next eligible APPROVED queue item in order without a new human prompt or governance PR, provided:
+  * the previous task PR has been human-merged or explicitly human-closed
+  * main has been verified after merge
+  * prerequisites are satisfied
+  * repos are clean
+  * the next task remains inside its written scope
+* Agents must stop at READY_FOR_HUMAN_MERGE for each product PR. Human merge is still required for every PR.
+* Agents must not skip, reorder, invent, or materially edit queue items.
+* Agents must stop if a queued task is ambiguous, stale, blocked, conflicts with current repo state, or would require expanding allowed files/repositories.
+* Human approval remains required to add, remove, reorder, or materially change queued tasks.
+
+Queue status updates are operational bookkeeping only. Agents may report local task completion and next-task selection in their run report. Material queue edits, new tasks, reordering, scope changes, or removing tasks still require a governance PR and human merge.
 
 ## Permission Tiers
 
