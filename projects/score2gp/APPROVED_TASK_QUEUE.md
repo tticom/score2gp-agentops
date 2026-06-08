@@ -260,125 +260,110 @@ Same as Task 1.
 
 ---
 
-## Task 4 — Synthetic complex primitive-cluster standard-staff fixture
+## Task 4 — Repair and merge complex standard-staff primitive-cluster fixture
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: `score2gp`
+
+Existing PR:
+https://github.com/tticom/score2gp/pull/201
 
 Branch:
 `feature/standard-staff-complex-cluster-fixture-v0.1`
 
-PR title:
-`test(pdf): add complex standard-staff primitive cluster fixture`
-
 Purpose:
-Add a synthetic dense primitive cluster fixture to validate standard-staff primitive clustering around notehead-like, accidental-like, stem-like, and ledger-line-like shapes without semantic interpretation.
+Repair Task 4 so it is based on current product main after #200, resolves mergeability problems, removes duplicated/stale Task 3 changes if necessary, and leaves #201 as a clean complex-cluster fixture PR.
 
-Prerequisites:
+Required product fixes:
+- Fetch and update from product main after #200.
+- Resolve the current non-mergeable state of #201.
+- Ensure #201 is a clean Task 4 PR, not a stale stacked copy of Task 3.
+- Retain only the complex-cluster fixture changes that are genuinely required after #200.
+- Fix the existing review issue: if the test comment says the target cluster contains four primitives, the assertion must require at least four primitives.
+- Keep assertions geometry-only.
+- Do not introduce pitch, duration, clef, voice, ScoreIR event generation, OCR, or real/private/copyrighted PDF inputs.
 
-* Task 3 is human-merged and verified on product `main`.
-
-Allowed product files:
-
-* `fixtures/public/generated_standard_staff_complex_cluster.json`
-* `tests/fixtures/pdf/make_standard_staff_diagnostics_pdfs.py`
-* generated synthetic complex-cluster PDF if convention requires
-* `tests/test_pdf_standard_staff_diagnostics_fixtures.py`
-
-Non-goals:
-
-* Do not assign pitch.
-* Do not assign duration.
-* Do not assign voices.
-* Do not identify chords semantically.
-* Do not alter ScoreIR event generation.
-* Do not perform OCR/scanned PDF work.
-
-Implementation guidance:
-
-* Add generator support for `note_clusters` as purely geometric grouped primitives.
-* Simulate noteheads using filled circles/rectangles or text-like primitive markers according to existing fitz conventions.
-* Simulate stems and ledger lines geometrically.
-* Simulate accidentals as text or path primitives only to stress clustering.
-* Add tests for diagnostic cluster counts/bounds or equivalent exposed diagnostic fields.
-* If existing diagnostics do not expose enough stable fields, stop and report with a recommended diagnostic schema follow-up rather than inventing semantic assertions.
+Expected product files for #201:
+- `fixtures/public/generated_standard_staff_complex_cluster.json`
+- `tests/fixtures/pdf/generated_standard_staff_complex_cluster.pdf`
+- `tests/fixtures/pdf/make_standard_staff_diagnostics_pdfs.py`
+- `tests/test_pdf_standard_staff_diagnostics_fixtures.py`
 
 Validation:
+Agents may run relevant non-destructive validation without per-test approval.
 
+Required:
 ```bash
 git diff --check
 .venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
 .venv/bin/python -m pytest tests/test_pdf_staff_geometry_diagnostics.py
 ```
 
-Acceptance criteria:
+Also verify:
+```bash
+git status --short
+git diff --stat
+```
 
-* Complex cluster fixture exists.
-* Geometry-only tests prove dense primitive cluster handling.
-* No semantic interpretation is introduced.
-* Relevant tests pass.
+Acceptance criteria:
+- #201 is mergeable.
+- #201 only contains Task 4 complex-cluster work relative to current main.
+- The complex-cluster fixture is synthetic.
+- The test proves geometry-only cluster diagnostics.
+- The four-primitive cluster threshold is protected.
+- Relevant tests pass.
+- No generated/private/copyrighted/scanned/OCR artifacts are introduced beyond intended synthetic fixture PDFs.
 
 Stop conditions:
-Same as Task 1, plus:
-
-* stop if required diagnostics fields are not exposed.
-
-Reporting:
-Same as Task 1.
+Stop and report if:
+- #201 cannot be cleanly rebased/merged onto main without broad conflict resolution.
+- Fixing #201 would require changing product diagnostics schema.
+- The existing diagnostics do not expose stable fields for the complex-cluster assertions.
+- Any private/copyrighted/large/generated artifact issue appears.
+- The branch cannot be pushed safely.
 
 ---
 
-## Task 5 — Standard-staff fixture coverage review and next implementation decision
+## Task 5 — Correct standard-staff fixture coverage review from product main
 
 Status: APPROVED
 
 Owning repo: `score2gp-agentops`
 
 Branch:
-`review/standard-staff-fixture-coverage-v0.1`
-
-PR title:
-`docs(review): record standard-staff fixture coverage review`
+`review/standard-staff-fixture-coverage-correction-v0.1`
 
 Purpose:
-Review the four synthetic standard-staff fixture slices after Tasks 1–4 and decide whether the fixture system is sufficient to support the next product implementation step.
+Replace/supersede the premature #84 review with a reproducible review based on product main after Tasks 1–4 are actually merged.
 
 Prerequisites:
-
-* Task 4 is human-merged and verified on product `main`.
+- #201 is human-merged.
+- Product main has been fast-forwarded/pulled and verified.
+- All fixture files from Tasks 1–4 exist on product main.
 
 Allowed governance files:
+- `projects/score2gp/reviews/2026-06-08-standard-staff-fixture-coverage-review-correction.md`
+- `projects/score2gp/APPROVED_TASK_QUEUE.md`
+- `projects/score2gp/ACTIVE_TASK.md`
 
-* `projects/score2gp/reviews/2026-06-08-standard-staff-fixture-coverage-review.md`
-* `projects/score2gp/APPROVED_TASK_QUEUE.md`
-* `projects/score2gp/ACTIVE_TASK.md`
-
-Product repo access:
+Product access:
 Read-only inspection and validation only.
 
-Non-goals:
-
-* Do not modify product code.
-* Do not add fixtures.
-* Do not infer musical semantics.
-* Do not start implementation of pitch, rhythm, voice, or ScoreIR event generation.
-
-Implementation guidance:
-
-* Inspect product fixture files added by Tasks 1–4.
-* Run targeted diagnostics tests and optionally full pytest.
-* Review whether fixture coverage now exercises:
-
-  * dense left margins
-  * sparse baseline
-  * wide curves
-  * complex primitive clusters
-* Identify whether diagnostics schema is stable enough for the next implementation stage.
-* Recommend the next bounded task.
+Required evidence fields:
+- product repo inspected
+- product main commit SHA inspected
+- PRs included in review
+- fixture files inspected
+- generated PDFs inspected or at least checked for presence and size
+- commands run
+- test results
+- privacy/artifact check result
+- known limitations
+- queue/prompt-chain reference
+- clear verdict
 
 Validation:
-
 ```bash
 cd /home/tticom/work/score2gp-workspace/score2gp
 git status --short
@@ -386,34 +371,38 @@ git status --short
 .venv/bin/python -m pytest tests/test_pdf_staff_geometry_diagnostics.py
 ```
 
-If reasonable, also run:
-
+If reasonable:
 ```bash
 .venv/bin/python -m pytest
 ```
 
-Acceptance criteria:
+Verdict options:
+- fixtures sufficient for next stage
+- fixtures need more coverage
+- diagnostics schema needs hardening first
+- cannot verify
 
-* Review record exists in governance repo.
-* Review gives a clear verdict:
+Important:
+Do not recommend semantic interpretation unless the evidence from product main actually supports it.
+If recommending a next implementation stage, keep it bounded and name the exact diagnostic fields it will use.
 
-  * fixtures sufficient for next stage
-  * fixtures need more coverage
-  * diagnostics schema needs hardening first
-  * cannot verify
-* Commands and test results are recorded.
-* Next task recommendation is concrete and bounded.
+---
 
-Stop conditions:
-Stop and report if:
+## Task 6 — Diagnostics schema stability check before semantic candidates
 
-* product tests fail for unclear reasons
-* fixture coverage cannot be inspected
-* generated artifacts appear unsafe/private/large
-* review would require product edits
+Status: DEFERRED / NOT ACTIVE unless the corrected review recommends it
 
-Reporting:
-Same as normal review format.
+Purpose:
+Before any geometric-to-semantic interpretation layer, verify that the diagnostic schema exposes stable, documented, test-protected fields for:
+- staff-level primitive counts
+- morphology summaries
+- x-aligned cluster counts
+- max primitives per cluster
+- cluster primitive summary
+- left-margin counts
+
+Non-goal:
+Do not create NoteheadCandidate, StemCandidate, pitch, duration, voice, or ScoreIR events in this task.
 
 ---
 
