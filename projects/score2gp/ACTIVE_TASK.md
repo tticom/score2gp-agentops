@@ -1,72 +1,38 @@
-# Active Task: score2gp
-
-Status:
-ACTIVE
-
-Execution source:
-`projects/score2gp/APPROVED_TASK_QUEUE.md`
-
-Current product baseline after product PR #203:
-`0b73bd90898bc1f5a1bda6f5e61920d1e952c7f9`
-
-Agents may execute this task only inside its written scope.
-
-Agents must stop at READY_FOR_HUMAN_MERGE for every product or governance PR. Human merge is still required for every PR.
-
-Agents must not skip, reorder, invent, or materially edit queue items.
-
 ## Current Active Task
 
-## Task 7 — Record post-#203 product baseline
+## Task 13 — Add expected diagnostics snapshots for four fixtures
 
 Status: ACTIVE
 
-Owning repo: score2gp-agentops
+Owning repo: score2gp
 
 Branch:
-review/post-schema-snapshot-product-baseline-v0.1
+test/pdf-diagnostics-fixture-snapshots-v0.1
 
 PR title:
-docs(review): record post-schema-snapshot product baseline
+test(pdf): add diagnostics snapshots for standard-staff fixtures
 
 Purpose:
-Record the exact product baseline after PR #203 so later agents have a durable reference point.
+Commit small expected diagnostic JSON snapshots for the four synthetic fixtures to make diagnostic drift visible.
 
-Allowed governance files:
-- projects/score2gp/reviews/2026-06-08-post-schema-snapshot-product-baseline.md
-- projects/score2gp/APPROVED_TASK_QUEUE.md
-- projects/score2gp/ACTIVE_TASK.md
+Likely product files:
+- fixtures/public/expected_diagnostics_dense_margin.json
+- fixtures/public/expected_diagnostics_sparse.json
+- fixtures/public/expected_diagnostics_wide_curves.json
+- fixtures/public/expected_diagnostics_complex_cluster.json
+- tests/test_pdf_standard_staff_diagnostics_snapshots.py
 
-Product repo access:
-Read-only.
-
-Required evidence:
-- product main commit SHA
-- recent merged PRs #197-#203
-- fixture files present
-- schema snapshot file present
-- targeted tests
-- full pytest if reasonable
-- privacy/artifact check
+Non-goals:
+- no full inspect_pdf output if it includes unstable/noisy fields
+- no private paths
+- no semantic fields
 
 Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-git fetch --all --prune
-git switch main
-git pull --ff-only human main
-git status --short
+git diff --check
+.venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_snapshots.py
 .venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
-.venv/bin/python -m pytest tests/test_pdf_staff_geometry_diagnostics.py
-.venv/bin/python -m pytest
 
 Acceptance criteria:
-- baseline review record exists
-- exact commit SHA recorded
-- test evidence recorded
-- known limitations recorded
-- no product files changed
-
-Stop conditions:
-- product main is dirty
-- tests fail
-- product baseline cannot be verified
+- stable expected diagnostics snapshots exist
+- tests compare current stable subset against snapshots
+- no semantic fields appear
