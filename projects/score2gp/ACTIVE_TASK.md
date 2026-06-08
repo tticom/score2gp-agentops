@@ -19,4 +19,4 @@ Agents must not skip, reorder, invent, or materially edit queue items.
 
 ## Current Active Task
 
-Task 4 — Repair and merge complex standard-staff primitive-cluster fixture
+Task 5 — Correct standard-staff fixture coverage review from product main
