@@ -164,6 +164,19 @@ Unless explicitly approved by the human maintainer, agents must not implement or
 
 Geometry diagnostics remain diagnostic-only until separately approved.
 
+## Validation Permission
+
+Within an approved task, agents are authorized to run and re-run relevant non-destructive validation commands inside the task boundary without per-test human approval. This includes targeted pytest tests, the full pytest suite, diff checks, schema checks, and fixture-generation smoke checks when relevant to the task.
+
+Human approval is only needed if validation would:
+- exceed the approved task boundary
+- require destructive commands
+- use private/copyrighted/sensitive data
+- create large generated artifacts
+- need unexpected network access
+- alter dependencies/environment configuration
+- modify files outside the allowed scope
+
 ## Stop Conditions
 
 Agents must stop and report if:

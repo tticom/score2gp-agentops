@@ -30,6 +30,19 @@ Allowed values:
 - Tier 2: Branch and PR Work
 
 Tier 2 allows creating a branch, committing, pushing, and opening a PR. Merges and branch deletion remain strictly human-only.
+    
+## Validation Permission
+
+Within an approved task, agents are authorized to run and re-run relevant non-destructive validation commands inside the task boundary without per-test human approval. This includes targeted pytest tests, the full pytest suite, diff checks, schema checks, and fixture-generation smoke checks when relevant to the task.
+
+Human approval is only needed if validation would:
+- exceed the approved task boundary
+- require destructive commands
+- use private/copyrighted/sensitive data
+- create large generated artifacts
+- need unexpected network access
+- alter dependencies/environment configuration
+- modify files outside the allowed scope
 
 ## Context
 
