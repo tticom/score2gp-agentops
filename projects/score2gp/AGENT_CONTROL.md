@@ -99,7 +99,7 @@ Agents must stop and report if:
 - required preflight checks fail
 - the current branch is unexpected
 - the working tree contains unrelated changes
-- a requested action would push, open a PR, merge, or delete a branch
+- a requested action would merge or delete a branch, or perform an unauthorized push/PR
 - a requested action would touch private or generated artifacts
 - requirements conflict with repository evidence
 - tests fail and the failure is not clearly in scope
