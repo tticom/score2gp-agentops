@@ -44,7 +44,7 @@ Completion basis:
 
 ## Task 7 — Record post-#203 product baseline
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -100,7 +100,7 @@ Stop conditions:
 
 ## Task 8 — Add schema snapshot regeneration helper
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 
@@ -138,7 +138,7 @@ Acceptance criteria:
 
 ## Task 9 — Add explicit schema required-field tests
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -189,7 +189,7 @@ Acceptance criteria:
 
 ## Task 10 — Add diagnostics field glossary to product docs
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -226,7 +226,7 @@ Acceptance criteria:
 
 ## Task 11 — Add fixture manifest
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -275,7 +275,7 @@ Acceptance criteria:
 
 ## Task 12 — Add manifest-driven fixture smoke test
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -312,7 +312,7 @@ Acceptance criteria:
 
 ## Task 13 — Add expected diagnostics snapshots for four fixtures
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 
