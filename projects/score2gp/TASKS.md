@@ -12,14 +12,17 @@ If `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`, the agent must stop after pr
 
 Agents must not:
 
-- push
-- create PRs
 - merge PRs
+- push directly to main
 - delete branches
+- force-push
 - run `gh pr merge`
 - run commands containing `--delete-branch`
 - run `hgh`
-- mark tasks complete
+- approve own PR
+- bypass failing checks
+- mark unmerged work as merged
+- start unrelated backlog tasks
 - modify files without explicit approval in `ACTIVE_TASK.md` or the current user session
 
 Unchecked tasks below are backlog candidates only.
