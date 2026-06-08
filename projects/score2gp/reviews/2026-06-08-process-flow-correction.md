@@ -25,3 +25,5 @@ Agents were generating separate PRs for role transitions (Architect, Developer, 
 
 ## Impact
 This correction ensures that all future task executions operate under a unified lifecycle branch, eliminating "process theatre" and keeping product knowledge properly located in the product repository.
+
+After this PR is merged, ACTIVE_TASK.md must be reset or advanced by a human-approved follow-up so main does not indefinitely show this governance correction as PR_OPEN.
