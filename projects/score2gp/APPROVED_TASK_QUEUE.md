@@ -189,7 +189,7 @@ Acceptance criteria:
 
 ## Task 10 — Add diagnostics field glossary to product docs
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -226,7 +226,7 @@ Acceptance criteria:
 
 ## Task 11 — Add fixture manifest
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 
