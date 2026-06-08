@@ -275,7 +275,7 @@ Acceptance criteria:
 
 ## Task 12 — Add manifest-driven fixture smoke test
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -312,7 +312,7 @@ Acceptance criteria:
 
 ## Task 13 — Add expected diagnostics snapshots for four fixtures
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 

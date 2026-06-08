@@ -1,36 +1,38 @@
 ## Current Active Task
 
-## Task 12 — Add manifest-driven fixture smoke test
+## Task 13 — Add expected diagnostics snapshots for four fixtures
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Branch:
-test/pdf-fixture-manifest-smoke-v0.1
+test/pdf-diagnostics-fixture-snapshots-v0.1
 
 PR title:
-test(pdf): run standard-staff fixture smoke tests from manifest
+test(pdf): add diagnostics snapshots for standard-staff fixtures
 
 Purpose:
-Use the fixture manifest to run a generic smoke test over all standard-staff synthetic PDFs.
+Commit small expected diagnostic JSON snapshots for the four synthetic fixtures to make diagnostic drift visible.
 
 Likely product files:
-- tests/test_pdf_standard_staff_fixture_manifest.py
-- or tests/test_pdf_standard_staff_diagnostics_fixtures.py
+- fixtures/public/expected_diagnostics_dense_margin.json
+- fixtures/public/expected_diagnostics_sparse.json
+- fixtures/public/expected_diagnostics_wide_curves.json
+- fixtures/public/expected_diagnostics_complex_cluster.json
+- tests/test_pdf_standard_staff_diagnostics_snapshots.py
 
 Non-goals:
-- do not replace focused fixture tests
-- do not add new fixtures
-- do not infer semantics
+- no full inspect_pdf output if it includes unstable/noisy fields
+- no private paths
+- no semantic fields
 
 Validation:
 git diff --check
-.venv/bin/python -m pytest tests/test_pdf_standard_staff_fixture_manifest.py
+.venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_snapshots.py
 .venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
 
 Acceptance criteria:
-- every manifest fixture loads through inspect_pdf
-- diagnostics status is success
-- exactly expected minimum staff count is asserted
-- manifest and focused tests pass
+- stable expected diagnostics snapshots exist
+- tests compare current stable subset against snapshots
+- no semantic fields appear
