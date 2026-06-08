@@ -56,9 +56,11 @@ Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run t
 
 Agents may run an internal architect/developer/reviewer loop for the approved task. The reviewer may inspect the PR and request fixes. The developer may push follow-up commits to the same PR branch.
 
-Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, or `BLOCKED`.
+Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `TODO`, `APPROVED`, `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, `BLOCKED`, or `MERGED`.
 
-Agents must not merge PRs, push directly to `main`, delete branches, force-push, bypass failing checks, start unrelated backlog tasks, or mark a task as merged before human merge.
+Agents must not merge PRs, push directly to `main`, delete branches, force-push, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve own PR, bypass failing checks, start unrelated backlog tasks, or mark unmerged work as merged.
+
+A task must not be marked `MERGED` or `DONE` until the human has actually merged the PR.
 
 ### Human-Only Operations
 
