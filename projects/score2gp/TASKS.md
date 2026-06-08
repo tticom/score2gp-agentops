@@ -1,3 +1,31 @@
+# Agent Execution Gate
+
+This task queue is not permission to execute work.
+
+Agents must not start any unchecked task from this file.
+
+The only executable task source is:
+
+`projects/score2gp/ACTIVE_TASK.md`
+
+If `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`, the agent must stop after preflight and report.
+
+Agents must not:
+
+- push
+- create PRs
+- merge PRs
+- delete branches
+- run `gh pr merge`
+- run commands containing `--delete-branch`
+- run `hgh`
+- mark tasks complete
+- modify files without explicit approval in `ACTIVE_TASK.md` or the current user session
+
+Unchecked tasks below are backlog candidates only.
+
+---
+
 # Score2GP Task Queue
 
 This file serves as a durable task queue to organize and track governance and product priorities for `score2gp`. It replaces scattered next-priority lists found in individual research documents.
