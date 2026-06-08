@@ -1,6 +1,14 @@
 # Active Task
 
 Status: PR_OPEN
+# Active Task
+
+Status: NO_ACTIVE_TASK_APPROVED
+
+No active task is currently approved.
+
+The previous Tier 2 governance relaxation task was completed by human merge of PR #74.
+Agents must stop after preflight and report proposed next action until a new task is explicitly approved here.
 
 Current Permission Tier: Tier 2 branch and PR work.
 
