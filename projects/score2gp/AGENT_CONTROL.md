@@ -67,14 +67,14 @@ A task must not be marked `MERGED` or `DONE` until the human has actually merged
 
 Statuses must strictly distinguish:
 
-- `TODO`: Work that is approved or in backlog but not started.
-- `APPROVED`: Explicitly approved for execution by human.
-- `IN_PROGRESS`: Currently being worked on.
-- `PR_OPEN`: A pull request is open and waiting for review/actions.
-- `NEEDS_HUMAN_REVIEW`: Blocked waiting for human review.
-- `BLOCKED`: Blocked by a technical issue or waiting for external factor.
-- `MERGED`: PR has been merged by a human and verified on main.
-- `NO_ACTIVE_TASK_APPROVED`: No current execution authorized.
+- `TODO`: backlog or queued work that is not approved for execution.
+- `APPROVED`: explicitly approved for execution in ACTIVE_TASK.md by the human maintainer.
+- `IN_PROGRESS`: approved work currently being executed.
+- `PR_OPEN`: a pull request is open for the approved task.
+- `NEEDS_HUMAN_REVIEW`: waiting for human review or merge decision.
+- `BLOCKED`: cannot proceed without resolving a blocker.
+- `MERGED`: the PR has been merged by a human and verified on main.
+- `NO_ACTIVE_TASK_APPROVED`: no current execution authorized.
 
 ## Role Boundaries
 
