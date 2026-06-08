@@ -1,41 +1,28 @@
 ## Current Active Task
 
-## Task 11 — Add fixture manifest
+## Task 12 — Add manifest-driven fixture smoke test
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Branch:
-test/pdf-fixture-manifest-v0.1
+test/pdf-fixture-manifest-smoke-v0.1
 
 PR title:
-test(pdf): add manifest for synthetic standard-staff fixtures
+test(pdf): run standard-staff fixture smoke tests from manifest
 
 Purpose:
-Create a machine-readable manifest of synthetic PDF fixtures and their source JSON specs.
+Use the fixture manifest to run a generic smoke test over all standard-staff synthetic PDFs.
 
 Likely product files:
-- fixtures/public/standard_staff_fixture_manifest.json
 - tests/test_pdf_standard_staff_fixture_manifest.py
+- or tests/test_pdf_standard_staff_diagnostics_fixtures.py
 
-Manifest entries:
-- dense-margin
-- sparse
-- wide-curves
-- complex-cluster
-
-Each entry should include:
-- fixture id
-- JSON path
-- PDF path
-- generator script
-- expected diagnostic focus
-- synthetic=true
-- private=false
-- scanned=false
-- ocr=false
-- semantic_inference=false
+Non-goals:
+- do not replace focused fixture tests
+- do not add new fixtures
+- do not infer semantics
 
 Validation:
 git diff --check
@@ -43,6 +30,7 @@ git diff --check
 .venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
 
 Acceptance criteria:
-- manifest paths exist
-- manifest asserts all fixtures are synthetic
-- no private/copyrighted/scanned/OCR fixture is listed
+- every manifest fixture loads through inspect_pdf
+- diagnostics status is success
+- exactly expected minimum staff count is asserted
+- manifest and focused tests pass
