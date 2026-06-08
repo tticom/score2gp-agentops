@@ -41,95 +41,37 @@ and read:
 
 ### Tier 0: Inspect Only
 
-Default tier.
+Agents may inspect repositories, read files, run safe status/log commands, and report.  
+Agents must not modify files, create branches, commit, push, create PRs, merge PRs, or update task status.
 
-Allowed:
+### Tier 1: Local Research / Documentation Only
 
-- read files
-- run safe inspection commands
-- run non-mutating diagnostics
-- report findings
+Agents may create local documentation or research notes within the files allowed by `ACTIVE_TASK.md`.  
+Agents may commit locally only if explicitly allowed by `ACTIVE_TASK.md`.  
+Agents must not push, create PRs, merge PRs, or modify product code.
 
-Not allowed:
+### Tier 2: Branch and PR Work
 
-- modify files
-- create branches
-- commit
-- push
-- open PRs
+Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run tests, commit, push the task branch, and open a PR.
+
+Agents may run an internal architect/developer/reviewer loop for the approved task. The reviewer may inspect the PR and request fixes. The developer may push follow-up commits to the same PR branch.
+
+Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, or `BLOCKED`.
+
+Agents must not merge PRs, push directly to `main`, delete branches, force-push, bypass failing checks, start unrelated backlog tasks, or mark a task as merged before human merge.
+
+### Human-Only Operations
+
+Only the human maintainer may:
+
 - merge PRs
-- delete branches
-- mark tasks complete
-
-### Tier 1: Local Edits Only
-
-Allowed only when explicitly approved in `ACTIVE_TASK.md` or the current user session.
-
-Allowed:
-
-- edit only approved files
-- run validation commands
-- report diffs and results
-
-Not allowed:
-
-- commit
-- push
-- open PRs
-- merge PRs
-- delete branches
-
-### Tier 2: Local Commit
-
-Disabled by default.
-
-Allowed only when explicitly approved by the human maintainer.
-
-### Tier 3: Push or Open PR
-
-Disabled for agents.
-
-Only the human maintainer may push or open PRs unless a future written policy explicitly changes this.
-
-### Tier 4: Merge or Delete Branch
-
-Prohibited for agents.
-
-Only the human maintainer may merge PRs or delete branches.
-
-## Absolute Prohibitions
-
-Agents must not:
-
-- push
-- create PRs
-- edit PRs
-- close PRs
-- merge PRs
-- delete branches
+- push directly to protected branches
+- delete remote branches
+- force-push
 - run `gh pr merge`
-- run any command containing `--delete-branch`
-- run `gh auth login`
-- run `hgh`
-- mark `TASKS.md` items complete
-- treat unchecked backlog items as approval
-- modify files outside the active approved scope
-- touch private PDFs, private GP/MusicXML files, generated diagnostic dumps, benchmark artifacts, local work outputs, credentials, tokens, SSH keys, or GitHub CLI authentication state
-
-## Human-Only Commands
-
-The following are human-only:
-
-- `git push`
-- `hgh pr create`
-- `hgh pr merge`
-- `gh auth login`
-- branch deletion
-- changing GitHub credentials
-- changing SSH keys
-- changing read-only/write remote configuration
-
-Agents must never use `hgh`.
+- run commands containing `--delete-branch`
+- use the `hgh` GitHub CLI alias
+- approve movement from one backlog task to a different task unless that task is already explicitly listed in `ACTIVE_TASK.md`
 
 ## Deferred Product Boundaries
 
