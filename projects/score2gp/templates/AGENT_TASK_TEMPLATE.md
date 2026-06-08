@@ -6,9 +6,18 @@ Short task name.
 
 ## Status
 
-NOT_APPROVED
+NO_ACTIVE_TASK_APPROVED
 
 Use `APPROVED` only when the human maintainer has explicitly approved execution.
+Valid statuses:
+- `NO_ACTIVE_TASK_APPROVED`: Agents may inspect and report only.
+- `APPROVED`: The task may start.
+- `IN_PROGRESS`: Agents are working inside the approved task boundary.
+- `PR_OPEN`: A task PR exists. Agents may continue review, fixes, tests, follow-up commits, and re-review on the same branch/PR.
+- `CHANGES_REQUESTED`: Reviewer found issues. Developer may fix them on the same branch/PR without new human approval.
+- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met. Agents must stop before merge.
+- `BLOCKED`: Human decision is required.
+- `DONE`: Only after human merge or explicit human closure.
 
 ## Permission Tier
 

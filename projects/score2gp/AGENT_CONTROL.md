@@ -55,26 +55,80 @@ Agents must not push, create PRs, merge PRs, or modify product code.
 
 Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run tests, commit, push the task branch to the human remote, and open a PR.
 
-Agents may run an internal architect/developer/reviewer loop for the approved task. Reviewer agents are explicitly permitted to review PRs, make comments on PRs, and review Architect and Developer outputs. The developer may push follow-up commits to the same PR branch.
+**Human approval is for the task boundary, not role transitions.**
+An approved `ACTIVE_TASK.md` authorizes the full lifecycle of that task:
+* research
+* architecture
+* development
+* review
+* reviewer-requested fixes
+* testing
+* re-review
+* evidence recording
+* pushing follow-up commits to the same branch
+* updating the same PR
 
-Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `TODO`, `APPROVED`, `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, `BLOCKED`, or `MERGED`.
+No extra human approval is needed to move from Architect to Developer to Reviewer as long as the work stays inside the approved task boundary.
 
-Agents must not merge PRs, push directly to `main`, delete branches, force-push, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve own PR, bypass failing checks, start unrelated backlog tasks, or mark unmerged work as merged/done.
+**One task should normally produce one PR.**
+The default model is:
+* one approved task
+* one task branch
+* one PR in the repository that owns the durable output
+* many review/fix/re-review cycles on that same branch and PR
 
-A task must not be marked `MERGED` or `DONE` until the human has actually merged the PR and it has been verified on main.
+Do not create separate PRs for Architect, Developer, and Reviewer phases.
+
+**Governance PRs are only for governance.**
+A governance PR is appropriate when changing:
+* `ACTIVE_TASK.md`
+* task templates
+* control policy
+* orchestration notes
+* review records
+* evidence/handoff records
+
+A governance PR is not the right place for durable product design knowledge.
+Durable product architecture, parser design, diagnostics design, fixture plans, test plans, implementation notes, scripts, generated public fixtures, and product documentation belong in `score2gp`.
+
+Agents may update task-tracking files only for the approved task, and only to reflect accurate state.
+
+A task must not be marked `DONE` until the human has actually merged the PR and it has been verified on main.
 
 ## Status Model
 
 Statuses must strictly distinguish:
 
-- `TODO`: backlog or queued work that is not approved for execution.
-- `APPROVED`: explicitly approved for execution in ACTIVE_TASK.md by the human maintainer.
-- `IN_PROGRESS`: approved work currently being executed.
-- `PR_OPEN`: a pull request is open for the approved task.
-- `NEEDS_HUMAN_REVIEW`: waiting for human review or merge decision.
-- `BLOCKED`: cannot proceed without resolving a blocker.
-- `MERGED`: the PR has been merged by a human and verified on main.
-- `NO_ACTIVE_TASK_APPROVED`: no current execution authorized.
+- `NO_ACTIVE_TASK_APPROVED`: Agents may inspect and report only.
+- `APPROVED`: The task may start.
+- `IN_PROGRESS`: Agents are working inside the approved task boundary.
+- `PR_OPEN`: A task PR exists. Agents may continue review, fixes, tests, follow-up commits, and re-review on the same branch/PR.
+- `CHANGES_REQUESTED`: Reviewer found issues. Developer may fix them on the same branch/PR without new human approval.
+- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met. Agents must stop before merge.
+- `BLOCKED`: Human decision is required.
+- `DONE`: Only after human merge or explicit human closure.
+
+## Task Scope and Exploration
+
+**Tasks should be meaningful, not microscopic.**
+Avoid process theatre. A task may include multiple cycles of research, development, and review if that is what is needed to reach a useful outcome.
+
+A task is valid if either:
+* the expected outcome is well-defined, with acceptance criteria, or
+* it is explicitly a research task, where the output is evidence, constraints, options, risks, and a recommended next step
+
+For research tasks, the result does not have to be predetermined. The point is to discover reality safely and report it clearly.
+
+**Branches make exploration safe, but not uncontrolled.**
+It is acceptable to explore, test, refine, or discard work on a task branch. However, the branch does not remove the task boundary. Agents must still stop if:
+* the work exceeds approved scope
+* private/copyrighted/sensitive material would be exposed
+* allowed files or repositories need expansion
+* destructive commands are required
+* tests fail and the cause is unclear
+* the task needs a human architectural/product decision
+* merge is required
+* force-push or branch deletion would be needed
 
 ## Role Boundaries
 
@@ -97,6 +151,11 @@ Only the human maintainer may:
 - run `gh pr merge`
 - run commands containing `--delete-branch`
 - use the `hgh` GitHub CLI alias
+- approve own PR
+- bypass failing checks
+- start unrelated backlog work
+- expand scope without human approval
+- mark unmerged work as merged/done
 - approve movement from one backlog task to a different task unless that task is already explicitly listed in `ACTIVE_TASK.md`
 
 ## Deferred Product Boundaries
