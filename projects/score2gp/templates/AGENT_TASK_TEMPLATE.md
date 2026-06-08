@@ -16,13 +16,11 @@ Tier 0 inspect only by default.
 
 Allowed values:
 
-- Tier 0 inspect only
-- Tier 1 local edits only
-- Tier 2 local commit
-- Tier 3 push/open PR
-- Tier 4 merge/delete branch
+- Tier 0: Inspect Only
+- Tier 1: Local Research / Documentation Only
+- Tier 2: Branch and PR Work
 
-Tier 3 and Tier 4 are human-only unless a future policy explicitly changes this.
+Tier 2 allows creating a branch, committing, pushing, and opening a PR. Merges and branch deletion remain strictly human-only.
 
 ## Context
 
