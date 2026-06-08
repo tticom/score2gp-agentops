@@ -1,54 +1,35 @@
-# Active Task: score2gp
-
-Status:
-ACTIVE
-
-Execution source:
-`projects/score2gp/APPROVED_TASK_QUEUE.md`
-
-Current product baseline after product PR #203:
-`0b73bd90898bc1f5a1bda6f5e61920d1e952c7f9`
-
-Agents may execute this task only inside its written scope.
-
-Agents must stop at READY_FOR_HUMAN_MERGE for every product or governance PR. Human merge is still required for every PR.
-
-Agents must not skip, reorder, invent, or materially edit queue items.
-
 ## Current Active Task
 
-## Task 8 — Add schema snapshot regeneration helper
+## Task 10 — Add diagnostics field glossary to product docs
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Branch:
-test/diagnostics-schema-snapshot-regenerator-v0.1
+docs/staff-diagnostics-field-glossary-v0.1
 
 PR title:
-test(pdf): add diagnostics schema snapshot regeneration helper
+docs(pdf): add staff diagnostics field glossary
 
 Purpose:
-Add a small script that regenerates `fixtures/public/pdf_staff_geometry_diagnostics_schema.json` from `PdfStaffNotationGeometryDiagnostics`, so intentional schema changes have a reproducible update path.
+Create durable product documentation explaining each geometry diagnostics field, its intended meaning, and what it must not be used to infer yet.
 
 Likely product files:
-- tests/fixtures/pdf/make_pdf_staff_geometry_schema_snapshot.py
-- fixtures/public/pdf_staff_geometry_diagnostics_schema.json
-- tests/test_pdf_standard_staff_diagnostics_fixtures.py only if needed
+- docs/testing/staff-geometry-diagnostics.md
 
-Non-goals:
-- do not change schema fields
-- do not change diagnostics models
-- do not add semantic candidates
-- do not change parser behaviour
+Must include:
+- field names
+- geometry-only meanings
+- examples from fixtures
+- forbidden semantic interpretations
+- how to update schema snapshot intentionally
 
 Validation:
 git diff --check
-.venv/bin/python tests/fixtures/pdf/make_pdf_staff_geometry_schema_snapshot.py
-.venv/bin/python -m pytest tests/test_pdf_standard_staff_diagnostics_fixtures.py
+grep -R -i -E "pitch|duration|clef|voice|key signature|notehead" docs/testing/staff-geometry-diagnostics.md || true
 
 Acceptance criteria:
-- script regenerates the committed schema snapshot byte-for-byte
-- snapshot test remains green
-- anti-semantic schema test remains green
+- glossary is product-owned
+- glossary is consistent with schema snapshot
+- no instruction to infer musical semantics

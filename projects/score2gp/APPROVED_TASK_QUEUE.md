@@ -138,7 +138,7 @@ Acceptance criteria:
 
 ## Task 9 — Add explicit schema required-field tests
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -189,7 +189,7 @@ Acceptance criteria:
 
 ## Task 10 — Add diagnostics field glossary to product docs
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp
 
