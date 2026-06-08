@@ -54,7 +54,7 @@ Agents must not push, create PRs, merge PRs, or modify product code.
 
 Agents may create a task branch, modify files allowed by `ACTIVE_TASK.md`, run tests, commit, push the task branch, and open a PR.
 
-Agents may run an internal architect/developer/reviewer loop for the approved task. The reviewer may inspect the PR and request fixes. The developer may push follow-up commits to the same PR branch.
+Agents may run an internal architect/developer/reviewer loop for the approved task. Reviewer agents are explicitly permitted to review PRs, make comments on PRs, and review Architect and Developer outputs. The developer may push follow-up commits to the same PR branch.
 
 Agents may update task-tracking files only for the approved task, and only to reflect accurate state such as `TODO`, `APPROVED`, `IN_PROGRESS`, `PR_OPEN`, `NEEDS_HUMAN_REVIEW`, `BLOCKED`, or `MERGED`.
 
