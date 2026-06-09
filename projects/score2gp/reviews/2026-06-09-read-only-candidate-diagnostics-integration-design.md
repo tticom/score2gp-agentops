@@ -42,7 +42,7 @@ The future integration must ensure that:
 - The `PdfStaffNotationGeometryDiagnostics` payload structure remains intact, simply carrying the additional candidates as read-only appendices on each staff.
 
 ## Backward Compatibility Requirements
-Candidate diagnostics must be optional or default-empty to protect backward compatibility. Existing consumers of the JSON report must not fail due to the sudden appearance of these new schema keys.
+Candidate diagnostics must be strictly optional, defaulting to `None`, to protect backward compatibility. Existing consumers of the JSON report must not fail due to the sudden appearance of these new schema keys.
 
 ## Validation Required Before Any Product Implementation
 Before any code is committed, the following validations must pass:
