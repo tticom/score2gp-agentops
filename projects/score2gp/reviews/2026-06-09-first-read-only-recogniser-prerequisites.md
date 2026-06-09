@@ -30,16 +30,16 @@ The following prerequisite evidence may affect robust recognition but is current
 - **Text-vs-notation distinction:** Prevents clear differentiation between annotations/lyrics and actual notation markings.
 
 ## First Recogniser Target Selection
-**Target:** Read-Only Clef Candidate Classifer (Left-Margin)
+**Target:** Read-Only Clef Candidate Classifier (Left-Margin)
 
-This target is selected because clefs reliably appear in the left margin and can be classified based purely on existing `left_margin_candidates` geometry and primitive type without requiring synthetic geometry.
+Clef candidate classification is selected as the first design target because left-margin candidates may contain relevant evidence; implementation remains blocked until public tracked fixtures prove that the required evidence is present and distinguishable without synthetic geometry.
 **Important:** This design note authorises only a candidate-level read-only recogniser. It does **not** authorise a ScoreIR Clef event implementation. The recogniser must classify the physical evidence only and must not emit ScoreIR. It must not group disconnected primitives unless a future design explicitly authorises a grouping rule.
 
 ## Allowed Inputs for the Future Recogniser
-The future recogniser is strictly limited to reading the following fields from `NotationStaffDiagnostics`:
-- **Staff Identity:** `page_index`, `system_index`, `staff_index`
-- **Geometry:** `x0`, `y0`, `x1`, `y1`
-- **Primitive Metadata:** primitive kind, font name, font size, input/evidence order
+The future recogniser is strictly limited to reading fields accessed through `NotationStaffDiagnostics.left_margin_candidates` (and potentially `x_aligned_cluster_candidates`). It may read:
+- **Staff Identity:** `page_index`, `system_index`, `staff_index` (from the parent diagnostic context)
+- **Geometry:** `x0`, `y0`, `x1`, `y1` (from the candidate objects themselves)
+- **Primitive Metadata:** primitive kind, font name, font size, input/evidence order (from the candidate objects themselves)
 
 Original evidence must be preserved exactly and not mutated.
 
@@ -65,6 +65,10 @@ Later product work must prove its safety and efficacy before merge by providing:
   - No mutation of candidate bounds.
 
 If suitable public fixtures to support this verification do not exist, the next immediate task must be prerequisite fixture/evidence creation, rather than recogniser implementation.
+
+## Conditional Next Task
+- **If suitable public/tracked fixture evidence exists:** Task 48 may be a product implementation task (`Task 48 — Implement read-only Clef Candidate Classifier over left-margin candidates`).
+- **If not:** The next task must be prerequisite fixture/evidence definition or creation before any recogniser implementation begins.
 
 ## Stop Conditions for Future Product Implementation
 Product implementation must immediately halt and report if:
