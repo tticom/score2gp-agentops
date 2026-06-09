@@ -1219,3 +1219,15 @@ The following remain explicitly not approved:
 - ScoreIR event generation from standard-staff glyphs
 - scanned/OCR PDF handling
 - real/private/copyrighted PDF fixtures
+
+## Task 36 — feat(pdf): expose primitive-level geometry diagnostics
+
+Status: APPROVED
+
+Goal:
+Ensure `PrimitiveGeometry` instances (with real `x0/y0/x1/y1` fields) are cleanly serialized and made available to downstream processes, thereby removing the reliance on aggregate counts and unblocking the optical candidate extraction sequence.
+
+Non-goals:
+- Do not build candidate extractors themselves yet.
+- Do not implement complex heuristic geometric mapping.
+
