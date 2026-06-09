@@ -19,12 +19,15 @@ Goal:
 Design the architectural path for safely attaching primitive evidence candidates to the top-level diagnostics payload.
 
 Non-goals:
-- Do not write product code.
-- Do not implement candidate reporting logic.
-- Do not propose semantic analysis or heuristics.
-- Do not modify fixtures or snapshots.
+- Do not make any product repo modifications.
+- Do not make any product schema changes.
+- Do not make any snapshot changes.
+- Do not implement diagnostics output.
+- Do not propose semantic terms or inference heuristics.
 
 Requirements:
+- Design only.
+- Output should be a governance design note only.
 - Plan exactly how `PdfGeometryCandidateExtractor` will be invoked by the diagnostics runner.
 - Specify how the candidates will appear in `PdfStaffNotationGeometryDiagnostics` output.
 - Enforce that candidates remain strictly supplementary "evidence for candidates" and do not substitute the existing morphology or basic clustering reports.
@@ -34,6 +37,10 @@ Validation:
 
 Stop conditions:
 - Product repo is modified.
-- Proposed design introduces semantic analysis.
+- Schema changes are attempted.
+- Snapshot changes are attempted.
+- Diagnostics output implementation is attempted.
+- Semantic analysis or inference is introduced.
+- Output includes anything other than a governance design note.
 - Governance repo is dirty before work.
 - Validation fails.
