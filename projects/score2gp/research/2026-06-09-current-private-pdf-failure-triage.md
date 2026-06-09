@@ -7,10 +7,10 @@ Current failures are caused by missing diagnostics—specifically, primitive-lev
 ## Environment
 
 * Governance repo branch and HEAD: `main` at `5ebeb239`
-* Product repo branch and HEAD: `test/pdf-curve-position-diagnostics-fixture-v0.1` at `dcfb717`
+* Product repo branch and HEAD: `test/pdf-curve-position-diagnostics-fixture-v0.1` at `dcfb717`. Note: Private corpus was analysed from product branch dcfb717, not necessarily current main; implementation should re-check on current main.
 * Dirty/clean status: Clean
 * Date/time: 2026-06-09
-* Model used: Gemini 3.1 Pro (High) & Claude Opus 4.6 (Thinking)
+* Model usage: primarily Gemini 3.1 Pro High, with Claude Opus 4.6 (Thinking) used for parallel artifact inspection where requested.
 
 ## Private run corpus
 
