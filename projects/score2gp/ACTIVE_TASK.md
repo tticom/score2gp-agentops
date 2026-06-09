@@ -1,81 +1,46 @@
 ## Current Active Task
 
-## Task 37 — Define geometry candidate boundary from primitive evidence
+## Task 40 — Add candidate extraction design review
 
 Status: ACTIVE
 
-Owning repo: score2gp
+Owning repo: score2gp-agentops
 
 Branch:
-`docs/primitive-evidence-candidate-boundary-v0.1`
+`review/primitive-evidence-candidate-extraction-design-v0.1`
 
 PR title:
-`docs(pdf): define candidate boundary from primitive evidence`
-
-Context:
-Product PR #227 (`feat(pdf): expose primitive-level geometry diagnostics`) was merged on 2026-06-09.
-
-Verified baseline for this task:
-- PR #227 head SHA: `3276e27a6cd0877fdbdb0eaa3d8a5a0af67b6f02`
-- PR #227 merge commit: `44508b260fd9e7677faed8654a40ecdb4a1c94ef`
+`docs(review): review primitive-evidence candidate extraction design`
 
 Goal:
-Add a product architecture note that defines the candidate boundary, allowed model concepts, input evidence, non-goals, stop conditions, and fixture proof required before any extractor implementation.
+Perform a hard governance review before any extraction implementation. Decide whether the candidate model boundary is ready for a minimal extractor skeleton.
+
+Allowed governance files:
+- `projects/score2gp/reviews/2026-06-09-primitive-evidence-candidate-extraction-design.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+- `projects/score2gp/tasks/2026-06-09-post-227-candidate-boundary-task-list.md`
+
+Product repo access:
+Read-only.
+
+Required evidence:
+- product main SHA
+- Task 37 PR link and merge commit
+- Task 38 PR link and merge commit
+- Task 39 PR link and merge commit
+- files inspected
+- tests run
+- schema status
+- anti-semantic gate result
+- privacy/artifact check
+
+Verdict options:
+- ready for extractor skeleton
+- needs model hardening
+- needs diagnostics prerequisite
+- cannot verify
 
 Non-goals:
-- Do not implement candidate extraction.
-- Do not add candidate model classes.
-- Do not integrate candidates into `inspect_pdf`.
-- Do not emit ScoreIR.
-- Do not infer musical semantics.
-- Do not use private files or generated work artifacts.
-
-Required pre-flight checks:
-- Fetch and update product `main`.
-- Confirm product PR #227 is merged.
-- Confirm the product working tree is clean.
-
-Likely product files:
-- `docs/testing/primitive-evidence-candidate-boundary.md`
-- optionally update `docs/testing/staff-geometry-diagnostics.md` only if it already exists and is the right home
-
-Implementation guidance:
-The document must define candidate inputs from:
-- `StaffLeftMarginAggregateDiagnostics.evidence`
-- `XAlignedClusterAggregateDiagnostics.evidence`
-- `PrimitiveGeometryEvidence`
-- `XAlignedPrimitiveClusterEvidence`
-
-The document must define only geometry/visual concepts. Suggested allowed names:
-- `PrimitiveEvidenceCandidate`
-- `LeftMarginPrimitiveCandidate`
-- `XAlignedPrimitiveClusterCandidate`
-- `TextSpanPrimitiveCandidate`
-- `CurvePrimitiveCandidate`
-- `VerticalStrokePrimitiveCandidate`
-- `HorizontalStrokePrimitiveCandidate`
-- `DiagonalStrokePrimitiveCandidate`
-- `RectanglePrimitiveCandidate`
-
-Acceptance criteria:
-- Document exists in product repo.
-- It names PR #227 evidence arrays as the required source of truth.
-- It forbids aggregate-derived, placeholder, and synthetic candidate coordinates.
-- It defines model/input/output boundaries before implementation.
-- It includes stop conditions for missing evidence.
-- It does not approve extraction implementation.
-
-Stop conditions:
-- PR #227 is not present on product `main`.
-- Evidence arrays are missing from schema or public fixtures.
-- The design requires semantic names or musical inference.
-- The document would need private examples.
-
-Reporting format:
-- Branch name
-- PR link
-- Files changed
-- Commands run
-- Validation result
-- Known limitations
-- Next recommended task
+- do not implement extraction
+- do not modify product code
+- do not add semantic tasks
