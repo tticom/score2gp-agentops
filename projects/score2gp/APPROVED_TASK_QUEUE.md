@@ -1220,7 +1220,7 @@ The following remain explicitly not approved:
 - scanned/OCR PDF handling
 - real/private/copyrighted PDF fixtures
 
-## Task 35 — feat(pdf): expose primitive-level geometry diagnostics
+## Task 36 — feat(pdf): expose primitive-level geometry diagnostics
 
 Status: APPROVED
 
