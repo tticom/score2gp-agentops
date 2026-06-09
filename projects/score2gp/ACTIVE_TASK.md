@@ -7,10 +7,10 @@ Status: ACTIVE
 Owning repo: score2gp-agentops
 
 Branch:
-`review/candidate-diagnostics-consumption-boundary-v0.1`
+`review/candidate-diagnostics-consumption-boundary-note-v0.1`
 
 PR title:
-`docs(score2gp): define candidate diagnostics consumption boundary review`
+`docs(review): candidate diagnostics consumption boundary review`
 
 Context:
 Product PR #234 is merged (commit `7dabc59ac120dfc726ccb72c47586eb1af37392f`). This completed Task 45: Implement read-only candidate diagnostics integration. The product repository now exposes `left_margin_candidates` and `x_aligned_cluster_candidates` as optional read-only supplementary fields on `NotationStaffDiagnostics`.
@@ -64,6 +64,14 @@ Acceptance criteria:
 - Task 46 is clearly design/review-only.
 - Task 46 explicitly blocks semantic inference and ScoreIR integration.
 - Task 46 defines the evidence required before any future recogniser implementation.
+
+Stop conditions:
+- Product PR #234 is not present on product main.
+- Product repo is dirty or would need modification.
+- The review would require private PDFs, GP files, screenshots, logs, generated debug output, or new fixtures.
+- The review cannot distinguish real candidate evidence from inferred or aggregate-derived data.
+- The review would require semantic inference, recogniser implementation, ScoreIR integration, or musical object classification.
+- The branch contains unrelated governance changes.
 
 Reporting format:
 The governance agent must report:
