@@ -1,46 +1,28 @@
 ## Current Active Task
 
-## Task 40 — Add candidate extraction design review
+## Task 41 — Add primitive-evidence extractor skeleton
 
 Status: ACTIVE
 
-Owning repo: score2gp-agentops
+Owning repo: score2gp
 
 Branch:
-`review/primitive-evidence-candidate-extraction-design-v0.1`
+`feature/primitive-evidence-extractor-skeleton-v0.1`
 
 PR title:
-`docs(review): review primitive-evidence candidate extraction design`
+`feat(pdf): add primitive-evidence extractor skeleton`
 
 Goal:
-Perform a hard governance review before any extraction implementation. Decide whether the candidate model boundary is ready for a minimal extractor skeleton.
+Implement a skeleton `PdfGeometryCandidateExtractor` that accepts the PR #227 diagnostic evidence arrays and returns empty structures conforming to the PR #229 geometry candidate models.
 
-Allowed governance files:
-- `projects/score2gp/reviews/2026-06-09-primitive-evidence-candidate-extraction-design.md`
-- `projects/score2gp/ACTIVE_TASK.md`
-- `projects/score2gp/tasks/2026-06-09-post-227-candidate-boundary-task-list.md`
+Context:
+Governance design review (Task 40) explicitly approved starting the skeleton after hardening models and semantic gates. 
 
-Product repo access:
-Read-only.
+Hard Constraints (Stop Conditions):
+- MUST BE skeleton-only.
+- Do NOT implement real extraction rules.
+- Do NOT implement left-margin or x-aligned candidate logic.
+- Do NOT integrate reporting or modify `inspect_pdf`.
+- Do NOT infer semantics.
 
-Required evidence:
-- product main SHA
-- Task 37 PR link and merge commit
-- Task 38 PR link and merge commit
-- Task 39 PR link and merge commit
-- files inspected
-- tests run
-- schema status
-- anti-semantic gate result
-- privacy/artifact check
-
-Verdict options:
-- ready for extractor skeleton
-- needs model hardening
-- needs diagnostics prerequisite
-- cannot verify
-
-Non-goals:
-- do not implement extraction
-- do not modify product code
-- do not add semantic tasks
+(Refer to `projects/score2gp/tasks/2026-06-09-post-227-candidate-boundary-task-list.md` for full context).
