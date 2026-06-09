@@ -1,6 +1,6 @@
 # Candidate Diagnostics Consumption Boundary
 
-**Status:** APPROVED
+**Status:** PROPOSED
 **Date:** 2026-06-09
 
 ## Verified Baseline
@@ -38,8 +38,10 @@ Before robust recogniser implementation can begin, the following prerequisite ev
 - Identification of textual annotations/lyrics versus notation markings.
 
 ## Recommended Next Task
-The recommended next smallest safe task is to define and implement the **first read-only primitive recogniser** strictly bounded by the extracted candidate geometry.
-For instance: `Task 47 — Implement read-only Clef or Key Signature recogniser over left-margin candidates`. This task must be restricted to classification within the candidate bounds without producing ScoreIR events.
+The recommended next smallest safe task is a governance-only design task:
+**Task 47 — Define first read-only recogniser prerequisites and acceptance criteria**
+
+This task must produce a governance-only design note that selects the very first isolated recogniser target (e.g., Clef). It must identify exactly which candidate evidence it will consume, explain why the missing prerequisites listed above do not block this specific limited scope, define exact fixture/smoke requirements, and set strict stop conditions. No product implementation should begin until this design note is merged.
 
 ## Stop Conditions for Future Implementation
 Implementation of recognisers must halt and return to governance if:
