@@ -35,10 +35,10 @@ find . -path "./.git" -prune -o -type f -size +10M -print
 - `test_pdf_candidate_semantic_gate.py`: 4 passed
 
 **Anti-semantic Gate Result:**
-Passed. The gate correctly verified that no forbidden semantic terms (e.g., 'note', 'stem', 'chord', 'pitch') were present in the source strings, docstrings, public interfaces, or models related to the primitive evidence candidate extraction boundary. 
+Passed. The gate correctly verified that no forbidden semantic terms (e.g., 'note', 'stem', 'chord', 'pitch') were present in the source strings, docstrings, public interfaces, or models related to the primitive evidence candidate extraction boundary.
 
 **Privacy/Artifact Checks:**
-Passed. The privacy check commands returned only legitimate, pre-existing fixtures or allowed directory paths (such as `work/private_e2e_smoke...` and `tests/fixtures/pdf/generated...` already tracked securely in product history). No new private PDFs, screenshots, local logs, or GP files were committed. 
+Passed. The privacy check commands returned only legitimate, pre-existing fixtures or allowed directory paths (such as `work/private_e2e_smoke...` and `tests/fixtures/pdf/generated...` already tracked securely in product history). No new private PDFs, screenshots, local logs, or GP files were committed.
 
 ## What Was Not Tested
 - Diagnostics payload integration (`inspect_pdf`).
@@ -56,7 +56,7 @@ Task 44 must halt and report immediately if any of the following occur:
 - The output results in anything other than a governance design note.
 
 ## Verdict
-**APPROVED.** The implemented candidate boundary code meets all geometric constraints, successfully preserving input provenance and staff identity, while completely avoiding semantic leakage. 
+**APPROVED.** The implemented candidate boundary code meets all geometric constraints, successfully preserving input provenance and staff identity, while completely avoiding semantic leakage.
 
 ## Next Task Authorization
 Authorize transition to **Task 44: Read-only candidate diagnostics integration design**.
