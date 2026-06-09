@@ -57,7 +57,7 @@ Implementation guidance:
 - Recommend the next smallest safe step.
 
 Acceptance criteria:
-- A governance PR is opened from `review/candidate-diagnostics-consumption-boundary-v0.1` to `main`.
+- A governance PR is opened from `review/candidate-diagnostics-consumption-boundary-note-v0.1` to `main`.
 - Only governance files are changed.
 - No product files are changed.
 - No private/generated artifacts are committed.
