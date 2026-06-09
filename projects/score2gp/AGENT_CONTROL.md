@@ -45,15 +45,26 @@ and read:
 * `APPROVED_TASK_QUEUE.md` is an ordered list of pre-approved bounded tasks.
 * The human approves the queue by merging the governance PR that adds or changes it.
 * Agents may execute the next eligible APPROVED queue item in order without a new human prompt or governance PR, provided:
-  * the previous task PR has been human-merged or explicitly human-closed
-  * main has been verified after merge
-  * prerequisites are satisfied
+  * the current task has been completed and a PR has been opened (or the task is explicitly marked as skipped/abandoned)
+  * prerequisites for the next task are satisfied
   * repos are clean
   * the next task remains inside its written scope
-* Agents must stop at READY_FOR_HUMAN_MERGE for each product PR. Human merge is still required for every PR.
-* Agents must not skip, reorder, invent, or materially edit queue items.
+  * the dependency relationship is clear (branching from current `main` for independent tasks, or stacking onto a dependent branch if the prior PR is unmerged)
+* Agents must stop at PR creation (or READY_FOR_HUMAN_MERGE) for each product PR. Human merge is still required for every PR. Agents must never merge to main.
+* Agents must not skip, reorder, invent, or materially edit queue items unless a task is unblocked by another task.
 * Agents must stop if a queued task is ambiguous, stale, blocked, conflicts with current repo state, or would require expanding allowed files/repositories.
 * Human approval remains required to add, remove, reorder, or materially change queued tasks.
+
+Continuous Execution Rule:
+After finishing a task, the agent should:
+- run required validation
+- commit
+- push the branch
+- open a PR
+- report the PR link and evidence
+- inspect the next queue item
+- continue to the next eligible approved task if it is not blocked
+- stop only if a stop condition is met
 
 Queue status updates are operational bookkeeping only. Agents may report local task completion and next-task selection in their run report. Material queue edits, new tasks, reordering, scope changes, or removing tasks still require a governance PR and human merge.
 
@@ -95,6 +106,16 @@ The default model is:
 * one task branch
 * one PR in the repository that owns the durable output
 * many review/fix/re-review cycles on that same branch and PR
+
+Branching Rules:
+- If the task is independent: branch from current `main`.
+- If the task depends on an unmerged task PR: branch from the dependent task branch (creating a stacked/dependent branch).
+- Require stacked PRs to clearly state their dependency in the PR body.
+- Do not force-push unless explicitly instructed by a human.
+- Do not merge main.
+- Do not push to main.
+- Do not combine unrelated tasks into one branch.
+- Do not silently rewrite another agent’s branch.
 
 Do not create separate PRs for Architect, Developer, and Reviewer phases.
 
@@ -200,6 +221,11 @@ Human approval is only needed if validation would:
 
 Agents must stop and report if:
 
+- the next task has unmet prerequisites
+- the next task depends on an unmerged branch and the dependency relationship is unclear
+- product or governance main cannot be updated cleanly
+- a branch conflict requires human decision
+- PR creation or branch push is blocked
 - `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`
 - required preflight checks fail
 - the current branch is unexpected
@@ -207,6 +233,8 @@ Agents must stop and report if:
 - a requested action would merge or delete a branch, or perform an unauthorized push/PR
 - a requested action would touch private or generated artifacts
 - requirements conflict with repository evidence
-- tests fail and the failure is not clearly in scope
+- tests fail and the failure is not clearly in scope or cannot be explained
 - the task would require implementing a deferred capability
+- the task requires modifying files outside its allowed scope
+- destructive changes would be required
 - the next step requires human approval
