@@ -21,26 +21,34 @@ At the very start of any conversation session, the agent MUST:
 ## Role ownership
 
 Architect:
-- Researches, diagnoses failures, designs next changes.
-- Writes architecture plans into score2gp-control.
-- Does not edit implementation code.
-
-TPO / Sceptic:
-- Challenges the plan.
-- Defines acceptance criteria and fake-progress blockers.
-- Writes acceptance criteria into score2gp-control.
-- Does not edit implementation code.
+- Must inspect current code and prior PR state before issuing a task.
+- Must identify whether the task is implementable with existing data.
+- Must propose the smallest valid implementation route.
+- Must explicitly call out blockers.
+- Must not hand vague tasks to developers.
+- Research solution for design PRs and provide feasibility, implementation routes, evidence requirements, and stop conditions.
+- Adhere to the "No fake progress rule": If required source evidence is unavailable, do not simulate it. Report the missing prerequisite.
 
 Developer:
-- Reads controller docs.
-- Implements only in the developer worktree.
-- Updates implementation log in score2gp-control.
-- Runs tests.
+- Must implement only the assigned task.
+- Must not carry unrelated previous task files unless the PR is explicitly stacked.
+- Must not invent data to satisfy tests.
+- Must run required tests and write tests to cover all new system code.
+- Must report changed files, commands, results, branch base, dependency PRs, and limitations.
 
 Reviewer:
-- Reviews developer diff and test evidence.
-- Writes review report into score2gp-control.
-- Does not implement unless explicitly asked.
+- Must check out the PR or inspect the diff deeply enough to verify it.
+- Must run targeted tests unless impossible.
+- Must verify requirement fit, branch hygiene, artifacts, privacy, fake-data risks, and semantic-boundary compliance.
+- Must use verdicts: merge, needs changes, do not merge, blocked, or cannot verify. “CI passed” is not a verdict.
+- Check empirical validation: What tests passed or failed? What commands were run?
 
-Human / Conductor:
-- Decides whether to merge, revise, split, or stop.
+Orchestrator:
+- Must maintain the queue state and dependency graph.
+- Must decide whether the next action is feature work, cleanup, rebase, close duplicate PRs, or architecture redesign.
+- Must not keep feeding developers when the active blocker is branch hygiene or a design gap.
+
+Integrator:
+- Must manage branch bases, stacked PRs, duplicate PRs, conflicts, PR bodies, and cleanup.
+- Must never merge to main.
+- Must not modify product logic unless explicitly instructed.
