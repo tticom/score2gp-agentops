@@ -17,10 +17,10 @@ This report maps real diagnostic candidates from a named vector PDF against a vi
 * **Selected file path:** `fixtures/private/Lesson-3.pdf`
 * **Why selected:** Preferred by maintainer; known to have a clear standard-staff opening.
 * **Page(s) inspected:** Page 1
-* **Treble clef visible:** Yes
-* **Key signature visible:** Yes
-* **Time signature visible:** Yes
-* **Brief visual notes:** The PDF contains standard-staff notation visually confirmed to include opening symbols such as a treble clef at the left margin.
+* **Treble clef visible:** Yes (visual confirmation inherited from PR #103 / maintainer-provided context)
+* **Key signature visible:** Yes (assumed via maintainer context)
+* **Time signature visible:** Yes (assumed via maintainer context)
+* **Brief visual notes:** The PDF contains standard-staff notation visually confirmed to include opening symbols such as a treble clef at the left margin based on inherited reference context.
 
 ## 5. Visual treble-clef region
 * **Page number:** 1
@@ -46,8 +46,8 @@ This report maps real diagnostic candidates from a named vector PDF against a vi
 * **Page index:** 1
 * **System index:** None (0 staves detected)
 * **Staff index:** None (0 staves detected)
-* **`left_margin_candidates`:** `None`
-* **`x_aligned_cluster_candidates`:** `None`
+* **`left_margin_candidates`:** not available / not applicable because no notation staff diagnostics were produced.
+* **`x_aligned_cluster_candidates`:** not available / not applicable because no notation staff diagnostics were produced.
 * **Candidate count:** 0
 * **Candidate kinds:** None
 * **Candidate geometry:** None
