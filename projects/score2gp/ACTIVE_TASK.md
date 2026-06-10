@@ -1,27 +1,26 @@
 ## Current Active Task
 
-## Task 56 — Define diagnostic consumer boundary for raster treble-clef candidates
+## Task 58 — Record raster diagnostics summary merge and define next reporting boundary
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-56-raster-treble-clef-diagnostic-consumer-boundary-v0.1`
+`governance/task-58-record-raster-diagnostics-summary-merge-v0.1`
 
 PR title:
-`docs(score2gp): define raster treble-clef diagnostic consumer boundary`
+`docs(score2gp): record raster diagnostics summary merge`
 
 Context:
-Task 56 is governance-only.
-Task 56 defines the consumer boundary for `raster_opening_symbol_classification`.
-Task 56 does not authorise product implementation.
-Task 56 depends on merged governance PR #109 and merged product PR #236.
-No downstream product task may consume the diagnostic classifier until this consumer boundary is merged.
-The next likely task may be a read-only diagnostics summary, but only if this note defines the consumer contract clearly.
+Task 58 is a governance/orchestration task.
+Task 58 records Product PR #237 as merged and marks Task 57 as complete.
+Task 58 preserves the read-only diagnostics summary boundary.
+Task 58 defines the next safe reporting/export boundary before any further product work.
+Task 58 does not modify the product repo.
 
 Goal:
-Create a governance PR that defines how downstream diagnostic or research tasks may consume `raster_opening_symbol_classification` without crossing into ScoreIR creation, recognised clef objects, or full semantic music recognition.
+Create a governance PR that records Product PR #237 as merged, marks Task 57 as complete, preserves the read-only diagnostics summary boundary, and defines the next safe reporting/export boundary before any further product work.
 
 Non-goals:
 - Do not modify the product repo.
@@ -35,27 +34,21 @@ Non-goals:
 - Do not authorise OCR.
 - Do not authorise vector/raster fusion.
 - Do not authorise product recogniser implementation.
-- Do not promote `treble_clef_candidate` to semantic recognition.
+- Do not promote `treble_clef_candidate` or the diagnostics summary into semantic recognition.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-56-raster-treble-clef-diagnostic-consumer-boundary-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated to Task 56.
-- `projects/score2gp/reviews/2026-06-10-raster-treble-clef-diagnostic-consumer-boundary.md` is added.
-- The note verifies PR #236 and PR #109 are merged.
-- The note defines the diagnostic consumer boundary.
-- The note preserves diagnostic-only meaning.
-- The note blocks ScoreIR and semantic recognition.
-- The note defines allowed and disallowed uses.
-- The note preserves `unknown` as a required consumer-visible result.
-- The note defines acceptance criteria for any later read-only diagnostics summary implementation.
+- Governance PR opened from `governance/task-58-record-raster-diagnostics-summary-merge-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated to Task 58.
+- `projects/score2gp/reviews/2026-06-10-raster-diagnostics-summary-merge-and-next-boundary.md` is added.
+- PR #237 and PR #110 merge are verified in the boundary note.
+- Boundary note defines the next safe reporting/export boundary.
+- No new product implementation is authorised.
 
 Stop conditions:
-- Product PR #236 is not merged.
-- Governance PR #109 is not merged.
+- Product PR #237 is not merged.
+- Governance PR #110 is not merged.
 - Governance repo is dirty before work starts.
 - The task requires product repo modifications.
-- The task would authorise ScoreIR, recognised clefs, pitch, rhythm, key/time inference, OCR, or vector/raster fusion.
-- The task requires new fixtures or private artifacts.
 
 Reporting format:
 - Branch name
@@ -65,9 +58,8 @@ Reporting format:
 - Commands run
 - Validation results
 - Privacy/artifact check results
-- How PR #236 merge was verified
-- How PR #109 merge was verified
+- How PR #237 merge was verified
+- How PR #110 merge was verified
 - Boundary summary
 - Known limitations
 - Whether PR is ready for review
-- Recommended next smallest task after this PR is merged
