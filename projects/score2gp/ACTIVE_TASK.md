@@ -1,26 +1,25 @@
 ## Current Active Task
 
-## Task 58 — Record raster diagnostics summary merge and define next reporting boundary
+## Task 59 — Define raster diagnostics summary reporting/export boundary
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-58-record-raster-diagnostics-summary-merge-v0.1`
+`governance/task-59-raster-diagnostics-summary-reporting-boundary-v0.1`
 
 PR title:
-`docs(score2gp): record raster diagnostics summary merge`
+`docs(score2gp): define raster diagnostics summary reporting boundary`
 
 Context:
-Task 58 is a governance/orchestration task.
-Task 58 records Product PR #237 as merged and marks Task 57 as complete.
-Task 58 preserves the read-only diagnostics summary boundary.
-Task 58 defines the next safe reporting/export boundary before any further product work.
-Task 58 does not modify the product repo.
+Task 59 is a governance-only task.
+Task 59 defines whether and how a CLI, smoke script, JSON report, or governance run record may expose the raster diagnostics summary without committing artifacts, leaking private fixtures, or implying semantic recognition.
+Task 59 must be completed before any product implementation of reporting/export occurs.
+Task 59 depends on the merge of Governance PR #111.
 
 Goal:
-Create a governance PR that records Product PR #237 as merged, marks Task 57 as complete, preserves the read-only diagnostics summary boundary, and defines the next safe reporting/export boundary before any further product work.
+Create a governance PR that defines the reporting/export contract for the read-only raster diagnostics summary helper. The note must explicitly state what reporting actions are authorised and what remain strictly prohibited.
 
 Non-goals:
 - Do not modify the product repo.
@@ -37,16 +36,15 @@ Non-goals:
 - Do not promote `treble_clef_candidate` or the diagnostics summary into semantic recognition.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-58-record-raster-diagnostics-summary-merge-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated to Task 58.
-- `projects/score2gp/reviews/2026-06-10-raster-diagnostics-summary-merge-and-next-boundary.md` is added.
-- PR #237 and PR #110 merge are verified in the boundary note.
-- Boundary note defines the next safe reporting/export boundary.
-- No new product implementation is authorised.
+- Governance PR opened from `governance/task-59-raster-diagnostics-summary-reporting-boundary-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated to Task 59.
+- `projects/score2gp/reviews/2026-06-10-raster-diagnostics-summary-reporting-boundary.md` is added.
+- The boundary note specifies what forms of reporting/export are permitted.
+- The boundary note prohibits ScoreIR and semantic inferences.
+- The boundary note sets up the next implementation task securely.
 
 Stop conditions:
-- Product PR #237 is not merged.
-- Governance PR #110 is not merged.
+- Governance PR #111 is not merged.
 - Governance repo is dirty before work starts.
 - The task requires product repo modifications.
 
@@ -58,8 +56,7 @@ Reporting format:
 - Commands run
 - Validation results
 - Privacy/artifact check results
-- How PR #237 merge was verified
-- How PR #110 merge was verified
+- How PR #111 merge was verified
 - Boundary summary
 - Known limitations
 - Whether PR is ready for review
