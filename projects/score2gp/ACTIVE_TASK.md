@@ -1,40 +1,44 @@
 ## Current Active Task
 
-## Task 47 — Define first read-only recogniser prerequisites and acceptance criteria
+## Task 52 — Record raster diagnostics merge and define opening-symbol diagnostics consumption boundary
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-47-read-only-recogniser-prereqs-v0.1`
+`governance/task-52-raster-opening-symbol-consumption-boundary-v0.1`
 
 PR title:
-`docs(score2gp): define first read-only recogniser prerequisites`
+`docs(score2gp): define raster opening-symbol diagnostics consumption boundary`
 
 Context:
-Governance PR #101 is merged, producing the candidate diagnostics consumption boundary note. Candidate diagnostics are explicitly limited to read-only geometry/evidence inspection, preserving `None`/`[]` semantics. Before any robust recognisers are implemented, we must define the first isolated read-only recogniser target, its allowed inputs, and strict stop conditions.
+Task 52 records Product PR #235 as merged.
+Task 52 reconciles PR #105 as closed-unmerged historical negative vector-path evidence.
+Task 52 defines the raster opening-symbol diagnostics consumption boundary.
+Task 52 does not authorise product recogniser implementation.
+The next likely task is governance-only unless the boundary explicitly authorises implementation.
 
 Goal:
-Create a governance-only design note (`projects/score2gp/reviews/2026-06-09-first-read-only-recogniser-prerequisites.md`) that defines the first safe, read-only recogniser prerequisite boundary and acceptance criteria. This task does not authorise product implementation.
+Create a governance PR that records the raster diagnostics merge, reconciles closed-unmerged PR #105 as historical negative evidence, and defines the opening-symbol diagnostics consumption boundary before any recogniser or classifier implementation.
 
 Non-goals:
 - Do not modify the product repo.
 - Do not implement any recogniser.
-- Do not infer musical semantics or emit ScoreIR.
-- Do not create or update fixtures, artifacts, private PDFs, or logs.
+- Do not emit ScoreIR.
+- Do not infer pitch, rhythm, key signature, time signature, notes, rests, voices, or musical semantics.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-47-read-only-recogniser-prereqs-v0.1` to `main`.
-- Exactly one governance design note is added, alongside this `ACTIVE_TASK.md` update.
-- No product repo files are changed.
-- The design note selects one evidence-driven, read-only target.
-- The note defines allowed evidence, fixture requirements, and stop conditions.
+- Governance PR opened from `governance/task-52-raster-opening-symbol-consumption-boundary-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated.
+- `projects/score2gp/reviews/2026-06-10-raster-opening-symbol-diagnostics-consumption-boundary.md` is added.
+- The note records Product PR #235 merge and PR #105 closure.
+- The note defines a clear consumption boundary for raster diagnostics and explicitly blocks ScoreIR and recogniser implementation until authorised.
 
 Stop conditions:
-- Product repo would need modification.
-- Private artifacts are needed.
-- Inference requires semantic ScoreIR integration or fake geometry.
+- Repo is dirty before work starts.
+- PR #235 is not merged or PR #105 is unexpectedly merged.
+- The task requires product repo modifications.
 
 Reporting format:
 - Branch name
@@ -42,7 +46,7 @@ Reporting format:
 - Exact files changed
 - Commit hash
 - Commands run
-- Test/check results
+- Validation results
 - Privacy/artifact check results
 - Known limitations
 - Whether PR is ready for review
