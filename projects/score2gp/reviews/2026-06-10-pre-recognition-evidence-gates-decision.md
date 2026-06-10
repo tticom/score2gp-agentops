@@ -7,15 +7,15 @@
 This note establishes the specific review criteria required to evaluate the raw raster diagnostic candidates (`treble_clef_candidate`) against the private corpus. It defines the quality gates that must be cleared before these candidates can be promoted into `ScoreIR` or trusted for musical semantic parsing.
 
 ## Required Corpus Review Actions
-A subsequent evaluation phase must be conducted by reviewing the private JSON diagnostic reports. The evaluation must answer the following questions:
+A subsequent evaluation phase must be conducted by reviewing the locally generated, untracked smoke-script JSON output. The evaluation must answer the following questions against a ground truth established explicitly by human-reviewed private fixture expectations or fixture-level manual review:
 1. **False Positive Rate:** How often do the existing proportional heuristics incorrectly flag non-clef objects (e.g., dense clusters of notes, text, or noise) as `treble_clef_candidate`?
 2. **False Negative Rate:** How often do legitimate treble clefs fail the proportional checks due to fragmentation, unusual fonts, or scanning artifacts?
 3. **Staff-line Exclusion:** Are the bounding boxes strictly enclosing the clef symbols, or do they erroneously encompass the staff lines themselves, leading to false positives on blank staves?
 
 ## Evidence-Quality Gates
-Before any recogniser implementation may proceed, the corpus review must confirm that:
-- The raw proportional heuristics achieve a sufficiently low false-positive rate, OR
-- The heuristics need to be augmented by secondary validation gates (such as an ML-based shape classifier, strict contour analysis, or template matching) to achieve production-safe accuracy.
+Task 63 must produce a governance review table listing fixture/page/staff, expected opening-symbol status, observed summary label, false-positive/false-negative classification, and notes.
+
+Task 63 does not decide recogniser readiness. A subsequent governance PR must define explicit numeric thresholds before authorising semantic promotion. Any secondary validation gates (such as an ML-based shape classifier, strict contour analysis, or template matching) are possible later research/design tasks only, not authorised by Task 62 or Task 63.
 
 ## Prohibitions
 The following product implementation actions remain **strictly prohibited**:
