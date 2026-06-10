@@ -1,55 +1,61 @@
 ## Current Active Task
 
-## Task 55 — Record diagnostic classifier merge and define next recognition boundary
+## Task 56 — Define diagnostic consumer boundary for raster treble-clef candidates
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-55-record-diagnostic-classifier-merge-v0.1`
+`governance/task-56-raster-treble-clef-diagnostic-consumer-boundary-v0.1`
 
 PR title:
-`docs(score2gp): record diagnostic classifier merge and next boundary`
+`docs(score2gp): define raster treble-clef diagnostic consumer boundary`
 
 Context:
-Task 54 product implementation is complete via Product PR #236.
-Task 55 is governance-only.
-Task 55 records the diagnostic classifier merge.
-Task 55 preserves the diagnostic-only boundary.
-Task 55 defines the next safe task boundary.
-No further product recognition work is authorised until this governance PR is merged and the next task is explicitly approved.
+Task 56 is governance-only.
+Task 56 defines the consumer boundary for `raster_opening_symbol_classification`.
+Task 56 does not authorise product implementation.
+Task 56 depends on merged governance PR #109 and merged product PR #236.
+No downstream product task may consume the diagnostic classifier until this consumer boundary is merged.
+The next likely task may be a read-only diagnostics summary, but only if this note defines the consumer contract clearly.
 
 Goal:
-Create a governance PR that records Product PR #236 as merged, marks Task 54 as complete, preserves the diagnostic-only boundary, and defines the next safe boundary before any further recognition work.
+Create a governance PR that defines how downstream diagnostic or research tasks may consume `raster_opening_symbol_classification` without crossing into ScoreIR creation, recognised clef objects, or full semantic music recognition.
 
 Non-goals:
 - Do not modify the product repo.
-- Do not implement any code.
+- Do not implement code.
+- Do not create or modify tests.
 - Do not create fixtures.
-- Do not add screenshots, rendered images, logs, debug dumps, GP files, PDFs, or local artifacts.
+- Do not add screenshots, rendered images, logs, debug dumps, PDFs, GP files, or local artifacts.
 - Do not authorise ScoreIR emission.
 - Do not authorise recognised clef objects.
 - Do not authorise pitch, rhythm, key signature, time signature, notes, rests, voices, or musical semantics.
 - Do not authorise OCR.
 - Do not authorise vector/raster fusion.
-- Do not jump directly to product recogniser implementation.
+- Do not authorise product recogniser implementation.
+- Do not promote `treble_clef_candidate` to semantic recognition.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-55-record-diagnostic-classifier-merge-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated to Task 55.
-- `projects/score2gp/reviews/2026-06-10-diagnostic-classifier-merge-and-next-boundary.md` is added.
-- The note records Product PR #236 merge commit `125002f3014c255344f2df049967d08db94f823e`.
-- The note records Product PR #236 head SHA `7915d983c5d9cb257c7fdb60ecd317112e85157a`.
+- Governance PR opened from `governance/task-56-raster-treble-clef-diagnostic-consumer-boundary-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated to Task 56.
+- `projects/score2gp/reviews/2026-06-10-raster-treble-clef-diagnostic-consumer-boundary.md` is added.
+- The note verifies PR #236 and PR #109 are merged.
+- The note defines the diagnostic consumer boundary.
 - The note preserves diagnostic-only meaning.
 - The note blocks ScoreIR and semantic recognition.
-- The note recommends Task 56 as a governance boundary task.
+- The note defines allowed and disallowed uses.
+- The note preserves `unknown` as a required consumer-visible result.
+- The note defines acceptance criteria for any later read-only diagnostics summary implementation.
 
 Stop conditions:
 - Product PR #236 is not merged.
-- Governance PR #107 is not merged.
+- Governance PR #109 is not merged.
 - Governance repo is dirty before work starts.
 - The task requires product repo modifications.
+- The task would authorise ScoreIR, recognised clefs, pitch, rhythm, key/time inference, OCR, or vector/raster fusion.
+- The task requires new fixtures or private artifacts.
 
 Reporting format:
 - Branch name
@@ -60,6 +66,7 @@ Reporting format:
 - Validation results
 - Privacy/artifact check results
 - How PR #236 merge was verified
+- How PR #109 merge was verified
 - Boundary summary
 - Known limitations
 - Whether PR is ready for review
