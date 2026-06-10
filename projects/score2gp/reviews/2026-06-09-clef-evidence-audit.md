@@ -3,7 +3,7 @@
 **Status:** PROPOSED
 **Date:** 2026-06-09
 
-**Verdict: public fixture evidence insufficient, but new reference material is sufficient to proceed to private/reference opening-symbol diagnostics analysis.**
+**Verdict: public fixture evidence insufficient; new reference material is present and likely relevant, but visual opening-symbol evidence is not yet verified.**
 
 ## 1. Public fixture snapshot audit
 - **Public fixture input files found:** We inspected the tracked snapshot files under `fixtures/public/*.json`.
@@ -14,11 +14,7 @@
 ## 2. New reference material audit
 - **Reference directory:** `reference/tab-notation-reference-images/2026-06-09`
 - **Files inspected:** The directory contains over 60 PNG image files (e.g., `Capo Notation.png`, `Pick Scrape.png`, `Screenshot 2026-06-09 103745.png`).
-- **Method of inspection:** Shell `find` and `file` commands were used to list and check dimensions (mostly ~900x450). *Note: Visual confirmation was not performed; inferred from filenames, metadata, directory context, and presence of standard tab notation screenshots.*
-- **Visible symbols:** We infer these standard notation screenshots visibly contain:
-  - treble clef
-  - key signature
-  - time signature
+- **Method of inspection:** Shell `find` and `file` commands were used to list and check dimensions (mostly ~900x450), and a subset of files was opened via image viewer. *Note: Partial visual confirmation showed treble clefs on standard staves, but key signatures and time signatures were not strictly verified across the dataset.*
 
 ## 3. What is now unblocked
 **Task 48 — Analyse private/reference opening-symbol fixture diagnostics**
