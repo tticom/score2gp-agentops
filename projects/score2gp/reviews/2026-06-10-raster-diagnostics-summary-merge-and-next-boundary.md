@@ -11,7 +11,7 @@ This note records the successful implementation of the read-only raster diagnost
 Task 57 introduced `summarize_raster_treble_clef_diagnostics`, which safely consumes the `raster_opening_symbol_classification` field without mutating the product objects, producing semantic inferences, or emitting `ScoreIR`. The implementation handles missing, malformed, or unexpected summary inputs safely, returning `"unknown"` as a first-class result.
 
 ## Next Safe Reporting Boundary
-The next authorized step must remain a governance boundary definition. Task 59 should define whether and how a CLI, smoke script, JSON report, or governance run record may expose the summary data without committing artifacts, leaking private fixtures, or implying semantic recognition. 
+The next authorized step must remain a governance boundary definition. Task 59 should define whether and how a CLI, smoke script, JSON report, or governance run record may expose the summary data without committing artifacts, leaking private fixtures, or implying semantic recognition.
 
 ### What remains explicitly unauthorised
 The following actions are strictly prohibited in the next or any downstream tasks unless explicitly authorized by a later governance task:
