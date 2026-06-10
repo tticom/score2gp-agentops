@@ -11,21 +11,37 @@ This note records the successful implementation of the read-only raster diagnost
 Task 57 introduced `summarize_raster_treble_clef_diagnostics`, which safely consumes the `raster_opening_symbol_classification` field without mutating the product objects, producing semantic inferences, or emitting `ScoreIR`. The implementation handles missing, malformed, or unexpected summary inputs safely, returning `"unknown"` as a first-class result.
 
 ## Next Safe Reporting Boundary
-The next authorized step must remain diagnostic. The summary data must be surfaced (e.g., printed, logged, or appended to the diagnostic JSON report) so a human developer can inspect the corpus-wide treble clef candidate counts.
+The next authorized step must remain a governance boundary definition. Task 59 should define whether and how a CLI, smoke script, JSON report, or governance run record may expose the summary data without committing artifacts, leaking private fixtures, or implying semantic recognition. 
 
-### Constraints on Reporting/Export Task:
-- Must only consume the new summary dictionary output.
-- Must not parse `"unknown"` or `"treble_clef_candidate"` as actual music notation.
-- Must preserve the distinction between raster evidence, diagnostic summary, and semantic music objects.
-- Must not create `ScoreIR` representations of clefs or alter music models.
-- Must be read-only and diagnostic-only.
+### What remains explicitly unauthorised
+The following actions are strictly prohibited in the next or any downstream tasks unless explicitly authorized by a later governance task:
+- Emitting `ScoreIR`.
+- Creating recognised clef objects.
+- Inferring pitch, rhythm, key signature, time signature, notes, rests, voices, or any other musical semantics.
+- Deciding that a staff is musically parsed.
+- Fusing vector and raster evidence.
+- Running or introducing OCR.
+- Treating `"treble_clef_candidate"` or the diagnostics summary as a confirmed treble clef or semantic recognition.
+- Mutating product models, candidate data, or the extracted summary.
+
+### Evidence and privacy rules
+- `"unknown"` must remain a first-class, consumer-visible result.
+- Missing, malformed, unexpected, or ambiguous summary inputs must stay safe and non-semantic.
+- Existing private fixtures remain intentionally authorised and tracked. Do not relitigate them.
+- Do not add new private files, logs, generated PDFs, screenshots, or local artifacts to the repository.
+
+### Known limitations
+This summary tool strictly operates on the raw outputs of conservative spatial heuristics. It does not guarantee the existence of semantic clefs, nor does it form a complete recognition model. It is a diagnostic reporting tool intended to surface corpus-wide metadata.
 
 ## Candidate Next Tasks
-- `Task 59 — Export raster diagnostics summary to developer review report`
+- `Task 59 — Define raster diagnostics summary reporting/export boundary`
+- `Task 60 — Implement read-only raster diagnostics summary reporting`
 
 ## Recommended Next Task
 The explicitly recommended next task is:
-**Task 59 — Export raster diagnostics summary to developer review report**
+**Task 59 — Define raster diagnostics summary reporting/export boundary**
+
+Task 60 is not authorised until Task 59 is merged.
 
 ## Stop Conditions
-Any implementation task that attempts to consume this diagnostic summary to build a semantic recogniser, emit `ScoreIR`, or prematurely fuse vector/raster evidence must be blocked.
+Any implementation task that attempts to consume this diagnostic summary to build a semantic recogniser, emit `ScoreIR`, or prematurely fuse vector/raster evidence must be blocked. Product work must not proceed until the reporting/export boundary is properly defined.
