@@ -39,3 +39,15 @@ Stop conditions:
 - Repo is dirty before work starts.
 - PR #235 is not merged or PR #105 is unexpectedly merged.
 - The task requires product repo modifications.
+
+Reporting format:
+- Branch name
+- PR link
+- Exact files changed
+- Commit hash
+- Commands run
+- Validation results
+- Privacy/artifact check results
+- Known limitations
+- Whether PR is ready for review
+- Recommended next smallest task after this PR is merged

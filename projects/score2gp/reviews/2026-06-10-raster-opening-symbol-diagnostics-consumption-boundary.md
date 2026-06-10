@@ -10,7 +10,7 @@ Governance PR #105 reported that the vector-only diagnostics path was insufficie
 The raster path reports:
 * A `status` indicating successful extraction.
 * A list of `staffs` (five-line groups), including their vertical bounds (`y_coords`) and `spacing`.
-* A `raster_opening_symbol_candidate` indicating the exact bounding box, width, and height of connected dark regions in the left margin area of each staff.
+* A `raster_opening_symbol_candidate` containing a crop-derived bounding box, width, and height for dark pixels found in the left-margin search region of each staff.
 
 Raster diagnostics are evidence only. `raster_opening_symbol_candidate` is not a recognised clef, but rather a candidate bound for downstream classification or analysis.
 
