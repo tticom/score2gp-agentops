@@ -42,24 +42,24 @@ Existing diagnostic entry points and helpers discovered:
 These runners successfully depend on PDF extraction (`pymupdf`) and can process the vector sources found in the `fixtures` directory.
 
 ## 7. Optional vector-PDF smoke
-A diagnostics smoke test over the generative `wide_curves` fixture demonstrates successful candidate extraction:
-* **Command:** `tests/test_pdf_standard_staff_diagnostics_fixtures.py` (which produces `expected_diagnostics_wide_curves.json`)
-* **Input:** Generative standard staff vector fixture
+A diagnostics smoke test over the generative `wide_curves` fixture demonstrates successful candidate extraction. Note that this is parsed from existing JSON, not regenerated live.
+* **Command:** `python3 -c "import json; [print(c) for c in json.load(open('fixtures/public/expected_diagnostics_wide_curves.json'))[0]['left_margin_candidates']]"` (Exit code: 0)
+* **Input:** Existing JSON output for the generative standard staff vector fixture (`expected_diagnostics_wide_curves.json`).
 * **Completed:** Yes
 * **`left_margin_candidates`:** Populated
   * **Count:** 2
   * **Kinds:** `['vertical_stroke', 'curve']`
   * **Geometry:** x_range=80.0..150.0, y_range=85.0..134.0
-* **`x_aligned_cluster_candidates`:** Populated (count=4)
-* **Mapping plausibility:** The `left_margin_candidates` (a vertical stroke and a curve at the far left margin) perfectly map to the visually confirmed location and shape of the treble clef.
+* **Mapping plausibility:** The `wide_curves` fixture proves that vector fixtures can produce left-margin `vertical_stroke` and `curve` candidates. It does not by itself prove treble-clef mapping unless the fixture is documented or visually verified as containing a treble clef.
 
 ## 8. Source-normalisation verdict
-**vector source available and diagnostics mapping can proceed**
+**vector source available; treble-clef diagnostics mapping still requires a named treble-clef PDF smoke**
 
-The `fixtures` directory contains sufficient vector source examples to serve as the required material.
+* Vector-source material exists under the `fixtures` directory.
+* Treble-clef diagnostic mapping is not yet proven until an actual treble-clef vector source (such as `Lesson-3.pdf`) is explicitly smoke-tested and mapped against its visual region.
 
 ## 9. Recommended next task
-**Task 50 — Map treble-clef candidate diagnostics from vector-source fixtures**
+**Task 50 — Map treble-clef candidate diagnostics from vector-source fixtures using a named treble-clef PDF smoke**
 
 ## 10. What remains blocked
 * Product recogniser implementation remains blocked.
