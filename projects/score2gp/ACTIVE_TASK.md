@@ -1,25 +1,25 @@
 ## Current Active Task
 
-## Task 61 — Record raster diagnostics summary reporting merge and define pre-recognition review boundary
+## Task 62 — Decide pre-recognition evidence-quality gates and corpus review criteria
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-61-record-raster-diagnostics-reporting-merge-v0.1`
+`governance/task-62-decide-pre-recognition-evidence-gates-v0.1`
 
 PR title:
-`docs(score2gp): record raster diagnostics summary reporting merge`
+`docs(score2gp): decide pre-recognition evidence-quality gates and corpus review criteria`
 
 Context:
-Task 61 is a governance/orchestration task.
-Task 61 records Product PR #238 as merged and marks Task 60 as complete.
-Task 61 defines the next smallest safe boundary. Rather than jumping straight into semantic recognition, it establishes that the next governance step must decide whether further reporting validation, corpus review, or additional evidence-quality gates are needed before any recogniser work.
-Task 61 does not modify the product repo.
+Task 62 is a governance-only task.
+Task 62 defines the corpus evaluation criteria and evidence-quality gates required before any semantic recogniser implementation may proceed.
+Task 62 ensures that before `treble_clef_candidate` objects are promoted to fully recognised clefs emitting `ScoreIR`, the existing proportional heuristics must be evaluated against the private corpus.
+Task 62 depends on the merge of Governance PR #113.
 
 Goal:
-Create a governance PR that records Product PR #238 as merged, marks Task 60 as complete, and sets up the next boundary note blocking semantic recognition until a deliberate decision is made on corpus review or validation gates.
+Create a governance PR that decides whether further reporting validation, corpus review, or additional evidence-quality gates are needed before any recogniser work. This note must explicitly outline the review criteria for the diagnostics summary data and block product-side recognition until those criteria are met.
 
 Non-goals:
 - Do not modify the product repo.
@@ -35,15 +35,15 @@ Non-goals:
 - Do not authorise product recogniser implementation.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-61-record-raster-diagnostics-reporting-merge-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated to Task 61.
-- `projects/score2gp/reviews/2026-06-10-raster-diagnostics-reporting-merge-and-next-boundary.md` is added.
-- PR #238 and PR #112 merge are verified in the boundary note.
-- Boundary note defines the next step as a governance decision on validation/review gates, explicitly blocking product recognition.
+- Governance PR opened from `governance/task-62-decide-pre-recognition-evidence-gates-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated to Task 62.
+- `projects/score2gp/reviews/2026-06-10-pre-recognition-evidence-gates-decision.md` is added.
+- PR #113 merge is verified in the decision note.
+- The note defines evidence-quality gates and corpus review criteria.
+- Semantic recognition remains explicitly blocked.
 
 Stop conditions:
-- Product PR #238 is not merged.
-- Governance PR #112 is not merged.
+- Governance PR #113 is not merged.
 - Governance repo is dirty before work starts.
 - The task requires product repo modifications.
 
@@ -55,8 +55,7 @@ Reporting format:
 - Commands run
 - Validation results
 - Privacy/artifact check results
-- How PR #238 merge was verified
-- How PR #112 merge was verified
+- How PR #113 merge was verified
 - Boundary summary
 - Known limitations
 - Whether PR is ready for review
