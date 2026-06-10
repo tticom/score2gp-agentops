@@ -17,11 +17,11 @@ The following product implementation actions remain **strictly prohibited**:
 - Modifying product logic to perform OCR on the diagnostic boundaries.
 
 ## Defining the Pre-Recognition Boundary
-The current state provides raw raster diagnostics through an ephemeral smoke script. Jumping straight into semantic recognition is a high-risk leap. 
+The current state provides raw raster diagnostics through an ephemeral smoke script. Jumping straight into semantic recognition is a high-risk leap.
 
-The next governance step must evaluate the current diagnostic output against the private test corpus to determine if the existing rules (e.g., shape/ink ratio exclusions) are sufficient, or if further validation gates (like machine learning classifiers, or additional structural checks) are required before allowing semantic product logic to trust the diagnostic candidates.
+The next governance step must evaluate the current diagnostic output against the private test corpus to determine if the existing proportional heuristics and any future explicitly authorised structural checks are sufficient, or if further validation gates (like machine learning classifiers, or additional structural checks) are required before allowing semantic product logic to trust the diagnostic candidates.
 
 ## Recommended Next Task
 The explicitly recommended next task is:
-**Task 62 — Decide pre-recognition evidence-quality gates and corpus review criteria** 
+**Task 62 — Decide pre-recognition evidence-quality gates and corpus review criteria**
 *(Note: Task 62 is a governance-only task. It does not authorise product implementation.)*
