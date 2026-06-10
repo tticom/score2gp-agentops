@@ -31,7 +31,7 @@ A review of the `/home/tticom/work/score2gp-workspace/score2gp/fixtures` directo
 * Private PDFs (`fixtures/private/Lesson-4.pdf`, `fixtures/private/Lesson-3.pdf`, `fixtures/private/LegatoLicks.pdf`, etc.)
 * Public generative fixture outputs (`fixtures/public/expected_diagnostics_wide_curves.json`, etc.)
 
-While these vector sources do not share identical basenames with the visual screenshots, they provide the necessary vector-source material containing treble clefs to validate the diagnostics pipeline.
+While these vector sources do not share identical basenames with the visual screenshots, they provide vector-source material; named treble-clef PDF smoke is still required to prove treble-clef mapping.
 
 ## 6. Diagnostics entry point check
 Existing diagnostic entry points and helpers discovered:
