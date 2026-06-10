@@ -1,46 +1,55 @@
 ## Current Active Task
 
-## Task 53 — Define read-only treble-clef candidate classifier boundary
+## Task 55 — Record diagnostic classifier merge and define next recognition boundary
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-53-read-only-treble-clef-candidate-classifier-boundary-v0.1`
+`governance/task-55-record-diagnostic-classifier-merge-v0.1`
 
 PR title:
-`docs(score2gp): define read-only treble-clef candidate classifier boundary`
+`docs(score2gp): record diagnostic classifier merge and next boundary`
 
 Context:
-Task 53 defines a read-only treble-clef candidate classifier boundary.
-Task 53 is governance-only.
-Task 53 does not authorise product implementation.
-Task 53 depends on merged PR #106.
-The next likely task, after this PR is merged and reviewed, may be a product implementation task for diagnostic-only classifier output, but only if this note explicitly authorises that boundary.
+Task 54 product implementation is complete via Product PR #236.
+Task 55 is governance-only.
+Task 55 records the diagnostic classifier merge.
+Task 55 preserves the diagnostic-only boundary.
+Task 55 defines the next safe task boundary.
+No further product recognition work is authorised until this governance PR is merged and the next task is explicitly approved.
 
 Goal:
-Create a governance PR in `tticom/score2gp-agentops` that defines a read-only treble-clef candidate classifier boundary.
+Create a governance PR that records Product PR #236 as merged, marks Task 54 as complete, preserves the diagnostic-only boundary, and defines the next safe boundary before any further recognition work.
 
 Non-goals:
 - Do not modify the product repo.
-- Do not implement classifier code.
-- Do not emit ScoreIR.
-- Do not infer full musical semantics.
-- Do not convert `raster_opening_symbol_candidate` into a recognised clef.
+- Do not implement any code.
+- Do not create fixtures.
+- Do not add screenshots, rendered images, logs, debug dumps, GP files, PDFs, or local artifacts.
+- Do not authorise ScoreIR emission.
+- Do not authorise recognised clef objects.
+- Do not authorise pitch, rhythm, key signature, time signature, notes, rests, voices, or musical semantics.
+- Do not authorise OCR.
+- Do not authorise vector/raster fusion.
+- Do not jump directly to product recogniser implementation.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-53-read-only-treble-clef-candidate-classifier-boundary-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated.
-- `projects/score2gp/reviews/2026-06-10-read-only-treble-clef-candidate-classifier-boundary.md` is added.
-- The note defines allowed inputs and outputs for a read-only treble-clef candidate classifier.
-- The note blocks ScoreIR and full recogniser implementation.
-- The note requires `unknown` handling and empirical validation.
+- Governance PR opened from `governance/task-55-record-diagnostic-classifier-merge-v0.1` to `main`.
+- `ACTIVE_TASK.md` is updated to Task 55.
+- `projects/score2gp/reviews/2026-06-10-diagnostic-classifier-merge-and-next-boundary.md` is added.
+- The note records Product PR #236 merge commit `125002f3014c255344f2df049967d08db94f823e`.
+- The note records Product PR #236 head SHA `7915d983c5d9cb257c7fdb60ecd317112e85157a`.
+- The note preserves diagnostic-only meaning.
+- The note blocks ScoreIR and semantic recognition.
+- The note recommends Task 56 as a governance boundary task.
 
 Stop conditions:
-- PR #106 is not merged.
-- Repo is dirty before work starts.
-- The task requires product repo changes or new fixtures.
+- Product PR #236 is not merged.
+- Governance PR #107 is not merged.
+- Governance repo is dirty before work starts.
+- The task requires product repo modifications.
 
 Reporting format:
 - Branch name
@@ -50,7 +59,7 @@ Reporting format:
 - Commands run
 - Validation results
 - Privacy/artifact check results
-- How PR #106 merge was verified
+- How PR #236 merge was verified
 - Boundary summary
 - Known limitations
 - Whether PR is ready for review
