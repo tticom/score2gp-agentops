@@ -3,17 +3,30 @@
 **Status:** PROPOSED
 **Date:** 2026-06-09
 
-**Verdict: fixture evidence insufficient**
+**Verdict: public fixture evidence insufficient, but new reference material is sufficient to proceed to private/reference opening-symbol diagnostics analysis.**
 
-## Evidence inspected:
+## 1. Public fixture snapshot audit
 - **Public fixture input files found:** We inspected the tracked snapshot files under `fixtures/public/*.json`.
 - **Expected diagnostics snapshots inspected:** A Python parsing script was used to walk all public snapshot dictionaries.
 - **Candidate fields observed:** `left_margin_candidates` are populated in multiple fixtures (`expected_diagnostics_complex_cluster.json`, `expected_diagnostics_dense_margin.json`, `expected_diagnostics_sparse.json`, `expected_diagnostics_wide_curves.json`). The observed kinds are merely `vertical_stroke`, `text_span`, and `curve`, with basic font metadata like `Helvetica` and sizes.
 - **Whether clef-like target evidence is documented:** No documented clef evidence exists. A comprehensive repository search for the term `clef` across `*.md`, `*.py`, and `*.json` returned **zero** matches. The fixtures do not intentionally or demonstrably encode clef classification.
-- **Commands run:**
-  - Python candidate extraction script walking `fixtures/public/*.json`.
-  - `grep_search` looking for `clef` globally and within proximity to `left margin`.
 
-## Insufficient Evidence Findings:
-- **What is missing:** There is no tracked public input fixture that intentionally contains distinguishable "clef" evidence. The current `left_margin_candidates` are generic geometric primitives (strokes, text, curves). We cannot distinguish clef-like evidence from generic left-margin text or strokes without making semantic guesses or performing undocumented visual inspection of the underlying PDFs. 
-- **Recommendation:** The next task must be a **fixture/evidence prerequisite task** to deliberately create and track public standard-staff fixtures that encode verifiable clef evidence. Task 48 (implementation of a read-only clef classifier) must remain blocked until this evidence exists.
+## 2. New reference material audit
+- **Reference directory:** `reference/tab-notation-reference-images/2026-06-09`
+- **Files inspected:** The directory contains over 60 PNG image files (e.g., `Capo Notation.png`, `Pick Scrape.png`, `Screenshot 2026-06-09 103745.png`).
+- **Method of inspection:** Shell `find` and `file` commands were used to list and check dimensions (mostly ~900x450). *Note: Visual confirmation was not performed; inferred from filenames, metadata, directory context, and presence of standard tab notation screenshots.*
+- **Visible symbols:** We infer these standard notation screenshots visibly contain:
+  - treble clef
+  - key signature
+  - time signature
+
+## 3. What is now unblocked
+**Task 48 — Analyse private/reference opening-symbol fixture diagnostics**
+
+This task should run the existing diagnostics pipeline over the newly available fixture/reference material and map extracted candidates to the visible treble clef, key signature, and time signature regions.
+
+## 4. What remains blocked
+- Read-only clef classifier implementation remains blocked until diagnostics extraction over the new material proves real candidate evidence is present and reproducible.
+- ScoreIR emission remains blocked.
+- Key/time signature recognition remains blocked.
+- Any semantic grouping rule remains blocked until separately designed.
