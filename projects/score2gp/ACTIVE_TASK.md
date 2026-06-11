@@ -1,46 +1,43 @@
 ## Current Active Task
 
-## Task 64 — Interpret raster diagnostics corpus review and define numeric threshold gates
+## Task 65 — Expand diagnostic evidence corpus with negative fixtures and failure taxonomy
 
 Status: ACTIVE
 
-Owning repo: score2gp-agentops
+Owning repo: score2gp
 
 Branch:
-`governance/task-64-decide-recogniser-readiness-v0.1`
+`product/task-65-expand-diagnostic-corpus`
 
 PR title:
-`docs(score2gp): decide recogniser readiness and semantic promotion boundary`
+`test(diagnostics): add negative fixtures and failure taxonomy for treble clef candidates`
 
 Context:
-Task 64 is a governance-only decision task.
-Task 63 completed the read-only evidence collection for raster diagnostics, showing 0 false positives and 11 false negatives across the private corpus, with 3 true negatives.
-Task 64 must interpret this evidence and define numeric threshold gates. It must state that the current evidence is not sufficient to authorise semantic promotion, because 3 true negatives is too small to prove robust staff-line/TAB/noise exclusion.
+Task 64 established that the current raster diagnostics corpus has insufficient negative coverage (only 3 true negatives). Semantic promotion is blocked.
+Before any semantic recognition can be considered, we must provide robust proof of staff-line, TAB, and noise exclusion. We also need a structured failure taxonomy for the existing false negatives (11 found in Task 63). 
 
 Goal:
-Create a governance PR that defines explicit numeric and qualitative threshold gates. The decision must maintain the block on semantic promotion until broader evidence is collected.
+Expand the product repository's diagnostic fixtures to include explicit negative cases (TAB staves, blank staves, noise). Create a failure taxonomy documenting why false negatives occur. Establish a repeatable validation command or fixture manifest. This task remains purely diagnostic.
 
 Non-goals:
-- Do not modify the product repo.
-- Do not implement product recogniser code.
-- Do not authorise ScoreIR emission.
+- Do not implement ScoreIR emission.
 - Do not authorise recognised clef objects.
 - Do not authorise pitch, rhythm, key signature, time signature, notes, rests, voices, or musical semantics.
 - Do not authorise OCR.
 - Do not authorise vector/raster fusion.
 - Do not semantically promote `treble_clef_candidate`.
+- Do not modify governance decisions; implement the required evidence base.
 
 Acceptance criteria:
-- Governance PR opened from `governance/task-64-decide-recogniser-readiness-v0.1` to `main`.
-- `ACTIVE_TASK.md` is updated to Task 64.
-- `projects/score2gp/reviews/2026-06-10-recogniser-readiness-decision.md` is added.
-- The decision note explicitly blocks semantic promotion based on insufficient negative coverage.
-- The note defines acceptable false positive and false negative thresholds.
+- New negative fixtures (TAB, blank staves, text/noise) added to the `score2gp` test corpus.
+- Documentation or taxonomy created for false negatives.
+- A repeatable command or script to validate the diagnostic coverage against these fixtures.
+- The `treble_clef_candidate` implementation remains diagnostic-only (returning coordinates/boxes without musical semantics).
+- PR opened from `product/task-65-expand-diagnostic-corpus` to `main` in the `score2gp` repo.
 
 Stop conditions:
-- Governance PR #115 is not merged.
-- Governance repo is dirty before work starts.
-- The task requires product repo modifications.
+- Product repo is dirty before work starts.
+- The task attempts to emit ScoreIR or semantically recognised objects.
 
 Reporting format:
 - Branch name
@@ -48,8 +45,7 @@ Reporting format:
 - Exact files changed
 - Commit hash
 - Commands run
-- Validation results
-- Privacy/artifact check results
-- Summary of decision
+- Validation results (pass/fail for new fixtures)
+- Summary of taxonomy added
 - Known limitations
 - Whether PR is ready for review
