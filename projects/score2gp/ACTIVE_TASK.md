@@ -56,9 +56,14 @@ Required validation:
 - `find` large files check
 
 Reporting format:
+- branch name
+- PR link
 - exact files changed
+- commit hash
 - commands run
 - targeted and broader test results
 - privacy/artifact check results
 - whether any fixtures were added, and why they are safe to commit
+- summary of taxonomy added
 - known limitations
+- whether PR is ready for review
