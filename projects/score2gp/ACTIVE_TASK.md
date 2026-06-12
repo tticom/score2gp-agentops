@@ -1,22 +1,22 @@
 ## Current Active Task
 
-## Task 70 — Record Task 69 completion and select next diagnostic-only path
+## Task 72 — Record Task 71 completion and select next diagnostic-only path
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-70-next-diagnostic-path-v0.1`
+`governance/task-72-next-diagnostic-path-v0.1`
 
 PR title:
-`docs(governance): add Task 70 decision on next diagnostic-only path`
+`docs(governance): add Task 72 decision on next diagnostic-only path`
 
 Context:
-Product PR #241 (Task 69) was audited and successfully merged, providing a machine-readable raster false-negative manifest. The next step is to further consolidate our baseline confidence before allowing semantic logic to take effect or hardening classifiers. We must formally select the next product task to improve gate-report reviewability.
+Product PR #242 (Task 71) was audited and successfully merged, improving the raster diagnostics gate report. A noted limitation is that true positive outcomes are classified but not aggregated into a top-level totals count. Closing this gap makes the gate report more complete before any classifier hardening is considered.
 
 Goal:
-Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-69-next-diagnostic-path.md` summarizing the completed Task 69 evidence and formally selecting Task 71 as a product task focused on adding gate-report distinction between known false negatives and unexpected false negatives.
+Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-71-next-diagnostic-path.md` summarizing the completed Task 71 evidence and formally selecting Task 73 as a product task focused on adding a top-level true-positive count and gate status summary to the gate report.
 
 Non-goals:
 - Do not implement ScoreIR emission.
@@ -35,11 +35,11 @@ Constraints & Privacy Boundaries:
 - Keep output ephemeral and avoid tracking logs, GP files, or private JSON artifacts in the governance repo.
 
 Acceptance criteria:
-- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-69-next-diagnostic-path.md`.
-- The document summarizes Task 69 as complete.
+- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-71-next-diagnostic-path.md`.
+- The document summarizes Task 71 as complete.
 - The document explicitly blocks semantic promotion, classifier hardening, and vector/raster fusion.
-- The document selects a new diagnostic-only Task 71 that implements a gate-report distinction between known false negatives and unexpected false negatives.
-- `ACTIVE_TASK.md` is updated to Task 70.
+- The document selects a new diagnostic-only Task 73 that adds a top-level true-positive count.
+- `ACTIVE_TASK.md` is updated to Task 72.
 - A PR is raised for this governance task.
 
 Stop conditions:
@@ -61,7 +61,7 @@ Reporting format:
 - commands run
 - validation results
 - privacy/artifact check results
-- summary of Task 70 decision
+- summary of Task 72 decision
 - selected next diagnostic-only product task
 - known limitations
 - whether PR is ready for review
