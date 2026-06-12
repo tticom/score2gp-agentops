@@ -1,22 +1,22 @@
 ## Current Active Task
 
-## Task 74 — Record Task 73 completion and select next diagnostic-only path
+## Task 76 — Record Task 75 completion and select next diagnostic-only path
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-74-next-diagnostic-path-v0.1`
+`governance/task-76-next-diagnostic-path-v0.1`
 
 PR title:
-`docs(governance): add Task 74 decision on next diagnostic-only path`
+`docs(governance): add Task 76 decision on next diagnostic-only path`
 
 Context:
-Product PR #243 (Task 73) was audited and successfully merged, improving the raster diagnostics gate report by adding a top-level true-positive count, stdout true-positive summary, deterministic gate status summary, and a PASS/REVIEW status logic. The next step is to improve machine-readable report consumption.
+Product PR #244 (Task 75) was successfully merged. It added an optional `--json` output mode to the raster diagnostics gate report, preserving the default human-readable mode. This makes the report machine-readable. However, the report still exits with code 0 regardless of the gate status. We now need to make the gate usable by CI via an explicit exit code checking mode.
 
 Goal:
-Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-73-next-diagnostic-path.md` summarizing the completed Task 73 evidence and formally selecting Task 75 as a product task focused on adding a machine-readable JSON output mode for the raster diagnostics gate report.
+Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-75-next-diagnostic-path.md` summarizing the completed Task 75 evidence and formally selecting Task 77 as a product task focused on adding an explicit command-line gate check mode (`--check`) to the raster diagnostics gate report.
 
 Non-goals:
 - Do not implement ScoreIR emission.
@@ -35,11 +35,11 @@ Constraints & Privacy Boundaries:
 - Keep output ephemeral and avoid tracking logs, GP files, or private JSON artifacts in the governance repo.
 
 Acceptance criteria:
-- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-73-next-diagnostic-path.md`.
-- The document summarizes Task 73 as complete.
+- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-75-next-diagnostic-path.md`.
+- The document summarizes Task 75 as complete.
 - The document explicitly blocks semantic promotion, classifier hardening, and vector/raster fusion.
-- The document selects a new diagnostic-only Task 75 that adds an optional JSON output mode to the gate report.
-- `ACTIVE_TASK.md` is updated to Task 74.
+- The document selects a new diagnostic-only Task 77 that adds an explicit `--check` mode to the gate report.
+- `ACTIVE_TASK.md` is updated to Task 76.
 - A PR is raised for this governance task.
 
 Stop conditions:
@@ -61,7 +61,7 @@ Reporting format:
 - commands run
 - validation results
 - privacy/artifact check results
-- summary of Task 74 decision
+- summary of Task 76 decision
 - selected next diagnostic-only product task
 - known limitations
 - whether PR is ready for review
