@@ -1,22 +1,22 @@
 ## Current Active Task
 
-## Task 78 — Record Task 77 completion and select next diagnostic-only path
+## Task 80 — Record Task 79 completion and select next diagnostic-only path
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-78-next-diagnostic-path-v0.1`
+`governance/task-80-next-diagnostic-path-v0.1`
 
 PR title:
-`docs(governance): add Task 78 decision on next diagnostic-only path`
+`docs(governance): add Task 80 decision on next diagnostic-only path`
 
 Context:
-Product PR #245 (Task 77) was successfully merged, making the raster diagnostics gate report usable as a command-line quality gate by exiting with 0 for PASS and 1 for REVIEW. However, tests currently mock `sys.exit` rather than executing the script as a real subprocess. To reduce operational risk before wiring the gate into CI, we should prove the actual command-line behaviour end-to-end.
+Product PR #246 (Task 79) was successfully merged, adding subprocess-level CLI smoke tests for the gate report. However, the REVIEW subprocess path is still not proven end-to-end. CI enforcement should remain blocked until REVIEW exit behaviour can be tested safely without private data leakage or classifier changes.
 
 Goal:
-Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-77-next-diagnostic-path.md` summarizing the completed Task 77 evidence and formally selecting Task 79 as a product task focused on adding subprocess-level CLI smoke tests for the raster diagnostics gate report.
+Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-79-next-diagnostic-path.md` summarizing the completed Task 79 evidence and formally selecting Task 81 as a product task focused on making REVIEW-path subprocess testing safe and deterministic.
 
 Non-goals:
 - Do not implement ScoreIR emission.
@@ -35,11 +35,11 @@ Constraints & Privacy Boundaries:
 - Keep output ephemeral and avoid tracking logs, GP files, or private JSON artifacts in the governance repo.
 
 Acceptance criteria:
-- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-77-next-diagnostic-path.md`.
-- The document summarizes Task 77 as complete.
+- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-79-next-diagnostic-path.md`.
+- The document summarizes Task 79 as complete.
 - The document explicitly blocks semantic promotion, classifier hardening, and vector/raster fusion.
-- The document selects a new diagnostic-only Task 79 that adds subprocess-level CLI smoke tests to the gate report.
-- `ACTIVE_TASK.md` is updated to Task 78.
+- The document selects a new diagnostic-only Task 81 that makes REVIEW-path subprocess testing safe.
+- `ACTIVE_TASK.md` is updated to Task 80.
 - A PR is raised for this governance task.
 
 Stop conditions:
@@ -61,7 +61,7 @@ Reporting format:
 - commands run
 - validation results
 - privacy/artifact check results
-- summary of Task 78 decision
+- summary of Task 80 decision
 - selected next diagnostic-only product task
 - known limitations
 - whether PR is ready for review
