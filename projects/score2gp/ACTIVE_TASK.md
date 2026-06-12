@@ -1,22 +1,22 @@
 ## Current Active Task
 
-## Task 80 — Record Task 79 completion and select next diagnostic-only path
+## Task 82 — Record Task 81 completion and select next diagnostic-only path
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-80-next-diagnostic-path-v0.1`
+`governance/task-82-next-diagnostic-path-v0.1`
 
 PR title:
-`docs(governance): add Task 80 decision on next diagnostic-only path`
+`docs(governance): add Task 82 decision on next diagnostic-only path`
 
 Context:
-Product PR #246 (Task 79) was successfully merged, adding subprocess-level CLI smoke tests for the gate report. However, the REVIEW subprocess path is still not proven end-to-end. CI enforcement should remain blocked until REVIEW exit behaviour can be tested safely without private data leakage or classifier changes.
+Product PR #247 (Task 81) was successfully merged, adding a safe REVIEW-path subprocess testability seam. The raster diagnostics gate report is now suitable for cautious CI integration, but semantic promotion and classifier hardening remain blocked.
 
 Goal:
-Create a governance decision document in `projects/score2gp/decisions/2026-06-12-post-task-79-next-diagnostic-path.md` summarizing the completed Task 79 evidence and formally selecting Task 81 as a product task focused on making REVIEW-path subprocess testing safe and deterministic.
+Create a governance PR that records Task 81 completion and defines the next safe diagnostic-only product task (Task 83).
 
 Non-goals:
 - Do not implement ScoreIR emission.
@@ -35,11 +35,11 @@ Constraints & Privacy Boundaries:
 - Keep output ephemeral and avoid tracking logs, GP files, or private JSON artifacts in the governance repo.
 
 Acceptance criteria:
-- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-79-next-diagnostic-path.md`.
-- The document summarizes Task 79 as complete.
+- A new decision document exists at `projects/score2gp/decisions/2026-06-12-post-task-81-next-diagnostic-path.md`.
+- The document summarizes Task 81 as complete.
 - The document explicitly blocks semantic promotion, classifier hardening, and vector/raster fusion.
-- The document selects a new diagnostic-only Task 81 that makes REVIEW-path subprocess testing safe.
-- `ACTIVE_TASK.md` is updated to Task 80.
+- The document selects a new diagnostic-only Task 83 that adds an advisory CI workflow.
+- `ACTIVE_TASK.md` is updated to Task 82.
 - A PR is raised for this governance task.
 
 Stop conditions:
@@ -61,7 +61,7 @@ Reporting format:
 - commands run
 - validation results
 - privacy/artifact check results
-- summary of Task 80 decision
+- summary of Task 82 decision
 - selected next diagnostic-only product task
 - known limitations
 - whether PR is ready for review
