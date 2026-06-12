@@ -1,22 +1,22 @@
 ## Current Active Task
 
-## Task 86 — Record Task 85 completion and authorise integrated whole-note diagnostics follow-up
+## Task 88 — Record whole-note diagnostics integration and authorise location-focused follow-up
 
 Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
 Branch:
-`governance/task-86-record-whole-note-diagnostics-followup-v0.1`
+`governance/task-88-record-integrated-whole-note-diagnostics-v0.1`
 
 PR title:
-`docs(governance): record whole-note diagnostics and authorise integration follow-up`
+`docs(governance): record integrated whole-note diagnostics and authorise location follow-up`
 
 Context:
-Product PR #249 (Task 85) was successfully merged, adding diagnostic-only whole-note candidate detection. The implementation distinguished whole notes from half notes via stem exclusion and preserved strict semantic boundaries. Furthermore, a review process correction is needed: Codex comments are review evidence and must be explicitly dispositioned in reviews.
+Product PR #250 (Task 87) was successfully merged. It integrated whole-note candidate diagnostics into the normal diagnostics flow, updated `raster_diagnostics_gate_report.py`, and proved the expected behaviour. It also correctly addressed trailing whitespace and local artifacts flagged by Codex. The half-note exclusion boundary is intact. Future reviews must include a “Codex comment disposition” section.
 
 Goal:
-Create a governance PR that records Task 85 completion, sets the whole-note vs half-note diagnostic boundary, records the Codex review process correction, and authorises Product Task 87: integrating whole-note diagnostics.
+Create a governance PR that records Task 87 completion, notes the integration of whole-note diagnostics, reaffirms the half-note boundary, and authorises Product Task 89: exposing whole-note candidate locations in the normal diagnostic output.
 
 Non-goals:
 - Do not modify the product repo.
@@ -25,26 +25,25 @@ Non-goals:
 - Do not authorise GP file emission.
 - Do not authorise full semantic note recognition.
 - Do not authorise pitch inference.
-- Do not authorise rhythm inference beyond diagnostic labels.
+- Do not authorise rhythm/duration inference beyond diagnostic labels.
 - Do not authorise voice, measure, key signature, time signature, rest, or full-notation inference.
 - Do not authorise OCR.
 - Do not require private fixtures.
-- Do not add another CI/gate/process-improvement task unless there is a serious blocker.
+- Do not create another CI/gate/process-improvement task unless there is a serious blocker.
 
 Constraints & Privacy Boundaries:
 - Governance only: strictly update `ACTIVE_TASK.md` and the new decision markdown file.
 - Keep output ephemeral and avoid tracking logs, GP files, or private JSON artifacts in the governance repo.
 
 Acceptance criteria:
-- `ACTIVE_TASK.md` is updated to Task 86.
-- A new decision document records Product Task 85 completion.
-- The decision document explicitly records the whole-note versus half-note distinction.
-- The decision document explicitly requires reviewers to inspect and disposition Codex comments.
-- The decision document authorises Product Task 87 as an integration follow-up.
-- The decision document keeps all semantic and privacy boundaries intact.
-- A governance PR is opened.
+- `ACTIVE_TASK.md` is updated to Task 88.
+- A new decision document records Product Task 87 / PR #250 completion.
+- The decision document authorises Product Task 89 as a product-visible diagnostic-location follow-up.
+- The whole-note versus half-note boundary is preserved.
+- Codex comment disposition remains required for future reviews.
 - No product repo files are changed.
 - No generated/private artifacts are committed.
+- A governance PR is opened.
 
 Validation:
 - `git diff --check`
