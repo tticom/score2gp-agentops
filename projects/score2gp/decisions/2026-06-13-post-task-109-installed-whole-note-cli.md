@@ -20,16 +20,19 @@ Verified evidence:
   - Installed CLI tests (`tests/test_whole_note_recognition_cli.py`) invoke the Typer subcommand directly, verifying structure and deep nested temporary path sanitisation.
   - Privacy-safe source metadata (`pdf_path.name`) is strictly maintained.
   - All CI tests and diagnostic gate checks passed successfully.
+- **Codex Disposition**:
+  - Comment: "Tests should not depend on a globally installed executable."
+  - Disposition: Accepted as blocker for the next product task. Product PR #261 tests invoke the global `score2gp` executable directly, which is fragile for source-tree test runs.
 
 ## Decision
-We authorise Product Task 111: Extract shared whole-note candidate evidence shaping for diagnostics and recognition.
+We authorise Product Task 111: Make whole-note recognition CLI tests source-tree-safe.
 
 ## Constraints for Product Task 111
-- Extract the smallest shared helper for whole-note candidate evidence shaping if duplication is confirmed (between `scripts/raster_diagnostics_gate_report.py`, `src/score2gp/whole_note_recogniser.py`, etc.).
-- Ensure that candidate ordering, ID assignment, page index handling, and privacy-safe metadata shaping stay exactly consistent across both diagnostic and recognition surfaces.
-- Both paths must continue to yield identical current outputs without changing extraction thresholds.
-- Preserve existing installed CLI, source-tree script, and raster diagnostics gate behaviour.
-- Add regression coverage to guarantee outputs stay synchronised across these dependent paths.
-- Do NOT add broader notation semantics (ScoreIR, GP output, MusicXML, pitch/rhythm inference, OCR, etc.).
+- Fix `tests/test_whole_note_recognition_cli.py` so normal repository test runs do not depend on a globally installed `score2gp` executable.
+- Prefer `sys.executable -m score2gp.cli` with the right environment or Typer `CliRunner`, after inspecting the existing test style.
+- Preserve proof that the installed CLI command is wired.
+- Preserve the source-tree script behaviour and privacy-safe source metadata.
+- Do NOT change recognition semantics or extraction logic.
+- Shared candidate shaping will become Product Task 113.
 
 Next recommended action: after this governance PR is merged, create the Product Task 111 executable prompt in ChatGPT.
