@@ -52,3 +52,8 @@ Every PR review must report the following result channels as separate, independe
 - **Remediation / Diagnostic Result**: Softened gates, unboxed system skipping, or system-wide fallbacks used for debugging.
 - **Semantic Round-Trip Result**: Match rates, string/fret accuracy, and poor/unknown bars.
 - **Generated-File Existence**: Whether ScoreIR or GP package files were written.
+
+## 5. Codex Comment Disposition
+
+The reviewer must inspect the PR for any automated or human comments, especially those raised by Codex or static analysis.
+- **Mandatory Verification**: You must ensure that all comments raised by Codex on the PR are explicitly addressed or resolved before claiming that the PR is ready for review.
