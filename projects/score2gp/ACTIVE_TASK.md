@@ -1,16 +1,16 @@
 ## Current Active Task
 
-## Task 111 — Make whole-note recognition CLI tests source-tree-safe
+## Task 113 — Share whole-note candidate evidence shaping for diagnostics and recognition
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 109 made the read-only whole-note recognition report available through the installed CLI (`score2gp whole-note-recognition`). However, testing this via `subprocess.run(["score2gp", ...])` causes tests to depend on a globally installed executable, which is fragile for source-tree test runs.
+Product Task 111 made the whole-note recognition CLI tests source-tree-safe. The installed CLI path and source-tree subprocess test path are now covered without requiring a globally installed `score2gp` executable. Whole-note recognition currently derives read-only recognition outcomes from diagnostic candidate evidence. The next small product step is to reduce duplication and make the whole-note candidate evidence shaping shared and explicit across diagnostics and recognition, without broadening recognition semantics.
 
 Goal:
-Fix `tests/test_whole_note_recognition_cli.py` so normal repository test runs do not depend on a globally installed `score2gp` executable. Prefer `sys.executable -m score2gp.cli` with the right environment or Typer `CliRunner`, after inspecting the existing test style. Preserve proof that the installed CLI command is wired, preserve the source-tree script behaviour, and preserve privacy-safe source metadata. Do not change recognition semantics or extraction logic.
+Extract or consolidate shared whole-note candidate evidence shaping so diagnostics and whole-note recognition consume the same safe, read-only candidate evidence structure. Preserve current CLI/script behaviour, JSON shape unless explicitly justified by tests, privacy-safe source metadata, and existing recognition outcomes.
 
 Next Step:
-Execute Product Task 111 in the `score2gp` repository.
+Execute Product Task 113 in the `score2gp` repository.
