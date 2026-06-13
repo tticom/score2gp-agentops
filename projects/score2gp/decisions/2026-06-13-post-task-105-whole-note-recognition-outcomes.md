@@ -17,11 +17,11 @@ Verified evidence:
   - `test_subprocess_json_read_only_recognition_outcomes_custom_case_id` regression test is present.
   - All tests passed.
   - CI and advisory checks were green.
-- **Codex Disposition**: 
+- **Codex Disposition**:
   - The comment “Emit outcomes for all whole-note candidate cases” was accepted as a blocker. It was fully addressed by emitting outcomes based on the fixture path or category, rather than a hardcoded alias, and enforced with a custom test case.
 
 ## Decision
-We authorise Product Task 107: Expose read-only whole-note recognition outcomes through a narrow product-facing CLI/report surface. 
+We authorise Product Task 107: Expose read-only whole-note recognition outcomes through a narrow product-facing CLI/report surface.
 
 This will provide a machine-checkable JSON surface specifically for safe public whole-note fixtures or properly vetted PDF paths without adding full notation recognition.
 
