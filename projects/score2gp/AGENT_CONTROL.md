@@ -26,10 +26,11 @@ Before any work, run and report:
 Agents must then read, in this order:
 
 1. `projects/score2gp/AGENT_CONTROL.md`
-2. `projects/score2gp/ACTIVE_TASK.md`
-3. `projects/score2gp/APPROVED_TASK_QUEUE.md`
-4. `projects/score2gp/TASKS.md`
-5. Relevant task template(s) under `projects/score2gp/templates/`
+2. `projects/score2gp/AGENT_PR_READINESS.md`
+3. `projects/score2gp/ACTIVE_TASK.md`
+4. `projects/score2gp/APPROVED_TASK_QUEUE.md`
+5. `projects/score2gp/TASKS.md`
+6. Relevant task template(s) under `projects/score2gp/templates/`
 
 If product work is involved, agents must also inspect the product repository:
 
