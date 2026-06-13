@@ -2,7 +2,7 @@
 
 ## Task 94 — Record Product Task 93 completion and authorise Product Task 95
 
-Status: DONE
+Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
