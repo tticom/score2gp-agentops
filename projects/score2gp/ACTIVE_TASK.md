@@ -1,23 +1,25 @@
 ## Current Active Task
 
-## Task 118 — Expose half-note candidate evidence in read-only recognition/reporting path
+## Task 120 — Add generic read-only note-candidate reporting CLI/script alias
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 116 added a narrow read-only half-note candidate evidence boundary. Score2GP now has `whole_note_candidate` read-only recognition outcome support and `half_note_candidates` diagnostic candidate evidence support. The next small product step is to make half-note candidate evidence visible through a read-only recognition/reporting path where repo evidence supports it, without adding musical semantics.
+Product Task 118 exposed half-note candidate evidence through the read-only recognition/reporting path. Score2GP now emits both `whole_note_candidate` and `half_note_candidate` outcomes, but the current CLI/reporting surface is still named around whole-note recognition. Before adding more notehead families, the reporting interface should be made honest and generic while preserving backwards compatibility.
 
 Goal:
-Expose half-note candidate evidence through the read-only recognition/reporting surface in a way that preserves whole-note behaviour, diagnostic/read-only boundaries, deterministic candidate IDs, JSON privacy boundaries, and existing CLI/script behaviour.
+Add a generic read-only note-candidate reporting entry point, such as a CLI command and/or script alias, that exposes the existing candidate-evidence outcomes without changing recognition semantics. Preserve the existing `whole-note-recognition` command/script behaviour as a compatibility alias.
 
 Non-goals:
+Do not add new note types.
 Do not add pitch inference.
 Do not add staff-position inference.
 Do not add rhythm or playable duration.
 Do not emit ScoreIR, MusicXML, GP output, OCR, or full notation events.
-Do not broaden recognition beyond candidate evidence.
+Do not remove or break the existing `whole-note-recognition` command.
+Do not broaden recognition beyond existing candidate evidence.
 
 Next Step:
-Execute Product Task 118 in the `score2gp` repository using the Codex-cleared PR readiness workflow.
+Execute Product Task 120 in the `score2gp` repository using the Codex-cleared PR readiness workflow.
