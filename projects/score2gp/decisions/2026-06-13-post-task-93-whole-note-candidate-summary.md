@@ -51,3 +51,13 @@ The summary must include at least:
 - case-level whole-note outcome entries containing: `case_id`, `category`, `whole_note_candidate`, `whole_note_candidate_summary.total_count`, and an outcome label (e.g., `whole_note_true_positive`, `whole_note_false_negative`, `whole_note_true_negative`, `whole_note_false_positive`).
 
 Product Task 95 must use existing diagnostic report data only. It must not change extraction logic unless a defect is discovered and explicitly reported as a blocker.
+
+### Required Tests for Task 95
+Implementation of Product Task 95 must include explicit regression tests proving:
+- positive whole-note fixture outcome summary counts;
+- half-note fixture false-positive count;
+- negative/noise fixture false-positive count;
+- case-level outcome labels;
+- consistency between case-level `whole_note_candidate_summary.total_count` and aggregate counts;
+- proof that output remains strictly diagnostic-only;
+- proof that no ScoreIR, GP output, pitch inference, duration/rhythm inference, OCR, or full notation recognition is introduced.
