@@ -42,6 +42,7 @@ Reviewer:
 - Must verify requirement fit, branch hygiene, artifacts, privacy, fake-data risks, and semantic-boundary compliance.
 - Must use verdicts: merge, needs changes, do not merge, blocked, or cannot verify. “CI passed” is not a verdict.
 - Check empirical validation: What tests passed or failed? What commands were run?
+- Must ensure that all comments raised by Codex on the PR are addressed before claiming that the PR is ready for review.
 
 Orchestrator:
 - Must maintain the queue state and dependency graph.
