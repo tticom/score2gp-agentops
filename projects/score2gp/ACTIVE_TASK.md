@@ -1,16 +1,16 @@
 ## Current Active Task
 
-## Task 107 — Expose read-only whole-note recognition outcomes through a narrow product-facing CLI/report surface
+## Task 109 — Expose whole-note recognition report through the installed CLI
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 105 has been recorded as complete. It added the first read-only recognition mapping for whole-note candidates. However, this outcome is currently only surfaced through the raster diagnostics gate report. The next visible product improvement is to make this recognition outcome easier to invoke and inspect via a narrow product-facing surface without turning it into ScoreIR, GP, MusicXML, or full notation recognition.
+Product Task 107 added a source-tree script `scripts/whole_note_recognition_report.py` that successfully exposes read-only whole-note recognition outcomes. However, it is not available to installed users. The product-facing surface should be available through the installed product CLI to make the feature genuinely accessible without broadening recognition semantics.
 
 Goal:
-Add the smallest safe product-facing surface for read-only recognition outcomes. Consume existing diagnostic whole-note candidate evidence and the Product Task 105 read-only recogniser to provide deterministic read-only recognition output for the safe public whole-note fixture. Keep the output explicitly diagnostic-derived/read-only and machine-checkable JSON.
+Wire the read-only recognition report into the installed CLI surface (either a subcommand of the existing `score2gp` CLI or a new console script entry point). It must emit machine-checkable JSON. The safe public fixture must produce exactly two outcomes. Source metadata must remain privacy-safe. Existing diagnostics tests and script tests must continue to pass.
 
 Next Step:
-Execute Product Task 107 in the `score2gp` repository.
+Execute Product Task 109 in the `score2gp` repository.
