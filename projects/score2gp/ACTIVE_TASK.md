@@ -1,6 +1,6 @@
 ## Current Active Task
 
-## Task 104 — Add first read-only whole-note recognition outcome mapping from validated candidates
+## Task 105 — Add first read-only whole-note recognition outcome mapping from validated candidates
 
 Status: ACTIVE
 
@@ -13,4 +13,4 @@ Goal:
 Add first read-only whole-note recognition outcome mapping from validated candidates. The product task should consume existing whole-note candidate evidence and produce a read-only recognition/conversion outcome for the safe public generated whole-note fixture, without weakening gates or touching unrelated symbol recognition.
 
 Next Step:
-Execute Product Task 104 in the `score2gp` repository.
+Execute Product Task 105 in the `score2gp` repository.

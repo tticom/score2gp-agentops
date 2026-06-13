@@ -1,4 +1,4 @@
-# Decision: Authorise Product Task 104 (Whole-Note Recognition Outcome Mapping)
+# Decision: Authorise Product Task 105 (Whole-Note Recognition Outcome Mapping)
 
 ## Context
 Product PR #258 has merged. It strengthened the diagnostics gate by making expected whole-note candidate counts explicit and fail-fast. This robust diagnostic foundation gives us the safer evidence we need to take our first concrete step toward actual product functionality. The overarching goal is to move from diagnostics-only processing to visible product progress, starting with a minimal, reviewable piece of whole-note recognition.
@@ -17,9 +17,9 @@ Product PR #258 has merged. It strengthened the diagnostics gate by making expec
 
 ## Next Direction
 Because our diagnostics gating precisely detects any mismatches or regressions in candidate expectations, we are secure in leveraging this data.
-We will now execute Product Task 104. This task will consume the existing whole-note candidate evidence and map it to a read-only recognition/conversion outcome for the safe public whole-note fixture, without impacting any other components or diagnostics.
+We will now execute Product Task 105. This task will consume the existing whole-note candidate evidence and map it to a read-only recognition/conversion outcome for the safe public whole-note fixture, without impacting any other components or diagnostics.
 
-## Acceptance Criteria for Product Task 104
+## Acceptance Criteria for Product Task 105
 - Implement a first read-only whole-note recognition outcome mapping.
 - The outcome mapping only translates validated candidates (already exposed by diagnostics) into a recognition representation.
 - Ensure no diagnostics or existing validations are weakened or removed.
@@ -35,4 +35,4 @@ We will now execute Product Task 104. This task will consume the existing whole-
 - Do not update large documentation files unless needed for continuity.
 
 ## Next Recommended Action
-Next recommended action: after this governance PR is merged, create the Product Task 104 executable prompt in ChatGPT.
+Next recommended action: after this governance PR is merged, create the Product Task 105 executable prompt in ChatGPT.
