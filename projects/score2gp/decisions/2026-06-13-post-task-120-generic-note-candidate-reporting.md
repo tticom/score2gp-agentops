@@ -2,7 +2,7 @@
 
 ## Task 120 Completion Summary
 
-Product Task 120 added a generic read-only note-candidate reporting CLI and script alias to the `score2gp` product repository. 
+Product Task 120 added a generic read-only note-candidate reporting CLI and script alias to the `score2gp` product repository.
 
 * **Product PR:** https://github.com/tticom/score2gp/pull/267
 * **Final Head SHA:** `4c4d39c2c9b45389d624a69cb9c4a7759cf2807b`
