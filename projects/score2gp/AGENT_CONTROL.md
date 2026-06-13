@@ -144,7 +144,7 @@ Statuses must strictly distinguish:
 - `IN_PROGRESS`: Agents are working inside the approved task boundary.
 - `PR_OPEN`: A task PR exists. Agents may continue review, fixes, tests, follow-up commits, and re-review on the same branch/PR.
 - `CHANGES_REQUESTED`: Reviewer found issues. Developer may fix them on the same branch/PR without new human approval.
-- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met. Agents must stop before merge.
+- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met and all Codex comments on the PR are addressed. Agents must stop before merge.
 - `BLOCKED`: Human decision is required.
 - `DONE`: Only after human merge or explicit human closure.
 
@@ -177,7 +177,7 @@ Agents operate under the following role boundaries during team operation:
 - **Orchestrator**: identifies active blocker, sequences approved work, reports state.
 - **Architect**: defines requirements, assumptions, acceptance criteria, risks.
 - **Developer**: implements smallest useful approved change.
-- **Reviewer**: reviews code/docs/process/evidence and comments, but does not merge or self-approve.
+- **Reviewer**: reviews code/docs/process/evidence and comments, ensures all Codex comments on the PR are addressed before claiming that the PR is ready for review, but does not merge or self-approve.
 - **Researcher**: investigates uncertainty and records evidence without changing product implementation unless approved.
 
 ### Forbidden Actions
