@@ -1,22 +1,16 @@
 ## Current Active Task
 
-## Task 102 — Record whole-note gate decision completion and authorise count expectation gating
+## Task 105 — Add first read-only whole-note recognition outcome mapping from validated candidates
 
 Status: ACTIVE
 
-Owning repo: score2gp-agentops
-
-Branch:
-`governance/task-102-record-whole-note-gate-decision-v0.1`
-
-PR title:
-`docs(governance): record whole-note gate decision and authorise count expectations`
+Owning repo: score2gp
 
 Context:
-Product PR #257 (Task 101) was successfully merged, making `whole_note_detection_status` actionable in raster diagnostics gate/check mode by adding a machine-checkable `whole_note_detection_gate_status` and appropriately reflecting non-pass conditions into the aggregate `gate_status`.
+Product PR #258 has merged. It strengthened the diagnostics gate by making expected whole-note candidate counts explicit and fail-fast. That gives us safer evidence for the next product improvement. We need to move from diagnostics-only candidate counting toward visible product behaviour, starting with a small, reviewable read-only recognition/conversion outcome for the safe public generated whole-note fixture.
 
 Goal:
-Record Task 101 completion in a decision document. Authorise Product Task 103 to add expected whole-note candidate count checks to the raster diagnostics gate report. Keep all outputs diagnostic-only and preserve the Codex comment disposition rule.
+Add first read-only whole-note recognition outcome mapping from validated candidates. The product task should consume existing whole-note candidate evidence and produce a read-only recognition/conversion outcome for the safe public generated whole-note fixture, without weakening gates or touching unrelated symbol recognition.
 
 Next Step:
-Execute Product Task 103 in the `score2gp` repository.
+Execute Product Task 105 in the `score2gp` repository.
