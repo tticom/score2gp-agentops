@@ -1,16 +1,16 @@
 ## Current Active Task
 
-## Task 105 — Add first read-only whole-note recognition outcome mapping from validated candidates
+## Task 107 — Expose read-only whole-note recognition outcomes through a narrow product-facing CLI/report surface
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product PR #258 has merged. It strengthened the diagnostics gate by making expected whole-note candidate counts explicit and fail-fast. That gives us safer evidence for the next product improvement. We need to move from diagnostics-only candidate counting toward visible product behaviour, starting with a small, reviewable read-only recognition/conversion outcome for the safe public generated whole-note fixture.
+Product Task 105 has been recorded as complete. It added the first read-only recognition mapping for whole-note candidates. However, this outcome is currently only surfaced through the raster diagnostics gate report. The next visible product improvement is to make this recognition outcome easier to invoke and inspect via a narrow product-facing surface without turning it into ScoreIR, GP, MusicXML, or full notation recognition.
 
 Goal:
-Add first read-only whole-note recognition outcome mapping from validated candidates. The product task should consume existing whole-note candidate evidence and produce a read-only recognition/conversion outcome for the safe public generated whole-note fixture, without weakening gates or touching unrelated symbol recognition.
+Add the smallest safe product-facing surface for read-only recognition outcomes. Consume existing diagnostic whole-note candidate evidence and the Product Task 105 read-only recogniser to provide deterministic read-only recognition output for the safe public whole-note fixture. Keep the output explicitly diagnostic-derived/read-only and machine-checkable JSON.
 
 Next Step:
-Execute Product Task 105 in the `score2gp` repository.
+Execute Product Task 107 in the `score2gp` repository.
