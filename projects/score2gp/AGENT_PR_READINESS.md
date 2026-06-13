@@ -20,6 +20,13 @@ Every Codex comment or review thread must be dispositioned as one of:
 - already fixed;
 - rejected with reason.
 
+When Codex leaves an inline review comment or review thread, the assigned agent must reply directly to that thread with:
+- disposition: accepted as blocker, accepted as non-blocking, already fixed, or rejected with reason;
+- fix evidence: commit SHA, changed file(s), and regression test or validation evidence;
+- remaining status: resolved, unresolved, or human resolution required.
+
+A top-level PR comment is not sufficient for inline Codex feedback. If the agent has permission to resolve the thread, it must resolve it after verifying the fix. If it cannot resolve the thread, it must report that human thread resolution is required and must not mark the PR as READY.
+
 If a Codex comment identifies a plausible correctness bug, require or add a regression test unless there is a clear written reason not to.
 
 ## 3. Separation of Opening and Completion

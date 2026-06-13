@@ -1,23 +1,23 @@
 ## Current Active Task
 
-## Task 116 — Add read-only half-note candidate evidence boundary
+## Task 118 — Expose half-note candidate evidence in read-only recognition/reporting path
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 113 consolidated whole-note candidate evidence shaping so diagnostics and whole-note recognition consume the same safe, read-only candidate evidence structure. Score2GP currently exposes `whole_note_candidate` recognition outcomes only. The next step toward broader notation recognition is to introduce a narrow, read-only candidate-evidence boundary for half-note-like open noteheads with stems, while keeping whole-note candidate behaviour stable.
+Product Task 116 added a narrow read-only half-note candidate evidence boundary. Score2GP now has `whole_note_candidate` read-only recognition outcome support and `half_note_candidates` diagnostic candidate evidence support. The next small product step is to make half-note candidate evidence visible through a read-only recognition/reporting path where repo evidence supports it, without adding musical semantics.
 
 Goal:
-Add or expose a read-only half-note candidate evidence boundary that can distinguish half-note-like candidates from whole-note candidates where existing diagnostics and fixtures support it. Preserve existing whole-note recognition outcomes, CLI/script behaviour, JSON privacy boundaries, and diagnostic/read-only constraints.
+Expose half-note candidate evidence through the read-only recognition/reporting surface in a way that preserves whole-note behaviour, diagnostic/read-only boundaries, deterministic candidate IDs, JSON privacy boundaries, and existing CLI/script behaviour.
 
 Non-goals:
-Do not add full half-note musical recognition.
-Do not infer pitch, staff position, rhythm, or playable duration.
-Do not emit ScoreIR, MusicXML, GP output, or full notation events.
-Do not add OCR.
+Do not add pitch inference.
+Do not add staff-position inference.
+Do not add rhythm or playable duration.
+Do not emit ScoreIR, MusicXML, GP output, OCR, or full notation events.
 Do not broaden recognition beyond candidate evidence.
 
 Next Step:
-Execute Product Task 116 in the `score2gp` repository using the Codex-cleared PR readiness workflow.
+Execute Product Task 118 in the `score2gp` repository using the Codex-cleared PR readiness workflow.
