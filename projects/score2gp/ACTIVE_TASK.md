@@ -1,46 +1,29 @@
 ## Current Active Task
 
-## Product Task 132 — Add read-only left-margin candidate reporting boundary
+## Product Task 134 — Discover next safe read-only candidate reporting boundary
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 130 completed by exposing read-only `x_aligned_cluster_candidates` through the generic `note-candidate-recognition` pathway while explicitly preserving whole-note compatibility outcomes.
+Product Task 132 completed by exposing read-only `left_margin_candidates` through the generic `note-candidate-recognition` pathway while explicitly preserving whole-note compatibility outcomes. The product now reports whole, half, and quarter note candidates, as well as x-aligned clusters and left margins. The product still lacks eighth-note recognition, rests, pitch inference, staff-position inference, rhythm inference, ScoreIR, MusicXML, GP output, and OCR.
 
 Goal:
-Add read-only reporting for `left_margin_candidates`.
-Expose existing diagnostic `left_margin_candidates` through the generic read-only `note-candidate-recognition` reporting path.
-Emit output as read-only diagnostic-derived candidate evidence only.
-Use a clear candidate type such as `left_margin_candidate`.
-Preserve existing `whole_note_candidate`, `half_note_candidate`, `quarter_note_candidate`, and `x_aligned_cluster_candidate` outputs.
-Preserve generic `score2gp note-candidate-recognition`.
-Preserve compatibility `score2gp whole-note-recognition`.
-Preserve `scripts/note_candidate_recognition_report.py`.
-Keep compatibility outputs isolated exactly as in Product Task 130.
-Add tests proving left-margin candidate reporting and preservation of existing note and x-aligned-cluster reporting.
-Add or update regression tests proving `whole-note-recognition` does not emit left-margin candidates.
-Use existing safe public fixture evidence, especially `fixtures/public/expected_diagnostics_complex_cluster.json` or the corresponding generated public fixture/PDF if needed.
-Avoid fixture churn.
-Stop and report if the existing diagnostic field is unavailable or cannot safely support reporting.
+This is a product discovery task. Inspect existing product diagnostics, models, fixtures, and tests to identify the next safe product-facing read-only candidate output.
+The preferred target is eighth-note candidate reporting, but only if existing diagnostics already safely expose enough evidence. Do not authorise implementation yet unless the discovery proves the existing boundary is safe.
 
 Non-goals:
-* Do not add new primitive extraction.
-* Do not alter diagnostic clustering or margin extraction unless absolutely required to consume existing `left_margin_candidates`.
-* Do not add pitch inference.
-* Do not add staff-position inference.
-* Do not add rhythm or playable-duration inference.
-* Do not emit ScoreIR.
-* Do not emit MusicXML.
-* Do not emit Guitar Pro or GP output.
-* Do not add OCR.
-* Do not add rests as product-facing recognition output.
-* Do not add eighth-note recognition as product-facing recognition output.
-* Do not emit beam-spanning recognition output.
-* Do not emit full notation events.
-* Do not broaden into full notation recognition.
-* Do not change governance records from the product repo.
+* This is a no-code discovery task; do not modify code in the product repository, but you may inspect it and report findings.
+* Do not implement eighth-note recognition.
+* Do not implement rests.
+* Do not authorise new primitive extraction.
+* Do not authorise pitch inference.
+* Do not authorise staff-position inference.
+* Do not authorise rhythm or playable-duration inference.
+* Do not authorise ScoreIR, MusicXML, GP output, OCR, or full notation events.
+* Do not authorise broad notation recognition.
+* Do not commit generated artifacts, raw JSON dumps, screenshots, PDFs, GP files, logs, PR body files, private files, credentials, or unrelated files.
 
 Next Step:
-Execute Product Task 132 in the `score2gp` repository.
+Execute Product Task 134 in the `score2gp` repository.
