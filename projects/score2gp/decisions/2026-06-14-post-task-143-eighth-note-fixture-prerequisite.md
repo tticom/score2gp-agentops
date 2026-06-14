@@ -17,4 +17,4 @@ Implementing `eighth_note_candidate` is blocked by insufficient public fixture e
 
 ## Authorisation
 Product Task 145 is authorised as a prerequisite fixture task.
-**Explicit constraint:** Product Task 145 must NOT implement `eighth_note_candidate` reporting. It is strictly limited to adding generated public fixture coverage for eighth-note geometry.
+**Explicit constraint:** Product Task 145 must NOT implement `eighth_note_candidate` reporting. It is strictly limited to adding generated public fixture coverage for eighth-note geometry. Product Task 145 must NOT alter existing extraction heuristics; if heuristic changes are required, it must stop and report the blocker for a separate governance decision.
