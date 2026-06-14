@@ -1,46 +1,27 @@
 ## Current Active Task
 
-## Product Task 148 — Implement read-only eighth-note candidate boundary composition
+## Product Task 150 — Validate read-only eighth-note candidate reporting across public fixtures
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 145 successfully added generated public fixture evidence (`generated_standard_staff_eighth_notes.pdf`) that emits `quarter_note_candidate`, `flag_candidate`, and `beam_candidate` evidence, all perfectly joined with explicit bounds (`page_index`, `system_index`, `staff_index`, `bbox`). This evidence enables safe boundary composition for eighth notes without altering extraction heuristics.
+Product Task 148 has only added a read-only candidate-composition boundary for eighth notes. Before semantic inference, we need a validation/reporting step that proves the new `eighth_note_candidate` behaves safely across the existing public fixtures and does not create unwanted candidates in non-eighth-note fixtures.
 
 Goal:
-Implement a conservative generic `eighth_note_candidate` composition boundary from existing `quarter_note_candidate` plus nearby `flag_candidate` or `beam_candidate` evidence.
+Validate the newly added read-only `eighth_note_candidate` reporting across existing public fixtures and confirm it appears only where expected.
 
 Scope:
 - Work in `tticom/score2gp`.
-- Use only existing generic candidate outputs and evidence fields.
-- Compose `eighth_note_candidate` from:
-  - `quarter_note_candidate` + `flag_candidate`, or
-  - `quarter_note_candidate` + `beam_candidate`.
-- Require exact match on:
-  - `page_index`
-  - `system_index`
-  - `staff_index`
-- Require conservative bbox relationship:
-  - overlap, touch, or tightly bounded local proximity;
-  - avoid staff-space margins unless the value is available at the composition boundary and explicitly justified.
-- Use `generated_standard_staff_eighth_notes.pdf` and `generated_standard_staff_eighth_notes.json` to prove the boundary.
-- Include source component references in the emitted candidate, such as source candidate ids or component bboxes, if those fields already exist or can be added without changing extraction heuristics.
-- Preserve all existing generic outputs:
-  - `whole_note_candidate`
-  - `half_note_candidate`
-  - `quarter_note_candidate`
-  - `x_aligned_cluster_candidate`
-  - `left_margin_candidate`
-  - `flag_candidate`
-  - `beam_candidate`
+- Use existing public fixtures only.
+- Run generic `note-candidate-recognition` reporting across public generated staff fixtures.
+- Confirm `eighth_note_candidate` appears in `generated_standard_staff_eighth_notes.pdf`.
+- Confirm `eighth_note_candidate` does not appear in fixtures where only whole, half, quarter, sparse, or unrelated geometry is expected.
+- Add or update tests only where they prove fixture-level reporting stability.
+- Preserve all existing generic outputs.
 - Preserve backward compatibility for `whole-note-recognition`.
-- Add focused tests for:
-  - flagged eighth-note composition;
-  - beamed eighth-note composition;
-  - no composition across different staff/system/page;
-  - no composition where bbox relationship is absent or too loose.
+- Produce a concise validation summary in the PR body.
 
 Non-goals:
 - Do not infer pitch.
@@ -51,9 +32,10 @@ Non-goals:
 - Do not add OCR.
 - Do not implement rests.
 - Do not implement full notation recognition.
-- Do not alter existing extraction heuristics.
-- Do not change staff association heuristics.
-- Do not commit private PDFs, generated scratch dumps, screenshots, logs, credentials, or unrelated artifacts.
+- Do not alter extraction heuristics.
+- Do not alter staff-association heuristics.
+- Do not change `eighth_note_candidate` composition logic unless a failing regression proves the current logic is unsafe. If that happens, stop and report instead of broadening scope.
+- Do not add private fixtures, scratch outputs, logs, generated dumps, credentials, or unrelated artifacts.
 
 Next Step:
-Execute Product Task 148 in the `score2gp` repository.
+Execute Product Task 150 in the `score2gp` repository.
