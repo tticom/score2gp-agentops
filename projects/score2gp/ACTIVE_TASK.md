@@ -37,7 +37,7 @@ Non-goals:
 * Do not emit MusicXML.
 * Do not emit Guitar Pro or GP output.
 * Do not add OCR.
-* Do not alter existing extraction heuristics unless explicitly discovered as a blocker and reported.
+* Do not alter existing extraction heuristics. If fixture work discovers that heuristic changes are required, stop and report the blocker for a separate governance decision.
 * Do not commit private PDFs, generated scratch dumps, screenshots, logs, credentials, or unrelated artifacts.
 
 Next Step:
