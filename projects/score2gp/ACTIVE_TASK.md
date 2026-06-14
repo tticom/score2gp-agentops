@@ -1,44 +1,59 @@
 ## Current Active Task
 
-## Product Task 145 — Add generated public eighth-note geometry fixtures
+## Product Task 148 — Implement read-only eighth-note candidate boundary composition
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 143 discovery proved that while structural identity (`system_index`, `staff_index`, `bbox`) is correctly populated for candidates, there is currently NO public fixture containing both `quarter_note_candidate` and `beam_candidate` simultaneously. Furthermore, the flag candidates in existing fixtures are synthetic quadrants. We cannot safely tune or prove an `eighth_note_candidate` join boundary without valid geometry to test against.
+Product Task 145 successfully added generated public fixture evidence (`generated_standard_staff_eighth_notes.pdf`) that emits `quarter_note_candidate`, `flag_candidate`, and `beam_candidate` evidence, all perfectly joined with explicit bounds (`page_index`, `system_index`, `staff_index`, `bbox`). This evidence enables safe boundary composition for eighth notes without altering extraction heuristics.
 
 Goal:
-Create generated public fixture evidence for future eighth-note candidate composition.
+Implement a conservative generic `eighth_note_candidate` composition boundary from existing `quarter_note_candidate` plus nearby `flag_candidate` or `beam_candidate` evidence.
 
 Scope:
-* Work in `tticom/score2gp`.
-* Add generated public fixture coverage for eighth-note geometry.
-* Include at least one solitary flagged eighth note.
-* Include at least one beamed pair of eighth notes.
-* Ensure the fixture can produce the necessary existing generic candidate evidence:
-  * `quarter_note_candidate`
-  * `flag_candidate`
-  * `beam_candidate`
-  * populated `page_index`
-  * populated `system_index`
-  * populated `staff_index`
-  * populated `bbox`
-* Add or update tests/expected diagnostics only as needed to prove the fixture evidence.
-* Preserve existing candidate extraction behaviour.
+- Work in `tticom/score2gp`.
+- Use only existing generic candidate outputs and evidence fields.
+- Compose `eighth_note_candidate` from:
+  - `quarter_note_candidate` + `flag_candidate`, or
+  - `quarter_note_candidate` + `beam_candidate`.
+- Require exact match on:
+  - `page_index`
+  - `system_index`
+  - `staff_index`
+- Require conservative bbox relationship:
+  - overlap, touch, or tightly bounded local proximity;
+  - avoid staff-space margins unless the value is available at the composition boundary and explicitly justified.
+- Use `generated_standard_staff_eighth_notes.pdf` and `generated_standard_staff_eighth_notes.json` to prove the boundary.
+- Include source component references in the emitted candidate, such as source candidate ids or component bboxes, if those fields already exist or can be added without changing extraction heuristics.
+- Preserve all existing generic outputs:
+  - `whole_note_candidate`
+  - `half_note_candidate`
+  - `quarter_note_candidate`
+  - `x_aligned_cluster_candidate`
+  - `left_margin_candidate`
+  - `flag_candidate`
+  - `beam_candidate`
+- Preserve backward compatibility for `whole-note-recognition`.
+- Add focused tests for:
+  - flagged eighth-note composition;
+  - beamed eighth-note composition;
+  - no composition across different staff/system/page;
+  - no composition where bbox relationship is absent or too loose.
 
 Non-goals:
-* Do not implement `eighth_note_candidate` reporting.
-* Do not implement eighth-note recognition.
-* Do not infer pitch.
-* Do not infer rhythm or playable duration.
-* Do not emit ScoreIR.
-* Do not emit MusicXML.
-* Do not emit Guitar Pro or GP output.
-* Do not add OCR.
-* Do not alter existing extraction heuristics. If fixture work discovers that heuristic changes are required, stop and report the blocker for a separate governance decision.
-* Do not commit private PDFs, generated scratch dumps, screenshots, logs, credentials, or unrelated artifacts.
+- Do not infer pitch.
+- Do not infer playable rhythm or duration.
+- Do not emit ScoreIR.
+- Do not emit MusicXML.
+- Do not emit Guitar Pro or GP output.
+- Do not add OCR.
+- Do not implement rests.
+- Do not implement full notation recognition.
+- Do not alter existing extraction heuristics.
+- Do not change staff association heuristics.
+- Do not commit private PDFs, generated scratch dumps, screenshots, logs, credentials, or unrelated artifacts.
 
 Next Step:
-Execute Product Task 145 in the `score2gp` repository.
+Execute Product Task 148 in the `score2gp` repository.
