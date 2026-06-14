@@ -1,7 +1,7 @@
 # 2026-06-14 Post-Task 141 Note Candidate Staff Identity
 
 ## Context
-Product Task 141 added safe staff/system identity to generic whole, half, and quarter note candidate evidence. This completes the prerequisite for testing a staff-local composition join with flag/beam evidence. 
+Product Task 141 added safe staff/system identity to generic whole, half, and quarter note candidate evidence. This completes the prerequisite for testing a staff-local composition join with flag/beam evidence.
 
 ## Completion Summary
 * **Product PR**: [PR #274](https://github.com/tticom/score2gp/pull/274)
@@ -27,7 +27,7 @@ Product Task 141 added safe staff/system identity to generic whole, half, and qu
 ## User-Visible Capability
 Whole, half, and quarter generic note candidates now include staff/system identity (`system_index` and `staff_index`). Staff association is explicitly bounded by both vertical and horizontal compatibility to safely prevent false identity assignment to artifacts outside the staff bounds.
 
-`eighth_note_candidate` reporting was **not** added. Eighth-note recognition was **not** implemented. 
+`eighth_note_candidate` reporting was **not** added. Eighth-note recognition was **not** implemented.
 
 ## Known Limitations
 * The product still lacks `eighth_note_candidate` reporting, eighth-note recognition, pitch inference, rest reporting, rhythm inference, ScoreIR, MusicXML, GP output, OCR, and full notation recognition.
