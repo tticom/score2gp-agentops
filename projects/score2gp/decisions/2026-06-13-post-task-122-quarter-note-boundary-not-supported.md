@@ -18,7 +18,7 @@ Local source inspection on `main` verified the product agent's report:
 - There is no verified `QuarterNoteCandidateDiagnostics` model or `quarter_note_candidates` schema field.
 
 ## Decision
-The stop for Product Task 122 was correct. Exposing a quarter-note reporting boundary now would require speculative classification logic and unverified fixture updates. 
+The stop for Product Task 122 was correct. Exposing a quarter-note reporting boundary now would require speculative classification logic and unverified fixture updates.
 
 We must authorise a narrower precursor task to establish safe diagnostic evidence first.
 
