@@ -1,41 +1,42 @@
 ## Current Active Task
 
-## Product Task 150 — Validate read-only eighth-note candidate reporting across public fixtures
+## Product Task 152 — Discover staff-position and pitch inference prerequisites
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Context:
-Product Task 148 has only added a read-only candidate-composition boundary for eighth notes. Before semantic inference, we need a validation/reporting step that proves the new `eighth_note_candidate` behaves safely across the existing public fixtures and does not create unwanted candidates in non-eighth-note fixtures.
+The read-only candidate surface is now stable, but pitch inference is a semantic layer. Before implementation, we must discover and document the available evidence and boundary conditions for staff-position and pitch inference.
 
 Goal:
-Validate the newly added read-only `eighth_note_candidate` reporting across existing public fixtures and confirm it appears only where expected.
+Discover what evidence currently exists to support safe future staff-position and pitch inference for read-only note candidates.
 
 Scope:
 - Work in `tticom/score2gp`.
-- Use existing public fixtures only.
-- Run generic `note-candidate-recognition` reporting across public generated staff fixtures.
-- Confirm `eighth_note_candidate` appears in `generated_standard_staff_eighth_notes.pdf`.
-- Confirm `eighth_note_candidate` does not appear in fixtures where only whole, half, quarter, sparse, or unrelated geometry is expected.
-- Add or update tests only where they prove fixture-level reporting stability.
-- Preserve all existing generic outputs.
-- Preserve backward compatibility for `whole-note-recognition`.
-- Produce a concise validation summary in the PR body.
+- Discovery only.
+- Inspect existing staff geometry, staff-line diagnostics, note candidate bboxes, and fixture data.
+- Determine whether notehead centre can be derived safely from existing candidates.
+- Determine whether staff-line positions and staff spacing are available at the required boundary.
+- Determine whether clef assumptions exist or must be explicitly introduced.
+- Determine whether octave and ledger-line handling are in scope or must be deferred.
+- Determine whether accidentals exist in current diagnostics or must be deferred.
+- Determine which public fixtures are sufficient to prove staff-position mapping.
+- Recommend the smallest safe next product task.
 
 Non-goals:
-- Do not infer pitch.
+- Do not implement pitch inference.
 - Do not infer playable rhythm or duration.
 - Do not emit ScoreIR.
 - Do not emit MusicXML.
 - Do not emit Guitar Pro or GP output.
 - Do not add OCR.
 - Do not implement rests.
-- Do not implement full notation recognition.
-- Do not alter extraction heuristics.
-- Do not alter staff-association heuristics.
-- Do not change `eighth_note_candidate` composition logic unless a failing regression proves the current logic is unsafe. If that happens, stop and report instead of broadening scope.
-- Do not add private fixtures, scratch outputs, logs, generated dumps, credentials, or unrelated artifacts.
+- Do not implement accidentals.
+- Do not implement ledger-line handling unless discovery proves it already exists and is safe.
+- Do not change extraction heuristics.
+- Do not change staff-association heuristics.
+- Do not commit private fixtures, scratch outputs, dumps, logs, credentials, or unrelated artifacts.
 
 Next Step:
-Execute Product Task 150 in the `score2gp` repository.
+Execute Product Task 152 in the `score2gp` repository.
