@@ -1,43 +1,56 @@
 # Active Task
 
-**Product Task 158 — Discover clef and pitch-mapping boundary for read-only candidates**
+**Product Task 160 — Add explicit assumed-treble read-only pitch mapping for generated public fixtures**
 
 ## Goal
-Discover what explicit evidence, assumptions, and fixtures are required before read-only pitch inference can be safely implemented.
+Add an explicit opt-in assumed-treble mode that maps existing `staff_position_index` values to read-only pitch names for natural notes within the standard five-line treble staff.
 
 ## Scope
 * Work in `tticom/score2gp`.
-* Discovery only.
-* Inspect current read-only candidate outputs, `staff_position_index`, `staff_geometry`, fixtures, exporter code, and tests.
-* Determine whether any clef evidence is available in the recognition/reporting layer.
-* Determine whether treble clef is explicit, implicit, or absent in fixtures and code.
-* Determine whether a future pitch task should use:
-  * detected clef;
-  * explicit fixture metadata;
-  * a clearly named assumed-clef mode;
-  * or no pitch mapping yet.
-* Determine whether octave mapping can be defined safely from current staff-position indexes.
-* Determine whether ledger-line notes are represented or must be deferred.
-* Determine whether accidentals are represented or must be deferred.
-* Determine whether current public fixtures are sufficient to prove natural treble-clef pitch mapping.
-* Determine the smallest safe next product task.
+* Add an explicitly named opt-in flag or parameter, such as `assume_treble_clef`.
+* The mode must be disabled by default.
+* When disabled, no pitch fields must be emitted.
+* When enabled, map only in-staff `staff_position_index` values `0` through `8`.
+* Use the mapping:
+  * `0` = `F5`
+  * `1` = `E5`
+  * `2` = `D5`
+  * `3` = `C5`
+  * `4` = `B4`
+  * `5` = `A4`
+  * `6` = `G4`
+  * `7` = `F4`
+  * `8` = `E4`
+* Add a clearly named read-only field such as `assumed_treble_pitch`.
+* The field name must make the assumption explicit.
+* Add CLI support to `scripts/note_candidate_recognition_report.py`, for example `--assume-treble-clef`.
+* Add tests proving pitch fields are absent by default.
+* Add tests proving pitch fields appear only when the explicit assumed-treble option is enabled.
+* Add tests proving out-of-range staff positions fail closed and do not receive pitch fields.
+* Add tests proving the exact mapping for generated public fixtures.
+* Preserve existing `staff_position_index`.
+* Preserve existing `staff_geometry`.
+* Preserve all existing generic candidate outputs.
+* Preserve backward compatibility for `whole-note-recognition`.
 
 ## Non-goals
-* Do not implement pitch inference.
-* Do not infer pitch names.
-* Do not infer octave names.
+* Do not implement generic pitch inference.
+* Do not implement clef recognition.
+* Do not infer clef from notation.
+* Do not infer sounding pitch.
+* Do not implement transposition.
+* Do not implement ledger-line pitch mapping.
+* Do not implement accidentals.
+* Do not implement key signatures.
 * Do not infer playable rhythm or duration.
 * Do not emit ScoreIR.
 * Do not emit MusicXML.
 * Do not emit Guitar Pro or GP output.
 * Do not add OCR.
 * Do not implement rests.
-* Do not implement accidentals.
-* Do not implement ledger-line handling.
-* Do not implement clef recognition.
 * Do not change extraction heuristics.
 * Do not change staff-association heuristics.
 * Do not change eighth-note composition logic.
-* Do not change staff-position inference logic.
+* Do not change staff-position inference logic unless a blocker is found; if so, stop and report.
 * Do not expose raw primitives, morphology dumps, clustering internals, or private diagnostic dumps.
 * Do not commit private fixtures, scratch outputs, dumps, logs, credentials, or unrelated artifacts.
