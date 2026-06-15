@@ -1,36 +1,37 @@
 ## Current Active Task
 
-## Product Task 154 — Expose staff geometry in read-only recognition report payload
+## Product Task 156 — Infer read-only note candidate staff positions
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
-Context:
-Governance PR #164 authorised Product Task 152 for discovery. The discovery found that staff geometry exists internally but is discarded before the read-only recognition/report boundary. This blocks safe future staff-position mapping.
-
 Goal:
-Expose staff geometry alongside read-only recognition outcomes so future tasks can map note candidates to staff-line positions.
+Add read-only staff-position information to note candidates by comparing notehead geometry with exposed staff-line coordinates.
 
 Scope:
 - Work in `tticom/score2gp`.
-- Modify the recognition/report payload so staff geometry is available to read-only consumers.
-- Prefer a top-level `staff_geometry` array in the returned report payload, not entries inside `read_only_recognition_outcomes`, because staff geometry is context rather than a note candidate.
-- Include only clean geometric fields:
-  - `page_index`
-  - `system_index`
-  - `staff_index`
-  - `bbox`
-  - `line_y_coords`
-  - `staff_space`, if already available from existing diagnostics without heuristic changes
-- Preserve all existing `read_only_recognition_outcomes`.
+- Use existing `staff_geometry.line_y_coords`.
+- Use existing candidate `page_index`, `system_index`, and `staff_index` join keys.
+- Infer relative staff position only.
+- Add a read-only field such as `staff_position_index` or `staff_position` to note candidates where safe.
+- Staff-position representation must be explicitly non-pitch:
+  - no note names;
+  - no octave names;
+  - no clef assumptions.
+- Prefer a deterministic integer index relative to staff lines/spaces.
+- Handle whole, half, quarter, and eighth candidates.
+- For eighth candidates, use the referenced quarter/notehead component rather than the union bbox where possible.
+- Fail closed if a candidate cannot be safely mapped to staff geometry.
+- Add tests proving staff-position mapping for public standard staff fixtures.
+- Add tests proving unmappable or malformed candidates do not raise and do not receive unsafe positions.
+- Preserve all existing generic candidate outputs.
+- Preserve top-level `staff_geometry`.
 - Preserve backward compatibility for `whole-note-recognition`.
-- Add tests proving `staff_geometry` is exported for public fixtures.
-- Add tests proving note candidates and staff geometry can be joined by `page_index`, `system_index`, and `staff_index`.
 
 Non-goals:
-- Do not implement pitch inference.
-- Do not implement staff-position inference.
+- Do not infer pitch names.
+- Do not infer octave names.
 - Do not infer playable rhythm or duration.
 - Do not emit ScoreIR.
 - Do not emit MusicXML.
@@ -42,9 +43,6 @@ Non-goals:
 - Do not implement clef recognition.
 - Do not change extraction heuristics.
 - Do not change staff-association heuristics.
-- Do not change eighth-note composition logic.
+- Do not change eighth-note composition logic unless a blocker is found; if so, stop and report.
 - Do not expose raw primitives, morphology dumps, clustering internals, or private diagnostic dumps.
 - Do not commit private fixtures, scratch outputs, dumps, logs, credentials, or unrelated artifacts.
-
-Next Step:
-Execute Product Task 154 in the `score2gp` repository.
