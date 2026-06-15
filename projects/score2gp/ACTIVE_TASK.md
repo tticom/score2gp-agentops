@@ -1,48 +1,43 @@
-## Current Active Task
+# Active Task
 
-## Product Task 156 — Infer read-only note candidate staff positions
+**Product Task 158 — Discover clef and pitch-mapping boundary for read-only candidates**
 
-Status: ACTIVE
+## Goal
+Discover what explicit evidence, assumptions, and fixtures are required before read-only pitch inference can be safely implemented.
 
-Owning repo: score2gp
+## Scope
+* Work in `tticom/score2gp`.
+* Discovery only.
+* Inspect current read-only candidate outputs, `staff_position_index`, `staff_geometry`, fixtures, exporter code, and tests.
+* Determine whether any clef evidence is available in the recognition/reporting layer.
+* Determine whether treble clef is explicit, implicit, or absent in fixtures and code.
+* Determine whether a future pitch task should use:
+  * detected clef;
+  * explicit fixture metadata;
+  * a clearly named assumed-clef mode;
+  * or no pitch mapping yet.
+* Determine whether octave mapping can be defined safely from current staff-position indexes.
+* Determine whether ledger-line notes are represented or must be deferred.
+* Determine whether accidentals are represented or must be deferred.
+* Determine whether current public fixtures are sufficient to prove natural treble-clef pitch mapping.
+* Determine the smallest safe next product task.
 
-Goal:
-Add read-only staff-position information to note candidates by comparing notehead geometry with exposed staff-line coordinates.
-
-Scope:
-- Work in `tticom/score2gp`.
-- Use existing `staff_geometry.line_y_coords`.
-- Use existing candidate `page_index`, `system_index`, and `staff_index` join keys.
-- Infer relative staff position only.
-- Add a read-only field such as `staff_position_index` or `staff_position` to note candidates where safe.
-- Staff-position representation must be explicitly non-pitch:
-  - no note names;
-  - no octave names;
-  - no clef assumptions.
-- Prefer a deterministic integer index relative to staff lines/spaces.
-- Handle whole, half, quarter, and eighth candidates.
-- For eighth candidates, use the referenced quarter/notehead component rather than the union bbox where possible.
-- Fail closed if a candidate cannot be safely mapped to staff geometry.
-- Add tests proving staff-position mapping for public standard staff fixtures.
-- Add tests proving unmappable or malformed candidates do not raise and do not receive unsafe positions.
-- Preserve all existing generic candidate outputs.
-- Preserve top-level `staff_geometry`.
-- Preserve backward compatibility for `whole-note-recognition`.
-
-Non-goals:
-- Do not infer pitch names.
-- Do not infer octave names.
-- Do not infer playable rhythm or duration.
-- Do not emit ScoreIR.
-- Do not emit MusicXML.
-- Do not emit Guitar Pro or GP output.
-- Do not add OCR.
-- Do not implement rests.
-- Do not implement accidentals.
-- Do not implement ledger-line handling.
-- Do not implement clef recognition.
-- Do not change extraction heuristics.
-- Do not change staff-association heuristics.
-- Do not change eighth-note composition logic unless a blocker is found; if so, stop and report.
-- Do not expose raw primitives, morphology dumps, clustering internals, or private diagnostic dumps.
-- Do not commit private fixtures, scratch outputs, dumps, logs, credentials, or unrelated artifacts.
+## Non-goals
+* Do not implement pitch inference.
+* Do not infer pitch names.
+* Do not infer octave names.
+* Do not infer playable rhythm or duration.
+* Do not emit ScoreIR.
+* Do not emit MusicXML.
+* Do not emit Guitar Pro or GP output.
+* Do not add OCR.
+* Do not implement rests.
+* Do not implement accidentals.
+* Do not implement ledger-line handling.
+* Do not implement clef recognition.
+* Do not change extraction heuristics.
+* Do not change staff-association heuristics.
+* Do not change eighth-note composition logic.
+* Do not change staff-position inference logic.
+* Do not expose raw primitives, morphology dumps, clustering internals, or private diagnostic dumps.
+* Do not commit private fixtures, scratch outputs, dumps, logs, credentials, or unrelated artifacts.
