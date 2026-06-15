@@ -1,21 +1,29 @@
-# Active Task
+# Active Product Task
 
-**Product Task 161 — Discover and design read-only ledger-line candidate boundary**
+## Product Task 162 — Implement read-only ledger-line candidate extraction
 
-## Context
-Product Task 160 successfully introduced an opt-in assumed-treble pitch mapping, but it strictly omits pitches for `staff_position_index` values less than 0 or greater than 8.
-To support full pitch inference for the assumed-treble boundary, we must next resolve how to map ledger lines. However, our discovery in Task 158 highlighted that ledger-line primitives are not currently passed to the semantic candidate boundary.
+### Scope
+- Work in `tticom/score2gp`.
+- Implement read-only `ledger_line_candidate` extraction from existing diagnostic evidence.
+- Use `docs/design/read-only-ledger-line-candidate-boundary.md` as the controlling design.
+- Emit `ledger_line_candidate` objects in the read-only recognition/reporting boundary.
+- Add or update public generated fixtures only if required and safe.
+- Add tests proving ledger-line candidates are emitted.
+- Add tests proving a promoted ledger-line primitive is not also emitted as `beam_candidate`.
+- Add tests proving eighth-note composition is not changed by ledger-line promotion.
+- Preserve existing `staff_position_index`.
+- Preserve existing `assumed_treble_pitch` behaviour.
+- Preserve existing whole-note compatibility.
+- Preserve default CLI/report behaviour except for the newly authorised read-only candidate exposure.
 
-## Goal
-This is a discovery and design task. Determine how ledger lines exist within the raster diagnostic output, if and how they can be semantically attached to note candidates (as modifiers or independent positional evidence), and propose a design for a `ledger_line_candidate` output boundary.
-
-## Scope
-* Inspect `src/score2gp/pdf_raster_staff_diagnostics.py` and clustering primitives to find ledger-line heuristics.
-* Determine whether ledger lines should be treated as properties of note candidates or separate generic candidates.
-* Explore test fixtures to see if ledger lines appear in unboxed diagnostic dumps.
-* Create a detailed design document in the product repository `tticom/score2gp`, under an appropriate documentation or research directory (e.g. `docs/design/` or similar). Do NOT create it in `tticom/score2gp-agentops`.
-
-## Non-goals
-* Do NOT implement ledger-line extraction.
-* Do NOT update pitch mapping logic.
-* Do NOT commit private fixtures, scratch outputs, dumps, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
+### Non-Goals
+- Do not implement pitch inference.
+- Do not implement ledger-line pitch mapping.
+- Do not alter `staff_position_index` logic.
+- Do not alter assumed-treble mapping.
+- Do not implement clef recognition.
+- Do not implement accidentals.
+- Do not implement key signatures.
+- Do not implement rhythm inference.
+- Do not emit ScoreIR, MusicXML, Guitar Pro, GP output, OCR, or rests.
+- Do not commit private fixtures, diagnostic dumps, scratch JSON, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
