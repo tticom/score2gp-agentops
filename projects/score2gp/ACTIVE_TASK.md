@@ -13,7 +13,7 @@ This is a discovery and design task. Determine how ledger lines exist within the
 * Inspect `src/score2gp/pdf_raster_staff_diagnostics.py` and clustering primitives to find ledger-line heuristics.
 * Determine whether ledger lines should be treated as properties of note candidates or separate generic candidates.
 * Explore test fixtures to see if ledger lines appear in unboxed diagnostic dumps.
-* Create a detailed design document under `projects/score2gp/research/`.
+* Create a detailed design document in the product repository `tticom/score2gp`, under an appropriate documentation or research directory (e.g. `docs/design/` or similar). Do NOT create it in `tticom/score2gp-agentops`.
 
 ## Non-goals
 * Do NOT implement ledger-line extraction.

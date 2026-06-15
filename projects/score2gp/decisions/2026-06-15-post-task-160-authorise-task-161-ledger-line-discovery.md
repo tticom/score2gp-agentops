@@ -53,4 +53,4 @@ pytest tests/test_note_candidate_recognition_cli.py tests/test_note_candidate_re
 Product Task 161 is authorised.
 
 **Product Task 161 is discovery and design only.**
-It must explore `pdf_raster_staff_diagnostics.py`, determine how ledger-line primitives exist in current unboxed diagnostics, and propose a semantic boundary. It must not implement extraction or update pitch mapping logic.
+It must explore `pdf_raster_staff_diagnostics.py`, determine how ledger-line primitives exist in current unboxed diagnostics, and propose a semantic boundary. It must produce a design document in the product repository `tticom/score2gp` (e.g., `docs/design/`), not in the governance repository. It must not implement extraction or update pitch mapping logic.
