@@ -16,6 +16,9 @@
 - Do not implement new visual clef recognition.
 - Do not guess treble clef globally.
 - Do not use `assume_treble_clef` as visual clef evidence.
+- Do not infer clef from pitch outcomes.
+- Do not infer clef from note positions.
+- Do not infer clef from ledger-line placement.
 - Do not wire `map_clef_resolved_staff_pitch(...)` into the main pipeline unless deterministic explicit clef evidence is actually bridged and the task boundary clearly permits it.
 - Do not implement pitch inference, accidentals, key signatures, rhythm inference, or rests.
 - Do not alter existing note-candidate extraction, ledger-line extraction, or ledger-line grouping heuristics.
