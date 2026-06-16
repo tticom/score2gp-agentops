@@ -18,8 +18,16 @@
   - pitch out of supported range;
   - zero or low `clef_resolved_staff_pitch` coverage.
 - Produce a concise diagnostic findings report that recommends the next smallest safe product task.
-- If a committed report file is useful, it must contain only safe aggregate data and no private filenames, copyrighted source names, raw OCR dumps, private fixture paths, or sensitive data.
-- If committing any diagnostic report is unsafe, the product agent must report the findings in the PR body only and not commit the report artifact.
+- Produce a safe committed aggregate report file for Task 170. For example: `reports/clef_resolved_pitch_coverage/2026-06-16-authorised-fixture-summary.md`.
+- The report must contain only safe aggregate data:
+  - no private fixture filenames;
+  - no private paths;
+  - no copyrighted source names;
+  - no raw OCR or diagnostic dumps;
+  - no screenshots;
+  - no PDFs or images;
+  - no GP files;
+  - no sensitive data.
 - Prefer using existing report paths or small wrapper scripts/options.
 
 ### Non-Goals
@@ -78,7 +86,11 @@ Stop and report instead of continuing if:
 - You would need to commit private fixtures, diagnostic dumps, scratch JSON, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
 
 ### Commit and PR requirements
-- Commit only intentional product files (e.g. a small summary script or test update).
+- The product PR must include either:
+  1. a safe aggregate report file, or
+  2. a small reporting/script/test change plus findings in the PR body.
+- Do not submit a PR with no product file changes.
+- Commit only intentional product files (e.g. a small summary script, test update, or safe aggregate report).
 - Push the feature branch.
 - Open a product PR against `main`.
 - The PR body must include:

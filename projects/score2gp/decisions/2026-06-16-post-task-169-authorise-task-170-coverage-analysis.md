@@ -14,7 +14,7 @@ The next necessary action is to understand where the current clef evidence cover
 
 We authorise Product Task 170 to execute this diagnostic analysis. 
 
-Product Task 170 will run the newly built `clef_resolved_pitch_coverage` report against the authorized fixtures and document the findings. It will NOT alter pitch-mapping logic. The sole outcome will be a diagnostic findings summary that points clearly to the next most impactful recognition task (e.g. bridging missing clef candidates, relaxing ledger line strictness, etc.).
+Product Task 170 will run the newly built `clef_resolved_pitch_coverage` report against the authorized fixtures and document the findings. It will NOT alter pitch-mapping logic. The sole outcome will be a committed safe aggregate diagnostic report (e.g. `reports/clef_resolved_pitch_coverage/2026-06-16-authorised-fixture-summary.md`) that points clearly to the next most impactful recognition task (e.g. bridging missing clef candidates, relaxing ledger line strictness, etc.). This ensures there is a permitted file change executable path for the product PR.
 
 ## Consequences
 
