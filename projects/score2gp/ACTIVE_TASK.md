@@ -10,10 +10,10 @@ git status --short
 git branch --show-current
 git fetch --all --prune
 git log --oneline --decorate --graph --max-count=20
-gh pr view 179 --repo tticom/score2gp-agentops --json state,mergedAt,mergeCommit,headRefOid,baseRefName,isDraft,title,url,changedFiles
+gh pr view 180 --repo tticom/score2gp-agentops --json state,mergedAt,mergeCommit,headRefOid,baseRefName,isDraft,title,url,changedFiles
 gh pr view 290 --repo tticom/score2gp --json state,mergedAt,mergeCommit,headRefOid,baseRefName,isDraft,title,url,changedFiles
 ```
-You MUST verify Governance PR #179 and Product PR #290 are merged before changing code. Verify the working tree is clean.
+You MUST verify Governance PR #180 and Product PR #290 are merged before changing code. Verify the working tree is clean.
 
 ## Investigation Guidance
 Inspect the current product repository before changing code. Do not hard-code file assumptions. Likely areas include:
@@ -64,7 +64,7 @@ Run and report the exact commands and results for:
 * `git ls-files | grep -Ei "(private|scratch|dump|log|\.pdf$|\.gp$|\.png$|\.jpg$|\.jpeg$|\.json$)" || true`
 
 ## Acceptance Criteria
-1. Governance PR #179 is verified merged before implementation.
+1. Governance PR #180 is verified merged before implementation.
 2. Product PR #290 is verified merged before implementation.
 3. Existing left-margin primitive evidence is located and described.
 4. A conservative logical clef candidate extractor/classifier is added.
@@ -79,7 +79,7 @@ Run and report the exact commands and results for:
 13. A product PR is opened with complete evidence.
 
 ## Stop Conditions (Halt and Report if encountered)
-* Governance PR #179 is not merged.
+* Governance PR #180 is not merged.
 * Product PR #290 is not merged.
 * The working tree is dirty before changes and the dirt is unrelated.
 * `LeftMarginPrimitiveCandidate` or equivalent left-margin primitive evidence cannot be located.
@@ -98,7 +98,7 @@ Run and report the exact commands and results for:
 * Open a product PR against `main`.
 * Include in the PR body:
   * Task summary.
-  * Governance PR #179 prerequisite verification.
+  * Governance PR #180 prerequisite verification.
   * Product PR #290 prerequisite verification.
   * Implementation summary.
   * Exact files changed.
@@ -116,7 +116,7 @@ You must report back with:
 * Product PR link.
 * Full head SHA.
 * Exact files changed.
-* Governance PR #179 verification result.
+* Governance PR #180 verification result.
 * Product PR #290 verification result.
 * Located left-margin primitive evidence summary.
 * Logical clef candidate extraction/classification summary.
