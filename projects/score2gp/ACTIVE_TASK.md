@@ -95,3 +95,19 @@ Run and report the exact commands and results for:
   * Behavioural confirmations.
   * Known limitations.
 * Do NOT merge the product PR.
+
+## Reporting Format
+You must report back with:
+* Branch name.
+* Product PR link.
+* Full head SHA.
+* Exact files changed.
+* Product PR #290 prerequisite verification result.
+* Located logical clef evidence summary, or stop-condition reason.
+* Implementation summary.
+* Coverage improvement evidence.
+* Validation commands and results.
+* Privacy/artifact hygiene result.
+* Behavioural confirmations.
+* Known limitations.
+* Suggested next action.
