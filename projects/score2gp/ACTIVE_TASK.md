@@ -1,36 +1,34 @@
 # Active Product Task
 
-## Product Task 169 — Add clef-resolved pitch quality report for public fixtures
+## Product Task 170 — Run clef-resolved pitch coverage report across authorised fixture corpus and record quality findings
 
 ### Scope
 - Work in `tticom/score2gp`.
-- Add a read-only quality/coverage report for `clef_resolved_staff_pitch` over authorised public fixtures and/or existing public diagnostic outputs.
-- Reuse existing note-candidate recognition/reporting paths where possible.
-- The report should count, at minimum:
-  - total note candidates in scope;
-  - note candidates with `staff_position_index`;
-  - note candidates on staves with valid `treble_clef_candidate` evidence;
-  - note candidates with `clef_resolved_staff_pitch`;
-  - in-staff mapped notes;
-  - out-of-staff mapped notes;
-  - out-of-staff notes missing required ledger support;
-  - notes skipped because clef evidence was missing;
-  - notes skipped because clef evidence was ambiguous;
-  - notes skipped because staff association was malformed;
-  - notes skipped because staff position was malformed.
-- The report should include enough sample detail to diagnose failures without dumping private data.
-- If existing public fixtures do not currently produce `clef_resolved_staff_pitch`, the report should still fail closed and report zero coverage honestly.
-- Preserve existing note extraction, ledger-line extraction, duplicate beam/ledger suppression, `staff_position_index`, `attached_ledger_line_candidate_ids`, clef candidate evidence extraction, `map_clef_resolved_staff_pitch(...)`, and `assumed_treble_pitch` behaviour.
+- Product Task 170 should be a read-only diagnostic analysis task. It should run or extend the new `clef_resolved_pitch_coverage` report over authorised fixtures and/or existing diagnostic outputs to identify where clef-resolved pitch mapping is succeeding, failing, or being skipped. The goal is to produce evidence for the next smallest recognition-improvement task, not to change recognition heuristics yet.
+- Use the existing `clef_resolved_pitch_coverage` report added by Product Task 169.
+- Run the report against authorised public fixtures and existing safe diagnostic outputs.
+- Private fixtures may be used only if they are already authorised for local testing and are not newly committed.
+- Summarise coverage and skip reasons.
+- Identify the dominant blockers:
+  - missing clef evidence;
+  - ambiguous clef evidence;
+  - malformed staff association;
+  - malformed staff position;
+  - missing ledger support;
+  - pitch out of supported range;
+  - zero or low `clef_resolved_staff_pitch` coverage.
+- Produce a concise diagnostic findings report that recommends the next smallest safe product task.
+- If a committed report file is useful, it must contain only safe aggregate data and no private filenames, copyrighted source names, raw OCR dumps, private fixture paths, or sensitive data.
+- If committing any diagnostic report is unsafe, the product agent must report the findings in the PR body only and not commit the report artifact.
+- Prefer using existing report paths or small wrapper scripts/options.
 
 ### Non-Goals
-- Do not declare `clef_resolved_staff_pitch` canonical.
-- Do not implement accidentals, key signatures, rhythm inference, ScoreIR, MusicXML, Guitar Pro or GP output, OCR, or rests.
-- Do not implement new visual clef recognition.
-- Do not guess treble clef globally.
-- Do not use `assume_treble_clef` as visual clef evidence.
-- Do not infer clef from pitch outcomes, note positions, or ledger-line placement.
-- Do not alter existing note-candidate extraction, ledger-line extraction, ledger-line grouping (unless blocked), or raster clef detection (unless blocked).
-- Do not commit private fixtures, diagnostic dumps, scratch JSON, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
+- Do not change recognition behaviour.
+- Do not change pitch mapping semantics.
+- Do not add or commit private PDFs, private diagnostic dumps, screenshots, logs, scratch JSON, GP files, images, or unrelated artifacts.
+- Do not implement new clef detection.
+- Do not implement canonical pitch adoption.
+- Do not implement ScoreIR, MusicXML, Guitar Pro output, rhythm, accidentals, key signatures, rests, or OCR.
 
 ### Required Pre-flight Checks
 Run these before making changes:
@@ -41,21 +39,12 @@ Run these before making changes:
     git pull --ff-only
     git log --oneline --decorate --graph --max-count=20
 
-Also verify that the governance PR authorising Product Task 169 is merged before making product changes.
+Also verify that the governance PR authorising Product Task 170 is merged before making product changes.
 
 ### Required Tests
 Add or update tests proving:
-- The quality report counts total in-scope note candidates.
-- The quality report counts notes with `clef_resolved_staff_pitch`.
-- The quality report separates in-staff and out-of-staff mapped notes.
-- The quality report records notes skipped because clef evidence is missing.
-- The quality report records notes skipped because clef evidence is ambiguous.
-- The quality report records notes skipped because staff association is malformed.
-- The quality report records notes skipped because staff position is malformed.
-- The quality report records out-of-staff notes missing required ledger support.
-- The report handles empty outcomes safely.
-- The report handles malformed outcomes safely.
-- Existing `clef_resolved_staff_pitch` mapping, `assumed_treble_pitch`, `staff_position_index`, `attached_ledger_line_candidate_ids`, clef evidence extraction, Task 167 raster clef bridge, and whole-note recognition compatibility remain unchanged.
+- Any script/reporting extension added remains testable and functionally correct on safe data.
+- Existing features, reporting paths, and whole-note compatibility remain unchanged.
 
 ### Validation
 Run focused tests covering raster bridge, note-candidate reporting, CLI output, and whole-note compatibility. At minimum:
@@ -69,47 +58,38 @@ Run focused tests covering raster bridge, note-candidate reporting, CLI output, 
 If tracked public fixture JSON files appear in `git ls-files`, explain whether they are pre-existing and whether this task changed them. Do not add new private or unrelated artifacts.
 
 ### Acceptance Criteria
-- A deterministic read-only quality report exists for `clef_resolved_staff_pitch`.
-- The report measures coverage and skip reasons without changing recognition semantics.
-- The report works on synthetic unit data and/or authorised public fixtures.
-- The task does not declare `clef_resolved_staff_pitch` canonical.
+- A diagnostic run or report is executed across the authorised corpus.
+- The dominant blockers for `clef_resolved_staff_pitch` mapping are identified and quantified.
+- A concise summary recommends the next smallest safe product task based on empirical findings.
+- No product logic or mapping semantics are modified.
 - The task does not emit playable output.
-- The task does not guess clef context.
 - Existing recognition behaviour is preserved.
 - Focused tests pass.
 - Hygiene checks pass.
-- PR body records exact commands, results, files changed, branch name, full head SHA, and known limitations.
+- PR body records exact commands, results, files changed, branch name, full head SHA, the findings summary, and the recommendation for the next task.
 
 ### Stop conditions
 Stop and report instead of continuing if:
-- Governance authorisation for Product Task 169 is not merged.
+- Governance authorisation for Product Task 170 is not merged.
+- Running the report across the corpus produces unexpected exceptions or exposes malformed states that block aggregate counts.
 - Existing tests fail before your changes in a way that prevents clean attribution.
-- Accurate quality reporting requires private fixtures or unapproved artifacts.
-- Correct implementation requires canonical pitch adoption.
-- Correct implementation requires accidentals, key signatures, rhythm inference, ScoreIR, MusicXML, GP output, OCR, or rests.
-- Required evidence is ambiguous or missing.
+- Safe reporting requires committing private fixtures or unapproved artifacts.
+- The diagnostic results are ambiguous or uniformly zero and no clear next step can be recommended.
 - You would need to commit private fixtures, diagnostic dumps, scratch JSON, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
-- You cannot produce a small, reviewable increment.
 
 ### Commit and PR requirements
-- Commit only intentional product files.
+- Commit only intentional product files (e.g. a small summary script or test update).
 - Push the feature branch.
 - Open a product PR against `main`.
 - The PR body must include:
-  - Product Task 169 summary.
+  - Product Task 170 summary.
   - Governance PR verification result.
-  - Exact files changed.
-  - Report fields and boundary.
+  - Exact files changed (if any).
+  - Diagnostic findings and dominant blockers.
+  - Recommendation for the next product task.
   - Validation commands and results.
   - Privacy/artifact hygiene result.
-  - Confirmation that Task 162 behaviour remains unchanged.
-  - Confirmation that Task 164 behaviour remains unchanged.
-  - Confirmation that Product Task 165 helper behaviour remains unchanged.
-  - Confirmation that Product Task 166 clef evidence boundary remains unchanged.
-  - Confirmation that Product Task 167 raster clef bridge remains unchanged.
-  - Confirmation that Product Task 168 mapping behaviour remains unchanged.
-  - Confirmation that no canonical pitch adoption or playable output was introduced.
-  - Known limitations.
+  - Confirmation that no canonical pitch adoption, mapping changes, or playable output were introduced.
 
 ### Reporting format
 Return:
@@ -117,16 +97,10 @@ Return:
 - Product PR link.
 - Full head SHA.
 - Exact files changed.
-- Summary of implementation or blocker found.
-- Report fields and boundary.
+- Summary of diagnostic execution.
+- Key findings and identified blockers.
+- Recommended next smallest product task.
 - Validation commands and results.
 - Privacy/artifact hygiene result.
-- Confirmation that Task 162 behaviour remains unchanged.
-- Confirmation that Task 164 behaviour remains unchanged.
-- Confirmation that Product Task 165 helper behaviour remains unchanged.
-- Confirmation that Product Task 166 boundary behaviour remains unchanged.
-- Confirmation that Product Task 167 bridge behaviour remains unchanged.
-- Confirmation that Product Task 168 mapping behaviour remains unchanged.
-- Confirmation that no canonical pitch adoption or playable output was introduced.
+- Confirmation that no canonical pitch adoption or mapping changes were introduced.
 - Known limitations.
-- Suggested next task.
