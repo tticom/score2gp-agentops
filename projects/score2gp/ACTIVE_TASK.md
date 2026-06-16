@@ -122,6 +122,6 @@ You must report back with:
 * Logical clef candidate extraction/classification summary.
 * Validation commands and results.
 * Privacy/artifact hygiene result.
-* Behavioural confirmations. 
-* Known limitations. 
-* Suggested next action. 
+* Behavioural confirmations.
+* Known limitations.
+* Suggested next action.
