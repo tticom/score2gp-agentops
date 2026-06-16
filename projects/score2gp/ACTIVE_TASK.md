@@ -1,19 +1,21 @@
 # Active Product Task
 
-## Product Task 165 — Map logical staff pitches using clef and ledger-line grouping
+## Product Task 166 — Introduce deterministic read-only clef candidate evidence
 
 ### Scope
 - Work in `tticom/score2gp`.
-- Add deterministic, read-only logical pitch mapping for `whole_note_candidate`, `half_note_candidate`, `quarter_note_candidate`, and `eighth_note_candidate`.
-- Use existing `staff_position_index` and `attached_ledger_line_candidate_ids` to support mapping.
-- Only map logical staff pitches for candidates where clef context is explicit, deterministic, and available.
-- If no explicit clef context exists, stop and report the blocker. Do not guess treble clef globally unless an existing `assume_treble_clef` pathway already applies.
-- Only assign pitch when required evidence is present. In-staff notes may be pitch-mapped only when clef context is explicit. Out-of-staff notes require explicit clef context AND valid ledger-line support.
-- The new read-only field should clearly distinguish deterministic mapping, e.g., `logical_staff_pitch` or `clef_resolved_staff_pitch`.
-- Fail closed if clef context is missing/ambiguous, staff position is malformed, or required ledger-line support for out-of-staff notes is missing.
+- Inspect existing staff, page, system, and recognition diagnostics before changing anything.
+- Determine whether there is already deterministic treble-clef evidence available in the product data.
+- If deterministic clef evidence exists, expose it as read-only candidate evidence in standard note-candidate recognition output (e.g., `clef_candidate` or similar).
+- Associate clef evidence to page/system/staff only when the association is deterministic.
+- Fail closed when clef evidence is missing, ambiguous, malformed, unsupported, or inferred only by guesswork.
+- If no deterministic existing clef evidence is available, implement the smallest safe diagnostic/preparatory boundary and stop before guessing.
 
 ### Non-Goals
-- Do not implement clef recognition or guess clef from visual symbols (unless separately authorised).
+- Do not implement full clef recognition unless deterministic existing evidence already supports it.
+- Do not guess treble clef globally.
+- Do not wire `map_clef_resolved_staff_pitch()` into the main pipeline unless explicit clef evidence is deterministic and the governance-authorised boundary clearly permits it.
+- Do not implement pitch inference.
 - Do not implement accidentals, key signatures, rhythm inference, or rests.
 - Do not alter existing note-candidate extraction, ledger-line extraction, or ledger-line grouping heuristics (unless a blocker is reported).
 - Do not emit ScoreIR, MusicXML, or Guitar Pro output.
