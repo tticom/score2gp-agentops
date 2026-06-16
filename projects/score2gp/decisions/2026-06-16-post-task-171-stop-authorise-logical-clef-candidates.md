@@ -2,10 +2,26 @@
 
 ## Context
 Product Task 171 was authorised by Governance PR #179.
-Governance PR #179 is merged (`318c9b1d8da9608febbfe74063df1e5710ba2f02`).
-Product PR #290 was verified merged (`3cba9263718181fa11b1123b4b25f72484f7003a`).
+Governance PR #179 is merged.
 
-The product agent attempted Product Task 171 on branch `feature/task-171-logical-clef-bridge-v0.1` but correctly halted and reported a stop condition. No product PR was opened, and no product files were changed.
+Live Governance PR #179 Verification:
+* **URL:** https://github.com/tticom/score2gp-agentops/pull/179
+* **State:** MERGED
+* **Merge Commit:** `eea48140e53a327c3338c809b7a38286609f222f`
+* **Merged At:** `2026-06-16T19:52:06Z`
+* **Head SHA:** `318c9b1d8da9608febbfe74063df1e5710ba2f02`
+* **Changed Files:** `2`
+
+Live Product PR #290 Verification:
+* **URL:** https://github.com/tticom/score2gp/pull/290
+* **State:** MERGED
+* **Merge Commit:** `20f8cc8c3b47ec26139a29e3f133db6c6a577759`
+* **Merged At:** `2026-06-16T17:52:08Z`
+* **Head SHA:** `3cba9263718181fa11b1123b4b25f72484f7003a`
+* **Changed Files:** `3`
+
+The product agent attempted Product Task 171 on branch `feature/task-171-logical-clef-bridge-v0.1` but correctly halted and reported a stop condition.
+* **No Product PR Verification:** `gh pr list --repo tticom/score2gp --head feature/task-171-logical-clef-bridge-v0.1` returned empty. No product PR was opened, and no product files were changed.
 
 ## Product Task 171 Stop Summary
 The product agent hit the authorised stop condition: "Existing logical clef candidate evidence cannot be located."
