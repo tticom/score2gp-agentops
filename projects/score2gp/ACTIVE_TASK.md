@@ -1,118 +1,113 @@
-# Active Product Task
+# ACTIVE TASK: Product Task 171
 
-## Product Task 170 — Run clef-resolved pitch coverage report across authorised fixture corpus and record quality findings
+**Repository:** `tticom/score2gp`
+**Goal:** Bridge logical clef candidate evidence into clef-resolved pitch mapping for generated public fixtures.
 
-### Scope
-- Work in `tticom/score2gp`.
-- Product Task 170 should be a read-only diagnostic analysis task. It should run or extend the new `clef_resolved_pitch_coverage` report over authorised fixtures and/or existing diagnostic outputs to identify where clef-resolved pitch mapping is succeeding, failing, or being skipped. The goal is to produce evidence for the next smallest recognition-improvement task, not to change recognition heuristics yet.
-- Use the existing `clef_resolved_pitch_coverage` report added by Product Task 169.
-- Run the report against authorised public fixtures and existing safe diagnostic outputs.
-- Private fixtures may be used only if they are already authorised for local testing and are not newly committed.
-- Summarise coverage and skip reasons.
-- Identify the dominant blockers:
-  - missing clef evidence;
-  - ambiguous clef evidence;
-  - malformed staff association;
-  - malformed staff position;
-  - missing ledger support;
-  - pitch out of supported range;
-  - zero or low `clef_resolved_staff_pitch` coverage.
-- Produce a concise diagnostic findings report that recommends the next smallest safe product task.
-- Produce a safe committed aggregate report file for Task 170. For example: `reports/clef_resolved_pitch_coverage/2026-06-16-authorised-fixture-summary.md`.
-- The report must contain only safe aggregate data:
-  - no private fixture filenames;
-  - no private paths;
-  - no copyrighted source names;
-  - no raw OCR or diagnostic dumps;
-  - no screenshots;
-  - no PDFs or images;
-  - no GP files;
-  - no sensitive data.
-- Prefer using existing report paths or small wrapper scripts/options.
+## Pre-flight Checks
+Run and report the results of:
+```bash
+git status --short
+git branch --show-current
+git fetch --all --prune
+git log --oneline --decorate --graph --max-count=20
+gh pr view 290 --repo tticom/score2gp --json state,mergedAt,mergeCommit,headRefOid,baseRefName,isDraft,title,url,changedFiles
+```
+You MUST verify Product PR #290 is merged before changing code.
 
-### Non-Goals
-- Do not change recognition behaviour.
-- Do not change pitch mapping semantics.
-- Do not add or commit private PDFs, private diagnostic dumps, screenshots, logs, scratch JSON, GP files, images, or unrelated artifacts.
-- Do not implement new clef detection.
-- Do not implement canonical pitch adoption.
-- Do not implement ScoreIR, MusicXML, Guitar Pro output, rhythm, accidentals, key signatures, rests, or OCR.
+## Investigation Requirements
+Inspect the current product repository state before implementing. Do not assume exact file locations without checking. Likely areas include:
+* clef candidate diagnostics or recogniser output
+* staff diagnostics models
+* note candidate recognition/reporting code
+* `clef_resolved_staff_pitch` production/consumption boundary
+* Task 170 coverage analysis script and tests
+* tests around note candidate recognition, whole-note recognition, and pitch mapping
 
-### Required Pre-flight Checks
-Run these before making changes:
-    git status --short
-    git branch --show-current
-    git fetch --all --prune
-    git checkout main
-    git pull --ff-only
-    git log --oneline --decorate --graph --max-count=20
+## Scope and Instructions
+* Verify where logical clef candidate evidence is produced.
+* Verify where `clef_resolved_staff_pitch` obtains clef evidence.
+* Use existing logical clef candidate evidence already produced by the pipeline, if present.
+* Bridge safe, deterministic logical clef candidate evidence into the clef evidence boundary used by `clef_resolved_staff_pitch`.
+* Target the missing-clef blocker identified by Product Task 170.
+* Preserve strict clef evidence policy.
+* Preserve existing `assumed_treble_pitch`.
+* Preserve existing `clef_resolved_staff_pitch` semantics.
+* Preserve the diagnostic-only/reporting boundary.
+* Add or update tests proving missing-clef coverage improves on authorised generated public fixtures or synthetic data.
+* Re-run focused regression tests.
 
-Also verify that the governance PR authorising Product Task 170 is merged before making product changes.
+## Non-Goals (DO NOT IMPLEMENT)
+* Do not declare `clef_resolved_staff_pitch` canonical.
+* Do not implement playable output, ScoreIR, MusicXML, GP output, rhythm, accidentals, key signatures, rests, or OCR.
+* Do not implement broad new visual clef recognition unless governance explicitly authorises it later.
+* Do not guess treble clef globally.
+* Do not use `assume_treble_clef` as visual clef evidence.
+* Do not infer clef from pitch outcomes, note positions, or ledger-line placement.
+* Do not commit private fixtures, private diagnostics, screenshots, logs, scratch JSON, PDFs, images, GP files, credentials, or generated dumps.
 
-### Required Tests
-Add or update tests proving:
-- Any script/reporting extension added remains testable and functionally correct on safe data.
-- Existing features, reporting paths, and whole-note compatibility remain unchanged.
+## Validation Requirements
+Run and report the exact commands and results for:
+* Focused tests for the changed implementation files
+* Focused tests for Task 170 coverage analysis, if the script/report boundary is touched or used as validation
+* Relevant note-candidate / clef-resolved pitch regression tests
+* `git diff --check`
+* `git status --short`
+* Privacy/artifact checks
 
-### Validation
-Run focused tests covering raster bridge, note-candidate reporting, CLI output, and whole-note compatibility. At minimum:
-    pytest tests/test_raster_treble_clef_bridge.py tests/test_note_candidate_recognition_report.py tests/test_note_candidate_recognition_cli.py tests/test_whole_note_recognition_cli.py
-    git diff --check
-    git diff --stat
-    git status --short
-    git status --ignored
-    git ls-files | grep -Ei "(private|scratch|dump|log|\.pdf$|\.gp$|\.png$|\.jpg$|\.jpeg$|\.json$)" || true
+## Acceptance Criteria
+1. Product PR #290 is verified merged before implementation.
+2. Existing logical clef candidate evidence is located and described, or the agent stops and reports that it is not present.
+3. The bridge uses deterministic clef evidence only.
+4. The strict clef evidence policy is preserved.
+5. `assumed_treble_pitch` remains preserved and is not treated as visual clef evidence.
+6. `clef_resolved_staff_pitch` semantics remain preserved.
+7. Missing-clef coverage improves on authorised generated public fixtures or a justified synthetic fixture/test proves the bridge.
+8. No canonical pitch adoption or playable output is introduced.
+9. Focused regression tests pass.
+10. No private or unsafe artifacts are committed.
+11. A product PR is opened with complete evidence.
 
-If tracked public fixture JSON files appear in `git ls-files`, explain whether they are pre-existing and whether this task changed them. Do not add new private or unrelated artifacts.
+## Stop Conditions (Halt and Report if encountered)
+* Product PR #290 is not merged.
+* The working tree is dirty before changes and the dirt is unrelated.
+* Existing logical clef candidate evidence cannot be located.
+* The only available route requires guessing treble clef globally.
+* The only available route uses `assume_treble_clef` as visual clef evidence.
+* The only available route infers clef from pitch outcomes, note positions, or ledger-line placement.
+* The task would require broad new visual clef recognition.
+* The task would require private fixtures or unsafe artifacts.
+* The task would require implementing playable output, ScoreIR, MusicXML, GP output, rhythm, accidentals, key signatures, rests, or OCR.
+* Tests fail in a way the agent cannot explain or isolate.
+* Requirements conflict with the verified repository state.
 
-### Acceptance Criteria
-- A diagnostic run or report is executed across the authorised corpus.
-- The dominant blockers for `clef_resolved_staff_pitch` mapping are identified and quantified.
-- A concise summary recommends the next smallest safe product task based on empirical findings.
-- No product logic or mapping semantics are modified.
-- The task does not emit playable output.
-- Existing recognition behaviour is preserved.
-- Focused tests pass.
-- Hygiene checks pass.
-- PR body records exact commands, results, files changed, branch name, full head SHA, the findings summary, and the recommendation for the next task.
+## Commit and PR Requirements
+* Work on a short-lived feature branch.
+* Commit only intentional product changes.
+* Open a product PR against `main`.
+* Include in the PR body:
+  * Task summary.
+  * Product PR #290 prerequisite verification.
+  * Implementation summary.
+  * Exact files changed.
+  * Tests run and results.
+  * Coverage improvement evidence.
+  * Safety and privacy/artifact hygiene result.
+  * Behavioural confirmations.
+  * Known limitations.
+* Do NOT merge the product PR.
 
-### Stop conditions
-Stop and report instead of continuing if:
-- Governance authorisation for Product Task 170 is not merged.
-- Running the report across the corpus produces unexpected exceptions or exposes malformed states that block aggregate counts.
-- Existing tests fail before your changes in a way that prevents clean attribution.
-- Safe reporting requires committing private fixtures or unapproved artifacts.
-- The diagnostic results are ambiguous or uniformly zero and no clear next step can be recommended.
-- You would need to commit private fixtures, diagnostic dumps, scratch JSON, logs, credentials, screenshots, GP files, PDFs, images, or unrelated artifacts.
-
-### Commit and PR requirements
-- The product PR must include either:
-  1. a safe aggregate report file, or
-  2. a small reporting/script/test change plus findings in the PR body.
-- Do not submit a PR with no product file changes.
-- Commit only intentional product files (e.g. a small summary script, test update, or safe aggregate report).
-- Push the feature branch.
-- Open a product PR against `main`.
-- The PR body must include:
-  - Product Task 170 summary.
-  - Governance PR verification result.
-  - Exact files changed (if any).
-  - Diagnostic findings and dominant blockers.
-  - Recommendation for the next product task.
-  - Validation commands and results.
-  - Privacy/artifact hygiene result.
-  - Confirmation that no canonical pitch adoption, mapping changes, or playable output were introduced.
-
-### Reporting format
-Return:
-- Branch name.
-- Product PR link.
-- Full head SHA.
-- Exact files changed.
-- Summary of diagnostic execution.
-- Key findings and identified blockers.
-- Recommended next smallest product task.
-- Validation commands and results.
-- Privacy/artifact hygiene result.
-- Confirmation that no canonical pitch adoption or mapping changes were introduced.
-- Known limitations.
+## Reporting Format
+You must report back with:
+* Branch name.
+* Product PR link.
+* Full head SHA.
+* Exact files changed.
+* Product PR #290 prerequisite verification result.
+* Located logical clef evidence summary, or stop-condition reason.
+* Implementation summary.
+* Coverage improvement evidence.
+* Validation commands and results.
+* Privacy/artifact hygiene result.
+* Behavioural confirmations.
+* Known limitations.
+* Suggested next action.
