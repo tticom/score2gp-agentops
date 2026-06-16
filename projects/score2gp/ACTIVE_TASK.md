@@ -107,6 +107,7 @@ Run and report the exact commands and results for:
   * Safety and privacy/artifact hygiene result.
   * Behavioural confirmations.
   * Known limitations.
+  * Suggested next action.
 * Do not merge the product PR.
 
 ## Reporting Format
