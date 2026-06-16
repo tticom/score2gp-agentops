@@ -10,11 +10,15 @@
 - Associate clef evidence to page/system/staff only when the association is deterministic.
 - Fail closed when clef evidence is missing, ambiguous, malformed, unsupported, or inferred only by guesswork.
 - If no deterministic existing clef evidence is available, implement the smallest safe diagnostic/preparatory boundary and stop before guessing.
+- Do not use `assume_treble_clef` as proof of visual clef evidence.
+- Do not infer clef from pitch outcomes.
+- Do not infer clef from note positions.
+- Do not infer clef from ledger-line placement.
 
 ### Non-Goals
-- Do not implement full clef recognition unless deterministic existing evidence already supports it.
+- Do not implement full clef recognition.
 - Do not guess treble clef globally.
-- Do not wire `map_clef_resolved_staff_pitch()` into the main pipeline unless explicit clef evidence is deterministic and the governance-authorised boundary clearly permits it.
+- Do not wire `map_clef_resolved_staff_pitch()` into the main pipeline.
 - Do not implement pitch inference.
 - Do not implement accidentals, key signatures, rhythm inference, or rests.
 - Do not alter existing note-candidate extraction, ledger-line extraction, or ledger-line grouping heuristics (unless a blocker is reported).

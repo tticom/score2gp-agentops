@@ -110,9 +110,9 @@ Candidate clef evidence in scope:
 * Preserve whole-note recognition compatibility.
 
 ### Non-goals
-* Do not implement full clef recognition unless deterministic existing evidence already supports it.
+* Do not implement full clef recognition.
 * Do not guess treble clef globally.
-* Do not wire `map_clef_resolved_staff_pitch()` into the main pipeline unless explicit clef evidence is deterministic and the governance-authorised boundary clearly permits it.
+* Do not wire `map_clef_resolved_staff_pitch()` into the main pipeline.
 * Do not implement pitch inference.
 * Do not implement accidentals.
 * Do not implement key signatures.
