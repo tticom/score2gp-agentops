@@ -57,3 +57,16 @@ Every PR review must report the following result channels as separate, independe
 
 The reviewer must inspect the PR for any automated or human comments, especially those raised by Codex or static analysis.
 - **Mandatory Verification**: You must ensure that all comments raised by Codex on the PR are explicitly addressed or resolved before claiming that the PR is ready for review.
+
+---
+
+## 6. Reviewing Architect & Research Outputs
+
+When reviewing Architect or research outputs, the Reviewer must apply the `projects/score2gp/skills/reviewer/SKILL.md`.
+
+- **Independent Reference Verification**: References must be independently verified, not merely accepted at face value.
+- **Unsupported Claims are Blockers**: Unsupported architecture claims or recommendations lacking specific references are review blockers.
+- **Vague Diagnostics are Blockers**: Diagnostics without measurable stop/continue/pivot decision criteria are review blockers.
+- **Measurable Criteria**: Measurable success criteria are required before any implementation authorization.
+- **Second Opinion on Plausibility**: The Reviewer must provide a second opinion on the plausibility of the proposed approach.
+- **Block Diagnostic Drift**: The Reviewer must block tasks likely to repeat long diagnostic loops without a definitive decision gate or milestone.
