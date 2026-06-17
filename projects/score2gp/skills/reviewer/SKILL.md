@@ -35,14 +35,16 @@ The Reviewer must explicitly state whether the proposed approach is:
 
 ## Required Reviewer verdicts
 
-The Reviewer verdict must be exactly one of:
+### 1. Architecture and Research Reviews
 
-- `approve architecture`;
-- `needs stronger research`;
-- `reject as speculative`;
-- `return to architect`;
-- `stop or pivot`;
-- `cannot verify`.
+When reviewing Architect or research outputs, the architecture verdict must be exactly one of:
+
+- `approve architecture`
+- `needs stronger research`
+- `reject as speculative`
+- `return to architect`
+- `stop or pivot`
+- `cannot verify`
 
 Use `approve architecture` only when:
 
@@ -62,6 +64,14 @@ Use `return to architect` when the Architect must rework the strategy before Dev
 Use `stop or pivot` when the evidence shows the approach is not justified.
 
 Use `cannot verify` when required references, repository state, or evidence are unavailable.
+
+### 2. Pull Request Readiness Reviews
+
+When reviewing a PR for readiness, the Reviewer must still use the PR readiness statuses required by `AGENT_PR_READINESS.md`:
+- `READY`
+- `NOT READY`
+- `NEEDS SUPERVISOR DECISION`
+- `NEEDS CHANGES`
 
 ## Mandatory rejection conditions
 
