@@ -4,6 +4,10 @@ This directory contains mandatory role skills for Score2GP governance.
 
 Role skill files are not optional guidance. `AGENT_CONTROL.md` defines when they must be loaded.
 
-The Architect and Reviewer skills exist to prevent speculative work and diagnostic drift. They force empirical research before technical recommendations are accepted and require independent review of the plausibility and evidence of any architectural proposals.
+The Architect, Developer, and Reviewer skills exist to prevent speculative work, diagnostic drift, and implementation drift. They enforce a strict execution loop:
 
-New role skills should be added here only if they are wired into `AGENT_CONTROL.md`.
+- **Architect** researches and proposes a concrete measurable approach or rejects it.
+- **Reviewer** verifies architecture/research plausibility.
+- **Developer** implements the approved requirement using requirement-driven TDD.
+- **Reviewer** verifies implementation conformance to the requirement and architecture.
+- **Reviewer** separately verifies PR readiness.

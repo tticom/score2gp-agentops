@@ -70,3 +70,13 @@ When reviewing Architect or research outputs, the Reviewer must apply the `proje
 - **Measurable Criteria**: Measurable success criteria are required before any implementation authorization.
 - **Second Opinion on Plausibility**: The Reviewer must provide a second opinion on the plausibility of the proposed approach.
 - **Block Diagnostic Drift**: The Reviewer must block tasks likely to repeat long diagnostic loops without a definitive decision gate or milestone.
+
+## 7. Developer Output Conformance
+
+A review is not complete until the Reviewer checks whether the implementation satisfies the original requirement and any approved Architect proposal.
+
+The Reviewer must not approve a PR merely because tests pass.
+
+The Reviewer must inspect whether tests validate wanted behaviour.
+
+Implementation-detail-only tests are insufficient when acceptance behaviour was required.
