@@ -66,59 +66,62 @@ The Architect must not cite a paper, library, blog post, or documentation page u
 
 ## Mandatory decision outcomes
 
-For uncertain technical strategy, the Architect must end with exactly one of these outcomes:
+For note-recognition Architect runs, the selected outcome must be exactly one of:
 
-### Outcome A — Concrete measurable approach
+### Outcome A — Raster path is viable
 
-Use this only when research supports a plausible bounded implementation path.
-
-Required output:
-
-- recommended approach;
-- references supporting the approach;
-- verified repository facts;
-- assumptions;
-- measurable success criterion;
-- smallest safe implementation task;
-- expected input fixtures or data;
-- expected output;
-- validation commands or tests;
-- risks and known limits;
-- cheaper or simpler alternatives considered;
-- why this approach is better than at least one alternative.
-
-The success criterion must be concrete and measurable.
-
-Acceptable examples:
-
-- “At least one generated public fixture produces deterministic raster treble-clef evidence accepted by the existing bridge.”
-- “The diagnostic reports zero false positives on the authorised generated public fixture set and at least one true positive on a synthetic public raster fixture.”
-- “The helper extracts a bounded clef-region raster candidate with staff association for fixture category X.”
-
-Unacceptable examples:
-
-- “Improve recognition.”
-- “Make progress.”
-- “Investigate further.”
-- “Support future work.”
-- “Try raster.”
-- “Explore ML.”
-- “Add better diagnostics.”
-
-### Outcome B — Impossible or not currently justified
-
-Use this when research does not support a safe, bounded, measurable implementation path.
+Use this when evidence supports a bounded raster implementation path.
 
 Required output:
 
-- exact reason the approach is not justified;
-- evidence reviewed;
-- missing prerequisite;
-- why proceeding would be guessing;
-- smallest unblocker task, if one exists;
-- recommendation to stop or pivot.
+* concrete measurable raster approach;
+* references supporting the approach;
+* verified repository facts;
+* assumptions;
+* measurable success criterion;
+* smallest safe raster Developer task;
+* expected input fixtures or data;
+* expected output;
+* validation commands or tests;
+* risks and known limits;
+* cheaper or simpler alternatives considered;
+* why raster is justified over at least one alternative.
 
-The Architect must choose Outcome B rather than inventing an implementation task when evidence is weak.
+### Outcome B — Raster path is not viable but another approach is
+
+Use this when raster is not justified under current constraints, but a different implementation path is justified.
+
+Required output:
+
+* exact reason raster is not currently viable;
+* alternative approach;
+* references supporting the alternative;
+* why the alternative is more viable than raster;
+* verified repository facts;
+* assumptions;
+* measurable success criterion;
+* smallest safe alternative Developer task;
+* expected input fixtures or data;
+* expected output;
+* validation commands or tests;
+* risks and known limits;
+* stop/pivot criteria.
+
+### Outcome C — No currently viable approach
+
+Use this when no safe, bounded, measurable implementation path is currently justified.
+
+Required output:
+
+* exact reason no implementation path is justified;
+* evidence reviewed;
+* missing prerequisite;
+* why proceeding would be guessing;
+* smallest unblocker task, if one exists;
+* recommendation to stop or return to governance;
+* explicit statement that Developer work is not authorised.
+
+The Architect must choose Outcome C rather than inventing an implementation task when evidence is weak.
 
 ## Forbidden Architect behaviour
 
@@ -158,9 +161,10 @@ The Architect report must include:
 - claim-by-claim evidence table;
 - options considered;
 - rejected options and reasons;
-- selected outcome: Outcome A or Outcome B;
-- proposed next task, if Outcome A;
-- stop/pivot recommendation, if Outcome B;
+- selected outcome: Outcome A, Outcome B, or Outcome C;
+- proposed raster Developer task, if Outcome A;
+- proposed alternative Developer task, if Outcome B;
+- stop/unblocker recommendation and no Developer authorisation, if Outcome C;
 - measurable success criterion;
 - known risks;
 - what was not verified.

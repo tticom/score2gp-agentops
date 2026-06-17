@@ -67,9 +67,9 @@ Prompts may also require unit tests, but unit tests are supporting evidence, not
 
 When a task includes Architect, Reviewer, and Developer responsibilities, the prompt must define the loop explicitly:
 
-1. Architect researches options and chooses Outcome A or Outcome B.
+1. Architect researches options and chooses Outcome A, Outcome B, or Outcome C.
 2. Reviewer verifies the research and gives an architecture verdict.
-3. Developer implements only after architecture approval, unless the task is mechanical and explicitly exempt.
+3. Developer implements only after Outcome A or Outcome B architecture approval, unless the task is mechanical and explicitly exempt. Developer work must not occur if Outcome C is selected.
 4. Developer uses requirement-driven TDD.
 5. Reviewer verifies implementation conformance to:
    - the requirement;
@@ -80,6 +80,23 @@ When a task includes Architect, Reviewer, and Developer responsibilities, the pr
 
 The prompt must define what happens if any stage fails.
 
+## Mandatory Architect Decision Gate for Note Recognition
+
+For uncertain, technical, experimental, architectural, product-changing, or behaviour-changing note-recognition work, the Architect must not end with an unbounded diagnostic recommendation.
+
+The Architect must choose exactly one of:
+
+1. **Outcome A — Raster path is viable:**
+   Provide a concrete measurable raster approach, references, validation plan, and the smallest next Developer task.
+2. **Outcome B — Raster path is not viable but another approach is:**
+   Provide the alternative approach, references, why it is more viable than raster, validation plan, and the smallest next Developer task.
+3. **Outcome C — No currently viable approach:**
+   State that Score2GP cannot currently progress toward reliable note recognition under present constraints. Identify the missing prerequisite and the smallest unblocker, if one exists. Do not authorise Developer work.
+
+The wording must make clear:
+* The Architect must not end with an unbounded diagnostic recommendation.
+* “Do more diagnostics” is only acceptable if it is bounded by a specific hypothesis, fixture set, metric, expected result, pass/fail threshold, and stop/pivot condition.
+* If the Architect cannot choose A, B, or C with evidence, the correct result is failure/cannot justify next implementation, not another vague research task.
 ## Anti-vagueness rule
 
 The prompt must not use vague goals such as:
