@@ -32,6 +32,27 @@ Agents must then read, in this order:
 5. `projects/score2gp/TASKS.md`
 6. Relevant task template(s) under `projects/score2gp/templates/`
 
+### Role skill loading
+
+Every agent run for the Score2GP project must load and obey:
+
+1. `projects/score2gp/AGENT_CONTROL.md`
+2. `projects/score2gp/ACTIVE_TASK.md`
+3. the relevant role skill file under `projects/score2gp/skills/<role>/SKILL.md`, if the role has a skill file
+4. any task-specific prompt from the Orchestrator
+
+For Architect work, the Architect must read:
+`projects/score2gp/skills/architect/SKILL.md`
+
+For Reviewer work, the Reviewer must read:
+`projects/score2gp/skills/reviewer/SKILL.md`
+
+If a role skill file exists and cannot be read, the agent must stop and report rather than continue from memory or guesswork.
+
+If task instructions conflict with the role skill file, the stricter safety/research/review rule wins unless the user explicitly overrides it.
+
+If a task asks for uncertain, experimental, or architectural work but does not include measurable stop/continue/pivot criteria, the Architect must create those criteria or stop and return to governance.
+
 If product work is involved, agents must also inspect the product repository:
 
 `/home/tticom/work/score2gp-workspace/score2gp`
