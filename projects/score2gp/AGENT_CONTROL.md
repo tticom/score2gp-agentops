@@ -47,11 +47,35 @@ For Architect work, the Architect must read:
 For Reviewer work, the Reviewer must read:
 `projects/score2gp/skills/reviewer/SKILL.md`
 
+For Developer work, the Developer must read:
+`projects/score2gp/skills/developer/SKILL.md`
+
 If a role skill file exists and cannot be read, the agent must stop and report rather than continue from memory or guesswork.
 
 If task instructions conflict with the role skill file, the stricter safety/research/review rule wins unless the user explicitly overrides it.
 
 If a task asks for uncertain, experimental, or architectural work but does not include measurable stop/continue/pivot criteria, the Architect must create those criteria or stop and return to governance.
+
+### Strict task loop
+
+For uncertain, technical, experimental, or product-changing work, a complete task loop consists of:
+
+1. Requirement prompt: The requirement writer defines the measurable requirement.
+2. Architect research and approach selection: The Architect researches options and proposes a concrete measurable approach or rejects the approach as not currently justified.
+3. Reviewer architecture/reference verification: The Reviewer verifies the Architect’s references and plausibility.
+4. Developer implementation: The Developer implements only the authorised requirement using the approved approach.
+5. Reviewer implementation conformance review: The Reviewer verifies implementation conformance.
+6. PR readiness review: The Reviewer separately verifies PR readiness using `AGENT_PR_READINESS.md`.
+
+The loop may occur across multiple PRs if governance requires it, but each authorised task must state which part of the loop it is executing and what evidence it must produce.
+
+Developer implementation work must not begin unless one of these is true:
+- the task is explicitly mechanical and exempt from architecture review; or
+- an Architect-approved approach exists; and
+- the Reviewer has verified that approach as plausible; and
+- the task contains measurable acceptance criteria.
+
+If the Developer cannot identify the requirement, approved approach, acceptance criteria, or validation evidence, the Developer must stop and report instead of guessing.
 
 If product work is involved, agents must also inspect the product repository:
 

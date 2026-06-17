@@ -35,9 +35,14 @@ The Reviewer must explicitly state whether the proposed approach is:
 
 ## Required Reviewer verdicts
 
-### 1. Architecture and Research Reviews
+The Reviewer skill defines exactly three review modes:
 
-When reviewing Architect or research outputs, the architecture verdict must be exactly one of:
+### Mode 1 — Architecture / research review
+
+Purpose:
+Verify the Architect’s research, references, claims, options, and proposed approach.
+
+Allowed verdicts:
 
 - `approve architecture`
 - `needs stronger research`
@@ -45,6 +50,8 @@ When reviewing Architect or research outputs, the architecture verdict must be e
 - `return to architect`
 - `stop or pivot`
 - `cannot verify`
+
+This mode must be used only for architecture/research outputs.
 
 Use `approve architecture` only when:
 
@@ -65,13 +72,84 @@ Use `stop or pivot` when the evidence shows the approach is not justified.
 
 Use `cannot verify` when required references, repository state, or evidence are unavailable.
 
-### 2. Pull Request Readiness Reviews
+### Mode 2 — Developer implementation conformance review
 
-When reviewing a PR for readiness, the Reviewer must still use the PR readiness statuses required by `AGENT_PR_READINESS.md`:
+Purpose:
+Verify that the Developer’s output conforms to:
+
+- the original requirement;
+- the approved Architect approach, if applicable;
+- the Reviewer-approved architecture verdict, if applicable;
+- the acceptance criteria;
+- the required validation plan;
+- safety/privacy/artifact rules.
+
+Allowed verdicts:
+
+- `approve implementation`
+- `needs implementation changes`
+- `reject implementation`
+- `return to developer`
+- `return to architect`
+- `cannot verify implementation`
+
+Use `approve implementation` only when:
+
+- the implementation satisfies the requirement;
+- tests prove wanted behaviour, not merely implementation details;
+- the implementation follows the approved Architect approach, or deviations are explicitly justified and reviewed;
+- acceptance criteria are met;
+- validation evidence is coherent;
+- safety/privacy/artifact rules are preserved.
+
+Reject or return the implementation if:
+
+- tests only mirror implementation details;
+- acceptance criteria are not validated;
+- implementation deviates from the approved Architect approach without justification;
+- Developer widened scope;
+- Developer substituted diagnostics for required behaviour;
+- Developer used private fixtures or unsafe artifacts;
+- Developer failed to report deviations or limitations;
+- the PR passes tests but does not prove the wanted behaviour.
+
+### Mode 3 — PR readiness review
+
+Purpose:
+Verify whether the PR is ready for human merge.
+
+Allowed statuses must remain exactly those required by `AGENT_PR_READINESS.md`:
+
 - `READY`
 - `NOT READY`
 - `NEEDS SUPERVISOR DECISION`
 - `NEEDS CHANGES`
+
+This mode checks:
+
+- PR state;
+- mergeability;
+- status checks;
+- Codex comments;
+- review threads;
+- required reports;
+- evidence blocks;
+- unresolved comments;
+- artifact hygiene.
+
+Make clear that PR readiness status does not replace architecture or implementation conformance verdicts. A PR can be technically ready in GitHub terms but still fail architecture or implementation review.
+
+The Reviewer report must include all applicable outputs. For a normal implementation PR after this governance change, the report should include:
+
+- implementation conformance verdict;
+- PR readiness status;
+- evidence reviewed;
+- references checked if architecture claims are involved;
+- tests/validation reviewed;
+- whether tests prove wanted behaviour;
+- safety/privacy/artifact result;
+- required fixes;
+- suggested next action.
 
 ## Mandatory rejection conditions
 

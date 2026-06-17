@@ -16,6 +16,12 @@ A PR is also NOT ready if:
 - required role skill checks were skipped;
 - Architect references were not provided for uncertain technical strategy;
 - Reviewer reference verification was required but not done;
+- Developer skill checks were skipped;
+- tests do not validate the requirement;
+- implementation deviates from approved architecture without explicit review;
+- acceptance criteria are unverified;
+- the PR body does not explain how validation proves the desired behaviour;
+- the applicable Reviewer mode verdict is missing;
 - unresolved review threads remain;
 - the PR body claims evidence that is not present.
 
