@@ -17,6 +17,7 @@ Reviewer/architect agents must copy, paste, and complete this exact template whe
 - **Claim**: [State the agent's claim]
   - **Evidence**: [State the reproducible evidence reviewed]
   - **Verified?**: `yes` / `no`
+  - **Incremental Progress Verified?**: `yes` / `no` (Must not merely repeat the baseline)
   - **Contradictions**: [Identify any contradictions between visual/source files and tool output]
 
 ---
