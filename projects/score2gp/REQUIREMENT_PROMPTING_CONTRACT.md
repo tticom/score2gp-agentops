@@ -117,19 +117,31 @@ A task is invalid if it only:
 * creates documentation churn that does not change execution, decision-making, or project state.
 
 Exception:
-Governance recording tasks may summarise prior merged work only when the active task explicitly says the purpose is to record completion, authorise the next task, or update governance state. Product PRs must not be used merely to repackage prior evidence.
+Recording previous results should normally be included as the first section of the next development-cycle task. Standalone recording tasks are allowed only when they record completion, authorise next work, update policy, change active governance state, or change readiness/blocker status. Product PRs must not be used merely to repackage prior evidence.
+
+Speed, volume, formatting quality, and rapid PR creation are not success criteria unless the task produces verified progress over the stated baseline.
 
 ## Required Prompt Field
+
+Every task must define a Progress Baseline before the Incremental Progress Check.
+The baseline must name the existing evidence/state being built from:
+PR/report/diagnostic/decision/fixture result/product capability/blocker/review verdict.
 
 Every future agy prompt must include an explicit `Incremental Progress Check` answering:
 * What new evidence, capability, governance state, or review verdict will this task produce?
 * Which prior result must it not merely repeat?
-* What existing PR, report, diagnostic, or decision record is the baseline?
 * How will we know the task moved the project forward?
 * What exact result means the task should stop as duplicate/no-progress?
 * What is the smallest next decision this task enables?
 
-If the Incremental Progress Check cannot be answered concretely, the prompt is not ready.
+The Incremental Progress Check must explicitly compare the proposed task result against that baseline.
+
+The task is not ready if:
+* the baseline is missing;
+* the baseline is vague;
+* the baseline is false or unverified;
+* the task output would merely repeat/reformat/repackage the baseline;
+* the task cannot explain what smallest next decision it enables.
 
 ## Anti-vagueness rule
 

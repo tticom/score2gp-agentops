@@ -24,6 +24,9 @@ A PR is also NOT ready if:
 - the applicable Reviewer mode verdict is missing;
 - unresolved review threads remain;
 - the PR body claims evidence that is not present;
+- the PR does not identify the baseline;
+- the PR claims progress but only reproduces the baseline;
+- tests pass but no incremental evidence/capability/governance state/review verdict was produced;
 - the PR does not provide incremental progress relative to its stated baseline (e.g., duplicate/no-progress), even if tests pass and the PR is technically clean.
 
 ## 2. Codex Disposition Rule
