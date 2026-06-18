@@ -80,6 +80,18 @@ List files or paths the agent may inspect or edit.
 
 Technical, security, privacy, architecture, branch, and style constraints.
 
+## Progress Baseline
+
+Name the existing PR, report, diagnostic, decision, fixture result, product capability, blocker, or review verdict being built from.
+
+## Incremental Progress Check
+
+* What new evidence, capability, governance state, or review verdict will this task produce?
+* Which prior result must it not merely repeat?
+* How will we know the task moved the project forward?
+* What exact result means the task should stop as duplicate/no-progress?
+* What is the smallest next decision this task enables?
+
 ## Required Pre-flight Checks
 
 Commands or inspections required before changes.

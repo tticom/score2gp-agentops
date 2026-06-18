@@ -6,7 +6,8 @@ Reviewer/architect agents must use this template to construct the next implement
 
 ## 1. Context & Branch
 
-- **Current State**: [Describe the verified baseline and active blocker]
+- **Current State**: [Describe the verified state and active blocker]
+- **Progress Baseline**: [Name the specific prior PR, report, decision, capability, or verdict being built from]
 - **Current Branch**: `bugfix/` or `feature/` branch name
 - **Base Branch**: `main`
 
@@ -15,6 +16,10 @@ Reviewer/architect agents must use this template to construct the next implement
 ## 2. Goal & Non-Goals
 
 - **Active Goal**: [Define the exact single-rung benchmark target]
+- **Incremental Progress Check**:
+  - What new evidence/capability/verdict will this produce?
+  - How will we know it moved the project forward relative to the baseline without merely repeating it?
+  - What smallest next decision does it enable?
 - **Non-Goals**:
   - Do not implement complex expressiveness techniques or general file format conversions.
   - Do not skip measures, bars, or candidates to make metric rates look better.

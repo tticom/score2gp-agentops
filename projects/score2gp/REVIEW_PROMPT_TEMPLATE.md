@@ -44,7 +44,9 @@ Ensure that the mandatory run record under `projects/score2gp/runs/<date>-<slug>
 
 Use the standard implementation template and specify:
 - Current verified state.
+- Progress Baseline (what specific evidence/PR is being built upon).
 - Target branch name.
 - Narrow, single-rung active goal.
+- Incremental Progress Check (what new evidence/capability is produced).
 - Non-goals (what must not be started).
 - Verification commands.
