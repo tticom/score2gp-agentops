@@ -27,7 +27,8 @@ Every product or governance task prompt must include, where applicable:
 - stop conditions;
 - privacy/artifact constraints;
 - PR requirements;
-- reporting format.
+- reporting format;
+- Incremental Progress Check.
 
 ## Requirement quality bar
 
@@ -97,6 +98,39 @@ The wording must make clear:
 * The Architect must not end with an unbounded diagnostic recommendation.
 * “Do more diagnostics” is only acceptable if it is bounded by a specific hypothesis, fixture set, metric, expected result, pass/fail threshold, and stop/pivot condition.
 * If the Architect cannot choose A, B, or C with evidence, the correct result is failure/cannot justify next implementation, not another vague research task.
+
+## Mandatory Incremental Progress Rule
+
+Every agy prompt must identify the smallest project-forwarding outcome it will produce.
+
+A valid task must produce at least one of:
+* new decision-useful evidence that was not already available;
+* new verified product capability;
+* a required governance state change;
+* a bounded review verdict that changes merge/readiness/blocker state.
+
+A task is invalid if it only:
+* repeats existing diagnostic output;
+* copies evidence from an already merged PR into a product PR;
+* creates a report from already-known data without adding new analysis, decision criteria, or implementation consequence;
+* says “more diagnostics needed” without a bounded hypothesis, fixture set, metric, expected result, pass/fail threshold, and stop/pivot condition;
+* creates documentation churn that does not change execution, decision-making, or project state.
+
+Exception:
+Governance recording tasks may summarise prior merged work only when the active task explicitly says the purpose is to record completion, authorise the next task, or update governance state. Product PRs must not be used merely to repackage prior evidence.
+
+## Required Prompt Field
+
+Every future agy prompt must include an explicit `Incremental Progress Check` answering:
+* What new evidence, capability, governance state, or review verdict will this task produce?
+* Which prior result must it not merely repeat?
+* What existing PR, report, diagnostic, or decision record is the baseline?
+* How will we know the task moved the project forward?
+* What exact result means the task should stop as duplicate/no-progress?
+* What is the smallest next decision this task enables?
+
+If the Incremental Progress Check cannot be answered concretely, the prompt is not ready.
+
 ## Anti-vagueness rule
 
 The prompt must not use vague goals such as:
