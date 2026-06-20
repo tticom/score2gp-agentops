@@ -145,7 +145,7 @@ The Reviewer may approve only when:
 * tests/diagnostics prove wanted behaviour, not just implementation details.
 
 Hard blockers:
-Return `cannot verify`, `needs stronger research`, `return to architect`, or `needs changes` if:
+Return `cannot verify`, `needs stronger research`, `return to architect`, or `NEEDS CHANGES` if:
 
 * evidence is missing;
 * source claims are not independently checked;
