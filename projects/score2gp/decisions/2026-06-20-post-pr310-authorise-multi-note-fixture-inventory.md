@@ -1,7 +1,7 @@
 # Post PR 310: Record Filled Single-Note Duration Baseline and Authorise Next Task
 
 ## Context and Baseline
-* Product PR #310 (merged `499abe6`) successfully implemented Developer Outcome A. It validated candidate symbol_types against expected durations and explicitly added export commands for quarter, 8th, 16th, 32nd, and 64th notes using deterministic vector extraction.
+* Product PR #310 merged with head SHA `499abe60036339c5de9ccdf99975a4b6ecff4fd4` and merge commit `969b3f06855e80de7daa4b06d6ce4742e08d8696`, and successfully implemented the approved Architect Outcome A implementation. It validated candidate symbol_types against expected durations and explicitly added export commands for quarter, 8th, 16th, 32nd, and 64th notes using deterministic vector extraction.
 * The product baseline now explicitly supports exporting all single-note durations (whole through 64th) from public generated fixtures.
 
 ## Completed State
