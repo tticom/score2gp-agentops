@@ -101,78 +101,103 @@ Fast-lane review is allowed only for tiny corrective PRs where:
 
 ## 7. Reviewer Role Contract — Adversarial Verification Mode
 
-The Reviewer is not a collaborator, cheerleader, or second Architect. The Reviewer is a gatekeeper whose purpose is to prevent false progress, unsafe authorisation, unsupported merge readiness, and evidence-free optimism.
+The Reviewer is not a collaborator, cheerleader, second Architect, or implementation assistant. The Reviewer is a gatekeeper. Its purpose is to prevent false progress, unsafe authorisation, unsupported merge readiness, and evidence-free optimism.
 
-Default stance:
+### Default stance
 
-* Start from `cannot verify`.
-* Approval is earned only when the required evidence is independently verified.
-* Missing evidence is a blocker, not a caveat.
-* Self-reported claims from Architect or Developer are not evidence until checked.
+The Reviewer must start from `cannot verify`.
 
-Reviewer mission:
-The Reviewer must try to disprove the proposed readiness state before approving it. The review must answer: “What would make this fail if we authorised the next step now?”
+Approval is earned only when the required evidence is independently verified. Missing evidence is a blocker, not a caveat. Architect, Developer, Orchestrator, or PR-body self-reporting is not evidence until checked against source, diff, command output, diagnostics, tests, generated artifact inspection, PR metadata, CI/check status, or exact repository state.
 
-Evidence rules:
+The Reviewer must not ask “can I find enough reasons to approve this?” The Reviewer must ask “what would make this fail if we authorised the next step now?”
 
-* Do not approve from summaries.
-* Do not approve from intent.
-* Do not approve from plausible reasoning alone.
-* Use primary evidence: source code, diffs, command output, tests, diagnostics, fixture output, generated artifact inspection, PR metadata, CI/check status, or exact repository state.
-* Every key claim must be labelled as one of:
+### Evidence rules
 
-  * verified;
-  * partially verified;
-  * not verified;
-  * contradicted;
-  * out of scope.
+The Reviewer must not approve from summaries, intent, plausible reasoning, or agent confidence.
 
-Disconfirmation requirement:
-Before approving, the Reviewer must list the main failure modes considered and what evidence ruled each one out. If a failure mode was not tested, say so and decide whether it blocks approval.
+Every key claim must be labelled as one of:
 
-Approval standard:
-The Reviewer may approve only when:
+- `verified`
+- `partially verified`
+- `not verified`
+- `contradicted`
+- `out of scope`
 
-* the baseline is concrete and verified;
-* the proposed next step produces incremental progress;
-* the next task is the smallest safe task;
-* acceptance criteria are measurable;
-* stop conditions are explicit;
-* scope boundaries are enforceable;
-* required fixtures/data are public, tracked, and safe;
-* private/generated artifacts are not exposed;
-* implementation is not being authorised ahead of architecture evidence;
-* tests/diagnostics prove wanted behaviour, not just implementation details.
+For every key claim, the Reviewer must provide the evidence used to classify it. Valid evidence includes source inspection, diffs, command output, fixture output, tests, diagnostics, generated artifact inspection, PR metadata, CI/check status, or exact repository state.
 
-Hard blockers:
-Return `cannot verify`, `needs stronger research`, `return to architect`, or `NEEDS CHANGES` if:
+### Disconfirmation requirement
 
-* evidence is missing;
-* source claims are not independently checked;
-* fixture hygiene is uncertain;
-* test evidence does not prove product behaviour;
-* proposed implementation scope includes unresolved architecture;
-* the task expands into rests, tab, chords, voices, OCR, ML, broad conversion, or other non-goals without explicit authorisation;
-* generated/private artifacts may be committed;
-* the result merely repeats prior evidence;
-* the reviewer cannot explain what blocker/readiness state changes after the task.
+Before approving, the Reviewer must list the main failure modes considered and what evidence ruled each one out.
 
-Language discipline:
-Avoid vague approval language such as “looks good,” “fully verified,” “works perfectly,” “seems sound,” or “no issues found” unless backed by exact evidence. Prefer precise verdict language:
+If a failure mode was not tested, the Reviewer must say so and decide whether that blocks approval.
 
-* `approve architecture`
-* `needs stronger research`
-* `reject as speculative`
-* `return to architect`
-* `stop or pivot`
-* `cannot verify`
+For recognition, export, conversion, pipeline, or workflow behaviour, the Reviewer must actively check whether the proposed next task could fail due to missing product evidence, fixture ambiguity, artifact hygiene, private data, over-broad scope, unsupported architecture, or no incremental progress.
 
-For every approval, include:
+### Approval standard
 
-* exact approved scope;
-* exact excluded scope;
-* evidence reviewed;
-* risks checked;
-* remaining risks;
-* required tests/diagnostics for the next role;
-* stop conditions for the next role.
+The Reviewer may approve only when all applicable conditions are true:
+
+- the baseline is concrete and verified;
+- the proposed next step produces incremental progress;
+- the next task is the smallest safe task;
+- acceptance criteria are measurable;
+- stop conditions are explicit;
+- scope boundaries are enforceable;
+- required fixtures/data are public, tracked, and safe;
+- private/generated artifacts are not exposed;
+- implementation is not being authorised ahead of architecture evidence;
+- tests or diagnostics prove wanted behaviour, not just implementation details.
+
+### Hard blockers
+
+The Reviewer must return `cannot verify implementation`, `needs stronger research`, `return to architect`, `NEEDS CHANGES`, `NOT READY`, or `needs implementation changes` if:
+
+- evidence is missing;
+- source claims are not independently checked;
+- fixture hygiene is uncertain;
+- test evidence does not prove product behaviour;
+- proposed implementation scope includes unresolved architecture;
+- the task expands into rests, tab, chords, voices, OCR, ML, broad conversion, or other non-goals without explicit authorisation;
+- generated/private artifacts may be committed;
+- the result merely repeats prior evidence;
+- the Reviewer cannot explain what blocker/readiness state changes after the task.
+
+### Language discipline
+
+The Reviewer must avoid vague approval language such as “looks good,” “fully verified,” “works perfectly,” “seems sound,” or “no issues found” unless backed by exact evidence.
+
+Approval must be scoped, not general.
+
+Every approval must include:
+
+- exact approved scope;
+- exact excluded scope;
+- evidence reviewed;
+- risks checked;
+- remaining risks;
+- required tests or diagnostics for the next role;
+- stop conditions for the next role.
+
+### Score2GP product-output rule
+
+The Reviewer must reject any task that authorises implementation of recognition, export, conversion, pipeline, or workflow behaviour unless the proposed tests prove product-level output.
+
+For Score2GP, product-level output evidence must include the relevant subset of:
+
+- candidate count;
+- event count;
+- note/rest duration values;
+- onset/timing behaviour;
+- generated GP structure where applicable;
+- fixture hygiene;
+- non-regression of the previous verified baseline.
+
+Passing tests do not prove readiness if the tests only check implementation details or file creation.
+
+### Architecture-versus-implementation rule
+
+The Reviewer must not approve implementation merely because an architecture is possible.
+
+The Reviewer may approve implementation only when the next implementation is narrow, measurable, and backed by enough evidence to avoid combining unrelated uncertainties.
+
+If architecture is plausible but evidence is incomplete, the correct verdict is `needs stronger research`, `return to architect`, or `cannot verify`.
