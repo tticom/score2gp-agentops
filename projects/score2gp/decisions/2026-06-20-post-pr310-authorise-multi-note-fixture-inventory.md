@@ -13,7 +13,7 @@ The next product task is a bounded public-fixture inventory for the next logical
 It must begin by inspecting `tticom/score2gp` from a clean branch and produce a fixture inventory of the remaining public simple fixtures (e.g. `HalfNotes.pdf`, `WholeNoteRest.pdf`).
 
 The product task must build a fixture inventory table mapped to expected GP outcomes, verifying if multi-note or rest fixtures exist.
-It must attempt to export these fixtures using the existing CLI commands, and this task is inspect/proof only. No implementation is authorised.
+It must attempt to export these fixtures using the existing CLI commands, and this task is inspect/proof only. No implementation is authorised. The task must explicitly require GP note/rest value evidence (duration values, rest state) before marking any feature supported.
 
 ## Stop Conditions
 * Stop and return to Architect research if multi-note or rest recognition fails or requires a new uncertain approach.

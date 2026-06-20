@@ -60,6 +60,7 @@ The product task must prove explicit GP export capability using authorised publi
 * note count;
 * bar count;
 * time signature;
+* GP note/rest value evidence, including note duration values for multi-note fixtures and rest/rest-duration evidence for rest fixtures where available;
 * proof no private fixture path is required;
 * proof generated artifacts were not committed.
 
