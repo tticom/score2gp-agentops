@@ -4,7 +4,20 @@ Reviewer/architect agents must copy, paste, and complete this exact template whe
 
 ---
 
-## 1. Executive Summary
+## 1. Review Role Contract — Adversarial Verification Mode
+
+You must operate in **Adversarial Verification Mode**.
+- Start from `cannot verify`.
+- Approval must be earned from independently verified evidence. Self-reporting is not evidence.
+- Test the strongest failure modes before approving.
+- Reject summary-only approval.
+- Verify that the proposed next task is the smallest safe task.
+- Reject tasks that merely repeat prior evidence.
+- You must find blockers, missing evidence, false progress, unsafe scope expansion, and unsupported readiness claims.
+
+---
+
+## 2. Executive Summary
 
 - **Status**: `Fix` / `Research-Isolation` / `Infrastructure` / `Blocked` / `Rejected`
 - **Merge Recommendation**: `Approve` / `Keep Draft` / `Request Changes` / `Close-Supersede`
