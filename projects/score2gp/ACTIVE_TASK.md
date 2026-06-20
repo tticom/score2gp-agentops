@@ -21,7 +21,7 @@ The project has explicit single whole-note and single half-note GP export paths,
 The task must explicitly follow this loop:
 Requirement → Architect diagnosis/research → Reviewer architecture verification → Developer implementation only if authorised → Reviewer implementation conformance review → PR readiness review.
 
-The initial task is inspect/proof-only. If the inventory finds that current production evidence can support additional durations with bounded changes, the Architect must propose the bounded implementation path (Outcome A). Developer implementation is NOT authorised until Reviewer architecture verification passes.
+The initial task is strictly inspect/proof-only. No implementation is authorised yet. If any unsupported duration is found, return to supervisor/Architect.
 
 ## Baseline Verification
 The next product task must inspect `tticom/score2gp` from a clean branch and produce a fixture inventory before implementing anything.
@@ -90,7 +90,6 @@ The product task must not:
 * rely on private fixtures for acceptance.
 
 ## Decision Rule
-* If all single-note duration fixtures are tracked and the current production evidence can support all durations with bounded changes, the Architect must propose the bounded implementation path. Developer implementation is NOT authorised until Reviewer architecture verification passes.
-* If only whole/half can be supported through current evidence, prove those using public fixtures and report unsupported durations precisely.
+* Inspect/proof only. No implementation authorised. If any unsupported duration is found, return to supervisor/Architect.
 * If filled-note duration recognition is missing or speculative, stop and request an Architect task to decide the duration-classification approach.
 * If the new fixtures are not tracked/public, stop and report the fixture hygiene blocker.

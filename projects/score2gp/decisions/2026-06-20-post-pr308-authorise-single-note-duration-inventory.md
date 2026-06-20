@@ -16,7 +16,7 @@ The next product task is a bounded public-fixture single-note duration task.
 It must begin by inspecting `tticom/score2gp` from a clean branch and produce a fixture inventory.
 
 The product task must build a duration fixture inventory table mapped to GP note values, verifying whole, half, quarter/q4, 8th, 16th, 32nd, and 64th notes if present.
-It must prove explicit single-note notation GP export using authorised public generated fixtures, and add support only where the current pipeline already provides sufficient evidence and the change is bounded.
+It must prove explicit single-note notation GP export using authorised public generated fixtures, and this task is inspect/proof only. No implementation is authorised.
 
 ## Stop Conditions
 * Stop and return to Architect research if filled-note duration recognition for quarter/eighth/sixteenth/thirty-second/sixty-fourth requires a new uncertain approach.
