@@ -99,6 +99,25 @@ The wording must make clear:
 * “Do more diagnostics” is only acceptable if it is bounded by a specific hypothesis, fixture set, metric, expected result, pass/fail threshold, and stop/pivot condition.
 * If the Architect cannot choose A, B, or C with evidence, the correct result is failure/cannot justify next implementation, not another vague research task.
 
+## Reviewer Prompt Requirement — Adversarial Verification
+
+Any prompt that asks for architecture review, implementation conformance review, PR readiness review, or merge readiness review must explicitly invoke adversarial verification mode as defined in `projects/score2gp/AGENT_PR_READINESS.md`.
+
+Reviewer approval must be earned from independently verified evidence. Architect, Developer, Orchestrator, or PR-body self-reporting must not be treated as evidence unless checked against source, diff, command output, tests, diagnostics, generated artifact inspection, PR metadata, CI/check status, or exact repository state.
+
+Every reviewer prompt must require the Reviewer to:
+
+* start from `cannot verify`;
+* test the strongest failure modes before approving;
+* label key claims as `verified`, `partially verified`, `not verified`, `contradicted`, or `out of scope`;
+* reject summary-only approval;
+* verify that the proposed next task is the smallest safe task;
+* reject tasks that merely repeat prior evidence;
+* define exact approved scope and exact excluded scope;
+* require product-level tests or diagnostics for recognition, export, conversion, pipeline, or workflow behaviour.
+
+Reviewer prompts must not ask the Reviewer to “confirm,” “approve if reasonable,” or “check whether this looks good.” They must ask the Reviewer to find blockers, missing evidence, false progress, unsafe scope expansion, and unsupported readiness claims.
+
 ## Mandatory Incremental Progress Rule
 
 Every agy prompt must identify the smallest project-forwarding outcome it will produce.
