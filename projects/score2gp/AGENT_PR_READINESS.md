@@ -150,7 +150,7 @@ The Reviewer may approve only when all applicable conditions are true:
 
 ### Hard blockers
 
-The Reviewer must return `cannot verify`, `needs stronger research`, `return to architect`, `needs changes`, or `not ready` if:
+The Reviewer must return `cannot verify implementation`, `needs stronger research`, `return to architect`, `NEEDS CHANGES`, `NOT READY`, or `needs implementation changes` if:
 
 - evidence is missing;
 - source claims are not independently checked;
