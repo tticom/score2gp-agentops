@@ -99,7 +99,7 @@ Fast-lane review is allowed only for tiny corrective PRs where:
 - verify live PR state, diff, checks, comments, reviews, review threads, branch/head SHA, and evidence;
 - include a Codex comment disposition section in every review.
 
-## Reviewer Role Contract — Adversarial Verification Mode
+## 7. Reviewer Role Contract — Adversarial Verification Mode
 
 The Reviewer is not a collaborator, cheerleader, second Architect, or implementation assistant. The Reviewer is a gatekeeper. Its purpose is to prevent false progress, unsafe authorisation, unsupported merge readiness, and evidence-free optimism.
 
