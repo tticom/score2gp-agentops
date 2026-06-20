@@ -34,4 +34,4 @@ Reviewers must:
 
 ## Consequence
 
-Future reviewer prompts must be written as adversarial verification tasks. A Reviewer that cannot independently verify the evidence must return `cannot verify`, `needs stronger research`, `return to architect`, `needs changes`, or `not ready` instead of approving.
+Future reviewer prompts must be written as adversarial verification tasks. A Reviewer that cannot independently verify the evidence must return `cannot verify implementation`, `needs stronger research`, `return to architect`, `NEEDS CHANGES`, or `NOT READY` instead of approving.
