@@ -118,6 +118,7 @@ The wording must make clear:
 * “Do more diagnostics” is only acceptable if it is bounded by a specific hypothesis, fixture set, metric, expected result, pass/fail threshold, and stop/pivot condition.
 * If the Architect cannot choose A, B, or C with evidence, the correct result is failure/cannot justify next implementation, not another vague research task.
 
+
 ## Mandatory Incremental Progress Rule
 
 Every agy prompt must identify the smallest project-forwarding outcome it will produce.
