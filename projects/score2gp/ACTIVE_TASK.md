@@ -1,81 +1,55 @@
-# Feature: Multi-note Sequencing
+# Diagnostic: Fixture Admission and Baseline Classification for Rest/Tab-only Inputs v0.1
 
 ## Repository
 tticom/score2gp
 
 ## Goal
-Implement clean, narrow deterministic multi-note sequencing from current `main`.
+Decide whether `QuarterRestThenNotes.pdf`, `TabOnlySingleNote.pdf`, and `TabOnlyTwoNotes.pdf` can become safe, admissible diagnostic fixtures, and what they prove or block, without authorising rest or tab-only implementation yet.
 
 ## Progress Baseline
-* Product PR #314 reverted the accidental PR #313 merge.
-* Product PR #315 merged the fractional/double-beam extraction fix.
-* Fractional/double-beam extraction for the generated `4SixteenthNotes.pdf` fixture is no longer the active blocker.
-* PR #313 remains reverted and must not be revived.
+* Product PR #316 merged, providing deterministic sequential event mapping for multiple already-recognised notation candidates in simple generated public notation fixtures.
+* The capability handles sorting, onset_ticks accumulation, and enforcing the 1-bar cap, but explicitly without rest or tab-only support.
 
 ## Incremental Progress Check
-* The next task must produce new decision-useful evidence by implementing sequential event mapping for multiple valid notation candidates in one staff group.
-* Progress is proven by extracting candidates, sorting them by page/system/staff and x-position, accumulating `onset_ticks` within one 4/4 bar, and exporting correctly.
+* The next task must produce decision-useful diagnostic evidence for the three new PDFs.
+* Progress is proven when the governance PR updates `ACTIVE_TASK.md` and adds a decision/governance record that changes the active blocker from deterministic sequencing to fixture admission/baseline classification for rest/tab-only inputs.
 
-## Product Validation Commands
-The product task must run and report commands equivalent to:
-```bash
-git status --short
-git branch --show-current
-git fetch --all --prune
-git ls-files fixtures/private work/private || true
-git status --ignored --short
-```
-
-For each acceptance fixture, the Developer must verify outputs by inspecting the generated GP structure using:
-```bash
-python src/score2gp/cli.py run fixtures/public/generated_simple/simple/<Fixture>.pdf
-```
-Expected outputs must explicitly demonstrate:
-* accurate candidate counts;
-* accurate event counts;
-* accurate duration values;
-* accurate sequential `onset_ticks` accumulation;
-* valid generated GP structure without rests or multiple voices;
-* completely green test suite (`pytest tests/`);
-* no artifact hygiene leakages.
-
-## Authorised Workflow
-The task must explicitly follow this loop:
-Developer implementation → Reviewer in adversarial verification mode for implementation conformance review → PR readiness review in adversarial verification mode.
-
-(Architect research is not required for this immediate task because the sequencing architecture was already approved during the Reviewer architecture verification for PR #313, and the active extraction blocker was resolved by PR #315).
+## Hypothesis
+The three candidate PDFs can be classified safely and usefully into one of:
+* admissible public diagnostic fixture,
+* not safe/admissible as fixture,
+* safe for local-only diagnostic but not commit,
+* not useful for current pipeline.
 
 ## Explicit Scope & Acceptance
-The implementation must:
-* Implement sequential event mapping for multiple valid notation candidates in one staff group.
-* Sort note outcomes by page/system/staff and x-position.
-* Accumulate `onset_ticks` within one 4/4 bar.
-* Preserve single-note PR #310 behaviour.
-* Preserve PR #315 beam extraction behaviour.
-* Reject unsupported chords, multiple staff groups, and sequences exceeding one 4/4 bar.
-
-The Acceptance Fixture Set:
-* `fixtures/public/generated_simple/simple/HalfNotes.pdf`
-* `fixtures/public/generated_simple/simple/2EighthNotes.pdf`
-* `fixtures/public/generated_simple/simple/4QuarterNotes.pdf`
-* `fixtures/public/generated_simple/simple/4SixteenthNotes.pdf`
+* Inspect the three PDFs: `QuarterRestThenNotes.pdf`, `TabOnlySingleNote.pdf`, and `TabOnlyTwoNotes.pdf`.
+* Do not commit them unless explicitly proven safe/admissible and the task authorises it.
+* The diagnostic must evaluate the following metrics for each file:
+  * file safety/admissibility outcome;
+  * whether the current production recognition path runs without crashing;
+  * whether notation candidates are produced;
+  * whether rest-like symbols are observed or absent;
+  * whether tab-only staff geometry/string evidence is detected;
+  * whether any ScoreIR/GP output is produced;
+  * exact warning/error/blocker reason;
+  * whether result enables rest-aware sequencing, tab-only extraction architecture, return to architecture, or stop/pivot.
 
 ## Constraints and Preservation
 Explicit non-goals:
-* No rests
-* No tab-only conversion
-* No chords
-* No voices
-* No tuplets
-* No mixed-duration-with-rest acceptance (`MixedDurations.pdf` remains exploratory/non-acceptance)
-* No general conversion
-* No PR #313 revival
+* Do not modify product code.
+* Do not authorise rest implementation.
+* Do not authorise tab-only implementation.
+* Do not add or commit the PDFs.
+* Do not create generated output fixtures (GP files, etc.).
+* Do not claim support for rests or tab-only input.
 
-## Stop Conditions for Developer
-The developer must stop if:
-* target fixtures fail;
-* sequencing requires bridge/export scope beyond authorised files;
-* private fixtures are needed;
-* branch is dirty;
-* tests fail;
-* implementation attempts rests/tab/chords/voices/general conversion.
+## Pass/Fail Thresholds
+* **Pass:** The diagnostic provides the full evaluation metrics (safety, run result, evidence summary, blocker classification, recommended next task) for all three files.
+* **Fail:** The diagnostic only captures logs, creates artifacts without forcing a decision, or only says "does not work."
+
+## Stop/Pivot Conditions
+* If files are unsafe/private/not admissible, stop fixture admission and request safe public/generated replacements.
+* If rest notation is detected but unsupported, authorise rest-aware sequencing architecture or implementation only if evidence is sufficient.
+* If tab-only input lacks necessary geometry/string evidence, return to architecture for tab-only extraction.
+* If tab-only evidence is present and production path exposes it, authorise a narrow tab-only diagnostic/implementation task.
+* If none of the files can be used safely, stop and request new generated public fixtures.
