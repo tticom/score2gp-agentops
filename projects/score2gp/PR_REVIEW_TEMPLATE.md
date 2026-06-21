@@ -25,13 +25,16 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 2. Claims vs. Evidence
+## 2. Adversarial Review Evidence Ledger
+
+For every key claim made by the author or in the PR, you must provide a ledger entry. Missing evidence is a verdict-changing blocker.
 
 - **Claim**: [State the agent's claim]
-  - **Evidence**: [State the reproducible evidence reviewed]
-  - **Verified?**: `yes` / `no`
-  - **Incremental Progress Verified?**: `yes` / `no` (Must not merely repeat the baseline)
-  - **Contradictions**: [Identify any contradictions between visual/source files and tool output]
+- **Evidence inspected**: [State the exact reproducible evidence reviewed]
+- **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
+- **Strongest failure mode**: [What is the strongest failure mode considered?]
+- **Was the failure mode tested or ruled out**: [Yes/No, and how]
+- **Verdict consequence**: [State the verdict consequence for this claim if missing or contradicted]
 
 ---
 
