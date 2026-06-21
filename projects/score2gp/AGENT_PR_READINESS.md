@@ -122,7 +122,7 @@ The Reviewer must provide a mandatory `Adversarial Review Evidence Ledger` in th
 - **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
 - **Strongest failure mode**: [What is the strongest failure mode considered?]
 - **Was the failure mode tested or ruled out**: [Yes/No, and how]
-- **Verdict consequence**: [What is the consequence for the review verdict if this claim is not verified or the failure mode is untested? Missing evidence must be treated as a verdict-changing blocker, not a caveat.]
+- **Verdict consequence**: [What is the consequence for the review verdict? Untested failure modes and any non-verified classification must be treated as a verdict-changing blocker, not a caveat.]
 
 ### Disconfirmation requirement
 
