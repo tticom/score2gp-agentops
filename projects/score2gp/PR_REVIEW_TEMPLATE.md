@@ -25,17 +25,30 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 2. Claims vs. Evidence
+## 2. Adversarial Review Evidence Ledger
+
+For every key claim made by the author or in the PR, you must provide a ledger entry. Missing evidence is a verdict-changing blocker.
 
 - **Claim**: [State the agent's claim]
-  - **Evidence**: [State the reproducible evidence reviewed]
-  - **Verified?**: `yes` / `no`
-  - **Incremental Progress Verified?**: `yes` / `no` (Must not merely repeat the baseline)
-  - **Contradictions**: [Identify any contradictions between visual/source files and tool output]
+- **Evidence inspected**: [State the exact reproducible evidence reviewed]
+- **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
+- **Strongest failure mode**: [What is the strongest failure mode considered?]
+- **Was the failure mode tested or ruled out**: [Yes/No, and how]
+- **Verdict consequence**: [State the verdict consequence. Untested failure modes and any non-verified classification MUST result in a verdict consequence, not just missing evidence.]
 
 ---
 
-## 3. Coherent Verification Channels
+## 3. Disconfirmation Gate
+
+- **Main ways this PR/task could falsely appear successful**: [List failure modes]
+- **Evidence checked against each false-success mode**: [What evidence ruled them out]
+- **Untested failure modes**: [List any failure modes that were not tested]
+- **Whether any untested failure mode blocks approval**: [Yes/No, with rationale]
+- **Final blocker/readiness consequence**: [Does this PR pass the disconfirmation gate?]
+
+---
+
+## 4. Coherent Verification Channels
 
 - **Fresh Output Directory Used**: `yes` / `no`
   - **Exact Command Run**: [State the CLI command]
@@ -44,7 +57,7 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 4. Required Result Channels
+## 5. Required Result Channels
 
 - **Strict-Mode Result**: [Report strict compile results; list safety blockers]
 - **Remediation / Diagnostic Result**: [Report permissive/debug/skipped compile results]
@@ -53,7 +66,7 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 5. Architectural & Risk Review
+## 6. Architectural & Risk Review
 
 - **Uses MusicXML pitches/tuning/oracle to bypass PDF geometry gates?**: `yes` / `no`
 - **Unsafe warning suppressions added to strict mode?**: `yes` / `no`
@@ -61,7 +74,7 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 6. Public Regression Coverage
+## 7. Public Regression Coverage
 
 - **Public synthetic fixture added or updated?**: [Name of the fixture]
 - **Mechanical defect reproduced?**: `yes` / `no`
@@ -69,7 +82,7 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 7. Mandatory Evidence Verification
+## 8. Mandatory Evidence Verification
 
 - **Durable evidence record written to `score2gp-agentops`?**: `yes` / `no`
   - **Record Path**: [e.g. projects/score2gp/runs/<date>-<slug>.md]
@@ -77,5 +90,5 @@ You must operate in **Adversarial Verification Mode**.
 
 ---
 
-## 8. Next Required Evidence
+## 9. Next Required Evidence
 - [Define exactly what evidence is required to advance this PR or the next branch]
