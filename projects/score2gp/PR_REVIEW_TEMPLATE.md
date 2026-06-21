@@ -38,7 +38,17 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 3. Coherent Verification Channels
+## 3. Disconfirmation Gate
+
+- **Main ways this PR/task could falsely appear successful**: [List failure modes]
+- **Evidence checked against each false-success mode**: [What evidence ruled them out]
+- **Untested failure modes**: [List any failure modes that were not tested]
+- **Whether any untested failure mode blocks approval**: [Yes/No, with rationale]
+- **Final blocker/readiness consequence**: [Does this PR pass the disconfirmation gate?]
+
+---
+
+## 4. Coherent Verification Channels
 
 - **Fresh Output Directory Used**: `yes` / `no`
   - **Exact Command Run**: [State the CLI command]
@@ -47,7 +57,7 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 4. Required Result Channels
+## 5. Required Result Channels
 
 - **Strict-Mode Result**: [Report strict compile results; list safety blockers]
 - **Remediation / Diagnostic Result**: [Report permissive/debug/skipped compile results]
@@ -56,7 +66,7 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 5. Architectural & Risk Review
+## 6. Architectural & Risk Review
 
 - **Uses MusicXML pitches/tuning/oracle to bypass PDF geometry gates?**: `yes` / `no`
 - **Unsafe warning suppressions added to strict mode?**: `yes` / `no`
@@ -64,7 +74,7 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 6. Public Regression Coverage
+## 7. Public Regression Coverage
 
 - **Public synthetic fixture added or updated?**: [Name of the fixture]
 - **Mechanical defect reproduced?**: `yes` / `no`
@@ -72,7 +82,7 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 7. Mandatory Evidence Verification
+## 8. Mandatory Evidence Verification
 
 - **Durable evidence record written to `score2gp-agentops`?**: `yes` / `no`
   - **Record Path**: [e.g. projects/score2gp/runs/<date>-<slug>.md]
@@ -80,5 +90,5 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ---
 
-## 8. Next Required Evidence
+## 9. Next Required Evidence
 - [Define exactly what evidence is required to advance this PR or the next branch]
