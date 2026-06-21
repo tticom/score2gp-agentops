@@ -1,65 +1,70 @@
-# Rest-Aware Sequencing Architecture Diagnostic for QuarterRestThenNotes v0.1
+# Quarter-Rest-Aware Sequencing Architecture for QuarterRestThenNotes v0.1
 
 ## Repository
 tticom/score2gp
 
 ## Goal
-To determine if `QuarterRestThenNotes.pdf` exposes enough structural rest evidence to define a deterministic rest-aware sequencing approach, or if rest work must return to architecture/pivot. Tab-only work is explicitly deferred to a separate active task.
+To determine where and how the extracted `quarter_rest_candidate` objects should be consumed in the deterministic sequencing pipeline, and explicitly map the required event representation for `QuarterRestThenNotes.pdf` without breaking existing note sequencing.
 
 ## Progress Baseline
-* Product PR #316 merged, providing deterministic multi-note sequencing.
-* Governance PR #194 authorised fixture baseline diagnostic.
-* Product PR #317 admitted exactly three public diagnostic PDFs.
-* Prior diagnostic found `QuarterRestThenNotes.pdf` produces note candidates but lacks rest-aware timing/representation.
-* Prior diagnostic found tab-only files expose text/fret evidence but staff geometry is missing.
+* Product PR #318 merged, providing extraction-only quarter rest candidate recognition from vector flag fragments.
+  * PR: `https://github.com/tticom/score2gp/pull/318`
+  * Title: `feat: extract quarter rest candidates from vector fragments`
+  * Merge commit: `1c42c7c76bbc2e8e462553e2330e4a32102a0158`
+  * Head SHA: `36ead2853f4841947229abecbd3aa7d38c8b70d2`
+* New merged product capability:
+  * recognises `quarter_rest_candidate` from vector fragments;
+  * filters note/clef overlaps;
+  * partitions by staff context before clustering;
+  * preserves `staff_index`.
+* Explicit non-capabilities:
+  * no rest sequencing;
+  * no rest export;
+  * no ScoreIR rest event integration;
+  * no tab-only support;
+  * no non-quarter rest extraction.
 
 ## Active Blocker
-`QuarterRestThenNotes.pdf` cannot yet be converted with rest-aware timing because the pipeline has not proven structural rest detection or a rest-event representation/mapping strategy.
+`QuarterRestThenNotes.pdf` can now emit a quarter_rest_candidate, but the deterministic sequencing/bridge path does not yet consume that candidate as a rest-duration event. Therefore rest-aware timing is not proven.
 
 ## Hypothesis
-`QuarterRestThenNotes.pdf` either exposes enough structural rest evidence to define a deterministic rest-aware sequencing approach, or it does not and rest work must return to architecture/pivot.
+`QuarterRestThenNotes.pdf` extracted candidates can be safely integrated into the deterministic multi-note sequencing pipeline either as intermediate events or ScoreIR events, or current sequencing assumptions prevent safe integration.
 
 ## Explicit Scope & Acceptance
-* Architecture diagnostic focused ONLY on `fixtures/public/generated_simple/simple/QuarterRestThenNotes.pdf`.
+* Architecture diagnostic focused ONLY on rest-aware deterministic sequencing.
 * Metrics to report:
-  * whether rest-like graphical/textual evidence is present in parsed PDF structures;
-  * whether current candidate extraction captures rest-like evidence anywhere;
-  * whether note candidates before and after the rest are detected and ordered;
-  * whether a rest duration can be inferred from spatial/timing context without hardcoded fixture hacks;
-  * whether a rest event representation exists or must be introduced;
-  * whether onset mapping can represent the gap without corrupting note order;
-  * whether implementation can be bounded to this fixture class;
-  * exact blocker if no viable path exists.
+  * Where in the pipeline should `quarter_rest_candidate` be consumed?
+  * Is it compatible with existing deterministic note sequencing from PR #316?
+  * Should it become an intermediate event before ScoreIR, a ScoreIR rest event, or a bridge input object?
+  * What exact event sequence should `QuarterRestThenNotes.pdf` produce?
+  * What tests would prove rest timing without overclaiming export support?
+  * Can implementation remain bounded without general rest support?
 * Required Architect outcome: must explicitly select Outcome A, B, or C (see Pass/Fail Thresholds).
 
 ## Constraints and Preservation
 Explicit non-goals:
-* Do not authorise rest implementation yet.
-* Do not authorise tab-only implementation.
-* Do not authorise tab-only architecture in the same active task.
-* Do not claim rest support exists.
-* Do not claim tab-only support exists.
-* Do not add or commit PDFs, GP files, screenshots, JSON reports, dumps, logs, or local artifacts.
-* Do not modify the product repo.
+* implement code;
+* modify tests;
+* modify export;
+* modify CLI;
+* support half/eighth/whole rests;
+* support tab-only scores;
+* train a model;
+* add fixtures;
+* generate or commit GP output;
+* claim end-to-end rest conversion.
 
 ## Pass/Fail Thresholds
-* **Pass:** The architecture diagnostic is approved by Reviewer if it produces:
-  * a concrete rest evidence map;
-  * a proposed event/timing model or a justified rejection;
-  * exact files/functions likely affected;
-  * exact tests/fixture assertions needed for implementation;
-  * explicitly chooses exactly one of: Outcome A (rest-aware sequencing is viable using current parsed evidence and a concrete deterministic approach), Outcome B (current parsed evidence is insufficient, but another bounded approach is viable and should be researched/implemented next), or Outcome C (no viable rest-aware approach is proven; no Developer work authorised);
-  * a yes/no Developer authorisation decision.
+* **Pass:** The architecture diagnostic is approved by Reviewer if it explicitly chooses exactly one of:
+  * Outcome A: Quarter-rest-aware sequencing is viable using current `quarter_rest_candidate` evidence and a concrete deterministic approach.
+  * Outcome B: Current evidence is insufficient, but another bounded approach is viable and should be researched next.
+  * Outcome C: No viable rest-aware sequencing path is proven; no Developer work authorised.
 * **Fail:** The diagnostic fails if it:
-  * relies only on visual inference;
-  * says "add rest support" generically;
-  * lacks a measurable implementation approach;
-  * does not classify evidence as fact/inference/hypothesis/unknown;
-  * does not choose Outcome A/B/C.
+  * proposes implementations outside architecture scope;
+  * claims rest export support exists;
+  * authorises Developer directly without Reviewer approval.
 
 ## Stop/Pivot Conditions
-* If rest evidence is not structurally detectable, return to architecture or request a generated fixture with clearer rest primitives.
-* If rest duration cannot be inferred deterministically, stop implementation.
-* If the fix requires broad OMR/model/OCR work, stop and escalate.
-* If implementation would affect tab-only or chord/voice handling, stop.
-* If product branch is dirty or tests fail unexplained, stop.
+* If rest-aware timing fundamentally breaks note sequencing and cannot be bounded, stop and pivot.
+* If sequencing requires spacing inference, stop.
+* If general rest support is needed, stop.
