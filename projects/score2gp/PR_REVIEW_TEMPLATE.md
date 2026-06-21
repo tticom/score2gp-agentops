@@ -34,7 +34,7 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 - **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
 - **Strongest failure mode**: [What is the strongest failure mode considered?]
 - **Was the failure mode tested or ruled out**: [Yes/No, and how]
-- **Verdict consequence**: [State the verdict consequence for this claim if missing or contradicted]
+- **Verdict consequence**: [State the verdict consequence. Untested failure modes and any non-verified classification MUST result in a verdict consequence, not just missing evidence.]
 
 ---
 

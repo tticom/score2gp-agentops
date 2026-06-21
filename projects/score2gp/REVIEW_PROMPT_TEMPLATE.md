@@ -30,11 +30,11 @@ You must operate in **Adversarial Verification Mode**.
 You must produce a mandatory `Adversarial Review Evidence Ledger` for all key claims in the review. Missing evidence must be treated as a verdict-changing blocker.
 For each key claim, provide:
 - **Claim**: [State the key claim]
-- **Evidence inspected**: [State the exact reproducible evidence reviewed, cross-referencing `summary.json`, `warnings.json`, etc.]
+- **Evidence inspected**: [State the exact reproducible evidence reviewed, cross-referencing `summary.json`, `warnings.json`, and `roundtrip_report.json`. Ensure all artifacts are from the same, single-run execution and are completely consistent.]
 - **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
 - **Strongest failure mode**: [What is the strongest failure mode considered?]
 - **Was the failure mode tested or ruled out**: [Yes/No, and how]
-- **Verdict consequence**: [What is the consequence for the review verdict if this claim is missing or contradicted]
+- **Verdict consequence**: [State the verdict consequence. Untested failure modes and any non-verified classification MUST result in a verdict consequence, not just missing evidence.]
 
 ### Task 2: Identify Contradictions
 - Check if visual/source evidence contradicts diagnostic summaries. If a contradiction is found, assume the tool output is wrong and label the claim as `contradicted` in the ledger.
