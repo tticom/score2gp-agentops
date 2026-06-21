@@ -16,11 +16,34 @@ Implement clean, narrow deterministic multi-note sequencing from current `main`.
 * The next task must produce new decision-useful evidence by implementing sequential event mapping for multiple valid notation candidates in one staff group.
 * Progress is proven by extracting candidates, sorting them by page/system/staff and x-position, accumulating `onset_ticks` within one 4/4 bar, and exporting correctly.
 
+## Product Validation Commands
+The product task must run and report commands equivalent to:
+```bash
+git status --short
+git branch --show-current
+git fetch --all --prune
+git ls-files fixtures/private work/private || true
+git status --ignored --short
+```
+
+For each acceptance fixture, the Developer must verify outputs by inspecting the generated GP structure using:
+```bash
+python src/score2gp/cli.py run fixtures/public/generated_simple/simple/<Fixture>.pdf
+```
+Expected outputs must explicitly demonstrate:
+* accurate candidate counts;
+* accurate event counts;
+* accurate duration values;
+* accurate sequential `onset_ticks` accumulation;
+* valid generated GP structure without rests or multiple voices;
+* completely green test suite (`pytest tests/`);
+* no artifact hygiene leakages.
+
 ## Authorised Workflow
 The task must explicitly follow this loop:
-Developer implementation → Reviewer implementation conformance review → PR readiness review.
+Developer implementation → Reviewer in adversarial verification mode for implementation conformance review → PR readiness review in adversarial verification mode.
 
-(Architect research is not required for this immediate task because the sequencing architecture was already approved and the active extraction blocker was resolved by PR #315).
+(Architect research is not required for this immediate task because the sequencing architecture was already approved during the Reviewer architecture verification for PR #313, and the active extraction blocker was resolved by PR #315).
 
 ## Explicit Scope & Acceptance
 The implementation must:
