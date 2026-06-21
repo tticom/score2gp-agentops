@@ -91,7 +91,8 @@ Every reviewer prompt must require the Reviewer to:
 
 - start from `cannot verify`;
 - test the strongest failure modes before approving;
-- label key claims as `verified`, `partially verified`, `not verified`, `contradicted`, or `out of scope`;
+- provide a mandatory `Adversarial Review Evidence Ledger` detailing the claim, exact evidence inspected, evidence classification, strongest failure mode considered, testing status of that failure mode, and verdict consequence;
+- treat missing evidence, untested failure modes, and any non-verified classification as a verdict-changing blocker;
 - reject summary-only approval;
 - verify that the proposed next task is the smallest safe task;
 - reject tasks that merely repeat prior evidence;

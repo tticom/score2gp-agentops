@@ -115,21 +115,23 @@ The Reviewer must not ask “can I find enough reasons to approve this?” The R
 
 The Reviewer must not approve from summaries, intent, plausible reasoning, or agent confidence.
 
-Every key claim must be labelled as one of:
+The Reviewer must provide a mandatory `Adversarial Review Evidence Ledger` in their review output. For every key claim, the Reviewer must list an entry with the following structure:
 
-- `verified`
-- `partially verified`
-- `not verified`
-- `contradicted`
-- `out of scope`
-
-For every key claim, the Reviewer must provide the evidence used to classify it. Valid evidence includes source inspection, diffs, command output, fixture output, tests, diagnostics, generated artifact inspection, PR metadata, CI/check status, or exact repository state.
+- **Claim**: [State the key claim]
+- **Evidence inspected**: [State the exact reproducible evidence reviewed. Valid evidence includes source inspection, diffs, command output, fixture output, tests, diagnostics, generated artifact inspection, PR metadata, CI/check status, or exact repository state.]
+- **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
+- **Strongest failure mode**: [What is the strongest failure mode considered?]
+- **Was the failure mode tested or ruled out**: [Yes/No, and how]
+- **Verdict consequence**: [What is the consequence for the review verdict? Untested failure modes and any non-verified classification must be treated as a verdict-changing blocker, not a caveat.]
 
 ### Disconfirmation requirement
 
-Before approving, the Reviewer must list the main failure modes considered and what evidence ruled each one out.
-
-If a failure mode was not tested, the Reviewer must say so and decide whether that blocks approval.
+Before approving, the Reviewer must explicitly document a `Disconfirmation Gate` with the following structure:
+- **Main ways this PR/task could falsely appear successful**: [List failure modes]
+- **Evidence checked against each false-success mode**: [What evidence ruled them out]
+- **Untested failure modes**: [List any failure modes that were not tested]
+- **Whether any untested failure mode blocks approval**: [Yes/No, with rationale]
+- **Final blocker/readiness consequence**: [Does this PR pass the disconfirmation gate?]
 
 For recognition, export, conversion, pipeline, or workflow behaviour, the Reviewer must actively check whether the proposed next task could fail due to missing product evidence, fixture ambiguity, artifact hygiene, private data, over-broad scope, unsupported architecture, or no incremental progress.
 
