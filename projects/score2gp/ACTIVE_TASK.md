@@ -1,55 +1,65 @@
-# Diagnostic: Fixture Admission and Baseline Classification for Rest/Tab-only Inputs v0.1
+# Rest-Aware Sequencing Architecture Diagnostic for QuarterRestThenNotes v0.1
 
 ## Repository
 tticom/score2gp
 
 ## Goal
-Decide whether `QuarterRestThenNotes.pdf`, `TabOnlySingleNote.pdf`, and `TabOnlyTwoNotes.pdf` can become safe, admissible diagnostic fixtures, and what they prove or block, without authorising rest or tab-only implementation yet.
+To determine if `QuarterRestThenNotes.pdf` exposes enough structural rest evidence to define a deterministic rest-aware sequencing approach, or if rest work must return to architecture/pivot. Tab-only work is explicitly deferred to a separate active task.
 
 ## Progress Baseline
-* Product PR #316 merged, providing deterministic sequential event mapping for multiple already-recognised notation candidates in simple generated public notation fixtures.
-* The capability handles sorting, onset_ticks accumulation, and enforcing the 1-bar cap, but explicitly without rest or tab-only support.
+* Product PR #316 merged, providing deterministic multi-note sequencing.
+* Governance PR #194 authorised fixture baseline diagnostic.
+* Product PR #317 admitted exactly three public diagnostic PDFs.
+* Prior diagnostic found `QuarterRestThenNotes.pdf` produces note candidates but lacks rest-aware timing/representation.
+* Prior diagnostic found tab-only files expose text/fret evidence but staff geometry is missing.
 
-## Incremental Progress Check
-* The next task must produce decision-useful diagnostic evidence for the three new PDFs.
-* Progress is proven when the governance PR updates `ACTIVE_TASK.md` and adds a decision/governance record that changes the active blocker from deterministic sequencing to fixture admission/baseline classification for rest/tab-only inputs.
+## Active Blocker
+`QuarterRestThenNotes.pdf` cannot yet be converted with rest-aware timing because the pipeline has not proven structural rest detection or a rest-event representation/mapping strategy.
 
 ## Hypothesis
-The three candidate PDFs can be classified safely and usefully into one of:
-* admissible public diagnostic fixture,
-* not safe/admissible as fixture,
-* safe for local-only diagnostic but not commit,
-* not useful for current pipeline.
+`QuarterRestThenNotes.pdf` either exposes enough structural rest evidence to define a deterministic rest-aware sequencing approach, or it does not and rest work must return to architecture/pivot.
 
 ## Explicit Scope & Acceptance
-* Inspect the three PDFs: `QuarterRestThenNotes.pdf`, `TabOnlySingleNote.pdf`, and `TabOnlyTwoNotes.pdf`.
-* Do not commit them unless explicitly proven safe/admissible and the task authorises it.
-* The diagnostic must evaluate the following metrics for each file:
-  * file safety/admissibility outcome;
-  * whether the current production recognition path runs without crashing;
-  * whether notation candidates are produced;
-  * whether rest-like symbols are observed or absent;
-  * whether tab-only staff geometry/string evidence is detected;
-  * whether any ScoreIR/GP output is produced;
-  * exact warning/error/blocker reason;
-  * whether result enables rest-aware sequencing, tab-only extraction architecture, return to architecture, or stop/pivot.
+* Architecture diagnostic focused ONLY on `fixtures/public/generated_simple/simple/QuarterRestThenNotes.pdf`.
+* Metrics to report:
+  * whether rest-like graphical/textual evidence is present in parsed PDF structures;
+  * whether current candidate extraction captures rest-like evidence anywhere;
+  * whether note candidates before and after the rest are detected and ordered;
+  * whether a rest duration can be inferred from spatial/timing context without hardcoded fixture hacks;
+  * whether a rest event representation exists or must be introduced;
+  * whether onset mapping can represent the gap without corrupting note order;
+  * whether implementation can be bounded to this fixture class;
+  * exact blocker if no viable path exists.
+* Required Architect outcome: must explicitly select Outcome A, B, or C (see Pass/Fail Thresholds).
 
 ## Constraints and Preservation
 Explicit non-goals:
-* Do not modify product code.
-* Do not authorise rest implementation.
+* Do not authorise rest implementation yet.
 * Do not authorise tab-only implementation.
-* Do not add or commit the PDFs.
-* Do not create generated output fixtures (GP files, etc.).
-* Do not claim support for rests or tab-only input.
+* Do not authorise tab-only architecture in the same active task.
+* Do not claim rest support exists.
+* Do not claim tab-only support exists.
+* Do not add or commit PDFs, GP files, screenshots, JSON reports, dumps, logs, or local artifacts.
+* Do not modify the product repo.
 
 ## Pass/Fail Thresholds
-* **Pass:** The diagnostic provides the full evaluation metrics (safety, run result, evidence summary, blocker classification, recommended next task) for all three files.
-* **Fail:** The diagnostic only captures logs, creates artifacts without forcing a decision, or only says "does not work."
+* **Pass:** The architecture diagnostic is approved by Reviewer if it produces:
+  * a concrete rest evidence map;
+  * a proposed event/timing model or a justified rejection;
+  * exact files/functions likely affected;
+  * exact tests/fixture assertions needed for implementation;
+  * explicitly chooses exactly one of: Outcome A (rest-aware sequencing is viable using current parsed evidence and a concrete deterministic approach), Outcome B (current parsed evidence is insufficient, but another bounded approach is viable and should be researched/implemented next), or Outcome C (no viable rest-aware approach is proven; no Developer work authorised);
+  * a yes/no Developer authorisation decision.
+* **Fail:** The diagnostic fails if it:
+  * relies only on visual inference;
+  * says "add rest support" generically;
+  * lacks a measurable implementation approach;
+  * does not classify evidence as fact/inference/hypothesis/unknown;
+  * does not choose Outcome A/B/C.
 
 ## Stop/Pivot Conditions
-* If files are unsafe/private/not admissible, stop fixture admission and request safe public/generated replacements.
-* If rest notation is detected but unsupported, authorise rest-aware sequencing architecture or implementation only if evidence is sufficient.
-* If tab-only input lacks necessary geometry/string evidence, return to architecture for tab-only extraction.
-* If tab-only evidence is present and production path exposes it, authorise a narrow tab-only diagnostic/implementation task.
-* If none of the files can be used safely, stop and request new generated public fixtures.
+* If rest evidence is not structurally detectable, return to architecture or request a generated fixture with clearer rest primitives.
+* If rest duration cannot be inferred deterministically, stop implementation.
+* If the fix requires broad OMR/model/OCR work, stop and escalate.
+* If implementation would affect tab-only or chord/voice handling, stop.
+* If product branch is dirty or tests fail unexplained, stop.
