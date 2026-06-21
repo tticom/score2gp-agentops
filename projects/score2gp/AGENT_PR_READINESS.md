@@ -126,6 +126,13 @@ The Reviewer must provide a mandatory `Adversarial Review Evidence Ledger` in th
 
 ### Disconfirmation requirement
 
+Before approving, the Reviewer must explicitly document a `Disconfirmation Gate` with the following structure:
+- **Main ways this PR/task could falsely appear successful**: [List failure modes]
+- **Evidence checked against each false-success mode**: [What evidence ruled them out]
+- **Untested failure modes**: [List any failure modes that were not tested]
+- **Whether any untested failure mode blocks approval**: [Yes/No, with rationale]
+- **Final blocker/readiness consequence**: [Does this PR pass the disconfirmation gate?]
+
 For recognition, export, conversion, pipeline, or workflow behaviour, the Reviewer must actively check whether the proposed next task could fail due to missing product evidence, fixture ambiguity, artifact hygiene, private data, over-broad scope, unsupported architecture, or no incremental progress.
 
 ### Approval standard

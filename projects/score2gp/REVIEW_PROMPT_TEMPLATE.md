@@ -39,7 +39,10 @@ For each key claim, provide:
 ### Task 2: Identify Contradictions
 - Check if visual/source evidence contradicts diagnostic summaries. If a contradiction is found, assume the tool output is wrong and label the claim as `contradicted` in the ledger.
 
-### Task 3: Identify Architectural Risks
+### Task 3: Execute Disconfirmation Gate
+- You must actively check for false success by providing a `Disconfirmation Gate` block. List the main ways the PR could falsely appear successful, evidence checked against each, untested failure modes, whether they block approval, and the final blocker consequence.
+
+### Task 4: Identify Architectural Risks
 - Inspect the diff to confirm that MusicXML pitch/tuning data was not used to bypass PDF geometry gates or drive layout grouping.
 - Ensure that the global warning filter remains tightly constrained and that no safety gates were loosened in strict mode.
 
