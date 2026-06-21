@@ -26,13 +26,18 @@ You must operate in **Adversarial Verification Mode**.
 
 ## 3. Review Instructions
 
-### Task 1: Verify Claims
-- Cross-reference the agent's claims against `summary.json`, `warnings.json`, and `roundtrip_report.json`.
-- Ensure all artifacts are from the same, single-run execution and are completely consistent.
+### Task 1: Create Adversarial Review Evidence Ledger
+You must produce a mandatory `Adversarial Review Evidence Ledger` for all key claims in the review. Missing evidence must be treated as a verdict-changing blocker.
+For each key claim, provide:
+- **Claim**: [State the key claim]
+- **Evidence inspected**: [State the exact reproducible evidence reviewed, cross-referencing `summary.json`, `warnings.json`, etc.]
+- **Evidence classification**: `verified` / `partially verified` / `not verified` / `contradicted` / `out of scope`
+- **Strongest failure mode**: [What is the strongest failure mode considered?]
+- **Was the failure mode tested or ruled out**: [Yes/No, and how]
+- **Verdict consequence**: [What is the consequence for the review verdict if this claim is missing or contradicted]
 
 ### Task 2: Identify Contradictions
-- Check if visual/source evidence contradicts diagnostic summaries (e.g. check if a measure or system is visible in the original PDF but reported missing by the tool). 
-- If a contradiction is found, assume the tool output is wrong and label the claim as `contradicted`.
+- Check if visual/source evidence contradicts diagnostic summaries. If a contradiction is found, assume the tool output is wrong and label the claim as `contradicted` in the ledger.
 
 ### Task 3: Identify Architectural Risks
 - Inspect the diff to confirm that MusicXML pitch/tuning data was not used to bypass PDF geometry gates or drive layout grouping.
