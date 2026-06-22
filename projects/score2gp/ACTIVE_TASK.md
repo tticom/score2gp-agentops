@@ -1,70 +1,61 @@
-# Quarter-Rest-Aware Sequencing Architecture for QuarterRestThenNotes v0.1
+# Architect Research: Quarter-Rest GP Export Integration v0.1
 
 ## Repository
 tticom/score2gp
 
 ## Goal
-To determine where and how the extracted `quarter_rest_candidate` objects should be consumed in the deterministic sequencing pipeline, and explicitly map the required event representation for `QuarterRestThenNotes.pdf` without breaking existing note sequencing.
+To determine if existing GP export can safely handle quarter-rest ScoreIR events sequenced by PR #319, or if an alternate bounded export path is required, without breaking existing note export.
 
 ## Progress Baseline
-* Product PR #318 merged, providing extraction-only quarter rest candidate recognition from vector flag fragments.
-  * PR: `https://github.com/tticom/score2gp/pull/318`
-  * Title: `feat: extract quarter rest candidates from vector fragments`
-  * Merge commit: `1c42c7c76bbc2e8e462553e2330e4a32102a0158`
-  * Head SHA: `36ead2853f4841947229abecbd3aa7d38c8b70d2`
-* New merged product capability:
-  * recognises `quarter_rest_candidate` from vector fragments;
-  * filters note/clef overlaps;
-  * partitions by staff context before clustering;
-  * preserves `staff_index`.
-* Explicit non-capabilities:
-  * no rest sequencing;
-  * no rest export;
-  * no ScoreIR rest event integration;
-  * no tab-only support;
-  * no non-quarter rest extraction.
+* Product PR #319 merged, providing deterministic sequencing of quarter rest candidates as ScoreIR rest events.
+  * PR URL: `https://github.com/tticom/score2gp/pull/319`
+  * Head SHA: `d19a149b7d915a737f247891b6be89dfb7a36181`
+  * Merge commit: `07b2552e625581771239f3178b24d9c7d25578f8`
+  * Merge status: ALREADY MERGED
+* Files changed:
+  * `src/score2gp/notation_bridge.py`
+  * `src/score2gp/quarter_rest_recogniser.py`
+  * `tests/test_notation_bridge_quarter_rest_candidate_sequencing.py`
+  * `tests/test_deterministic_multinote_sequencing_quarter_rest.py`
+  * `tests/test_quarter_rest_recogniser_extraction.py`
+* Tests/checks reported: All checks successful
+* Verdicts: Implementation conformance approved, PR readiness READY.
+* Known non-capability preserved: GP export was explicitly not tested and intentionally excluded.
 
 ## Active Blocker
-`QuarterRestThenNotes.pdf` can now emit a quarter_rest_candidate, but the deterministic sequencing/bridge path does not yet consume that candidate as a rest-duration event. Therefore rest-aware timing is not proven.
+Quarter-rest ScoreIR events exist after sequencing, but GP export handling for rest events has not been verified. The next task must not assume export works.
 
 ## Hypothesis
-`QuarterRestThenNotes.pdf` extracted candidates can be safely integrated into the deterministic multi-note sequencing pipeline either as intermediate events or ScoreIR events, or current sequencing assumptions prevent safe integration.
+The existing ScoreIR-to-GP export mechanism can be safely extended to emit quarter rest durations without breaking existing multi-note timing, or a bounded alternate strategy is necessary.
 
 ## Explicit Scope & Acceptance
-* Architecture diagnostic focused ONLY on rest-aware deterministic sequencing.
-* Metrics to report:
-  * Where in the pipeline should `quarter_rest_candidate` be consumed?
-  * Is it compatible with existing deterministic note sequencing from PR #316?
-  * Should it become an intermediate event before ScoreIR, a ScoreIR rest event, or a bridge input object?
-  * What exact event sequence should `QuarterRestThenNotes.pdf` produce?
-  * What tests would prove rest timing without overclaiming export support?
-  * Can implementation remain bounded without general rest support?
-* Required Architect outcome: must explicitly select Outcome A, B, or C (see Pass/Fail Thresholds).
+* Architecture diagnostic focused ONLY on quarter-rest GP export integration.
+* The Architect task must include:
+  * Current export path inventory.
+  * Where ScoreIR note events are converted into GP output.
+  * Whether rest events are represented in the existing ScoreIR/export model.
+  * Whether quarter rests require measure/timing validation.
+  * Existing tests that cover export timing/duration.
+  * Proposed smallest Developer task only if evidence supports it.
+  * Clear risks around breaking existing note export behaviour.
+* Required Architect outcome: must explicitly select Outcome A, B, or C.
 
 ## Constraints and Preservation
 Explicit non-goals:
-* implement code;
-* modify tests;
-* modify export;
-* modify CLI;
-* support half/eighth/whole rests;
-* support tab-only scores;
-* train a model;
-* add fixtures;
-* generate or commit GP output;
-* claim end-to-end rest conversion.
+* Do not change product code, tests, or fixtures.
+* Do not claim GP export support exists before evidence is provided.
+* Do not authorise direct implementation of GP export without architecture research.
+* Do not add support for other rest types (whole, half, eighth).
+* Do not broaden the task to tab-only export or full notation coverage.
+* Do not include private PDFs, GP files, screenshots, generated dumps, logs, or local artifacts.
 
 ## Pass/Fail Thresholds
 * **Pass:** The architecture diagnostic is approved by Reviewer if it explicitly chooses exactly one of:
-  * Outcome A: Quarter-rest-aware sequencing is viable using current `quarter_rest_candidate` evidence and a concrete deterministic approach.
-  * Outcome B: Current evidence is insufficient, but another bounded approach is viable and should be researched next.
-  * Outcome C: No viable rest-aware sequencing path is proven; no Developer work authorised.
-* **Fail:** The diagnostic fails if it:
-  * proposes implementations outside architecture scope;
-  * claims rest export support exists;
-  * authorises Developer directly without Reviewer approval.
+  * Outcome A: Existing GP export path can safely export quarter-rest ScoreIR events with a narrow Developer implementation task.
+  * Outcome B: Existing GP export path cannot safely handle quarter-rest events as-is, but a bounded alternate export approach is viable.
+  * Outcome C: No safe bounded export path is currently viable; stop and return to supervisor.
+* **Fail:** The diagnostic fails if it assumes export works without research, proposes changing existing note export without mitigation, authorises Developer work directly, or relies on unbounded implementation tasks.
 
 ## Stop/Pivot Conditions
-* If rest-aware timing fundamentally breaks note sequencing and cannot be bounded, stop and pivot.
-* If sequencing requires spacing inference, stop.
-* If general rest support is needed, stop.
+* If the existing export model structurally prohibits rest events entirely without an unbounded rewrite, stop and pivot to Outcome C.
+* If general rest support (handling arbitrary durations) is required to emit a single quarter rest, stop.
