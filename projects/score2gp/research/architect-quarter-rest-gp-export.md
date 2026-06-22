@@ -2,13 +2,15 @@
 
 ## Prompt Chain
 - Prompt manifest: None
-- Operative prompt: projects/score2gp/ACTIVE_TASK.md
-- Prompt files: projects/score2gp/ACTIVE_TASK.md
+- Operative prompt: projects/score2gp/research/architect-quarter-rest-gp-export-prompt.md
+- Prompt files: projects/score2gp/research/architect-quarter-rest-gp-export-prompt.md
 
 ## Summary Verdict
 **Outcome A Selected:** The existing GP export path can safely export quarter-rest ScoreIR events with a narrow Developer implementation task.
 
 ## Verified Metrics
+- **Product Repository Inspected:** `tticom/score2gp` on branch `main` at merge commit `07b2552e625581771239f3178b24d9c7d25578f8` (Product PR #319)
+- **Commands Executed:** `git checkout main`, `git pull --ff-only`, and static analysis via `git grep -n "class Event" src/score2gp`, `git grep -n "is_rest" src/score2gp`, `git grep -n "def _bars" src/score2gp`
 - **Files Inspected:** `src/score2gp/ir.py`, `src/score2gp/gp_package.py`, `src/score2gp/gpif.py`, `tests/test_gp_writer.py`
 - **Current Export Path Inventory:**
   - Entry point: `gp_package.py:write_gp`
