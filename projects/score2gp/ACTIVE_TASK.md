@@ -1,28 +1,26 @@
-# Supervisor Decision Gate: Post-Quarter-Rest End-to-End API Verification
+# Active Task: Fixture Hygiene/Review for `chore/adding-tab-only-rest-fixtures`
 
 ## Repository
-tticom/score2gp-agentops
+tticom/score2gp
 
 ## Goal
-Decide the next highest-value product or architecture task following the successful end-to-end API verification of quarter-rest PDF-to-GP pipeline.
+Perform a fixture hygiene and review task for the `chore/adding-tab-only-rest-fixtures` branch to verify the newly added PDFs are public-safe, intentionally added, and suitable for a future bounded tab-only rest diagnostic.
 
 ## Progress Baseline
-* Product PR #319 merged: Quarter-rest candidates sequence as ScoreIR rest events.
-* Product PR #320 merged: Verified production relational GPIF export path supports ScoreIR quarter-rest events without `gpif.py` changes.
 * Product PR #321 merged: Quarter-rest direct API PDF-to-GP acceptance is verified end-to-end.
+* Architectural Review: CLI `--pdf-only-tab` gap diagnosed as a mode mismatch for standard-notation fixtures.
+* Governance Decision: `projects/score2gp/decisions/2026-06-23-musicxml-sidecar-limitation.md` confirms standard-notation-only and mixed notation+tab PDF conversion requires MusicXML/sidecar for now. No user-facing PDF-only notation convert implementation is authorised until standard-notation layout inference is architected.
 
 ## Active Blocker
-The quarter-rest direct API PDF-to-GP acceptance blocker is now closed. 
-Remaining limitations are:
-* CLI `--pdf-only-tab` gap remains (`pdf_only_tab_grouping_unsafe`).
-* Tab-only rests are untested.
-* Other rest durations (eighth, half, whole) are untested.
-* Guitar Pro GUI import was not visually validated.
+Before tab-only rests can be safely diagnosed or integrated, the incoming fixtures meant to test them must be verified. The current blocker is ensuring the fixtures on the `chore/adding-tab-only-rest-fixtures` branch meet all safety and scope requirements.
 
 ## Explicit Scope & Acceptance
-* Supervisor to review `projects/score2gp/decisions/2026-06-23-post-pr321-quarter-rest-e2e-completion.md`.
-* Supervisor to authorise the next bounded task by updating this `ACTIVE_TASK.md` file.
+* Verify the newly added PDFs in `chore/adding-tab-only-rest-fixtures` are public-safe.
+* Verify they are intentionally added and scoped correctly.
+* Confirm they are suitable for a future bounded tab-only rest diagnostic.
+* Produce a hygiene report or approve the branch if safe.
 
 ## Constraints and Preservation
-* Do not authorise a product implementation task unless the next blocker is stated concretely.
-* Do not claim CLI `--pdf-only-tab` quarter-rest integration is proven.
+* Do not combine this review with the standard-notation governance PR.
+* Do not implement rest recognition logic in this task.
+* Do not run diagnostics on the fixtures during this review unless strictly necessary for hygiene verification.
