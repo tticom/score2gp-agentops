@@ -50,12 +50,10 @@ A public PDF fixture can now be processed through the direct API path (from extr
 * Tab-only rests remain untested.
 * Other rest durations (eighth, half, whole) remain untested.
 
-## Decision Required
-The project requires a Supervisor decision to select the next priority.
+## Follow-Up Governance State
 
-Recommended options:
-* **Option A**: Authorise a narrow CLI `--pdf-only-tab` investigation for the `pdf_only_tab_grouping_unsafe` gap on `QuarterRestThenNotes.pdf`.
-* **Option B**: Authorise a bounded tab-only rest feasibility/diagnostic task.
-* **Option C**: Authorise eighth-rest recognition/sequencing/export architecture or diagnostic task.
-* **Option D**: Authorise governance milestone review before choosing next symbol.
-* **Option E**: Stop/pivot if quarter-rest milestone is sufficient for current project direction.
+The post-PR #321 supervisor decision has been resolved.
+
+Subsequent diagnostic and architecture review established that `--pdf-only-tab` is tablature-exclusive and is not the product path for standard-notation-only fixtures. Standard-notation-only and mixed notation+tab PDF conversion require MusicXML/sidecar for now.
+
+The next authorised active task is fixture hygiene review for `chore/adding-tab-only-rest-fixtures`.
