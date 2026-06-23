@@ -8,6 +8,24 @@ Product PR #321 has been merged into `tticom/score2gp`, providing end-to-end acc
 * Final head SHA: `32b4efae23793caf4c587b55a06bcaad68ecee6f`
 * Merge commit: `4cf6cbd2b3e63e3d9990e77f2fcc09fe7f94ec90`
 
+## PR Readiness Evidence
+- Product PR: `tticom/score2gp#321` (closed / merged)
+- Final head SHA: `32b4efae23793caf4c587b55a06bcaad68ecee6f`
+- Merge commit: `4cf6cbd2b3e63e3d9990e77f2fcc09fe7f94ec90`
+- Reviewer implementation conformance verdict: `approve implementation`
+- PR readiness verdict: `READY`
+- Merge recommendation: `Authorise supervisor merge`
+- Codex/review thread disposition: all PR #321 review threads resolved before merge.
+- CI/check disposition: CI and Raster Diagnostics were green before merge.
+- Changed file: `tests/test_quarter_rest_e2e_acceptance.py`
+- Scope confirmed: test-only product change; no recognition, bridge, timing, or export implementation rewrite.
+- Artifact hygiene: generated `.gp` output used pytest `tmp_path / "test_e2e.gp"` and was not committed.
+- Limitations preserved:
+  - CLI `--pdf-only-tab` still fails with `pdf_only_tab_grouping_unsafe`;
+  - Guitar Pro GUI import was not visually validated;
+  - tab-only rests remain untested;
+  - other rest durations remain untested.
+
 ## Exact Capability Proven
 A public PDF fixture can now be processed through the direct API path (from extraction to export) preserving a quarter rest in the final `.gp` file without regressing the serialization of adjacent notes.
 
