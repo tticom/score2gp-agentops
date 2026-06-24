@@ -1,26 +1,32 @@
-# Active Task: Fixture Hygiene/Review for `chore/adding-tab-only-rest-fixtures`
+# Active Task: Architect Research on Tab-Only Rhythm Inference
 
 ## Repository
 tticom/score2gp
 
 ## Goal
-Perform a fixture hygiene and review task for the `chore/adding-tab-only-rest-fixtures` branch to verify the newly added PDFs are public-safe, intentionally added, and suitable for a future bounded tab-only rest diagnostic.
+Perform an Architect research decision gate to determine whether Score2GP can infer rhythm for tab-only PDF input using deterministic evidence from raster/vector/tab geometry, with enough reliability to justify implementation.
 
 ## Progress Baseline
-* Product PR #321 merged: Quarter-rest direct API PDF-to-GP acceptance is verified end-to-end.
-* Architectural Review: CLI `--pdf-only-tab` gap diagnosed as a mode mismatch for standard-notation fixtures.
-* Governance Decision: `projects/score2gp/decisions/2026-06-23-musicxml-sidecar-limitation.md` confirms standard-notation-only and mixed notation+tab PDF conversion requires MusicXML/sidecar for now. No user-facing PDF-only notation convert implementation is authorised until standard-notation layout inference is architected.
+* **Product PR #323 merged**: `feat: tab-only quarter rest candidate wiring`
+  * Merge commit: `6afdd3195f37eca6e319caf33dbeccfbbf1d4b5c`
+  * Baseline capability: Tab-only quarter-rest candidate support is now merged and wired into `--pdf-only-tab`.
+* **Governance Decision**: `projects/score2gp/decisions/2026-06-24-post-pr323-tab-only-rhythm-inference-gate.md` records PR #323 completion and blocks Developer work on rhythm inference until architecture is approved.
 
 ## Active Blocker
-Before tab-only rests can be safely diagnosed or integrated, the incoming fixtures meant to test them must be verified. The current blocker is ensuring the fixtures on the `chore/adding-tab-only-rest-fixtures` branch meet all safety and scope requirements.
+The active blocker is no longer "can we recognise tab-only quarter rests?". That is baseline capability.
+The active blocker is: **Can Score2GP infer rhythm for tab-only PDF input using deterministic evidence from raster/vector/tab geometry, with enough reliability to justify implementation?**
+General tab-only rhythm inference remains unimplemented. Whole, half, eighth, and sixteenth rests remain unsupported.
 
 ## Explicit Scope & Acceptance
-* Verify the newly added PDFs in `chore/adding-tab-only-rest-fixtures` are public-safe.
-* Verify they are intentionally added and scoped correctly.
-* Confirm they are suitable for a future bounded tab-only rest diagnostic.
-* Produce a hygiene report or approve the branch if safe.
+* The next authorised task is **Architect research only**. Developer implementation is blocked.
+* The Architect must produce exactly one of the following outcomes:
+
+  * **Outcome A**: The current deterministic raster/vector/tab-geometry path is viable for tab-only rhythm inference on a defined fixture set.
+  * **Outcome B**: The current deterministic path is not viable, but another concrete non-ML approach is viable.
+  * **Outcome C**: No credible deterministic or non-ML path is currently viable. The project must stop or pivot.
 
 ## Constraints and Preservation
-* Do not combine this review with the standard-notation governance PR.
-* Do not implement rest recognition logic in this task.
-* Do not run diagnostics on the fixtures during this review unless strictly necessary for hygiene verification.
+* Do not perform Developer implementation.
+* Do not modify product code, tests, or fixtures.
+* Do not commit private PDFs, GP files, screenshots, logs, diagnostic dumps, or local scratch files.
+* Developer work remains blocked until Reviewer architecture verification approves Outcome A or B.
