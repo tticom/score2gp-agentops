@@ -13,12 +13,12 @@ Standard-notation PDF-only extraction is currently blocked by a lack of structur
 
 ## Inferences
 - Because 5-line staff bounds and leading system connectors are already deterministically extracted, the vertical grouping of staves into systems is geometrically viable.
-- Because a standard barline is a simple vertical stroke connecting the top and bottom lines of a staff, internal measure boundary extraction is geometrically viable from vector PDFs.
+- Because a standard barline is a vertical stroke connecting the top and bottom lines of a staff, it is geometrically similar to a chord stem, making deterministic internal measure boundary extraction ambiguous without further heuristics.
 - Because polyphony relies on complex stem direction, horizontal offset, and rests logic, voice mapping is mathematically underdetermined from primitive geometry alone without extensive heuristics or ML.
 
 ## Hypotheses
-- **Narrow Layout Skeleton Hypothesis**: We can extract a complete "Layout Skeleton" (systems, staves, measure barlines) deterministically from standard-notation vector PDFs without attempting to solve polyphony or semantic note association.
-- **Fixture set**: Existing public fixtures `tests/fixtures/musicxml/tiny_single_bar.musicxml` (PDF equivalent) and `tests/fixtures/musicxml/tiny_two_voice.musicxml` (PDF equivalent).
+- **Narrow Layout Skeleton Hypothesis**: We can extract a complete "Layout Skeleton" (systems, staves, measure barlines) deterministically from standard-notation vector PDFs without attempting to solve polyphony or semantic note association. It is hypothesized that internal measure barlines can be cleanly distinguished from note stems.
+- **Fixture set**: Existing tracked public fixtures `tests/fixtures/pdf/generated_standard_staff_quarter_note.pdf` and `tests/fixtures/pdf/generated_standard_staff_multi_staff.pdf`.
 - **Metric**: Accurate extraction of the number of systems, staves per system, and barlines per staff.
 - **Expected result**: The geometry layer correctly groups all 5-line staves into systems and identifies all vertical strokes intersecting the staff bounds as barlines.
 - **Pass threshold**: 100% correct system/measure grid extraction on the bounded fixture set.
@@ -34,19 +34,19 @@ Standard-notation PDF-only extraction is currently blocked by a lack of structur
 | :--- | :--- | :--- | :--- |
 | 5-line staff grouping | Supported (`pdf_staff_detection.py`) | None | Viable (proven) |
 | Staff-to-system grouping | Partial (`SystemConnectorDiagnostics`) | Full system bounding box | Viable |
-| Internal Barline detection | Missing for notation | Barline extraction | Viable (vertical strokes) |
-| Measure boundary grid | Missing for notation | Measure x0/x1 logic | Viable |
+| Internal Barline detection | Missing for notation | Barline extraction | Hypothesis (ambiguous vs stems) |
+| Measure boundary grid | Missing for notation | Measure x0/x1 logic | Hypothesis |
 | Polyphony / Voice mapping | Missing | Semantic voice grouping | **Not Viable** deterministically |
-| Clef/Key/Time anchors | Missing for PDF-only | Geometric anchors | Viable |
+| Clef/Key/Time anchors | Missing for PDF-only | Geometric anchors | Hypothesis (clef partial, key/time unknown) |
 
 ## Outcome Decision
-**Outcome B**: Deterministic layout inference is not viable as first framed (if it includes polyphony and semantic voice mapping), but a narrower non-ML approach is viable. 
+**Outcome B**: Deterministic layout inference is not viable as first framed (if it includes polyphony and semantic voice mapping), but a narrower non-ML approach may be viable.
 
-The narrower viable approach is a **Structural Layout Grid**: extracting systems, staves, and internal barlines. Developer implementation for this structural grid is viable, but polyphony and semantic note association must remain excluded.
+The narrower approach is a **Structural Layout Grid**: extracting systems, staves, and internal barlines. Because internal barline extraction is currently an unproven hypothesis, Developer implementation is explicitly NOT authorised. We must first build a diagnostic to prove viability. Polyphony and semantic note association must remain excluded.
 
 ## Required Future Diagnostic implementation
 - **Hypothesis**: Standard-notation internal barlines and system bounds can be deterministically extracted from vector PDFs.
-- **Fixture set**: Existing public standard-notation vector fixtures.
+- **Fixture set**: Existing public standard-notation vector fixtures (e.g. `generated_standard_staff_multi_staff.pdf`).
 - **Metric**: System count, staff count per system, and barline count per staff.
 - **Pass threshold**: Perfect match on the layout grid for vector fixtures.
 - **Stop/pivot condition**: Fragmented/inconsistent barline vectors.
