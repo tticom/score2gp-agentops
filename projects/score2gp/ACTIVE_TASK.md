@@ -1,63 +1,49 @@
-# Active Task: Supervisor Pivot Decision Gate — Tab-Only Timing Policy
+# Active Task: Developer Implementation for Tab-Only Timing Policy A+B+C
 
 ## Repository
 tticom/score2gp
 
 ## Current Governance State
-Architect research for tab-only rhythm inference has completed with Outcome C.
+Outcome C for tab-only rhythm inference has been verified. The Supervisor has authorised the A+B+C product policy. Developer implementation is now authorised and unblocked.
 
-Report:
-`projects/score2gp/reports/2026-06-24-tab-only-rhythm-inference-viability.md`
+Decisions:
+`projects/score2gp/decisions/tab-only-timing-policy-a-b-c.md`
 
 ## Product Baseline
 - Product PR #323 is merged.
 - Product baseline: `6afdd3195f37eca6e319caf33dbeccfbbf1d4b5c`
-- Baseline capability: tab-only quarter-rest candidate support is wired into `--pdf-only-tab`.
 
-## Outcome C Summary
-No credible deterministic or non-ML path is currently viable for precise tab-only rhythm inference from tab-only PDFs where timing evidence is absent or insufficient.
+## Authorised Developer Task
+The Developer must implement the A+B+C tab-only timing policy in `tticom/score2gp`.
 
-## Supervisor Policy Direction
-The selected direction for now is A+B+C:
+1. **Inspect** existing CLI/API timing options and warning/diagnostic conventions.
+2. **Preserve** default `--pdf-only-tab` approximate output where already supported.
+3. **Ensure** approximate/default timing emits clear warning/provenance (e.g., preserving or strengthening `pdf_only_tab_inferred_timing`).
+4. **Add/Wire** strict precise-timing rejection using the smallest suitable existing or new CLI/API option (e.g., `--require-precise-timing`).
+5. **Ensure** precise mode does not accept tab-only missing-timing input as precise.
+6. **Preserve** MusicXML/sidecar precise timing behaviour.
+7. **Add** tests proving the policy behaviour.
 
-A. Approximate/default-rhythm output may be allowed for tab-only input where timing evidence is insufficient, provided the output is clearly marked as approximate/defaulted.
+## Required Acceptance Tests
+1. **Default approximate mode**: Using an existing public tab-only fixture with insufficient timing evidence, the normal/default tab-only path succeeds and emits/retains a warning/provenance marker that timing is inferred/defaulted.
+2. **Strict precise-timing mode**: Using the same or equivalent fixture, strict precise-timing mode fails cleanly and does not produce a misleading GP file.
+3. **Error/warning content**: The warning/error explains that precise timing requires MusicXML/sidecar or explicit reliable timing evidence.
+4. **Sidecar/precise path preservation**: Existing MusicXML/sidecar precise timing behaviour remains unchanged.
+5. **Existing product tests**: Existing tests continue to pass.
+6. **Artifact hygiene**: No private PDFs, GP files, screenshots, logs, dumps, or generated artifacts are committed.
 
-B. Strict rejection must be available when the user or caller requires precise timing but the input lacks timing evidence.
-
-C. Precise rhythm conversion requires MusicXML/sidecar, standard notation timing evidence, or explicit rhythm markers.
-
-D. ML-assisted tab rhythm extraction is future/nice-to-have only. It is not active work and is not authorised now.
-
-## Active Blocker
-The next blocker is not architecture viability. That has been answered by Outcome C.
-
-The next blocker is defining exact product behaviour and tests for approximate mode, strict mode, and precise mode requirements.
+## Non-Goals & Stop Conditions
+Stop any agent that:
+- Implements broad rhythm inference.
+- Starts ML research or ML-assisted extraction implementation.
+- Implements new tab stem/beam extraction.
+- Implements standard-notation PDF-only timing inference.
+- Changes MusicXML sidecar architecture.
+- Produces generated GP/PDF artifacts in tracking.
+- Ignores artifact/privacy constraints.
 
 ## Next Authorised Task
-Supervisor must authorise a bounded Developer requirement before any product implementation.
-
-The next valid task should define:
-- user-facing mode behaviour,
-- CLI/API flags or existing option behaviour,
-- warnings/errors,
-- acceptance tests,
-- fixture scope,
-- non-goals,
-- artifact/privacy constraints.
+After Developer implementation is complete and merged into a product branch, the next task is Reviewer implementation conformance review.
 
 ## Developer Implementation Authorised
-No.
-
-## Reviewer Architecture Verification Required
-Completed. Outcome C has been approved as evidence-backed.
-
-## Required Reviewer Verdict
-The Reviewer Architecture Verification report has been filed and merged or is pending merge in `projects/score2gp/reviews/tab-only-rhythm-outcome-c-architecture-verification.md`. Supervisor pivot decision is now unblocked.
-
-## Stop Conditions
-Stop any agent that:
-- tries to rerun the completed Architect research,
-- authorises ML work,
-- implements product code without a new Developer requirement,
-- claims precise tab-only rhythm inference is solved,
-- changes product files from this governance PR.
+Yes (on a product branch in `tticom/score2gp`).
