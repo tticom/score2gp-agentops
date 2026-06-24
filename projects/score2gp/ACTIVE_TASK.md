@@ -48,6 +48,13 @@ The next valid task should define:
 ## Developer Implementation Authorised
 No.
 
+## Reviewer Architecture Verification Required
+Yes.
+
+## Required Reviewer Verdict
+stop or pivot / approve Outcome C as evidence-backed / return to Architect if not sufficiently supported.
+Supervisor pivot decision remains blocked until Reviewer architecture verification is complete.
+
 ## Stop Conditions
 Stop any agent that:
 - tries to rerun the completed Architect research,

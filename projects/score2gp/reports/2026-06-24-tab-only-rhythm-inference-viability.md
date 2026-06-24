@@ -61,4 +61,8 @@ Following the completion of Product PR #323 and Governance PR #202, the baseline
 No.
 
 ## Reviewer Architecture Verification Required
-No. (Outcome C requires supervisor pivot decision, not Reviewer approval of an architecture).
+Yes.
+
+## Required Reviewer Verdict
+stop or pivot / approve Outcome C as evidence-backed / return to Architect if not sufficiently supported.
+Supervisor pivot decision remains blocked until Reviewer architecture verification is complete.
