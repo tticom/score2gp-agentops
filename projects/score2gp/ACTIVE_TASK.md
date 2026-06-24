@@ -1,32 +1,64 @@
-# Active Task: Architect Research on Tab-Only Rhythm Inference
+# Active Task: Supervisor Pivot Decision Gate — Tab-Only Timing Policy
 
 ## Repository
 tticom/score2gp
 
-## Goal
-Perform an Architect research decision gate to determine whether Score2GP can infer rhythm for tab-only PDF input using deterministic evidence from raster/vector/tab geometry, with enough reliability to justify implementation.
+## Current Governance State
+Architect research for tab-only rhythm inference has completed with Outcome C.
 
-## Progress Baseline
-* **Product PR #323 merged**: `feat: tab-only quarter rest candidate wiring`
-  * Merge commit: `6afdd3195f37eca6e319caf33dbeccfbbf1d4b5c`
-  * Baseline capability: Tab-only quarter-rest candidate support is now merged and wired into `--pdf-only-tab`.
-* **Governance Decision**: `projects/score2gp/decisions/2026-06-24-post-pr323-tab-only-rhythm-inference-gate.md` records PR #323 completion and blocks Developer work on rhythm inference until architecture is approved.
+Report:
+`projects/score2gp/reports/2026-06-24-tab-only-rhythm-inference-viability.md`
+
+## Product Baseline
+- Product PR #323 is merged.
+- Product baseline: `6afdd3195f37eca6e319caf33dbeccfbbf1d4b5c`
+- Baseline capability: tab-only quarter-rest candidate support is wired into `--pdf-only-tab`.
+
+## Outcome C Summary
+No credible deterministic or non-ML path is currently viable for precise tab-only rhythm inference from tab-only PDFs where timing evidence is absent or insufficient.
+
+## Supervisor Policy Direction
+The selected direction for now is A+B+C:
+
+A. Approximate/default-rhythm output may be allowed for tab-only input where timing evidence is insufficient, provided the output is clearly marked as approximate/defaulted.
+
+B. Strict rejection must be available when the user or caller requires precise timing but the input lacks timing evidence.
+
+C. Precise rhythm conversion requires MusicXML/sidecar, standard notation timing evidence, or explicit rhythm markers.
+
+D. ML-assisted tab rhythm extraction is future/nice-to-have only. It is not active work and is not authorised now.
 
 ## Active Blocker
-The active blocker is no longer "can we recognise tab-only quarter rests?". That is baseline capability.
-The active blocker is: **Can Score2GP infer rhythm for tab-only PDF input using deterministic evidence from raster/vector/tab geometry, with enough reliability to justify implementation?**
-General tab-only rhythm inference remains unimplemented. Whole, half, eighth, and sixteenth rests remain unsupported.
+The next blocker is not architecture viability. That has been answered by Outcome C.
 
-## Explicit Scope & Acceptance
-* The next authorised task is **Architect research only**. Developer implementation is blocked.
-* The Architect must produce exactly one of the following outcomes:
+The next blocker is defining exact product behaviour and tests for approximate mode, strict mode, and precise mode requirements.
 
-  * **Outcome A**: The current deterministic raster/vector/tab-geometry path is viable for tab-only rhythm inference on a defined fixture set.
-  * **Outcome B**: The current deterministic path is not viable, but another concrete non-ML approach is viable.
-  * **Outcome C**: No credible deterministic or non-ML path is currently viable. The project must stop or pivot.
+## Next Authorised Task
+Supervisor must authorise a bounded Developer requirement before any product implementation.
 
-## Constraints and Preservation
-* Do not perform Developer implementation.
-* Do not modify product code, tests, or fixtures.
-* Do not commit private PDFs, GP files, screenshots, logs, diagnostic dumps, or local scratch files.
-* Developer work remains blocked until Reviewer architecture verification approves Outcome A or B.
+The next valid task should define:
+- user-facing mode behaviour,
+- CLI/API flags or existing option behaviour,
+- warnings/errors,
+- acceptance tests,
+- fixture scope,
+- non-goals,
+- artifact/privacy constraints.
+
+## Developer Implementation Authorised
+No.
+
+## Reviewer Architecture Verification Required
+Yes.
+
+## Required Reviewer Verdict
+stop or pivot / approve Outcome C as evidence-backed / return to Architect if not sufficiently supported.
+Supervisor pivot decision remains blocked until Reviewer architecture verification is complete.
+
+## Stop Conditions
+Stop any agent that:
+- tries to rerun the completed Architect research,
+- authorises ML work,
+- implements product code without a new Developer requirement,
+- claims precise tab-only rhythm inference is solved,
+- changes product files from this governance PR.
