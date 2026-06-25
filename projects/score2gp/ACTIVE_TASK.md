@@ -5,7 +5,7 @@ tticom/score2gp
 
 ## Current Governance State
 Current product baseline: PR #326 in tticom/score2gp, merged with commit 7565e751e0dea624a209aeb4233373338296262a.
-Architect research: Authorised
+Architect research: Completed
 Reviewer architecture verification: Required next
 Developer implementation: Blocked
 Product feature implementation: Blocked
