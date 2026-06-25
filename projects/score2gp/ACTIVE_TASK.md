@@ -4,17 +4,18 @@
 tticom/score2gp
 
 ## Current Governance State
-Last completed governance PR: PR #208 (and Reviewer Architecture Verification PR)
-Merge commit: `b10b7aa758f3a5b9bb3b1daeec018162e54fd49d`
+Last completed governance PR: PR #209
+Reviewer architecture verification verdict: approve architecture
 Outcome selected: Outcome B
-Developer diagnostic implementation authorised: Yes (Bounded strictly to structural-skeleton scope)
+Developer diagnostic implementation authorised: No, pending explicit supervisor authorisation
+Developer diagnostic implementation may be authorised next: Yes, strictly bounded to systems, staves, and internal barlines
 Product feature implementation authorised: No
 
 ## Active Blocker
 The supervisor must explicitly authorise the bounded Developer diagnostic implementation task.
 
 ## Allowed Next Decisions
-- authorise a Developer diagnostic implementation task (must be strictly read-only diagnostics on public fixtures, measuring systems, staves, and internal barlines);
+- authorise a bounded Developer diagnostic implementation task for systems, staves, and internal barlines only;
 - stop this route.
 
 ## Explicit Non-Authorisations
