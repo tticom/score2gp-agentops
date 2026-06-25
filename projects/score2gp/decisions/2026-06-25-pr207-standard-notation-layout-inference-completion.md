@@ -11,6 +11,7 @@ Deterministic standard-notation layout inference is not viable as first framed b
 
 ## Governance State
 - Developer implementation authorised: No
+- Product diagnostic implementation authorised: No
 - Active blocker: The supervisor must explicitly choose the next bounded path.
 - Incremental progress check: This governance task officially changes the active project governance state after the PR #207 merge.
-- Explicit next supervisor decision required.
+- Explicit next supervisor decision required. The next allowed action must require Reviewer architecture verification of the narrowed structural-skeleton diagnostic scope before any Developer/product diagnostic implementation.
