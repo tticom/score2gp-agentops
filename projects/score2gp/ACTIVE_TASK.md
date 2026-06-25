@@ -1,25 +1,25 @@
-# Active Task: Supervisor Decision Gate
+# Active Task: Reviewer Architecture Verification
 
 ## Repository
 tticom/score2gp
 
 ## Current Governance State
-Last completed product PR: PR #325
-Merge commit: 9ab80c99bedb201d96a4324e3ad66c0da9209b2f
-Capability proven: diagnostic-only structural skeleton extraction for systems, staves, and internal barlines on bounded public vector-PDF fixtures.
+Last completed governance PR: PR #210
+Architect research: Complete (Outcome B selected: non-raster deterministic vector alternative viable)
+Proposed next task: Developer measure-grid diagnostic from confirmed internal barlines.
+Developer implementation authorised: No
 Product feature implementation authorised: No
-Standard-notation conversion authorised: No
 
 ## Active Blocker
-The structural-skeleton diagnostic has passed for the bounded public vector-PDF fixtures. The active blocker is now choosing the next smallest decision-useful step without overclaiming this diagnostic as standard-notation conversion. Product feature implementation remains blocked until a new bounded requirement and review loop authorise it.
+Reviewer architecture verification is required inside this task loop before Developer implementation may be authorised. Do not create a separate role-transition governance PR solely to restate the Architect report.
 
 ## Allowed Next Decisions
-1. Authorise an Architect task to define the next smallest product path from diagnostic skeleton to useful pipeline integration, without implementing it.
-2. Authorise a Reviewer architecture verification task if a proposed next implementation scope already exists.
-3. Authorise a narrow Developer diagnostic follow-up only if it has a bounded hypothesis, fixture set, metric, pass/fail threshold, and stop/pivot trigger.
-4. Pivot away from deterministic vector structural-skeleton extraction if the next required step depends on semantic notation inference or broad heuristics.
-5. Stop this route.
+1. Approve architecture and authorise bounded Developer implementation.
+2. Return to Architect if the proposed scope is unbounded or requires semantic inference.
+3. Reject as speculative if the metric or pass/fail thresholds are unclear.
+4. Stop/pivot.
 
 ## Explicit Non-Authorisations
+- Developer diagnostic implementation remains **blocked** pending Reviewer architecture verification.
 - Product feature implementation remains **blocked**.
 - Polyphony, semantic voice mapping, note association, and GP export changes remain **blocked**.
