@@ -1,7 +1,7 @@
 # Architect Report: Next Path After Structural-Skeleton Diagnostic
 
 ## Summary
-This report defines the next smallest, decision-useful architectural path after the successful implementation of the structural-skeleton diagnostic in PR #325. We select Outcome A: extracting a deterministic measure grid from the confirmed barlines.
+This report defines the next smallest, decision-useful architectural path after the successful implementation of the structural-skeleton diagnostic in PR #325. We select Outcome B: non-raster deterministic vector alternative viable. The path is extracting a deterministic measure grid from the confirmed barlines.
 
 ## Verified Baseline
 - **Product PR #325 merged:** Head SHA `7abc668d7aecafabd7675c21806c5c11a1850901`, merge commit `9ab80c99bedb201d96a4324e3ad66c0da9209b2f`.
@@ -33,10 +33,10 @@ This report defines the next smallest, decision-useful architectural path after 
 The active blocker is choosing the next smallest decision-useful step from structural skeleton extraction toward useful notation processing, without pretending this proves full standard-notation conversion.
 
 ## Outcome Selected
-**Outcome A: Next deterministic vector path viable.**
+**Outcome B: non-raster deterministic vector alternative viable.**
 
 ## Proposed Next Task
-**Authorise a Reviewer architecture verification task** to verify the scope for a narrow Developer diagnostic follow-up: constructing a measure-grid diagnostic from confirmed internal barlines. 
+**Reviewer architecture verification is required inside this task loop** to verify the scope for a narrow Developer diagnostic follow-up: constructing a measure-grid diagnostic from confirmed internal barlines. Do not create a separate role-transition governance PR solely to restate the Architect report.
 
 If verified, the Developer task would be bounded to:
 - **Fixture Set:** Existing public vector-PDF standard staff fixtures (`generated_standard_staff_quarter_note.pdf`, `generated_standard_staff_multi_staff.pdf`, `generated_standard_staff_ledger_lines.pdf`).
@@ -53,7 +53,7 @@ If verified, the Developer task would be bounded to:
 **No.**
 
 ## Required Next Review
-Reviewer architecture verification.
+Reviewer architecture verification inside this task loop.
 
 ## Recommendation
-Approve the Reviewer architecture verification of the measure-grid diagnostic scope.
+Approve the Reviewer architecture verification of the measure-grid diagnostic scope within this task loop.

@@ -5,13 +5,13 @@ tticom/score2gp
 
 ## Current Governance State
 Last completed governance PR: PR #210
-Architect research: Complete (Outcome A selected: Next deterministic vector path viable)
+Architect research: Complete (Outcome B selected: non-raster deterministic vector alternative viable)
 Proposed next task: Developer measure-grid diagnostic from confirmed internal barlines.
 Developer implementation authorised: No
 Product feature implementation authorised: No
 
 ## Active Blocker
-The Reviewer must verify if the Architect's proposed measure-grid diagnostic scope is bounded and decision-useful before authorising any Developer implementation.
+Reviewer architecture verification is required inside this task loop before Developer implementation may be authorised. Do not create a separate role-transition governance PR solely to restate the Architect report.
 
 ## Allowed Next Decisions
 1. Approve architecture and authorise bounded Developer implementation.
