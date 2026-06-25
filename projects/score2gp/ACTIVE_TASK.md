@@ -1,44 +1,44 @@
-# Active Task: Measure-Grid Diagnostic Implementation
+# Active Task: Candidate-to-Measure Architecture Research
 
 ## Repository
 tticom/score2gp
 
 ## Current Governance State
-Last completed governance PR: PR #211
-Architect research: Complete (Outcome B selected: non-raster deterministic vector alternative viable)
-Reviewer architecture verification: Complete
-Verdict: approve architecture
-Developer implementation authorised: Yes, strictly bounded.
-Product feature implementation authorised: No
+Last completed governance PR: PR #326 (measure-grid diagnostic merged)
+Architect research: Authorised
+Reviewer architecture verification: Required next
+Developer implementation: Blocked
+Product feature implementation: Blocked
 
-## Authorised Developer Task
-Implement a read-only measure-grid diagnostic from confirmed internal barlines.
-- Consume confirmed internal barlines from the structural-skeleton diagnostic.
-- Produce spatial measure-region bounds per staff/system.
-- Report exact region count and start/end X coordinate bounds.
-- Explicitly fail if grid resolution requires notation semantics.
+## Authorised Architect Task
+Perform bounded architecture research to determine whether detected notation candidates can be assigned into measure regions using the merged structural skeleton and measure-grid diagnostics.
+
+**Hypothesis:**
+Structural skeleton and measure-grid diagnostics provide sufficient geometric boundaries to support candidate-to-measure spatial assignment without relying on semantic notation recognition.
 
 **Allowed Fixtures:**
 - `generated_standard_staff_quarter_note.pdf`
 - `generated_standard_staff_multi_staff.pdf`
 - `generated_standard_staff_ledger_lines.pdf`
+- `generated_paired_notation_tab_system_double_barline.pdf`
 
 **Metric & Threshold:**
-- Exact measure-region count per staff/system; start/end X bound correctness; zero false measure grids; explicit failure for semantic-dependent cases.
-- Threshold: 100% boundary isolation on the approved fixture set; zero false grids.
+- Determine if candidates fall reliably into bounded measure regions geometrically.
+- Success threshold: Pass/fail verdict on the viability of candidate-to-measure assignment for the given fixtures.
 
 **Stop/Pivot Triggers:**
-- Stop if grid resolution requires notation semantics.
-- Return to Architect if confirmed internal barlines are insufficient to define spatial regions.
-- Stop if implementation would require ScoreIR, GP export, duration inference, voice mapping, or semantic notation interpretation.
+- Stop if candidate-to-measure assignment requires semantic notation recognition, rhythm inference, or score interpretation.
+- Pivot if the current diagnostic bounds cannot safely isolate candidates.
 
 ## Active Blocker
-Developer implementation of the bounded measure-grid diagnostic.
+Score2GP now has structural measure-grid evidence, but it does not yet have verified evidence that detected notation candidates can be assigned into measure regions safely enough to support recognition work. Can structural skeleton + measure-grid diagnostics support candidate-to-measure spatial assignment on approved fixtures without relying on semantic recognition?
 
 ## Required Next Stages
-1. Developer implementation
-2. Reviewer implementation conformance review
-3. PR readiness review
+1. Architect research
+2. Reviewer architecture verification
+3. Developer implementation (only if architecture verification approves)
+4. Reviewer implementation conformance review (only if implemented)
+5. PR readiness review
 
 ## Explicit Non-Authorisations
 These remain explicitly **blocked**:
@@ -53,3 +53,4 @@ These remain explicitly **blocked**:
 - tab-only timing changes;
 - private fixture usage;
 - generated artifact commits.
+- Developer implementation.
