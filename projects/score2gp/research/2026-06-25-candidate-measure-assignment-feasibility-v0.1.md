@@ -46,8 +46,8 @@
 ## Smallest Additional Diagnostic Evidence Needed
 Because staff identity is missing, we cannot proceed with full candidate-to-measure assignment implementation. The smallest required next step is to **add staff identity to candidate extraction**.
 
-**Recommended Next Developer Task (Diagnostic Evidence Only):**
-Update `PdfStaffNotationGeometryDiagnostics` and its extraction logic to preserve staff identity. For example, move `whole_note_candidates`, `half_note_candidates`, and `quarter_note_candidates` inside `NotationStaffDiagnostics`, or add explicit `staff_index`/`system_index` fields to the candidate diagnostic models. 
+**Smallest Additional Diagnostic Evidence Requirement:**
+Update `PdfStaffNotationGeometryDiagnostics` and its extraction logic to preserve staff identity. For example, move `whole_note_candidates`, `half_note_candidates`, and `quarter_note_candidates` inside `NotationStaffDiagnostics`, or add explicit `staff_index`/`system_index` fields to the candidate diagnostic models. This follow-up is not authorised for Developer implementation until Reviewer architecture verification approves Outcome B and the next requirement.
 
 ## Conclusion
 **Outcome B.** Developer implementation of candidate-to-measure assignment remains blocked. We must first fix candidate staff-identity preservation in the structural diagnostics layer.
