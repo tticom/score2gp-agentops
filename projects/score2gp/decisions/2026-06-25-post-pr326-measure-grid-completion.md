@@ -20,11 +20,19 @@
 - `tests/test_pdf_structural_skeleton_diagnostics.py`: 4 passed.
 
 ## Active Blocker
-Score2GP now has structural measure-grid evidence, but it does not yet have verified evidence that detected notation candidates can be assigned into measure regions safely enough to support recognition work.
-
-The next blocker is:
-Can structural skeleton + measure-grid diagnostics support candidate-to-measure spatial assignment on approved fixtures without relying on semantic recognition?
+Score2GP now has structural measure-grid evidence, but it does not yet have verified evidence that detected notation candidates can be assigned into measure regions safely enough to support recognition work. Can structural skeleton + measure-grid diagnostics support candidate-to-measure spatial assignment on approved fixtures without relying on semantic recognition?
 
 ## Next Authorised Task
 **Role:** Architect
 **Task:** Conduct bounded research to test whether candidate-to-measure spatial assignment is viable using the newly merged structural diagnostics without needing notation semantics. Developer implementation remains strictly blocked until Reviewer architecture verification approves an approach.
+
+The Architect must produce exactly one of the following outcomes:
+- **Outcome A:** Candidate-to-measure spatial assignment is viable using the merged measure-grid and existing candidate geometry. Developer implementation may be proposed only after Reviewer architecture verification approves the approach.
+- **Outcome B:** Measure-grid is useful but existing candidate evidence is insufficient. The Architect must define the smallest additional diagnostic evidence needed before implementation.
+- **Outcome C:** Candidate-to-measure assignment is not viable with the current raster/vector diagnostics. No Developer work is authorised and a pivot is required.
+
+**Stop/Pivot condition:** If existing diagnostics cannot support candidate-to-measure assignment, the Architect must not recommend implementation. They must choose Outcome B or Outcome C.
+
+## Required Reviews
+1. PR readiness review for this governance PR.
+2. Reviewer architecture verification after the Architect research task.
