@@ -4,17 +4,19 @@
 tticom/score2gp
 
 ## Current Governance State
-Last completed governance PR: PR #207
-Merge commit: `bf084654e9cc171b3a7cf5fff63a342d09564c23`
+Last completed governance PR: PR #208 (and Reviewer Architecture Verification PR)
+Merge commit: `b10b7aa758f3a5b9bb3b1daeec018162e54fd49d`
 Outcome selected: Outcome B
-Developer implementation authorised: No
-Product diagnostic implementation authorised: No
+Developer diagnostic implementation authorised: Yes (Bounded strictly to structural-skeleton scope)
+Product feature implementation authorised: No
 
 ## Active Blocker
-The supervisor must explicitly choose the next bounded path.
+The supervisor must explicitly authorise the bounded Developer diagnostic implementation task.
 
 ## Allowed Next Decisions
-- authorise a bounded Reviewer architecture verification task for the proposed structural-skeleton diagnostic scope. Product diagnostic implementation remains blocked unless that reviewer verdict approves the narrowed scope;
-- request stronger architecture research (must be justified by a specific missing decision-useful fact);
-- if the narrowed structural-skeleton scope cannot pass reviewer verification, or if a later approved diagnostic fails its threshold, pivot to another recognition approach rather than continuing deterministic layout inference by inertia;
+- authorise a Developer diagnostic implementation task (must be strictly read-only diagnostics on public fixtures, measuring systems, staves, and internal barlines);
 - stop this route.
+
+## Explicit Non-Authorisations
+- Product feature implementation remains **blocked**.
+- Polyphony, semantic voice mapping, note association, and GP export changes remain **blocked**.
