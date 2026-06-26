@@ -1,4 +1,4 @@
-# Active Task: Candidate-to-Measure Assignment Architecture Decision
+# Active Task: Reviewer Architecture Verification
 
 ## Repository
 tticom/score2gp
@@ -6,6 +6,7 @@ tticom/score2gp
 ## Current Governance State
 Product baseline PR #326 merged.
 Diagnostic identity baseline PR #327 merged.
+Governance PR #216 merged.
 
 Current evidence:
 - measure-grid regions exist;
@@ -16,22 +17,17 @@ Current evidence:
 
 Developer implementation: Blocked
 Full candidate-to-measure assignment: Blocked
-Next authorised role: Architect
-Required next review after Architect research: Reviewer architecture verification
+Next authorised role: Reviewer (Architecture Verification)
+Required next review after Reviewer: PR readiness review (if approved) or Architect (if returned)
 
 ## Active Task
-Architect research/decision on candidate-to-measure assignment viability.
+Reviewer architecture verification.
 
-The Architect must evaluate whether candidate-to-measure assignment can be safely designed using:
-- `MeasureGridDiagnostics` from PR #326;
-- nullable candidate `page_index`, `system_index`, and `staff_index` from PR #327;
-- existing candidate geometry, especially `bbox`, `width`, `height`, `aspect_ratio`, and `stem_bbox`;
-- approved public fixtures only.
-
-See `decisions/2026-06-25-post-pr327-staff-identity-diagnostic-completion.md` for full context and Outcome A/B/C requirements.
+The Architect has proposed Outcome A (viable candidate-to-measure architecture) in `decisions/2026-06-26-candidate-to-measure-assignment-viability.md`.
+The next required step is Reviewer architecture verification to approve, reject, or return the proposed architecture.
 
 ## Active Blocker
-Can the system safely and deterministically assign notation candidates to measure regions using PR #326 measure-grid diagnostics and PR #327 nullable heuristic staff/system identity, without relying on false identity, overclaiming heuristic evidence, or introducing semantic note/rhythm recognition?
+The candidate-to-measure assignment architecture is proposed but not yet verified. Developer implementation cannot proceed until the Reviewer approves Outcome A.
 
 ## Explicit Non-Authorisations
 These remain explicitly **blocked**:
