@@ -1,7 +1,7 @@
 # Architect Decision: Next Measure-Level Diagnostic Step
 
 **Date:** 2026-06-26
-**Status:** Outcome A Selected
+**Status:** Outcome A Selected (Revised)
 **Authorised Next Role:** Reviewer (Architecture Verification)
 **Developer Implementation:** Not authorised
 
@@ -22,19 +22,19 @@
 
 ## Inferences
 - Since valid candidates are firmly anchored to a validated measure region (via `measure_region_index` and staff/system identifiers), we can safely group them into "measure buckets".
-- `center_x` provides a deterministic basis for left-to-right visual geometric sorting within that bucket.
+- `center_x` provides a deterministic basis for left-to-right visual geometric sorting within that bucket, provided candidates do not overlap or share near-identical X coordinates.
 
 ## Hypotheses
 - We can define a `MeasureBucket` diagnostic model that consumes the flat `CandidateToMeasureAssignment` array and outputs a structured hierarchy (Page -> System -> Staff -> Measure -> Ordered Candidates).
 - This sorting and grouping is purely spatial/geometric and does not require semantic pitch, rhythm, or duration inference.
 
 ## Unknowns
-- Whether overlapping geometries (e.g., chords) perfectly sort left-to-right without tie-breaking heuristics, though geometric centers suffice for a baseline diagnostic.
 - Whether public fixtures have sufficiently complex candidate density to stress-test sorting rules, though mock injection can continue to fill gaps.
 
 ## Risks
 - Ordering candidates by `center_x` might be mistaken for sequential playback time (rhythm). We must explicitly constrain the next task as *geometric* ordering, not *rhythmic* ordering.
 - Developer implementation could overstep into ScoreIR/GP output generation. The task must be strictly bounded to diagnostic JSON models.
+- Assuming deterministic semantic tie-breakers for chord-like/overlapping candidates is unsafe. We must explicitly trap ties/overlaps as ambiguous instead of silently misordering them.
 
 ## Decision: Outcome A
 **Measure-local candidate ordering / measure-bucket diagnostic is viable using current public-fixture evidence, and a bounded Developer diagnostic task can be proposed later.**
@@ -42,12 +42,25 @@
 ### Proposed Next Developer Task (Pending Authorisation)
 - **Goal:** Implement a read-only `MeasureBucketDiagnostics` layer.
 - **Input:** Output from `extract_candidate_measure_assignment_diagnostics_dict`.
-- **Output:** A nested dictionary grouping `assigned` candidates into `MeasureBucket` objects, sorted internally by `center_x`.
-- **Success Statuses:** `pass`
-- **Failure Statuses:** Inherit failures from upstream (e.g., `measure_grid_diagnostics_failed`, `notation_diagnostics_failed`), plus a distinct bucket failure if data is fundamentally corrupted.
-- **Stop/Pivot conditions:** Stop if grouping requires semantic inference (e.g., parsing stems/flags) or if sorting fundamentally breaks on standard notation public fixtures.
-- **Non-Goals:** Rhythmic inference, duration inference, ScoreIR compilation, GP export, whole-note semantic recognition.
+- **Included Candidates:** Only candidates with `assignment_status == "assigned"`.
+- **Excluded Candidates:** Unassigned candidates remain in upstream assignment diagnostics and are not silently bucketed.
+- **Grouping Keys:** `page_index`, `system_index`, `staff_index`, `measure_region_index`.
+- **Bucket Output Fields:** `page_index`, `system_index`, `staff_index`, `measure_region_index`, `bucket_status`, `ordered_candidates`, `candidate_count`, `failure_reasons`.
+- **Candidate Fields Retained:** `candidate_type`, `candidate_bbox`, `center_x`, and original assignment identity fields.
+- **Empty Bucket Handling:** Valid measure regions with no assigned candidates emit `bucket_status == "empty"`.
+- **Upstream Failure Handling:** If candidate-to-measure diagnostics fail, `MeasureBucketDiagnostics` returns `diagnostic_status == "fail"` with inherited failure reasons and no buckets.
+- **Sorting Rule:** Primary sort by `center_x`. Only claim bucket status `ordered` if adjacent sorted candidates differ by more than `CENTER_X_TIE_TOLERANCE_PT` (e.g., 0.5pt).
+- **Ambiguity Rule:** Equal/near-equal `center_x` produces `bucket_status == "center_x_ambiguous"`. Chord-like/overlapping same-center candidates are treated as `center_x_ambiguous`. A deterministic fallback order (e.g. `center_x`, `candidate_bbox[1]`, `candidate_bbox[0]`, `candidate_type`, original input index) must be used for inspection stability only, but must not be claimed as meaningful order.
+- **Non-Goals:** Rhythmic inference, duration inference, playback order, ScoreIR compilation, GP export, whole-note semantic recognition.
+- **Fixture/Test Plan:**
+  - Single-staff quarter-note fixture: assigned candidates bucketed and ordered.
+  - Ledger-line fixture: candidates bucketed without staff identity regression.
+  - Multi-staff mock injection: candidates grouped by staff and measure.
+  - Double-barline fixture: no false empty split or boundary ambiguity.
+  - `center_x_ambiguous` mock injection: equal/near-equal center_x candidates produce safe ambiguity.
+  - Upstream page-level grid failure mock: inherited failure.
+- **Stop/Pivot Conditions:** Stop if ordering requires stem/beam/flag parsing; stop if bucket structure implies rhythm or playback sequence; stop if public fixture/mock evidence cannot prove deterministic grouping and safe ambiguity.
 
 ## Required Next Review
-- **Reviewer architecture verification** of this decision.
+- **Reviewer architecture verification** of this revised decision.
 - Developer implementation remains strictly blocked until governance explicitly authorises the implementation task.
