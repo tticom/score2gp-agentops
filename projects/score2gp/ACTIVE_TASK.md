@@ -1,31 +1,25 @@
-# Active Task: Candidate-to-Measure Diagnostic Assignment Implementation
+# Active Task
 
-## Repository
-tticom/score2gp
+**Task**: Architect Decision: Next Measure-Level Diagnostic Step After Candidate-to-Measure Assignment
+**Authorised Role**: Architect
+**Repository**: `tticom/score2gp-agentops` and `tticom/score2gp` (read-only for Architect)
 
-## Current Governance State
-Architecture Outcome A approved in PR #217.
-Developer implementation is authorised only for read-only diagnostics.
-Candidate-to-measure diagnostic assignment may be implemented.
-ScoreIR, GP export, rhythm inference, note/rest semantic recognition, MusicXML, OCR, ML/training, tab-only timing, private fixtures, and generated artifacts remain blocked.
-Required next role after Developer implementation is Reviewer implementation conformance review.
-PR readiness review is required before any product PR merge.
+## Context
+- Product PR #328 has merged.
+- Candidate-to-measure diagnostic assignment is available as a read-only product diagnostic capability.
+- Page-level measure-grid failure handling was fixed before merge.
+- Developer implementation is blocked.
 
-## Active Task
-Developer implementation of bounded read-only candidate-to-measure diagnostic assignment array.
+## Architect Decision Criteria
+Can the current read-only diagnostic evidence support a safe next product step that produces new decision-useful evidence beyond candidate-to-measure assignment?
 
-The Architect has proposed Outcome A, and the Reviewer architecture verification has approved it. The current governance state authorises the Developer to implement the read-only diagnostic assignment.
+The Architect must choose exactly one outcome:
+- **Outcome A:** measure-local candidate ordering / measure-bucket diagnostic is viable using current public-fixture evidence, and a bounded Developer diagnostic task can be proposed later.
+- **Outcome B:** current evidence is insufficient for measure-local ordering, but a smaller diagnostic/evidence task is viable and should be proposed.
+- **Outcome C:** current evidence is insufficient and no further Developer task is authorised without a new approach or pivot.
 
-## Explicit Non-Authorisations
-These remain explicitly **blocked**:
-- rhythm/duration inference;
-- whole-note recognition;
-- note/rest semantic recognition;
-- ScoreIR changes;
-- GP export changes;
-- MusicXML changes;
-- OCR;
-- ML/training;
-- tab-only timing changes;
-- private fixture usage;
-- generated artifact commits.
+The Architect must not authorise implementation.
+
+## Required Next Review
+After the Architect decision task is completed: **Reviewer architecture verification**
+Before this governance PR merges: **PR readiness review**
