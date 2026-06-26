@@ -9,7 +9,7 @@
 - Product PR #329 merge commit: 8af3518633f02cd9bcaf0e1413238eb093513f5e.
 - Governance PR #222 merged Supervisor Decision Gate.
 - Governance PR #222 merge commit: f10a7f140579ea8bad362d35ec8c6cee271c4760.
-- Architect Outcome A for StaffPositionDiagnostics approved by Reviewer architecture verification.
+- Approved architecture gate recorded in: projects/score2gp/decisions/2026-06-26-staff-position-diagnostics-approval.md.
 
 ## 2. Authorised Developer Scope
 Implement a read-only StaffPositionDiagnostics layer that maps assigned notation candidates from MeasureBucketDiagnostics to staff-relative vertical positions using staff geometry and candidate geometry.
