@@ -64,7 +64,7 @@ The morphology method provided highly useful and successful evidence, effectivel
 
 ## Next Recommended Task
 
-**Task**: Perform an Architect diagnostic phase to evaluate the horizontal projection morphology method on a natural (non-synthetic) public fixture to confirm if natural quarter notes resolve >70% without false confidence.
+**Task**: Architect fixture-safety-gated diagnostic task: evaluate the horizontal projection morphology method only on already committed safe natural public fixtures, if such fixtures exist. If no committed safe natural public fixture exists, first perform a fixture-discovery/selection gate that identifies a candidate public-domain or explicitly licensed natural score fixture, documents provenance and safety, and seeks explicit Supervisor approval before committing any binary fixture. Do not use private scores, arbitrary downloads, generated dumps, screenshots, or unapproved binary artifacts. If no safe fixture can be identified, stop and report BLOCKED. No product implementation, semantic pitch inference, G-clef inference, rhythm inference, ScoreIR semantic change, GP export change, ML/OCR/model training, or private fixture use is authorised.
 
 ## Stop / Pivot Conditions
 
