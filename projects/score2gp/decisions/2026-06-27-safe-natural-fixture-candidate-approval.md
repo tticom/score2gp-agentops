@@ -17,6 +17,10 @@ The Score2GP project cannot run natural notehead morphology diagnostics because 
 - **Composer**: J. S. Bach (1685–1750)
 - **Source page**: https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1612
 - **Source host**: Mutopia Project
+- **Mutopia ID**: Mutopia-2009/01/06-1612
+- **Candidate artifact format**: A4 PDF
+- **Candidate artifact URL**: https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf
+- **Note**: The Letter format PDF is explicitly not approved by this PR.
 
 ## 4. Source/Provenance/Licence Evidence
 - **Fact**: The Mutopia project page lists the Copyright status as "Public Domain". 
