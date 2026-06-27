@@ -9,6 +9,10 @@
 - **Previous Outcome**: Horizontal projection morphology method improved notehead centers for synthetic half/whole notes, but was blocked from product implementation because synthetic quarter-note fixtures remained ambiguous (66.6% resolution rate).
 - **Active Task**: Perform a fixture-safety-gated evaluation to determine if the method is viable on safe natural public score material, or if the project must stop/pivot.
 
+## Process-gate recovery
+
+The fixture-safety gate evidence in this PR is content-valid but was produced before the prior Reviewer architecture verification/authorisation state was fully recorded. No product code, product tests, fixture binaries, private artifacts, diagnostic execution, semantic inference, or implementation changes were made. This PR does not authorise downstream work. The governance recovery is to require Reviewer architecture verification re-review of this PR before any PR readiness review, merge decision, fixture discovery/approval task, diagnostic execution, or implementation task may proceed.
+
 ## Fixture-Safety Gate Assessment
 
 An inventory check of the product repository (`tticom/score2gp`) was performed to identify any eligible committed safe natural public fixtures.

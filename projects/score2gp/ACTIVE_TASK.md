@@ -14,6 +14,9 @@
 ## 2. Active Blocker
 The project requires verified evidence on natural score material to proceed with notehead-center morphology. However, because no eligible safe natural public fixtures are present in the repository, a safe fixture discovery and explicit Supervisor approval process is required before diagnostics can continue.
 
+**Process-gate recovery**:
+The fixture-safety gate evidence in this PR is content-valid but was produced before the prior Reviewer architecture verification/authorisation state was fully recorded. No product code, product tests, fixture binaries, private artifacts, diagnostic execution, semantic inference, or implementation changes were made. This PR does not authorise downstream work. The governance recovery is to require Reviewer architecture verification re-review of this PR before any PR readiness review, merge decision, fixture discovery/approval task, diagnostic execution, or implementation task may proceed.
+
 ## 3. Authorised Scope
 The Reviewer is authorised to:
 - evaluate the Architect's report in `projects/score2gp/decisions/2026-06-27-natural-notehead-morphology-fixture-gate.md`;
