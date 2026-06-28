@@ -8,7 +8,8 @@
 - Product PR #330 and Governance PRs #224, #225, #226, and #227 are merged.
 - PR #227 determined that the morphology method requires testing on a safe natural fixture because synthetic quarter-notes remained ambiguous, and that no eligible safe natural public fixtures were present in the repository.
 - Architect identified one safe candidate natural public score fixture (Bach Minuet BWV Anh. 120 from Mutopia) and verified its Public Domain provenance.
-- The exact artifact was pinned to the A4 PDF layout (Letter format explicitly not approved) to resolve a fixture ambiguity review thread.
+- The exact artifact format was pinned to A4 PDF with exact URL: `https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`.
+- The Letter PDF is explicitly not approved. Later fixture ingestion must use only the pinned A4 PDF URL.
 - The candidate was evaluated as suitable for morphology diagnostics, and Recommendation A was proposed.
 - NO binary files were downloaded or committed.
 
