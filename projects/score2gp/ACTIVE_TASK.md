@@ -1,33 +1,38 @@
 # Active Task
 
-**Task**: Supervisor Fixture-Ingestion / Artifact-Boundary Approval Decision
-**Authorised Role**: Supervisor
+**Task**: Controlled Mutopia A4 Diagnostic Rerun / Validation
+**Authorised Role**: Governance Implementer / Developer (Diagnostic)
 **Repository**: `tticom/score2gp-agentops`
 
 ## 1. Baseline
-- Product PR #333 merged (commit `b38c0acc9c284379dcd0f82316db08c3fc6211ec`).
-- Prior governance (`projects/score2gp/decisions/2026-06-27-safe-natural-fixture-candidate-approval.md`) selected the Mutopia A4 PDF as a candidate, requiring a Supervisor-approved fixture ingestion decision before diagnostic use.
-- A diagnostic run on Mutopia A4 produced evidence indicating basic whole-note heuristics are unsafe (>120 false positives), but this run lacks a durable artifact-boundary governance approval record.
-- Whole-note rule-based Developer implementation remains formally blocked.
+- Supervisor Outcome A fixture-ingestion approval decision record (`projects/score2gp/decisions/2026-06-29-supervisor-mutopia-a4-fixture-ingestion-approval.md`).
 
-## 2. Active Blocker
-Outcome C (and subsequent OMR/CV Architecture Research) is deferred and not yet durable because the diagnostic evidence relies on a fixture that has not yet passed a formal artifact-boundary / fixture-ingestion governance approval.
+## 2. Approved Fixture
+`https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`
+(Exact pinned A4 URL only)
 
 ## 3. Authorised Scope
-The Supervisor must decide to:
-- Approve the ingestion and diagnostic use of the pinned Mutopia A4 PDF; OR
-- Reject it and require an alternative approved false-positive fixture strategy.
+- Diagnostic purpose: Assess whole-note heuristics and false positives against the approved fixture.
+- Execute a controlled diagnostic rerun/validation using the precise fixture URL.
 
-## 4. Non-Goals
-- Do not authorise OMR/CV Architecture Research from unapproved evidence.
-- Do not run or validate the diagnostic until the boundary is approved.
-- Do not authorise Developer implementation.
+## 4. Required Diagnostic Contract
+- Precise fixture: `https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`
+- Command: To be defined by the next diagnostic implementer.
+- Metric/Output Evidence: Must be captured textually (no generated binaries, PDFs, or GP files attached).
+- Pass/Fail Threshold: To be validated.
+- Stop/Pivot Condition: To be evaluated upon completion.
 
-## 5. Required Evidence
-- A formal governance decision recording the approval or rejection of the Mutopia A4 fixture ingestion.
+## 5. Forbidden Scope
+- **Product implementation:** Not authorised.
+- **OMR/CV Architecture Research:** Not authorised.
+- **Letter variants:** Not authorised.
+- **Private/local artifacts:** Not authorised.
+- **Unpinned URLs:** Not authorised.
 
 ## 6. Stop Conditions
-- Stop if the artifact boundary is bypassed to authorise product work.
+- Stop if the task attempts to download, commit, or attach the PDF or any other binary/artifact file.
+- Stop if scope expands beyond the approved A4 fixture.
+- Stop if product changes are proposed.
 
 ## 7. Next Required Review
-PR readiness review for the Supervisor decision record.
+Diagnostic evidence review or PR readiness review, depending on whether a PR is opened for the diagnostic.
