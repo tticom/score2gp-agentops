@@ -1,39 +1,33 @@
 # Active Task
 
-**Task**: Reviewer architecture verification of the Architect's fixture candidate discovery and approval recommendation.
-**Authorised Role**: Reviewer
+**Task**: Supervisor Fixture-Ingestion / Artifact-Boundary Approval Decision
+**Authorised Role**: Supervisor
 **Repository**: `tticom/score2gp-agentops`
 
 ## 1. Baseline
-- Product PR #330 and Governance PRs #224, #225, #226, and #227 are merged.
-- PR #227 determined that the morphology method requires testing on a safe natural fixture because synthetic quarter-notes remained ambiguous, and that no eligible safe natural public fixtures were present in the repository.
-- Architect identified one safe candidate natural public score fixture (Bach Minuet BWV Anh. 120 from Mutopia) and verified its Public Domain provenance.
-- The exact artifact format was pinned to A4 PDF with exact URL: `https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`.
-- The Letter PDF is explicitly not approved. Later fixture ingestion must use only the pinned A4 PDF URL.
-- The candidate was evaluated as suitable for morphology diagnostics, and Recommendation A was proposed.
-- NO binary files were downloaded or committed.
+- Product PR #333 merged (commit `b38c0acc9c284379dcd0f82316db08c3fc6211ec`).
+- Prior governance (`projects/score2gp/decisions/2026-06-27-safe-natural-fixture-candidate-approval.md`) selected the Mutopia A4 PDF as a candidate, requiring a Supervisor-approved fixture ingestion decision before diagnostic use.
+- A diagnostic run on Mutopia A4 produced evidence indicating basic whole-note heuristics are unsafe (>120 false positives), but this run lacks a durable artifact-boundary governance approval record.
+- Whole-note rule-based Developer implementation remains formally blocked.
 
 ## 2. Active Blocker
-The project requires a Supervisor decision to approve or reject the candidate natural fixture before a fixture-ingestion PR can be created. The Architect recommendation must first pass Reviewer architecture verification.
+Outcome C (and subsequent OMR/CV Architecture Research) is deferred and not yet durable because the diagnostic evidence relies on a fixture that has not yet passed a formal artifact-boundary / fixture-ingestion governance approval.
 
 ## 3. Authorised Scope
-The Reviewer is authorised to:
-- evaluate the Architect's report in `projects/score2gp/decisions/2026-06-27-safe-natural-fixture-candidate-approval.md`;
-- verify whether the Architect correctly avoided downloading or committing binaries;
-- verify whether the provenance and licence evidence provided supports the candidate;
-- authorise the next task for a Supervisor approval decision on the candidate;
-- reject or amend the proposal if the fixture constraints were violated.
+The Supervisor must decide to:
+- Approve the ingestion and diagnostic use of the pinned Mutopia A4 PDF; OR
+- Reject it and require an alternative approved false-positive fixture strategy.
 
-The Reviewer must not:
-- implement product code;
-- implement semantic pitch, clef, rhythm, or whole-note recognition;
-- change ScoreIR semantics;
-- change GP export;
-- authorise ML/OCR/model training;
-- download or commit the candidate PDF file.
+## 4. Non-Goals
+- Do not authorise OMR/CV Architecture Research from unapproved evidence.
+- Do not run or validate the diagnostic until the boundary is approved.
+- Do not authorise Developer implementation.
 
-## 4. Required Outcomes
-The next task must force one of these outcomes:
-- **Outcome A**: The candidate discovery and provenance evaluation is verified, and the Supervisor decision task is authorised.
-- **Outcome B**: The proposal needs revision to meet architectural or safety constraints.
-- **Outcome C**: The proposal is rejected, forcing a pivot or stop condition.
+## 5. Required Evidence
+- A formal governance decision recording the approval or rejection of the Mutopia A4 fixture ingestion.
+
+## 6. Stop Conditions
+- Stop if the artifact boundary is bypassed to authorise product work.
+
+## 7. Next Required Review
+PR readiness review for the Supervisor decision record.
