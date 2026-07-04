@@ -18,6 +18,15 @@
 ## Decision
 **Verdict**: Outcome A — Approve exactly one pinned fixture for controlled diagnostic use.
 
+### Supervisor licence/provenance decision
+- The fixture is CC BY-SA 3.0, not public domain.
+- CC BY-SA 3.0 is accepted only for temporary local read-only diagnostic use.
+- No redistribution of the PDF is permitted.
+- No committed PDF is permitted.
+- No committed score-derived artifacts (excerpts, rendered images, JSON reports, screenshots, datasets, etc.) are permitted.
+- Attribution/licence/provenance is recorded herein.
+- Any future distributed score-derived artifacts require a fresh Supervisor/licence review.
+
 ### Approved Use
 - Controlled, read-only targeted diagnostic to map music-font glyphs to whole-note coordinates.
 
@@ -29,3 +38,5 @@
 
 ### Required Next Task
 Targeted Diagnostic — Map Approved Whole-Note Fixture Music-Font Glyphs to Coordinates.
+
+**Required next review:** Reviewer diagnostic evidence verification after diagnostic.
