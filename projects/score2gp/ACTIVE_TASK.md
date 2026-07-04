@@ -1,38 +1,44 @@
 # Active Task
 
-**Task**: Controlled Mutopia A4 Diagnostic Rerun / Validation
-**Authorised Role**: Governance Implementer / Developer (Diagnostic)
+**Task**: Architect Research — Mutopia A4 Whole-Note Representation and Alternative Detection Viability
+**Authorised Role**: Architect
 **Repository**: `tticom/score2gp-agentops`
 
 ## 1. Baseline
-- Supervisor Outcome A fixture-ingestion approval decision record (`projects/score2gp/decisions/2026-06-29-supervisor-mutopia-a4-fixture-ingestion-approval.md`).
+- The controlled diagnostic result failed: vector-path whole-note heuristic produced 0 candidates.
 
-## 2. Approved Fixture
-`https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`
-(Exact pinned A4 URL only)
+## 2. Active Blocker
+- Vector-path whole-note heuristic produced 0 candidates for the Mutopia A4 fixture.
 
-## 3. Authorised Scope
-- Diagnostic purpose: Assess whole-note heuristics and false positives against the approved fixture.
-- Execute a controlled diagnostic rerun/validation using the precise fixture URL.
+## 3. Goal
+- Determine the representation of whole notes (or relevant symbols) in the fixture.
+- Determine whether a viable alternative detection approach exists.
 
-## 4. Required Diagnostic Contract
-- Precise fixture: `https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`
-- Command: To be defined by the next diagnostic implementer.
-- Metric/Output Evidence: Must be captured textually (no generated binaries, PDFs, or GP files attached).
-- Pass/Fail Threshold: To be validated.
-- Stop/Pivot Condition: To be evaluated upon completion.
+## 4. Non-goals
+- No implementation.
+- No product changes.
+- No OMR/CV implementation.
+- No fixture expansion.
 
-## 5. Forbidden Scope
-- **Product implementation:** Not authorised.
-- **OMR/CV Architecture Research:** Not authorised.
-- **Letter variants:** Not authorised.
-- **Private/local artifacts:** Not authorised.
-- **Unpinned URLs:** Not authorised.
+## 5. Fixture Boundary
+- Exact pinned A4 URL only: `https://www.mutopiaproject.org/ftp/BachJS/BWVAnh120/BWV-120/BWV-120-a4.pdf`
 
-## 6. Stop Conditions
-- Stop if the task attempts to download, commit, or attach the PDF or any other binary/artifact file.
-- Stop if scope expands beyond the approved A4 fixture.
-- Stop if product changes are proposed.
+## 6. Required Evidence
+- PDF object/content stream inspection if available through safe tools.
+- Whether relevant symbols appear as text/font glyphs, vector drawings, raster image content, or unknown.
+- Whether whole-note-specific detection can be bounded without broad OMR/CV.
+- Risks of false positives/false negatives.
+- Proposed diagnostic or implementation path only if evidence supports it.
 
-## 7. Next Required Review
-Diagnostic evidence review or PR readiness review, depending on whether a PR is opened for the diagnostic.
+## 7. Required Output
+Architect must choose exactly one outcome:
+- **Outcome A**: text/font-based detection appears viable for the approved fixture and should proceed to Reviewer architecture verification.
+- **Outcome B**: text/font-based detection is not viable, but another bounded non-implementation approach appears viable and should proceed to Reviewer architecture verification.
+- **Outcome C**: no viable approach found; no Developer work authorised.
+
+## 8. Stop Conditions
+- Representation cannot be determined.
+- Evidence requires product implementation to inspect.
+- Fixture boundary cannot be maintained.
+- Approach would require broad OMR/CV implementation.
+- No decision-useful evidence can be produced.
