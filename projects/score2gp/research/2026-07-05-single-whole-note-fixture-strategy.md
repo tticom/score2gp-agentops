@@ -42,9 +42,9 @@ What is the safest strategy for obtaining or generating a born-digital vector PD
 
 ### Option 3: Programmatic PDF Generation via Product Script
 - **Source/provenance**: Generated programmatically using the product repository's existing PDF generator framework `tests/fixtures/pdf/make_standard_staff_diagnostics_pdfs.py`.
-- **License**: Project-owned / CC0 / MIT (no external copyright restrictions).
-- **License evidence**: N/A (entirely custom generated within the repository).
-- **Attribution obligations**: None.
+- **License/provenance**: The proposed fixture source would be authored as minimal coordinate data inside the Score2GP product repository. It would not be derived from any external score, composition, scan, PDF, music engraving, or third-party music source. The resulting source fixture and generated output would be governed by the repository’s existing license and project contribution terms. This strategy introduces no third-party score attribution obligations because no third-party score material is used.
+- **License evidence**: The later Developer task must keep the fixture source as repository-authored coordinate data and rely only on the repository’s existing license. No external music source, downloaded PDF, public-domain score, Creative Commons score, or third-party engraving is part of this option.
+- **Attribution obligations**: No additional third-party attribution obligations are introduced by the fixture source itself, because the strategy uses repository-authored coordinate data rather than external score material.
 - **Born-digital/vector evidence**: Yes. Uses PyMuPDF draw primitives (`draw_line` and `draw_oval`) which compile directly to clean vector structures.
 - **Font stack evidence**: Vector primitive shapes (does not depend on external font subsets).
 - **Layout complexity**: Minimal. Single-system, single-measure, single-note layout.
