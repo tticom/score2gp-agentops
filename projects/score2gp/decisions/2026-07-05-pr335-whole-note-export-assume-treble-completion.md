@@ -13,6 +13,24 @@
 - **Branch Deletion Status**: Deleted (remote branch removed)
 - **Post-Merge Verification Verdict**: VERIFIED
 
+```text
+PR readiness evidence:
+- PR state: MERGED
+- Head SHA: 04a2ff083a2d42ec025d9e212bbe24609089bd15
+- Mergeable: MERGEABLE (before merge)
+- Changed files: src/score2gp/cli.py, src/score2gp/whole_note_recogniser.py, tests/test_cli_notation_whole_note_export.py, tests/test_note_candidate_recognition_cli.py, tests/test_note_candidate_recognition_report.py
+- CI/checks: passing (4 checks)
+- Codex review submissions: 1 review submitted (COMMENTED state)
+- Codex inline comments: 2 inline comments (PRRT_kwDOShNpkc6ObK9V, PRRT_kwDOShNpkc6ObK9Y)
+- Review threads: 2 threads
+- Unresolved threads: 0 threads
+- Codex comment disposition:
+  - Thread PRRT_kwDOShNpkc6ObK9V: accepted as blocker, fixed by replacing silent truncation with explicit validation error, regression tests added.
+  - Thread PRRT_kwDOShNpkc6ObK9Y: accepted as blocker, fixed by propagating assumed-clef mode and counters to coverage reporting, regression tests added.
+- Regression tests added/updated: test_notation_whole_note_export_fails_on_real_fixture_due_to_multiple_notes, test_notation_whole_note_export_fails_without_pitch_resolution, test_coverage_report_under_assume_treble_clef, test_coverage_report_without_assume_treble_clef, test_note_candidate_recognition_cli.py, test_note_candidate_recognition_report.py
+- Known limitations: public two-note fixture rejects cleanly, positive export remains mock-only.
+```
+
 ## 3. Capability Landed
 - `notation-whole-note-export` command exposes an explicit opt-in `--assume-treble-clef` flag.
 - The flag is propagated to recognition.
