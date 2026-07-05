@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: None
+NO_ACTIVE_TASK_APPROVED
 **Authorised Role**: Supervisor
 **Repository**: `tticom/score2gp-agentops`
 
