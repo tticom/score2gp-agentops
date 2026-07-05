@@ -1,38 +1,19 @@
 # Active Task
 
-**Task**: Reviewer Architecture Verification — PR #234 whole-note real-fixture export research
-**Authorised Role**: Reviewer
-**Repository**: `tticom/score2gp-agentops`
+## Status
 
-## 1. Baseline
-- Architect research PR #234 has been submitted, documenting Outcome B.
-- Expected head SHA is `5c0a555250a4b8eba5b39b6782b27bd8e69e05e8`.
-- The research establishes that the E2E export path is blocked by gaps in CLI options, pitch fallback exclusions, and notation bridge filters.
+NO_ACTIVE_TASK_APPROVED
 
-## 2. Active Blocker
-- The Architect research outcome has not been independently verified.
-- Developer implementation remains blocked until Reviewer architecture verification approves the research and its next-step boundary.
+## Title
 
-## 3. Goal
-- Review PR #234 and verify whether the Architect Outcome B research is adequate, evidence-backed, bounded, and safe to use as the basis for a later narrow Developer task.
+No active task is approved.
 
-## 4. Non-goals
-- Do not implement product changes.
-- Do not modify the PR.
-- Do not push commits.
-- Do not merge PR #234.
-- Do not authorise Developer implementation.
-- Do not inspect or use unapproved fixtures.
-- Do not commit generated artifacts.
+## Context
 
-## 5. Required Output
-- Reviewer Architecture Verification Verdict: approved / return to architect / stop-pivot.
+Product PR #335 has been successfully squash-merged into `main` (commit `a4235ea55c45a513c671f2cc5f24c916bf58f865`) and post-merge verified. The remote branch has been deleted.
 
-## 6. Stop Conditions
-- Current live head SHA is not explainable.
-- Changed files differ from expected governance files.
-- Product files changed.
-- Research used unapproved/private fixtures.
-- Generated artifacts were committed.
-- Review threads contain unresolved blockers.
-- The causal chain from CLI failure to implementation gaps is not supported by evidence.
+No Developer implementation or Architect research task is currently approved. The next task requires a Supervisor decision to select a new capability or authorize further research.
+
+## Goal
+
+Provide a clean, unblocked state where agents can inspect the repository but are blocked from making changes to the codebase.
