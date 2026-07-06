@@ -1,7 +1,7 @@
 # Architect Research — 8th/16th-Note Recognition and Rhythm Semantics
 
 ## 1. Verdict
-Outcome A — Raster path viable
+Outcome A — Raster path viable for a narrow next bridge task, not proven as general real-world 8th/16th-note OMR support.
 
 ## 2. Baseline Reviewed
 - **Governance PR #239 merge commit**: `cd68a684f188f0499c511986fcd4e9e2c0fafa61`
@@ -41,9 +41,10 @@ Outcome A — Raster path viable
 - **Fact 5.4**: `src/score2gp/notation_bridge.py` (lines 155-156) raises `NotationBridgeInputError("cumulative_duration_exceeds_one_4_4_bar")` when total accumulated ticks exceed `max_ticks_in_4_4_bar`.
 - **Fact 5.5**: `src/score2gp/notation_bridge.py` (line 172) increments `current_onset_ticks += dur_ticks` unconditionally for every outcome mapped, serializing all outcomes sequentially regardless of their horizontal position or alignment.
 - **Fact 5.6**: `src/score2gp/pdf_staff_notation_diagnostics.py` (lines 797-837) extracts diagonal strokes/curves as `flag_candidates` and horizontal lines/rectangles as `beam_candidates`.
+- **Fact 5.7**: `src/score2gp/gpif.py` (lines 1819-1820) loops over `event.notes` and calls `_note` for each note in the event, confirming the GP writer supports exporting multiple notes per event as a chord.
 
 ## 6. Inferences
-- **Inference 6.1**: The core geometric candidate extraction and OMR mapping for eighth/sixteenth notes is already fully viable and implemented (supported by Fact 5.1, 5.2, and 5.6).
+- **Inference 6.1**: Basic visual candidate extraction for eighth/sixteenth notes is verified only on the existing synthetic fixtures inspected in this task. This supports a narrow bridge-level same-onset chord-grouping task, but does not prove robust real-world 8th/16th-note OMR. Beam, flag, stem, association, curved glyph, and complex-layout handling remain unresolved risks.
 - **Inference 6.2**: If multiple note candidates are aligned vertically (e.g. chords or polyphonic voices), `notation_bridge.py` will fail with `cumulative_duration_exceeds_one_4_4_bar` because it sequentially progresses ticks for each note candidate instead of grouping them into a chord event (supported by Fact 5.4 and 5.5).
 - **Inference 6.3**: The current codebase does not support polyphonic timing alignment or chord composition at the bridge layer, representing a blocker for complex rhythm/note recognition (supported by Fact 5.5).
 
@@ -77,14 +78,14 @@ Outcome A — Raster path viable
 - **Forbidden**: Committing new generated PDF fixtures, private PDFs, or generated `.gp` packages to git.
 
 ## 11. Recommended Outcome
-Outcome A — Raster path viable.
-The existing vector/raster candidate extraction pipelines for noteheads, stems, beams, and flags are already functional and successfully extract eighth/sixteenth note candidates from synthetic fixtures. The primary blocker is in `notation_bridge.py`, which serializes vertically aligned notes sequentially rather than grouping them into chords. Correcting this bridge logic is the smallest, highest-value next step.
+Outcome A — Raster path viable for a narrow next bridge task, not proven as general real-world 8th/16th-note OMR support.
+The existing vector/raster candidate extraction pipelines for noteheads, stems, beams, and flags successfully extract eighth/sixteenth note candidates from synthetic fixtures. However, significant OMR recognition, layout, and association gaps remain for real-world scores. The primary immediate blocker is in `notation_bridge.py`, which serializes vertically aligned notes sequentially rather than grouping them into chords. Correcting this bridge logic to group same-onset notes into chords is the smallest, highest-value next step.
 
 ## 12. Smallest Next Task
-- **Exact Intended Capability**: Implement chord-grouping/polyphony support in `notation_bridge.py` for eighth and sixteenth note candidates. Overlapping candidates aligned horizontally must group into single Events.
-- **Exact Non-goals**: Changing OMR candidate extraction code, modifying staff geometry classification, adding multi-voice track export, or committing new PDF fixtures.
+- **Exact Intended Capability**: Implement same-onset chord grouping in `notation_bridge.py` for eighth and sixteenth note candidates. Overlapping candidates aligned horizontally (same onset) must group into a single ScoreIR `Event` containing multiple `Note` objects.
+- **Exact Non-goals**: True polyphony, same-staff multi-voice streams, voice separation, multiple independent rhythmic voices, changing OMR candidate extraction code, modifying staff geometry classification, or committing new PDF fixtures.
 - **Likely files affected**: `src/score2gp/notation_bridge.py`, `tests/test_notation_bridge.py`.
-- **Tests/fixtures required**: Bridge unit tests in `tests/test_notation_bridge.py` using mock outcome inputs representing chords.
+- **Tests/fixtures required**: Bridge unit tests in `tests/test_notation_bridge.py` using mock outcome inputs representing chords, validating that same-onset candidates are correctly grouped and timing ticks are assigned correctly.
 - **Validation commands**: `pytest tests/test_notation_bridge.py`
 - **Acceptance criteria**:
   - `notation_bridge.py` groups overlapping note candidates sharing horizontal coordinate alignment into a single `Event` containing multiple `Note` objects.
@@ -94,7 +95,7 @@ The existing vector/raster candidate extraction pipelines for noteheads, stems, 
   - Overlapping note candidates are serialized sequentially.
   - Exception `cumulative_duration_exceeds_one_4_4_bar` is raised for chords.
 - **Stop conditions**: Stop if the task requires changing OMR candidate extraction logic or if it requires committing new PDF fixtures.
-- **Artifact constraints**: No generated PDFs or GP files committed.
+- **Artifact constraints**: No generated PDFs or GP files committed to git.
 - **Required next review**: Reviewer implementation conformance review.
 
 ## 13. Commands Run
@@ -105,11 +106,20 @@ The existing vector/raster candidate extraction pipelines for noteheads, stems, 
 - `find tests fixtures src -type f 2>/dev/null | sort`
 - `git log --oneline -n 20`
 - `ls -la /home/tticom/work/score2gp-workspace/`
+- `cd ../score2gp && git status --short && sed -n '1810,1830p' src/score2gp/gpif.py`
 
 ## 14. Evidence Not Verified
 None.
 
 ## 15. Cleanliness and Artifact Hygiene
 - **Product repo working tree state**: clean
-- **Governance repo working tree state**: clean (except new research report file)
+- **Governance repo working tree state**: clean (except new research report and prompts files)
 - **Artifact hygiene checks**: clean; no private or generated artifacts added.
+
+## 16. Prompt Chain
+- **Operative Prompts**:
+  - Prompt 1: [001_authorise_research_prompt.md](file:///home/tticom/work/score2gp-workspace/score2gp-agentops/projects/score2gp/research/prompts/001_authorise_research_prompt.md) (authorised the initial research)
+  - Prompt 2: [002_correction_prompt.md](file:///home/tticom/work/score2gp-workspace/score2gp-agentops/projects/score2gp/research/prompts/002_correction_prompt.md) (returned PR #240 to Architect for correction)
+- **Operative Prompt for Final conclusion**: Prompt 2 ([002_correction_prompt.md](file:///home/tticom/work/score2gp-workspace/score2gp-agentops/projects/score2gp/research/prompts/002_correction_prompt.md)) was operative for the final report corrections.
+- **Constraints Recorded**: Bounded to documentation correction; no-implementation; no new fixtures/PDFs/GP files committed; Developer implementation remains blocked.
+- **Next Required Stage**: Reviewer architecture re-verification.
