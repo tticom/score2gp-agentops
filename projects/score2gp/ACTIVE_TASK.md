@@ -4,11 +4,19 @@
 **Authorised Role**: Architect
 **Repository**: `tticom/score2gp-agentops`
 
+## Status
+
+APPROVED
+
+## Executable Task
+
+Yes
+
 ## 1. Baseline
 - Product PR #336 merged at `cae6a416076e66f6b84940ad0cbf3061beb241d9`.
 - Governance PR #238 merged at `96397d845b924fb27b12753940ccfec7251ebb09`.
 - Whole-note work is parked, and workflow loop tiers (Tier A/B) are active.
-- Project is at a clean `NO_ACTIVE_TASK_APPROVED` baseline prior to this authorisation.
+- Project was at a clean no-active-task baseline before this authorisation.
 
 ## 2. Context
 8th and 16th notes are critical recognition targets for rhythm notation. However, they introduce significant technical complexity (stems, beams, flags, rhythmic onset mapping, duration classification). This is a new recognition strategy and product-behaviour area, and is therefore classified as Tier A (Full Loop). Developer implementation is not authorised. The Architect must research and propose a viable technical strategy.
