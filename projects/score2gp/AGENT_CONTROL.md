@@ -56,21 +56,40 @@ If task instructions conflict with the role skill file, the stricter safety/rese
 
 If a task asks for uncertain, experimental, or architectural work but does not include measurable stop/continue/pivot criteria, the Architect must create those criteria or stop and return to governance.
 
-### Strict task loop
+### Workflow loop tiers
 
-For uncertain, technical, experimental, or product-changing work, a complete task loop consists of:
+To balance safety and speed, Score2GP utilizes two workflow tiers:
 
-1. Requirement prompt: The requirement writer defines the measurable requirement.
-2. Architect research and approach selection: The Architect researches options and must select exactly one bounded outcome: Outcome A (raster implementation path is viable), Outcome B (raster is not viable but an alternative implementation path is viable), or Outcome C (no implementation path is currently justified and Developer work is not authorised).
-3. Reviewer architecture/reference verification: The Reviewer verifies the Architect’s references and plausibility.
-4. Developer implementation: The Developer implements only the authorised requirement using the approved approach.
-5. Reviewer implementation conformance review: The Reviewer verifies implementation conformance.
-6. PR readiness review: The Reviewer separately verifies PR readiness using `AGENT_PR_READINESS.md`.
+#### Tier A: Full Loop (High-Risk Work)
+Required when a task involves:
+- Uncertain architecture or new recognition strategies.
+- Product behaviour changes or database schema modifications.
+- Artifact policy exceptions or private/copyrighted data risk.
+- Failed tests or unresolved Codex/review threads.
+- Broad semantic claims.
+- **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> Reviewer Conformance Review -> PR Readiness Review -> Merge.
 
-The loop may occur across multiple PRs if governance requires it, but each authorised task must state which part of the loop it is executing and what evidence it must produce.
+#### Tier B: Compressed Loop (Low-Risk Work)
+Allowed when the task is limited to:
+- Markdown-only governance recording or minor process improvements.
+- Narrow bug fixes with pre-approved architecture.
+- Fixture/test-only changes where expected behaviour is already authorised.
+- PRs with no product behaviour broadening.
+- No private/artifact risk, clean test suite, and no unresolved Codex threads.
+- **Compression Rules**:
+  - The requirement packet includes acceptance and readiness criteria up front.
+  - One combined Reviewer performs implementation conformance review and PR readiness review in a single pass.
+  - Governance completion records can be bundled with the next Supervisor decision in `ACTIVE_TASK.md` during state transitions, rather than requiring standalone PRs.
+  - Merge operators still perform the final guarded merge check.
+
+Developer implementation work must not begin unless it is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`.
+
+For Tier B tasks, `ACTIVE_TASK.md` may reference a requirement packet that contains acceptance criteria, readiness criteria, validation commands, artifact constraints, and reporting requirements. The requirement packet alone is not executable authorisation.
+
+Tier B compression shortens review sequencing; it does not weaken task authorisation, artifact controls, Codex/review-thread handling, or guarded merge requirements.
 
 Developer implementation work must not begin unless one of these is true:
-- the task is explicitly mechanical and exempt from architecture review; or
+- the task is Tier B (compressed loop) and is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`; or
 - Outcome A or Outcome B has been verified by Reviewer architecture/reference verification; and
 - the task contains measurable acceptance criteria.
 
