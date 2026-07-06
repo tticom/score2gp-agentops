@@ -10,7 +10,7 @@ No active task is approved.
 
 ## Context
 
-Product PR #335 has been successfully squash-merged into `main` (commit `a4235ea55c45a513c671f2cc5f24c916bf58f865`) and post-merge verified. The remote branch has been deleted.
+Product PR #336 has been successfully squash-merged into `main` (commit `cae6a416076e66f6b84940ad0cbf3061beb241d9`) and post-merge verified. The remote branch has been deleted.
 
 No Developer implementation or Architect research task is currently approved. The next task requires a Supervisor decision to select a new capability or authorize further research.
 
