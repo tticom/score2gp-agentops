@@ -12,7 +12,7 @@ The GP writer is verified to support multiple notes in a single event as a chord
 We authorise a Developer implementation task to implement same-onset chord grouping in `src/score2gp/notation_bridge.py` for eighth and sixteenth notes, with tests in `tests/test_notation_bridge.py`.
 
 ## Developer Task Specification
-- **Intended Capability**: Group note candidates representing the same onset into a single ScoreIR `Event` containing multiple `Note` objects, preserving timing, duration, and preventing tick overflow.
+- **Intended Capability**: Group note candidates representing the same onset into a single ScoreIR `Event` containing multiple `Note` objects, preserving timing, duration, and preventing tick overflow. Candidates may be grouped into a single chord Event only when they share the same page identity, system identity, staff index identity, and have horizontal onset/x coordinates within a tolerance of 1.0 point. Candidates with the same x/onset coordinate but different page, system, or staff context must remain separate events.
 - **Allowed Files**:
   - `src/score2gp/notation_bridge.py`
   - `tests/test_notation_bridge.py`
@@ -23,17 +23,18 @@ We authorise a Developer implementation task to implement same-onset chord group
   - Multiple independent rhythmic voices
   - OMR candidate extraction changes
   - Staff geometry changes
+  - GP writer changes unless a failing test proves the existing chord export path cannot consume multiple notes per Event
   - New PDF fixtures
   - Committed `.gp` artifacts
   - Real-world score support claims
 - **Required Tests**:
-  - Mock candidates representing same-onset chords are grouped into one Event.
-  - The Event contains multiple Notes.
-  - Onset ticks are shared for grouped chord notes.
-  - Duration ticks are correct for eighth and sixteenth notes.
-  - Valid chord inputs do not raise `cumulative_duration_exceeds_one_4_4_bar`.
-  - Non-aligned sequential candidates remain sequential.
-  - Existing duration mapping for eighth/sixteenth notes remains intact.
+  - same-onset candidates in the same page/system/staff context are grouped into one Event;
+  - candidates with the same x/onset coordinate but different page identity are not grouped;
+  - candidates with the same x/onset coordinate but different system identity are not grouped;
+  - candidates with the same x/onset coordinate but different staff index are not grouped;
+  - non-aligned sequential candidates remain sequential;
+  - existing eighth/sixteenth duration mapping remains intact;
+  - valid same-context chord inputs do not raise `cumulative_duration_exceeds_one_4_4_bar`.
 - **Validation Command**:
   - `pytest tests/test_notation_bridge.py`
 - **Stop Conditions**:
