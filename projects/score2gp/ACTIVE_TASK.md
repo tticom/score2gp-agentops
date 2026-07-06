@@ -10,9 +10,11 @@ No active task is approved.
 
 ## Context
 
-Product PR #336 has been squash-merged into `main` (commit `cae6a416076e66f6b84940ad0cbf3061beb241d9`) and post-merge verified. The remote branch has been deleted.
+Product PR #336 has been squash-merged and verified. The governance loop is closed by merging PR #237.
 
-No Developer implementation or Architect research task is currently approved. The completion of PR #336 was recorded with two deviations (lack of pre-authorisation and committed generated PDF stop-condition conflict). The next task requires a Supervisor decision to resolve/approve these deviations and select a new capability or authorize further research.
+The Supervisor has recorded the final whole-note pivot and resolved the two deviations (lack of pre-authorisation and committed generated PDF stop-condition conflict) as historical exceptions only under the new policy document `decisions/2026-07-06-whole-note-pivot-and-loop-efficiency.md`. Whole-note work is officially parked.
+
+No Developer implementation, Architect research, or Diagnostic task is currently approved. The next task requires a Supervisor decision to select a new capability under the improved loop efficiency rules.
 
 ## Goal
 
