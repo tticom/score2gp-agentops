@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Architect research — 8th/16th-note recognition and rhythm-semantics strategy
-**Authorised Role**: Architect
-**Repository**: `tticom/score2gp-agentops`
+**Task**: Developer implementation — Bounded same-onset chord grouping in `notation_bridge.py`
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp`
 
 ## Status
 
@@ -14,27 +14,30 @@ Yes
 
 ## 1. Baseline
 - Product PR #336 merged at `cae6a416076e66f6b84940ad0cbf3061beb241d9`.
-- Governance PR #238 merged at `96397d845b924fb27b12753940ccfec7251ebb09`.
-- Whole-note work is parked, and workflow loop tiers (Tier A/B) are active.
-- Project was at a clean no-active-task baseline before this authorisation.
+- Governance PR #240 merged at `9c4ec0e7c98ffc923d7ac347f55e9e8a0a6b12cd`.
+- Architecture approval: Reviewer architecture re-verification approved PR #240 at head `6cd939eccb8889b1867c91b4c4d17eb0d6c6786f`.
 
 ## 2. Context
-8th and 16th notes are critical recognition targets for rhythm notation. However, they introduce significant technical complexity (stems, beams, flags, rhythmic onset mapping, duration classification). This is a new recognition strategy and product-behaviour area, and is therefore classified as Tier A (Full Loop). Developer implementation is not authorised. The Architect must research and propose a viable technical strategy.
+PR #240 architecture research identified same-onset chord grouping in `notation_bridge.py` as the smallest next implementation task. Currently, `notation_bridge.py` sequentially increments onsets for all note candidates, which causes overlapping chord notes to be serialized, violating timing and exceeding measure limits. The Developer will implement chord grouping to address this blocker. The GP writer is verified to support multiple notes in a single event as a chord (iterating over `event.notes` in `gpif.py` lines 1819-1820).
 
 ## 3. Scope
-- **Approved**: Bounded research into 8th/16th noteheads, stems, flags, beams, coordinate association, beamed sub-beat segmentation, ScoreIR tick mapping, track rhythmic grouping, and GP export implications. Read-only inspection of existing product repository files, tests, and public fixtures.
-- **Excluded**: Product code changes, adding new generated fixtures or PDFs, speculative or unproven claims, 32nd-note work, and Developer implementation.
+- **Approved**: Same-onset chord grouping in `src/score2gp/notation_bridge.py` for eighth/sixteenth note candidates so horizontally aligned same-onset candidates become one ScoreIR `Event` containing multiple `Note` objects. Candidates may be grouped into a single chord Event only when they share the same page identity, system identity, staff index identity, and have horizontal onset/x coordinates within a tolerance of 1.0 point. Candidates with the same x/onset coordinate but different page, system, or staff context must remain separate events. Bridge-level tests in `tests/test_notation_bridge.py` must prove timing, duration, and no cumulative 4/4 overflow for valid chord inputs.
+- **Excluded**: True polyphony, same-staff multi-voice support, voice separation, multiple independent rhythmic voices, OMR candidate extraction changes, staff geometry changes, new PDF fixtures, committed `.gp` artifacts, and real-world score support claims.
 
 ## 4. Required Output & Outcome
-The Architect must write a self-contained research report under `projects/score2gp/research/2026-07-06-8th-16th-note-recognition-strategy.md` separating facts, inferences, hypotheses, and unknowns. The report must conclude with selecting exactly one of:
-- **Outcome A**: A raster/product path is viable. Provide the smallest implementable next Developer task, exact files affected, fixture/test requirements, validation strategy, acceptance criteria, and stop conditions.
-- **Outcome B**: A direct raster/product path is not viable, but another bounded approach is. Provide the alternate approach, evidence, smallest implementable next Developer task, fixture requirements, validation strategy, acceptance criteria, and stop conditions.
-- **Outcome C**: No viable implementation path is currently justified. No Developer work is authorised. Identify the missing prerequisite and next research question.
+Implementation of chord-grouping in `src/score2gp/notation_bridge.py` and comprehensive unit and integration tests in `tests/test_notation_bridge.py` verifying:
+- same-onset candidates in the same page/system/staff context are grouped into one Event;
+- candidates with the same x/onset coordinate but different page identity are not grouped;
+- candidates with the same x/onset coordinate but different system identity are not grouped;
+- candidates with the same x/onset coordinate but different staff index are not grouped;
+- non-aligned sequential candidates remain sequential;
+- existing eighth/sixteenth duration mapping remains intact;
+- valid same-context chord inputs do not raise `cumulative_duration_exceeds_one_4_4_bar`.
 
 ## 5. Artifact & Privacy Constraints
 - No private score PDFs or copyrighted music may be processed.
-- No generated PDFs, GP files, screenshots, logs, or dumps may be committed.
-- Propose fixture requirements but do not create any files.
+- No generated PDFs or GP files may be committed to git.
+- Product working tree must remain clean.
 
 ## 6. Required Next Review
-Reviewer architecture verification.
+Reviewer implementation conformance review and PR readiness review.
