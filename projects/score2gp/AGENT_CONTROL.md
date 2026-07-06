@@ -82,8 +82,14 @@ Allowed when the task is limited to:
   - Governance completion records can be bundled with the next Supervisor decision in `ACTIVE_TASK.md` during state transitions, rather than requiring standalone PRs.
   - Merge operators still perform the final guarded merge check.
 
+Developer implementation work must not begin unless it is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`.
+
+For Tier B tasks, `ACTIVE_TASK.md` may reference a requirement packet that contains acceptance criteria, readiness criteria, validation commands, artifact constraints, and reporting requirements. The requirement packet alone is not executable authorisation.
+
+Tier B compression shortens review sequencing; it does not weaken task authorisation, artifact controls, Codex/review-thread handling, or guarded merge requirements.
+
 Developer implementation work must not begin unless one of these is true:
-- the task is Tier B (compressed loop) where implementation is pre-authorised in the requirement packet; or
+- the task is Tier B (compressed loop) and is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`; or
 - Outcome A or Outcome B has been verified by Reviewer architecture/reference verification; and
 - the task contains measurable acceptance criteria.
 
