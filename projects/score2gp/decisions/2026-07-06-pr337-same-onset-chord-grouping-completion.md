@@ -21,9 +21,27 @@
 - `src/score2gp/notation_bridge.py`
 - `tests/test_notation_bridge.py`
 
-## Review Evidence
-- Implementation conformance approved at head: `b69f390ee74cc2425a4deb4b8ccaccc8d634cf5b`.
-- Merge was verified live; readiness report text was not present in this task context.
+## PR Readiness Evidence
+- **Product PR reviewed**: https://github.com/tticom/score2gp/pull/337
+- **Readiness verdict before merge**: READY
+- **Reviewed head SHA**: `b69f390ee74cc2425a4deb4b8ccaccc8d634cf5b`
+- **Merge commit**: `eae13541de67899ff9563a09f48ed747171dea6b`
+- **Merge commit reachable from product `origin/main`**: yes (verified live via `git merge-base` in local product repo)
+- **PR state verified**: merged
+- **Base branch**: `main`
+- **Changed files**:
+  - `src/score2gp/notation_bridge.py`
+  - `tests/test_notation_bridge.py`
+- **Checks / CI**: All checks successful (4 successful, 0 failing, 0 pending checks; verified live via GitHub API)
+- **Review submissions**: Commented by chatgpt-codex-connector, commented by tticom (conformance approved/reviewed by tticom)
+- **Review threads**:
+  - Total: 2
+  - Unresolved: 0
+  - Blocking comments: None
+  - Codex disposition: Resolved (2 threads resolved, covering single-note export paths chord rejection and coordinate-less grouping checks)
+- **Implementation conformance review**: approved at head `b69f390ee74cc2425a4deb4b8ccaccc8d634cf5b`
+- **Artifact hygiene**: verified clean (no private PDFs, `.gp` files, logs, or scratch dumps committed to git in the product repository)
+- **Known limitations preserved**: no true polyphony, no same-staff multi-voice support, no voice separation, no OMR extraction changes, no staff geometry changes, no GP writer changes, no new PDF fixtures, no committed `.gp` artifacts, no real-world score support claim.
 
 ## Validation Evidence
 - Reported by Developer/Reviewer:
