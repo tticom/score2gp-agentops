@@ -87,7 +87,7 @@ Reporting format:
 After a product PR is merged:
 1. Verify the merge live.
 2. Record the merge commit in run records.
-3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be committed directly to main or bundled.
+3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be bundled into a normal governance PR or handled through the approved branch/PR/human-merge path. Under all circumstances, direct commits to main are strictly prohibited.
 4. Promote the next task from `APPROVED_TASK_QUEUE.md` to `ACTIVE_TASK.md`. Ensure repository is clean before starting.
 5. Run `python scripts/score2gp_governance_audit.py` to ensure no stale tasks or privacy violations exist in the governance repo.
 

@@ -33,11 +33,12 @@ def main():
     tracked_files = run_cmd(["git", "ls-files"]).splitlines()
     banned_extensions = (".pdf", ".gp", ".mxl", ".musicxml", ".png", ".html")
     for file in tracked_files:
-        if file.startswith("work/") or file.startswith("inspect/") or file.startswith("overlays/"):
+        file_lower = file.lower()
+        if file_lower.startswith("work/") or file_lower.startswith("inspect/") or file_lower.startswith("overlays/"):
             violations.append(f"Banned path tracked in governance repo: {file}")
-        if any(file.endswith(ext) for ext in banned_extensions):
+        if any(file_lower.endswith(ext) for ext in banned_extensions):
             # Verify if it's in templates or allowed docs
-            if not file.startswith("projects/score2gp/templates/") and not file.startswith("docs/"):
+            if not file_lower.startswith("projects/score2gp/templates/") and not file_lower.startswith("docs/"):
                 violations.append(f"Banned binary/artifact file tracked in governance repo: {file}")
 
     # 3. Check product automation mentioned in policy docs
@@ -94,14 +95,22 @@ def main():
 
         if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and branch_name:
             # Query gh to see if this branch has a merged PR on product repo
-            gh_res = run_cmd(["gh", "pr", "view", branch_name, "--repo", "tticom/score2gp", "--json", "state,merged"])
-            if gh_res:
-                try:
-                    pr_info = json.loads(gh_res)
-                    if pr_info.get("state") == "MERGED" or pr_info.get("merged") is True:
-                        violations.append(f"ACTIVE_TASK.md status is stale ({status}) for branch '{branch_name}' which is already MERGED on product repo.")
-                except Exception:
-                    pass
+            try:
+                res = subprocess.run(
+                    ["gh", "pr", "view", branch_name, "--repo", "tticom/score2gp", "--json", "state"],
+                    capture_output=True, text=True
+                )
+                if res.returncode != 0 or not res.stdout.strip():
+                    violations.append(f"Unable to verify active task branch against GitHub: {branch_name}")
+                else:
+                    try:
+                        pr_info = json.loads(res.stdout)
+                        if pr_info.get("state") == "MERGED":
+                            violations.append(f"ACTIVE_TASK.md status is stale ({status}) for branch '{branch_name}' which is already MERGED on product repo.")
+                    except Exception as json_err:
+                        violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (JSON parse error: {json_err})")
+            except Exception as e:
+                violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (subprocess error: {e})")
 
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")
