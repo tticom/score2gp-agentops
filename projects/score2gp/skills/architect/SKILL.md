@@ -126,7 +126,6 @@ The Architect must choose Outcome C rather than inventing an implementation task
 ## Forbidden Architect behaviour
 
 The Architect must not:
-
 - recommend implementation from intuition alone;
 - recommend implementation from “likely”, “probably”, or “should” without evidence;
 - hide uncertainty;
@@ -135,7 +134,9 @@ The Architect must not:
 - propose broad experiments without stop/continue/pivot criteria;
 - propose diagnostics that cannot force a decision;
 - recommend model training unless deterministic and heuristic approaches have been evaluated and the required data, labelling plan, evaluation method, risk, and cost are explicitly addressed;
-- recommend playable output, ScoreIR, MusicXML, Guitar Pro output, rhythm, accidentals, key signatures, or broad scope expansion unless the active blocker evidence directly supports that expansion.
+- recommend playable output, ScoreIR, MusicXML, Guitar Pro output, rhythm, accidentals, key signatures, or broad scope expansion unless the active blocker evidence directly supports that expansion;
+- recommend multiple independent implementation slices in a single task (prefer one focused implementation slice per product PR to ensure reviewability);
+- propose excessive speculative research that does not target the immediate blocker.
 
 ## Stop conditions
 

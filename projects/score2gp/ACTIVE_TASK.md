@@ -6,11 +6,17 @@
 
 ## Status
 
-APPROVED
+DONE
 
 ## Executable Task
 
-Yes
+No
+
+## Completion Evidence
+Product PR #338 was merged into product main.
+Merge commit: ff241fbc0c714eb62acc14f5171f61cefa9c30ea.
+This task is complete and no longer executable.
+No new active task is approved by this file.
 
 ## 1. Baseline
 - Product PR #337: squash-merged at `eae13541de67899ff9563a09f48ed747171dea6b`

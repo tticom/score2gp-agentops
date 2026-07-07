@@ -58,29 +58,34 @@ If a task asks for uncertain, experimental, or architectural work but does not i
 
 ### Workflow loop tiers
 
-To balance safety and speed, Score2GP utilizes two workflow tiers:
+To balance safety and speed, Score2GP utilizes two workflow tiers, with Tier B as the standard default:
 
-#### Tier A: Full Loop (High-Risk Work)
-Required when a task involves:
-- Uncertain architecture or new recognition strategies.
-- Product behaviour changes or database schema modifications.
-- Artifact policy exceptions or private/copyrighted data risk.
-- Failed tests or unresolved Codex/review threads.
-- Broad semantic claims.
-- **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> Reviewer Conformance Review -> PR Readiness Review -> Merge.
-
-#### Tier B: Compressed Loop (Low-Risk Work)
-Allowed when the task is limited to:
+#### Tier B: Compressed Loop (Default Low-Risk Work)
+This is the default loop for low-risk tasks, including:
 - Markdown-only governance recording or minor process improvements.
 - Narrow bug fixes with pre-approved architecture.
 - Fixture/test-only changes where expected behaviour is already authorised.
 - PRs with no product behaviour broadening.
-- No private/artifact risk, clean test suite, and no unresolved Codex threads.
+- Clean public test suites, no private benchmark claims, and no unresolved Codex threads.
 - **Compression Rules**:
   - The requirement packet includes acceptance and readiness criteria up front.
   - One combined Reviewer performs implementation conformance review and PR readiness review in a single pass.
-  - Governance completion records can be bundled with the next Supervisor decision in `ACTIVE_TASK.md` during state transitions, rather than requiring standalone PRs.
+  - One approved task normally produces exactly one product PR.
+  - Governance completion records should be bundled with the next Orchestrator decision in `ACTIVE_TASK.md` or updated as direct run records, rather than requiring standalone governance PRs for routine completion bookkeeping.
   - Merge operators still perform the final guarded merge check.
+
+#### Tier A: Full Loop (High-Risk Work)
+Required only when a task involves:
+- Uncertain architecture or new recognition strategies.
+- Product behaviour changes or database schema modifications.
+- Policy exceptions, failed reviews, or private/copyrighted benchmark data claims.
+- **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> Reviewer Conformance Review -> PR Readiness Review -> Merge.
+
+### Verification and Report Automation
+Agents must execute and rely on product-level automation tools instead of copying raw logs:
+- Run `python scripts/agent_verify.py` to validate codebase correctness.
+- Run `python scripts/pr_body.py` to generate PR descriptions automatically.
+- Run `python scripts/artifact_audit.py` (which is run inside `agent_verify.py`) to verify repository hygiene.
 
 Developer implementation work must not begin unless it is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`.
 

@@ -8,15 +8,15 @@ This skill is for orchestration, governance updates, task promotion, and agent p
 Never trust self-reports. Verify live repository state, changed files, commits, and PR status before advancing work.
 
 ## Default Loop
-1. Verify current state.
+1. Verify current state using `python scripts/agent_status.py` and `python scripts/score2gp_governance_audit.py`.
 2. Identify active blocker.
 3. Confirm active task from governance (`projects/score2gp/ACTIVE_TASK.md`).
 4. Generate a bounded agent prompt.
-5. Developer implements one task on one branch.
+5. Developer implements one task on one branch using standard Tier B (compressed loop) default.
 6. PR is opened.
-7. Reviewer performs hard review (via `score2gp-pr-hard-review` skill).
+7. Reviewer performs conformance review (utilizing `scripts/agent_verify.py` report).
 8. Human merges only after review passes.
-9. Governance records completion and defines the next smallest safe task.
+9. Governance records completion in run records and promotes the next smallest safe task from `APPROVED_TASK_QUEUE.md` to `ACTIVE_TASK.md` when the repo is clean.
 10. Repeat.
 
 ## Mandatory Pre-flight Checks
@@ -86,10 +86,10 @@ Reporting format:
 ## Governance Completion Rule
 After a product PR is merged:
 1. Verify the merge live.
-2. Record the merge commit.
-3. Open a governance PR on `tticom/score2gp-agentops`.
-4. Mark the completed task in `ACTIVE_TASK.md`.
-5. Define the next task. Keep it as small and reviewable as possible.
+2. Record the merge commit in run records.
+3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be bundled into a normal governance PR or handled through the approved branch/PR/human-merge path. Under all circumstances, direct commits to main are strictly prohibited.
+4. Promote the next task from `APPROVED_TASK_QUEUE.md` to `ACTIVE_TASK.md`. Ensure repository is clean before starting.
+5. Run `python scripts/score2gp_governance_audit.py` to ensure no stale tasks or privacy violations exist in the governance repo.
 
 ## Score2GP-Specific Safety Rules
 - Preserve real visual and geometry evidence.
