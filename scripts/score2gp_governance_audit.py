@@ -58,7 +58,7 @@ def main():
     if os.path.exists(active_task_path):
         with open(active_task_path, "r", encoding="utf-8") as f:
             content = f.read()
-        
+
         # Robust status parsing
         status = ""
         lines = content.splitlines()
