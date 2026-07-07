@@ -8,14 +8,15 @@ At the very start of any conversation session, the agent MUST:
 
 ## Global rules
 
-1. Keep private copyrighted or licence-unclear fixtures local and untracked.
-2. Do not place private PDFs, GP files, MXL/MusicXML files, screenshots, overlays, logs, or generated conversion artifacts in Git.
-3. Use sanitized evidence only: counts, statuses, warning categories, command names, and artifact paths.
-4. Do not claim full PDF-to-GP conversion works unless proven by reproducible tests.
-5. Prefer public fixtures for automated tests.
-6. Do not let multiple agents edit the same source worktree.
-7. Do not allow documentation-only churn to masquerade as implementation progress.
-8. Every proposed implementation slice must have a test or a clear explanation of why no test is possible.
+1. Tier B (compressed loop) is the default workflow loop for low-risk, bounded public-fixture and product tasks. Tier A (full loop) is required only for architecture uncertainty, private benchmark claims, broad behavior changes, policy exceptions, or failed review.
+2. Keep private copyrighted or licence-unclear fixtures local and untracked. Private fixtures reside in the sibling repository `score2gp-private-fixtures`.
+3. Do not place private PDFs, GP files, MXL/MusicXML files, screenshots, overlays, logs, or generated conversion artifacts in Git.
+4. Use sanitized evidence only: counts, statuses, warning categories, command names, and artifact paths. Leverage product automation scripts (`scripts/agent_verify.py`, `scripts/agent_status.py`, `scripts/pr_body.py`, and `scripts/artifact_audit.py`) to gather status and generate reports rather than copy/pasting raw CLI outputs.
+5. Do not claim full PDF-to-GP conversion works unless proven by reproducible tests.
+6. Prefer public fixtures for automated tests.
+7. Do not let multiple agents edit the same source worktree.
+8. Do not allow documentation-only churn to masquerade as implementation progress.
+9. Every proposed implementation slice must have a test or a clear explanation of why no test is possible.
 
 
 ## Role ownership

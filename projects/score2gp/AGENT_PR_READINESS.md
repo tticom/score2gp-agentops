@@ -53,7 +53,7 @@ Opening a PR is not completion. After opening a PR, the assigned agent must obse
 
 ## 4. PR Readiness Evidence Block
 
-All review reports or completion reports must include the following evidence block:
+All review reports or completion reports should leverage the outputs of `scripts/agent_verify.py` and `scripts/pr_body.py`. When reporting, include the following streamlined evidence block:
 
 ```text
 PR readiness evidence:
@@ -61,14 +61,11 @@ PR readiness evidence:
 - Head SHA:
 - Mergeable:
 - Changed files:
-- CI/checks:
-- Codex review submissions:
-- Codex inline comments:
-- Review threads:
+- Verification Status: (Rely on work/agent_verify.md output)
+- Private-Safety Audit: (Rely on scripts/artifact_audit.py result)
+- Codex review submissions/comments:
 - Unresolved threads:
 - Codex comment disposition:
-- Regression tests added/updated:
-- Known limitations:
 ```
 
 ## 5. Fast-Lane Rule

@@ -16,9 +16,12 @@ gh pr diff <number>
 gh pr checks <number>
 ```
 
-For privacy/artifact checks on the checked-out PR branch:
+For default Tier B tasks, the Reviewer may verify using the automated verify report `work/agent_verify.md` and check that CI is green, instead of manually re-running every validation command. The Reviewer must still inspect the diff to verify actual behavior and confirm that `scripts/artifact_audit.py` passes.
+
+For high-risk Tier A reviews, manually run and check:
 ```bash
 git status --ignored
+python scripts/artifact_audit.py
 git ls-files | grep -Ei "(private|scratch|tmp|\.pdf$|\.gp$|\.log$|screenshot|output)" || true
 find . -path "./.git" -prune -o -type f -size +10M -print
 ```
