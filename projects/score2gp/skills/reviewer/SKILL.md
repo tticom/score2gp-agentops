@@ -76,7 +76,6 @@ Use `cannot verify` when required references, repository state, or evidence are 
 
 Purpose:
 Verify that the Developer’s output conforms to:
-
 - the original requirement;
 - the approved Architect approach, if applicable;
 - the Reviewer-approved architecture verdict, if applicable;
@@ -84,8 +83,9 @@ Verify that the Developer’s output conforms to:
 - the required validation plan;
 - safety/privacy/artifact rules.
 
-Allowed verdicts:
+For default Tier B (compressed loop) tasks, the Reviewer may verify using the automated verify report `work/agent_verify.md` and check that CI is green, instead of manually re-running every command. However, the Reviewer must still inspect the diff to sample and verify actual behavior and confirm the repository hygiene audit (`scripts/artifact_audit.py`) passes. For high-risk Tier A tasks, full manual/adversarial verification and validation commands remain mandatory.
 
+Allowed verdicts:
 - `approve implementation`
 - `needs implementation changes`
 - `reject implementation`
@@ -94,13 +94,12 @@ Allowed verdicts:
 - `cannot verify implementation`
 
 Use `approve implementation` only when:
-
 - the implementation satisfies the requirement;
 - tests prove wanted behaviour, not merely implementation details;
 - the implementation follows the approved Architect approach, or deviations are explicitly justified and reviewed;
 - acceptance criteria are met;
-- validation evidence is coherent;
-- safety/privacy/artifact rules are preserved.
+- validation evidence is coherent (automated verification reports are green);
+- safety/privacy/artifact rules are preserved (audit report passes).
 
 Reject or return the implementation if:
 

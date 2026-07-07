@@ -11,45 +11,19 @@
 
 ## Command(s) Run
 ```bash
-[e.g. python -m pytest]
+python scripts/agent_verify.py
 ```
-
-## Input Availability
-- **Inputs**: [e.g. tiny_score.xml (private-safe basenames only)]
 
 ## Output Directory Path
 - **Output**: `work/` or ignored subdirectory path
 
-## Universal Separate Reporting Statuses
-- **Strict Conversion Status**: `pass` / `fail`
-- **Remediation / Diagnostic Status**: `pass` / `fail` / `skipped`
-- **Generated File Existence**: `ScoreIR written (yes/no)` / `GP written (yes/no)`
-- **Semantic Round-Trip Status**: `pass` / `fail` / `unverified`
+## Verification Status
+- Refer to generated `work/agent_verify.md` report.
+- Standard checks (pytest, schema export, validate-ir, and git check diff) overall status: [PASS / FAIL]
 
-## Blocker and Diagnostics
-- **Exact Blocker Category**: [e.g. pdf_barline_too_short_absolute or None]
-- **Diagnostic warnings encountered**:
-  - [List of warning codes]
-
-## Private-Safe Metrics
-- Page Count: 
-- Total Candidates: 
-- Playable Fret Candidates: 
-- Candidates with System: 
-- Candidates with Bar: 
-- Candidates with String: 
-- Unassigned-to-System Count: 
-- Unassigned-to-Bar Count: 
-- Unassigned-to-String Count: 
-
-## Verification Matrix
-- `python -m pytest` status:
-- Schema validation status:
-- git diff --check status:
-
-## Private-Safety Audit
-- `git ls-files fixtures/private work` outputs only `fixtures/private/.gitkeep`: `yes` / `no`
-- No private score details, pitch steps, lyrics, chord symbols, or raw PDF/MusicXML text are committed: `yes` / `no`
+## Private-Safety & Repository Hygiene Audit
+- Refer to `scripts/artifact_audit.py` status (executed as part of verification).
+- Check that `git ls-files fixtures/private work` contains only `.gitkeep`: [PASS / FAIL]
 
 ## Next Required Evidence
 - [Define next required evidence or implementation step]

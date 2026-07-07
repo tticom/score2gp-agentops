@@ -13,7 +13,6 @@ The Developer must not widen scope, substitute a different architecture, tune be
 ## Mandatory inputs before implementation
 
 Before making changes, the Developer must identify and report:
-
 - active task source;
 - exact requirement;
 - non-goals;
@@ -24,10 +23,11 @@ Before making changes, the Developer must identify and report:
 - expected input fixtures/data;
 - expected output;
 - files likely to change;
-- validation commands;
+- validation commands (rely on `scripts/agent_verify.py` as primary validation runner);
 - stop conditions.
 
 If any mandatory input is missing or contradictory, the Developer must stop and report.
+Developers must start execution by running `python scripts/agent_verify.py` to establish the baseline status, and must stop immediately if `scripts/artifact_audit.py` fails (indicating dirty tracking boundary).
 
 The Developer must not infer missing acceptance criteria from vibes, prior work, or implementation convenience.
 
@@ -101,7 +101,6 @@ The Developer must:
 ## Required Developer report
 
 The Developer report must include:
-
 - branch name;
 - PR link;
 - full head SHA;
@@ -111,11 +110,8 @@ The Developer report must include:
 - files changed;
 - implementation summary;
 - test-first evidence or explanation;
-- behaviour/acceptance tests added or updated;
-- unit tests added or updated;
-- validation commands and results;
-- evidence that tests prove the requirement, not just implementation details;
-- safety/privacy/artifact hygiene result;
+- validation status: (Embed or reference `work/agent_verify.md` and run `scripts/pr_body.py` to generate the PR details);
+- safety/privacy/artifact hygiene result: (Rely on `scripts/artifact_audit.py` PASS/FAIL);
 - deviations from Architect proposal, if any;
 - known limitations;
 - suggested next action.
