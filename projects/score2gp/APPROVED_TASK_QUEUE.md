@@ -1481,3 +1481,54 @@ Evidence basis:
 
 Outcome:
 - Developer implementation PR pending
+
+---
+
+## Task 45 — Review Req-113 logical clef recognition implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-113-implementation-review-v0.1
+
+PR title:
+docs(review): approve Req-113 logical clef recognition implementation
+
+Purpose:
+Review the Developer's integration of logical clef heuristics.
+
+Evidence basis:
+- product PR #350
+- `projects/score2gp/reviews/2026-07-08-req-113-logical-clef-recognition-implementation-review.md`
+
+Outcome:
+- governance PR pending
+
+---
+
+## Task 46 — Research quarter rest extraction
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+docs/quarter-rest-recognition-v0.1
+
+PR title:
+docs(pdf): propose quarter rest extraction heuristics
+
+Purpose:
+Research how to deterministically classify quarter rests from stable staff body geometry.
+
+Requirement:
+Req-114
+
+Evidence basis:
+- `docs/testing/quarter-rest-recognition.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Architect proposal PR pending
