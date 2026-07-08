@@ -1074,7 +1074,7 @@ Acceptance criteria:
 
 ## Task 33 — Add product architecture review for geometry candidates
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -1115,6 +1115,12 @@ Verdict options:
 - schema needs hardening
 - cannot verify
 
+Outcome:
+- review report merged in governance PR #260
+- geometry-only boundary approved for research/backlog continuation
+- semantic implementation explicitly not approved
+- page-level geometry candidate export gap identified for Task 37
+
 Non-goals:
 - do not add semantic tasks unless review evidence supports it
 - do not modify product code
@@ -1131,7 +1137,7 @@ git status --short
 
 ## Task 34 — Research-only semantic boundary proposal
 
-Status: APPROVED only after Task 33 says ready
+Status: BLOCKED until Task 37 populates or explicitly settles the page-level geometry candidate export
 
 Owning repo: score2gp
 
@@ -1143,6 +1149,9 @@ docs(pdf): propose semantic boundary for standard-staff interpretation
 
 Purpose:
 Research and document the smallest safe semantic interpretation boundary after geometry candidates are proven.
+
+Current blocker:
+Task 33 found that populated diagnostic candidates exist inside `NotationStaffDiagnostics`, but the page-level `geometry_candidates` export still returns empty `GeometryCandidateSet` payloads. Task 37 must resolve that export boundary before this research task chooses implementation acceptance criteria.
 
 Likely product files:
 - docs/testing/standard-staff-semantic-boundary.md
@@ -1172,7 +1181,7 @@ Acceptance criteria:
 
 ## Task 35 — Governance backlog refresh after geometry candidate review
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -1222,7 +1231,7 @@ The following remain explicitly not approved:
 
 ## Task 36 — feat(pdf): expose primitive-level geometry diagnostics
 
-Status: APPROVED
+Status: DONE
 
 Goal:
 Ensure `PrimitiveGeometry` instances (with real `x0/y0/x1/y1` fields) are cleanly serialized and made available to downstream processes, thereby removing the reliance on aggregate counts and unblocking the optical candidate extraction sequence.
@@ -1231,3 +1240,56 @@ Non-goals:
 - Do not build candidate extractors themselves yet.
 - Do not implement complex heuristic geometric mapping.
 
+---
+
+## Task 37 — Populate page-level geometry candidate export
+
+Status: APPROVED
+
+Owning repo: score2gp
+
+Branch:
+feature/populate-geometry-candidate-export-v0.1
+
+PR title:
+feat(pdf): populate geometry candidate export
+
+Purpose:
+Make `inspect_pdf()["pages"][...]["geometry_candidates"]` contain the existing read-only geometry candidate data from `NotationStaffDiagnostics`, rather than always serializing empty `GeometryCandidateSet` objects.
+
+Requirement:
+Req-118
+
+Evidence basis:
+- Req-110 review report: `projects/score2gp/reports/2026-07-08-geometry-candidate-layer-review.md`
+- `NotationStaffDiagnostics.left_margin_candidates` and `NotationStaffDiagnostics.x_aligned_cluster_candidates` are already populated from diagnostic evidence.
+- `extract_geometry_candidates()` currently returns an unconditional empty `GeometryCandidateSet()`.
+
+Allowed product files:
+- `src/score2gp/pdf_geometry_candidate_extraction.py`
+- `tests/test_pdf_geometry_candidate_extraction.py`
+- `tests/test_pdf_geometry_candidate_snapshots.py`
+- `tests/test_pdf_geometry_candidate_reporting.py`
+- `tests/test_pdf_candidate_semantic_gate.py`
+- `tests/fixtures/pdf/make_geometry_candidate_snapshots.py`
+- `fixtures/public/expected_geometry_candidates_*.json`
+
+Non-goals:
+- no semantic interpretation
+- no ScoreIR event generation
+- no pitch, duration, voice, rhythm, clef, key signature, or time signature inference
+- no private fixtures
+- no broad OCR/scanned PDF support
+
+Validation:
+cd /home/tticom/work/score2gp-workspace/score2gp
+git diff --check
+.venv/bin/python -m pytest -q tests/test_pdf_geometry_candidate_extraction.py tests/test_pdf_geometry_candidate_snapshots.py tests/test_pdf_geometry_candidate_reporting.py tests/test_pdf_candidate_semantic_gate.py
+.venv/bin/python scripts/artifact_audit.py
+
+Acceptance criteria:
+- `extract_geometry_candidates()` transfers existing diagnostic candidates into `GeometryCandidateSet`
+- tests prove populated transfer, not just presence of an empty list
+- public geometry candidate snapshots are intentionally regenerated if fixture output changes
+- anti-semantic leakage tests remain green
+- artifact audit passes
