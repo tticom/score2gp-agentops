@@ -20,13 +20,11 @@ Never trust self-reports. Verify live repository state, changed files, commits, 
 10. Repeat.
 
 ## Mandatory Pre-flight Checks
-Before any product or governance task:
+Before any product or governance task, run:
 ```bash
-git status --short
-git branch --show-current
-git fetch --all --prune
-git log --oneline --decorate --graph --max-count=20
+python scripts/score2gp_bootstrap.py --product ../score2gp --agentops .
 ```
+The output of the bootstrap script reconstructs the status across both repositories as a mandatory startup summary. Note that bootstrap is not the sole authority for merge, review, or readiness decisions; agents must still verify task-specific live state before reviews, merges, PR readiness, or product/governance changes. Validate the output and follow the suggested next action.
 
 ## Branch & Workflow Rules
 - No direct commits to `main`.
