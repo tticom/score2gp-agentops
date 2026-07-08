@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: Req-114 / Task 46: Quarter rest extraction based on stable geometry
-**Authorised Role**: Architect
+**Task**: Req-114 / Task 48: Implement quarter rest extraction
+**Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
 ## Status
@@ -11,25 +11,31 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Architect must research and propose how to cleanly identify quarter rests (crotchet rests) from existing stable geometry candidates without inferring pitch or full rhythmic context.
+Developer must create a function to extract `QuarterRestCandidate` from `GeometryCandidateSet` using the Architect's bounding box heuristics.
 
 ## 1. Baseline
-- The semantic boundary for left-margin clefs has been established (Req-111, Req-112, Req-113).
-- We now want to look into the staff body primitives to identify standalone symbols, starting with the quarter rest which has distinct vertical characteristics.
+- The Architect's quarter rest extraction proposal was merged in PR #351.
+- The Reviewer approved the proposal in PR #267.
+- `GeometryCandidateSet` contains `x_aligned_clusters` with primitives.
 
 ## 2. Context
-Quarter rests are typically tall vertical-stroke-like or squiggly curve-like symbols sitting in the middle of the staff body. Because they do not rely on a notehead or stem, they are a good starting point for semantic extraction in the staff body. We need to identify if current diagnostics/primitives (e.g. `x_aligned_cluster_candidates` or `vertical_stroke` or `curve`) are sufficient to build a robust quarter rest heuristic.
+We need to extract quarter rests from the staff body geometry. This allows us to start processing rhythmic elements independently of pitch.
 
 ## 3. Goal
-Produce an Architect research proposal (`docs/testing/quarter-rest-recognition.md`) determining the safest, most deterministic method to classify quarter rest candidates from the body geometry.
+Create a new module `src/score2gp/pdf_candidate_quarter_rest.py` with the function `extract_quarter_rest_candidates(geometry: GeometryCandidateSet, staff_spacing: float, staff_center_y: float) -> list[QuarterRestCandidate]`.
+Implement the heuristic:
+1. `primitive_count == 1` and `kind` in (`text_span`, `curve`, `vertical_stroke`).
+2. `height / staff_spacing` between 2.0 and 4.0.
+3. `height / width` > 1.5.
+4. Vertical midpoint within 0.5 staff spaces of `staff_center_y`.
 
 ## 4. Non-goals
-- Do not implement the classification yet.
-- Do not modify existing logic.
-- Do not build inference for other rests or notes.
+- Do not extract other rests or notes.
+- Do not build ScoreIR events.
+- Do not handle polyphony or overlapping primitives in this pass.
 
 ## 5. Required Output & Outcome
-A product PR with the `quarter-rest-recognition.md` research proposal, recommending a specific implementation path for the Developer to take in Req-114.
+A product PR with the implementation and tests proving a quarter rest candidate is successfully returned when given a valid `x_aligned_cluster`.
 
 ## 6. Next Steps
-- After Architect PR opens, run Reviewer architecture verification before any Developer implementation is authorised.
+- After Developer PR merges, run Reviewer implementation conformance.
