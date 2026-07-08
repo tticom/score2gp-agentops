@@ -1532,3 +1532,54 @@ Evidence basis:
 
 Outcome:
 - Architect proposal PR pending
+
+---
+
+## Task 47 — Review Req-114 quarter rest extraction proposal
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-114-proposal-review-v0.1
+
+PR title:
+docs(review): approve Req-114 quarter rest extraction proposal
+
+Purpose:
+Review the Architect's proposal for quarter rest extraction.
+
+Evidence basis:
+- product PR #351
+- `projects/score2gp/reviews/2026-07-08-req-114-quarter-rest-recognition-review.md`
+
+Outcome:
+- governance PR #267 merged
+
+---
+
+## Task 48 — Implement quarter rest extraction
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/quarter-rest-extraction-v0.1
+
+PR title:
+feat(pdf): implement quarter rest extraction
+
+Purpose:
+Implement the Developer phase of Req-114 by extracting quarter rest candidates from `x_aligned_clusters`.
+
+Requirement:
+Req-114
+
+Evidence basis:
+- `docs/testing/quarter-rest-recognition.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR pending
