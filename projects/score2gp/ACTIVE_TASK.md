@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-105 / Task 29: Add candidate extraction JSON snapshot tests
+**Task**: Req-107 / Task 31: Add candidate extraction CLI reporting smoke path
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
