@@ -48,6 +48,10 @@ Requirements are ranked strictly using the following scale:
 - **Req-110 (Task 33)**: Add product architecture review for geometry candidates (P2, Ready, depends on Req-108 and Req-109).
 
 ### Epic C: Semantic Boundary Definition & Core Interpretation
+- **Req-119**: Semantic candidate JSON snapshot tests (P2, Ready).
+- **Req-120**: Semantic candidate CLI/reporting smoke path (P2, Ready).
+- **Req-121**: Fail-closed semantic coverage expansion (whole rests, polyphony) (P2, Ready).
+- **Req-122**: Semantic candidate no-ScoreIR leakage gate (P2, Ready).
 - **Req-111 (Task 34)**: Research-only semantic boundary proposal (P2, Architect-first, depends on Req-110).
 - **Req-112**: Implement semantic boundary validation gate (P2, Architect-first).
 - **Req-113**: Logical clef recognition candidate integration (P4, Architect-first).
