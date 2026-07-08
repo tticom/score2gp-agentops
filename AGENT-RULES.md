@@ -3,8 +3,9 @@
 ## Bootstrapping and Agent Loading
 
 At the very start of any conversation session, the agent MUST:
-1. Run `./scripts/bootstrap.py --session-dir <session_brain_dir>` (using the active conversation/brain folder) to verify that the repository is up to date and link local session planning files (`implementation_plan.md`, `task.md`, `walkthrough.md`) to the repository's active run folder. If the script fails, the agent must stop and report the error to the user.
-2. Read the output of `./scripts/bootstrap.py --session-dir <session_brain_dir>` and register the custom subagents (`architect`, `developer`, `reviewer`) using the `define_subagent` tool before invoking them.
+1. Run `python scripts/score2gp_bootstrap.py --product ../score2gp --agentops .` (specifying paths as needed) to reconstruct the workspace state across both repositories.
+2. Use the output of `score2gp_bootstrap.py` as a mandatory startup summary. Note that bootstrap is not the sole authority for merge, review, or readiness decisions; agents must still verify task-specific live state before reviews, merges, PR readiness, or product/governance changes.
+3. Read the role-specific skill files (e.g. `skills/score2gp-task-orchestration.md`, `skills/score2gp-developer.md`, `skills/score2gp-pr-hard-review.md`) to guide behavior. Do not start work if the bootstrap script output recommends a `stop` action.
 
 ## Global rules
 
