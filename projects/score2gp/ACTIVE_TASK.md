@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Reviewer architecture verification for single-prompt loop
-**Authorised Role**: Reviewer
-**Repository**: `tticom/score2gp-agentops`
+**Task**: Req-104 / Task 25: Add PDF geometry candidate extraction diagnostics skeleton
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp`
 
 ## Status
 
@@ -13,48 +13,48 @@ APPROVED
 Yes
 
 ## Completion Evidence
-A Reviewer architecture verification report with adversarial evidence ledger and verdict, saved in the appropriate governance directory (e.g., `projects/score2gp/reviews/`).
+Developer must implement the candidate extractor skeleton, commit to `score2gp`, push the branch, and open a PR.
 
 ## 1. Baseline
-- The Architect has completed the single-prompt autonomous cycle workflow research (`Req-101`) and produced the architecture report.
-- The control-plane orchestration flow remains constrained by manual handoff.
+- Reviewer verified that the Architect's single-prompt autonomous cycle was blocked (Req-102 returned `cannot verify`).
+- Pivot to Epic B (Geometry Candidate Extraction) to maintain momentum.
+- Product baseline is post-schema-snapshot.
 
 ## 2. Context
-The Architect was previously authorised to design a single-prompt, multi-agent autonomous cycle to improve turnaround times. The Architect has produced an architecture proposal detailing the loop mechanics, stop gates, and data flow. As mandated by `AGENT_PR_READINESS.md` and the Single-Task Loop Rule, the Reviewer must now independently verify the Architect's research before any Developer implementation is authorised.
+As part of the geometry candidate extraction architecture (Epic B), we need a skeleton extractor function. This function will accept `NotationStaffDiagnostics` and return a minimal `GeometryCandidateSet`. This establishes the structural boundary without yet implementing extraction logic.
 
 ## 3. Active Blocker
-Developer implementation of the single-prompt cycle cannot begin until the Architect's plan is explicitly verified and approved by a Reviewer, ensuring the design is safe and measurable.
+Subsequent extraction tasks (like extracting specific curve or rectangle candidates) cannot proceed until the fundamental extraction function signature and models are present.
 
 ## 4. Goal
-Verify the Architect's single-prompt autonomous cycle research before Developer implementation begins.
+Add a pure function that accepts `NotationStaffDiagnostics` and returns an empty or minimal `GeometryCandidateSet`, without implementing extraction rules yet.
 
 ## 5. Non-goals
-- No Developer implementation.
-- No product code changes.
+- No real extraction rules beyond pass-through metadata.
+- No parser integration.
+- No ScoreIR emission.
+- No semantic candidates (forbidden semantic leakage).
 
 ## 6. Repo Scope
 - **Allow**:
-  - Creation of a new review report in `projects/score2gp/reviews/`
+  - `src/score2gp/pdf_geometry_candidate_extraction.py`
+  - `src/score2gp/pdf_geometry_candidates.py`
+  - `tests/test_pdf_geometry_candidate_extraction.py`
 - **Stop before changing**:
-  - `ACTIVE_TASK.md` or any other governance policy files.
-  - any files in the product repository `tticom/score2gp`.
+  - `ACTIVE_TASK.md` (once authorised).
+  - any unrelated product files.
 
 ## 7. Branch Suggestion
-`review/single-prompt-cycle-architecture-v0.1`
+`feature/geometry-candidate-extractor-skeleton-v0.1`
 
 ## 8. Required Output & Outcome
-Produce a Reviewer architecture verification report using Mode 1 (Architecture / research review) defined in `skills/reviewer/SKILL.md`.
-
-The report must include:
-- An adversarial evidence ledger independently testing the Architect's claims.
-- A disconfirmation gate identifying ways the proposed loop could fail or become unsafe.
-- A final Reviewer verdict (e.g., `approve architecture`, `return to architect`, etc.).
+A PR in `score2gp` implementing the skeleton function with tests verifying its signature and anti-semantic properties.
 
 ## 9. Incremental Progress Check
-- **What new evidence will this task produce?**: An independent architectural verdict detailing whether the proposed loop is safe to implement.
-- **Which prior result must it not merely repeat?**: Must not just summarize the Architect's report. It must actively probe the proposed gates for failure modes.
-- **How will we know the task moved the project forward?**: A conclusive verdict will clear or block the path for implementation.
-- **What is the smallest next decision this task enables?**: Whether `Req-103` (Developer implementation of the loop) is safe to execute.
+- **What new evidence will this task produce?**: Tests proving the extraction function can be called.
+- **Which prior result must it not merely repeat?**: Must build upon existing raw diagnostics to introduce the new candidate layer.
+- **How will we know the task moved the project forward?**: A PR implementing the extractor interface is opened.
+- **What is the smallest next decision this task enables?**: Proceeding to add actual extraction logic for curves and snapshots (Req-105).
 
 ## 10. Next Steps
-- Promote `Req-103` only after Reviewer verification passes (`approve architecture`).
+- Promote Req-105 (Task 29) to add candidate extraction JSON snapshot tests.
