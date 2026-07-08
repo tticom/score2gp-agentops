@@ -100,7 +100,7 @@ Stop conditions:
 
 ## Task 8 — Add schema snapshot regeneration helper
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -312,7 +312,7 @@ Acceptance criteria:
 
 ## Task 13 — Add expected diagnostics snapshots for four fixtures
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1383,7 +1383,7 @@ Outcome:
 
 ## Task 41 — Review Req-112 semantic gate implementation
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -1459,7 +1459,7 @@ Outcome:
 
 ## Task 44 — Implement logical clef recognition integration
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1480,7 +1480,7 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR merged
 
 ---
 
@@ -1504,13 +1504,13 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-08-req-113-logical-clef-recognition-implementation-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
 ## Task 46 — Research quarter rest extraction
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1531,7 +1531,7 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Architect proposal PR pending
+- Architect proposal PR merged
 
 ---
 
@@ -1561,7 +1561,7 @@ Outcome:
 
 ## Task 48 — Implement quarter rest extraction
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1582,7 +1582,7 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR merged
 
 ---
 
@@ -1606,4 +1606,4 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-08-req-114-quarter-rest-recognition-implementation-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
