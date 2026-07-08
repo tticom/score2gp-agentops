@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-104 / Task 25: Add PDF geometry candidate extraction diagnostics skeleton
+**Task**: Req-105 / Task 29: Add candidate extraction JSON snapshot tests
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
