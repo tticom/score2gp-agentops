@@ -351,7 +351,7 @@ Acceptance criteria:
 
 ## Task 14 — Add diagnostics snapshot regeneration helper
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -384,7 +384,7 @@ Acceptance criteria:
 
 ## Task 15 — Add multi-staff synthetic fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -424,7 +424,7 @@ Acceptance criteria:
 
 ## Task 16 — Add multi-system synthetic fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -465,7 +465,7 @@ If current diagnostics cannot expose system separation reliably, stop and recomm
 
 ## Task 17 — Add left-margin threshold edge fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -498,7 +498,7 @@ Acceptance criteria:
 
 ## Task 18 — Add curve-position classification fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -534,7 +534,7 @@ Acceptance criteria:
 
 ## Task 19 — Add rectangle-position diagnostics fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -569,7 +569,7 @@ Acceptance criteria:
 
 ## Task 20 — Add text-font diversity fixture
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -601,7 +601,7 @@ Acceptance criteria:
 
 ## Task 21 — Add diagnostic schema extension for body primitive aggregates if needed
 
-Status: APPROVED, but only if Task 18 or 19 stop conditions prove it is needed
+Status: DONE, but only if Task 18 or 19 stop conditions prove it is needed
 
 Owning repo: score2gp
 
@@ -643,7 +643,7 @@ Acceptance criteria:
 
 ## Task 22 — Add product architecture note for geometry candidate boundary
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -690,7 +690,7 @@ Acceptance criteria:
 
 ## Task 23 — Add geometry candidate data models
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -738,7 +738,7 @@ Acceptance criteria:
 
 ## Task 24 — Add anti-semantic tests for geometry candidate models
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -780,7 +780,7 @@ Acceptance criteria:
 
 ## Task 25 — Add candidate extractor skeleton
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -819,7 +819,7 @@ Acceptance criteria:
 
 ## Task 26 — Extract left-margin geometry candidates
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -861,7 +861,7 @@ Acceptance criteria:
 
 ## Task 27 — Extract x-aligned primitive cluster candidates
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -898,7 +898,7 @@ Acceptance criteria:
 
 ## Task 28 — Extract curve geometry candidates
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -933,7 +933,7 @@ Acceptance criteria:
 
 ## Task 29 — Add candidate extraction JSON snapshot tests
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -971,7 +971,7 @@ Acceptance criteria:
 
 ## Task 30 — Add candidate snapshot regeneration helper
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1003,7 +1003,7 @@ Acceptance criteria:
 
 ## Task 31 — Add candidate extraction CLI/reporting smoke path
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1043,7 +1043,7 @@ If exposing the output would change public API too broadly, stop and propose an 
 
 ## Task 32 — Add backwards compatibility test for diagnostics output
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1137,7 +1137,7 @@ git status --short
 
 ## Task 34 — Research-only semantic boundary proposal
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
