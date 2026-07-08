@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: Req-111 / Task 34: Research-only semantic boundary proposal
-**Authorised Role**: Architect
+**Task**: Req-112 / Task 40: Implement semantic boundary validation gate
+**Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
 ## Status
@@ -11,76 +11,45 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Architect must produce a product-owned research document in `docs/testing/standard-staff-semantic-boundary.md`, commit it, push the branch, and open a PR. The document must define the smallest safe semantic interpretation boundary after the populated geometry candidate export landed in product PR #346.
+Developer must implement the semantic boundary validation gate (checking for a logical clef candidate from the left margin) based on the Architect's proposal in `docs/testing/standard-staff-semantic-boundary.md`. 
 
 ## 1. Baseline
-- Req-110 / Task 33 review was merged in governance PR #260.
-- Req-117 / Task 35 backlog refresh was merged in governance PR #261.
-- Req-118 / Task 37 product implementation was merged in product PR #346.
-- Page-level `geometry_candidates` now transfers populated `NotationStaffDiagnostics.left_margin_candidates` and `NotationStaffDiagnostics.x_aligned_cluster_candidates` into `GeometryCandidateSet`.
-- Public geometry candidate snapshots are non-empty for all four standard-staff fixtures.
-- Reviewer conformance found no required implementation fixes after PR #346.
+- Req-111 / Task 34 architecture proposal was merged in product PR #347.
+- The Reviewer approved the semantic boundary proposal in governance PR #263.
+- The smallest safe semantic unit identified is the Logical Clef from `left_margin_primitives`.
 
-## 2. Goal
-Research and document the smallest safe semantic interpretation boundary that can be attempted after geometry candidate export is populated.
+## 2. Context
+We are now entering Epic C (Semantic Boundary Definition & Core Interpretation). Before we can reliably extract pitches, we must formally transition from purely geometric candidates to semantic interpretation. The first step is to implement a validation gate that attempts to parse a Logical Clef from the isolated `left_margin_primitives`.
 
-The output must answer:
+## 3. Active Blocker
+Subsequent tasks (like mapping pitch) are completely blocked until the semantic boundary (the clef) is reliably extracted.
 
-- which semantic unit, if any, is safe to attempt first;
-- which existing geometry candidates and diagnostics are valid inputs;
-- which fixtures prove readiness;
-- which semantics remain explicitly deferred;
-- what measurable acceptance criteria would be needed for a later implementation task;
-- whether a stop/pivot is recommended instead of implementation.
+## 4. Goal
+Create the foundational logic that transitions `left_margin_primitives` into a `LogicalClefCandidate` (or similar semantic structure), proving we can safely interpret a known glyph (e.g., treble clef) without inferring pitches or rhythms yet.
 
-## 3. Non-goals
-- No implementation.
-- No new candidate classes.
-- No ScoreIR generation.
-- No pitch, duration, voice, rhythm, clef, key signature, time signature, chord, notehead, or rest inference.
-- No private or copyrighted fixtures.
-- No scanned/OCR PDF support.
+## 5. Non-goals
+- No pitch, duration, rhythm, voice, key signature, or time signature inference.
+- No rests (quarter/whole) interpretation yet.
+- Do not modify existing `GeometryCandidateSet` models; map from them instead.
 
-## 4. Product Scope
-Allowed likely file:
+## 6. Repo Scope
+- **Allow**:
+  - `src/score2gp/pdf_candidate_semantic_gate.py` (or similar new/existing modules)
+  - `tests/test_pdf_candidate_semantic_gate.py`
+- **Stop before changing**:
+  - `ACTIVE_TASK.md` (once authorised)
 
-- `docs/testing/standard-staff-semantic-boundary.md`
+## 7. Branch Suggestion
+`feature/logical-clef-semantic-boundary-v0.1`
 
-Allowed if needed for references:
+## 8. Required Output & Outcome
+A product PR implementing the logical clef extraction and a passing test suite proving >90% reliability on public standard-staff fixtures.
 
-- documentation-only edits under `docs/`
+## 9. Incremental Progress Check
+- **What new evidence will this task produce?**: Tests proving a logical clef is identified from geometry.
+- **Which prior result must it not merely repeat?**: Must generate a semantic `LogicalClefCandidate` instead of just returning raw geometric boundaries.
+- **How will we know the task moved the project forward?**: A PR is opened with the new semantic parsing logic.
+- **What is the smallest next decision this task enables?**: Extracting subsequent elements that depend on the clef, such as pitches or quarter rests.
 
-Stop before changing:
-
-- product source code;
-- tests;
-- fixtures;
-- generated snapshots;
-- governance files.
-
-## 5. Branch Suggestion
-`docs/semantic-boundary-research-v0.1`
-
-## 6. Required Validation
-
-```bash
-cd /home/tticom/work/score2gp-workspace/score2gp
-git diff --check
-```
-
-## 7. Acceptance Criteria
-- Document is product-owned.
-- Document clearly separates fact, inference, hypothesis, and unknown.
-- Document identifies the first safe semantic implementation candidate or explicitly says not ready.
-- Document defines continue/stop/pivot evidence gates.
-- Document names required validation commands for any later Developer implementation.
-- Document does not authorize implementation by itself.
-
-## 8. Incremental Progress Check
-- **What new evidence will this task produce?**: A bounded product research artifact that turns populated geometry candidates into a measured semantic proposal or a stop decision.
-- **Which prior result must it not merely repeat?**: It must not repeat that geometry candidates exist; it must decide whether they are sufficient for a first semantic task.
-- **How will we know the task moved the project forward?**: A Reviewer can approve, return, or reject a specific semantic boundary proposal.
-- **What is the smallest next decision this task enables?**: Whether to authorise one narrow semantic implementation task, require more geometry coverage, or stop/pivot.
-
-## 9. Next Steps
-- After Architect PR opens, run Reviewer architecture verification before any Developer semantic implementation is authorised.
+## 10. Next Steps
+- Promote the next available Epic C task (e.g., Req-113 Logical clef recognition candidate integration or Req-114 Quarter rest extraction).
