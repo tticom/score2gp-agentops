@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: Architect research — design a safe single-prompt autonomous cycle workflow
-**Authorised Role**: Architect
+**Task**: Reviewer architecture verification for single-prompt loop
+**Authorised Role**: Reviewer
 **Repository**: `tticom/score2gp-agentops`
 
 ## Status
@@ -13,55 +13,48 @@ APPROVED
 Yes
 
 ## Completion Evidence
-The Architect must publish an architecture report (`projects/score2gp/research/2026-07-08-single-prompt-autonomous-cycle-architecture.md`) analyzing the safety, role compliance, and workflow feasibility of the single-prompt autonomous loop, detailing Outcome A, B, or C, and specifying exact stop gates and data flow mechanics.
+A Reviewer architecture verification report with adversarial evidence ledger and verdict, saved in the appropriate governance directory (e.g., `projects/score2gp/reviews/`).
 
 ## 1. Baseline
-- Product PR #338: squash-merged at `ff241fbc0c714eb62acc14f5171f61cefa9c30ea`
-- Governance PR #247: squash-merged at `c3b129a9514dd0e137d627f4a89fd1e81d081cf8`
-- Decision record: `projects/score2gp/decisions/2026-07-08-pr338-completion-and-single-prompt-cycle-architecture-authorisation.md`
+- The Architect has completed the single-prompt autonomous cycle workflow research (`Req-101`) and produced the architecture report.
+- The control-plane orchestration flow remains constrained by manual handoff.
 
 ## 2. Context
-Product PR #338 successfully implemented multi-staff parallel timing in `notation_bridge.py`. PR #247 implemented a cross-repo status bootstrap utility and updated startup rules. The Supervisor has reprioritized workflow turnaround efficiency and safety, overriding the next queue item (Task 14) to remain queued. This task authorises the Architect to design a safe, gated, multi-agent autonomous loop that can be launched from a single human prompt.
+The Architect was previously authorised to design a single-prompt, multi-agent autonomous cycle to improve turnaround times. The Architect has produced an architecture proposal detailing the loop mechanics, stop gates, and data flow. As mandated by `AGENT_PR_READINESS.md` and the Single-Task Loop Rule, the Reviewer must now independently verify the Architect's research before any Developer implementation is authorised.
 
 ## 3. Active Blocker
-Turnaround times are constrained by manual human copy-pasting of evidence, prompt generation, and step-by-step triggers between the Architect, Developer, Reviewer, and Integrator roles.
+Developer implementation of the single-prompt cycle cannot begin until the Architect's plan is explicitly verified and approved by a Reviewer, ensuring the design is safe and measurable.
 
 ## 4. Goal
-Analyze and design a single-prompt, multi-agent orchestration cycle that:
-- Runs bootstrap first as a mandatory startup summary;
-- Sequences agents (Architect, Developer, Reviewer) securely;
-- Preserves explicit role boundaries and prevents self-approval;
-- Employs strict evidence verification gates (fails closed);
-- Passes status/evidence outputs between agents without manual copy-paste;
-- Handles PR creation, review, merge, expected-head protection, and post-merge recording;
-- Defines stop/pivot triggers and Supervisor approval gates.
+Verify the Architect's single-prompt autonomous cycle research before Developer implementation begins.
 
 ## 5. Non-goals
-- No product logic modifications.
-- No developer implementation work is authorised.
-- No automatic merge policies without head-matching and verification.
-- No removal of Reviewer or PR readiness review gates.
+- No Developer implementation.
+- No product code changes.
 
 ## 6. Repo Scope
 - **Allow**:
-  - `projects/score2gp/research/2026-07-08-single-prompt-autonomous-cycle-architecture.md`
+  - Creation of a new review report in `projects/score2gp/reviews/`
 - **Stop before changing**:
-  - `ACTIVE_TASK.md` or any other governance policy files;
-  - any files in the product repository.
+  - `ACTIVE_TASK.md` or any other governance policy files.
+  - any files in the product repository `tticom/score2gp`.
 
 ## 7. Branch Suggestion
-`architect/single-prompt-autonomous-cycle-architecture-v0.1`
+`review/single-prompt-cycle-architecture-v0.1`
 
 ## 8. Required Output & Outcome
-Architect must select exactly one:
-- **Outcome A**: Cycle is viable for Tier B only, with Tier A pauses.
-- **Outcome B**: Cycle is viable for both Tier A and Tier B with explicit stop gates.
-- **Outcome C**: Full cycle is not safe; propose a smaller assistant/orchestrator improvement.
+Produce a Reviewer architecture verification report using Mode 1 (Architecture / research review) defined in `skills/reviewer/SKILL.md`.
 
-And define:
-- Exact data flow mechanics between agents (preventing copy/paste).
-- Concrete stop/pivot gates.
-- Safety enforcement (e.g. expected-head check, artifact checks).
+The report must include:
+- An adversarial evidence ledger independently testing the Architect's claims.
+- A disconfirmation gate identifying ways the proposed loop could fail or become unsafe.
+- A final Reviewer verdict (e.g., `approve architecture`, `return to architect`, etc.).
 
-## 9. Next Steps
-- Required next review: Reviewer architecture verification.
+## 9. Incremental Progress Check
+- **What new evidence will this task produce?**: An independent architectural verdict detailing whether the proposed loop is safe to implement.
+- **Which prior result must it not merely repeat?**: Must not just summarize the Architect's report. It must actively probe the proposed gates for failure modes.
+- **How will we know the task moved the project forward?**: A conclusive verdict will clear or block the path for implementation.
+- **What is the smallest next decision this task enables?**: Whether `Req-103` (Developer implementation of the loop) is safe to execute.
+
+## 10. Next Steps
+- Promote `Req-103` only after Reviewer verification passes (`approve architecture`).
