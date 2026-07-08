@@ -1137,7 +1137,7 @@ git status --short
 
 ## Task 34 — Research-only semantic boundary proposal
 
-Status: BLOCKED until Task 37 populates or explicitly settles the page-level geometry candidate export
+Status: APPROVED
 
 Owning repo: score2gp
 
@@ -1150,8 +1150,8 @@ docs(pdf): propose semantic boundary for standard-staff interpretation
 Purpose:
 Research and document the smallest safe semantic interpretation boundary after geometry candidates are proven.
 
-Current blocker:
-Task 33 found that populated diagnostic candidates exist inside `NotationStaffDiagnostics`, but the page-level `geometry_candidates` export still returns empty `GeometryCandidateSet` payloads. Task 37 must resolve that export boundary before this research task chooses implementation acceptance criteria.
+Unblock evidence:
+Task 37 was completed and merged in product PR #346. Page-level `geometry_candidates` now transfers populated diagnostic candidates into `GeometryCandidateSet`, and all four public geometry candidate snapshots contain non-empty candidate output.
 
 Likely product files:
 - docs/testing/standard-staff-semantic-boundary.md
@@ -1244,7 +1244,7 @@ Non-goals:
 
 ## Task 37 — Populate page-level geometry candidate export
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1293,3 +1293,36 @@ Acceptance criteria:
 - public geometry candidate snapshots are intentionally regenerated if fixture output changes
 - anti-semantic leakage tests remain green
 - artifact audit passes
+
+Outcome:
+- product PR #346 merged
+- full product test suite passed before merge: 886 passed, 1 skipped
+- GitHub checks passed before merge
+- public geometry candidate snapshots are now non-empty across all four standard-staff fixtures
+- Reviewer conformance found no required implementation fixes
+
+---
+
+## Task 38 — Review Req-118 geometry candidate export implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-118-implementation-review-v0.1
+
+PR title:
+docs(review): approve Req-118 geometry candidate export implementation
+
+Purpose:
+Record implementation conformance and PR readiness evidence for product PR #346 before promoting Req-111 research.
+
+Evidence basis:
+- product PR #346
+- `projects/score2gp/reviews/2026-07-08-req-118-implementation-conformance.md`
+
+Outcome:
+- implementation conformance verdict: approve implementation
+- PR readiness status: READY
+- next active task promoted to Req-111 / Task 34
