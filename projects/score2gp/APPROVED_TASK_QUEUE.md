@@ -1404,3 +1404,80 @@ Outcome:
 - implementation conformance verdict: approve implementation
 - PR readiness status: READY
 - next active task promoted to Req-113 / Task 42
+
+---
+
+## Task 42 — Research logical clef recognition classification heuristics
+
+Status: DONE
+
+Owning repo: score2gp
+
+Branch:
+docs/logical-clef-recognition-v0.1
+
+PR title:
+docs(pdf): propose logical clef classification heuristics
+
+Purpose:
+Research how to deterministically classify a logical clef candidate into Treble or Bass without modifying underlying geometry logic.
+
+Requirement:
+Req-113
+
+Evidence basis:
+- `docs/testing/logical-clef-recognition.md`
+
+Outcome:
+- product PR #349 merged
+
+---
+
+## Task 43 — Review Req-113 logical clef recognition proposal
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-113-proposal-review-v0.1
+
+PR title:
+docs(review): approve Req-113 logical clef recognition proposal
+
+Purpose:
+Review the Architect's proposal for logical clef recognition.
+
+Evidence basis:
+- product PR #349
+- `projects/score2gp/reviews/2026-07-08-req-113-logical-clef-recognition-review.md`
+
+Outcome:
+- governance PR #265 merged
+
+---
+
+## Task 44 — Implement logical clef recognition integration
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/logical-clef-recognition-integration-v0.1
+
+PR title:
+feat(pdf): integrate logical clef recognition heuristics
+
+Purpose:
+Implement the Developer phase of Req-113 by integrating `classify_logical_clef_candidate` into `evaluate_logical_clef_gate`.
+
+Requirement:
+Req-113
+
+Evidence basis:
+- `docs/testing/logical-clef-recognition.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR pending
