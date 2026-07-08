@@ -1583,3 +1583,27 @@ Evidence basis:
 
 Outcome:
 - Developer implementation PR pending
+
+---
+
+## Task 49 — Review Req-114 quarter rest extraction implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-114-implementation-review-v0.1
+
+PR title:
+docs(review): approve Req-114 quarter rest extraction implementation
+
+Purpose:
+Review the Developer's integration of quarter rest heuristics.
+
+Evidence basis:
+- product PR #352
+- `projects/score2gp/reviews/2026-07-08-req-114-quarter-rest-recognition-implementation-review.md`
+
+Outcome:
+- governance PR pending
