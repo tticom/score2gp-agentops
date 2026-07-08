@@ -1326,3 +1326,81 @@ Outcome:
 - implementation conformance verdict: approve implementation
 - PR readiness status: READY
 - next active task promoted to Req-111 / Task 34
+
+---
+
+## Task 39 — Review Req-111 semantic boundary proposal
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-111-semantic-boundary-review-v0.1
+
+PR title:
+docs(review): review Req-111 semantic boundary proposal
+
+Purpose:
+Approve the semantic boundary proposal from PR #347 and update ACTIVE_TASK.md to authorise Req-112.
+
+Evidence basis:
+- product PR #347
+- `projects/score2gp/reviews/2026-07-08-req-111-semantic-boundary-review.md`
+
+Outcome:
+- governance PR #263 merged
+
+---
+
+## Task 40 — Implement semantic boundary validation gate
+
+Status: DONE
+
+Owning repo: score2gp
+
+Branch:
+feature/logical-clef-semantic-boundary-v0.1
+
+PR title:
+feat(pdf): implement semantic boundary validation gate
+
+Purpose:
+Create the foundational logic that transitions `left_margin_primitives` into a `LogicalClefCandidate` failing-closed, based on the Architect's proposal.
+
+Requirement:
+Req-112
+
+Evidence basis:
+- `docs/testing/standard-staff-semantic-boundary.md`
+- `src/score2gp/pdf_candidate_semantic_gate.py`
+- `tests/test_pdf_candidate_semantic_gate_logic.py`
+
+Outcome:
+- product PR #348 merged
+
+---
+
+## Task 41 — Review Req-112 semantic gate implementation
+
+Status: ACTIVE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/post-req-112-implementation-review-v0.1
+
+PR title:
+docs(review): approve Req-112 semantic gate implementation
+
+Purpose:
+Record implementation conformance and PR readiness evidence for product PR #348 before promoting Req-113 research.
+
+Evidence basis:
+- product PR #348
+- `projects/score2gp/reviews/2026-07-08-req-112-semantic-gate-review.md`
+
+Outcome:
+- implementation conformance verdict: approve implementation
+- PR readiness status: READY
+- next active task promoted to Req-113 / Task 42
