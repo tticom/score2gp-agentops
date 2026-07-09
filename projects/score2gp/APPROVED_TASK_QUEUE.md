@@ -2162,7 +2162,7 @@ Outcome:
 
 ## Task 70 — Implement clef-aware pitch mapping
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2189,13 +2189,13 @@ Acceptance:
 - No ScoreIR/GP writer changes.
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 71 — Review Req-127 clef-aware pitch mapping implementation
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2215,4 +2215,4 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-implementation-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
