@@ -2216,3 +2216,66 @@ Evidence basis:
 
 Outcome:
 - governance PR merged
+
+---
+
+## Task 72 — Apply clef-aware pitch mapping to read-only note diagnostics
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-129-read-only-clef-aware-pitch-diagnostics-v0.1
+
+PR title:
+feat(pdf): apply clef-aware pitch mapping to read-only diagnostics
+
+Purpose:
+Wire the approved clef-aware pitch mapping helper into read-only note-candidate diagnostics so treble, bass, and alto clef evidence can enrich note candidates without changing ScoreIR, GP export, rhythm timelines, or voice assignment.
+
+Requirement:
+Req-129
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-127-pitch-mapping-schema.md`
+- `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-implementation-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- read-only note candidates can be enriched using `map_staff_step_to_midi_pitch`
+- treble, bass, and alto clef evidence are each covered by tests
+- diagnostic output includes stable pitch evidence, preferably both MIDI pitch and note name if existing output contracts allow it
+- unknown, missing, or ambiguous clef evidence fails closed without pitch enrichment
+- ledger-line support remains bounded by existing staff-position/ledger validation rules
+- no ScoreIR, GP writer, MusicXML oracle, rhythm, timeline, or voice behavior changes
+- no-ScoreIR leakage tests and artifact audit pass
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 73 — Review Req-129 read-only clef-aware pitch diagnostics
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-129-review-v0.1
+
+PR title:
+docs(review): approve Req-129 read-only pitch diagnostics
+
+Purpose:
+Review the Developer's read-only clef-aware pitch diagnostic integration, verify strict non-leakage to ScoreIR/GP output, and promote the next credible continuation through the required continuation audit.
+
+Requirement:
+Req-129
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-129-read-only-pitch-diagnostics-review.md`
+
+Outcome:
+- governance PR pending

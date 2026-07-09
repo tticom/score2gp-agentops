@@ -173,6 +173,13 @@ Examples of credible post-completion continuations:
 
 Successful completion is not a stop condition while an evidence-backed continuation exists.
 
+Review tasks must include an explicit continuation audit in the review report or governance PR body. The audit must name either:
+
+- the next active task being promoted; or
+- the concrete reason no safe continuation exists.
+
+Marking a review task `DONE` and setting `ACTIVE_TASK.md` to `NO_ACTIVE_TASK_APPROVED` without this audit is non-compliant unless the active task already documented an unavoidable terminal boundary.
+
 ### Handoffless Role Transition Protocol
 
 Promoting a next task is not a completion point.
