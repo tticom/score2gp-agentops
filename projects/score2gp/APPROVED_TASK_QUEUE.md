@@ -1773,7 +1773,7 @@ Outcome:
 
 ## Task 56 — Implement semantic candidate no-ScoreIR leakage gate
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1793,4 +1793,31 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR merged
+
+---
+
+## Task 57 — Review Req-122 semantic candidate no-ScoreIR leakage gate implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-122-review-v0.1
+
+PR title:
+docs(review): approve Req-122 semantic candidate no-ScoreIR leakage gate implementation
+
+Purpose:
+Review the Developer's integration of a strict isolation gate test for ScoreIR and GP packages.
+
+Requirement:
+Req-122
+
+Evidence basis:
+- product PR #356
+- `projects/score2gp/reviews/2026-07-09-req-122-no-scoreir-leakage-gate-review.md`
+
+Outcome:
+- governance PR merged
