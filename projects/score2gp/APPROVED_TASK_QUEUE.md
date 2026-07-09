@@ -1607,3 +1607,31 @@ Evidence basis:
 
 Outcome:
 - governance PR merged
+
+---
+
+## Task 50 — Implement semantic candidate JSON snapshot tests
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-119-semantic-snapshot-tests-v0.1
+
+PR title:
+feat(pdf): implement semantic candidate JSON snapshot tests
+
+Purpose:
+Implement the Developer phase of Req-119 by creating deterministic JSON snapshot tests for current semantic candidate outputs:
+- logical clef candidate outputs
+- quarter rest candidate outputs
+
+Requirement:
+Req-119
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR pending
