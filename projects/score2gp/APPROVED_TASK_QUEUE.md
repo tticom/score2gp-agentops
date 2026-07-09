@@ -2524,7 +2524,7 @@ Outcome:
 
 ## Task 82 — Design consolidated diagnostics schema and CLI reporting format
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2548,13 +2548,13 @@ Acceptance:
 - Defines fields, CLI table formatting, and validation constraints.
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
 ## Task 83 — Review consolidated diagnostics schema and CLI reporting format
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2572,6 +2572,67 @@ Req-132
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-132-diagnostics-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 84 — Implement consolidated diagnostics and CLI reporting format
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-132-diagnostics-implementation-v0.1
+
+PR title:
+feat(pdf): implement consolidated diagnostics and CLI reporting format
+
+Purpose:
+Implement the formatted console print table and consolidated JSON reports inside the diagnostics CLI commands in `cli.py` under Req-132.
+
+Requirement:
+Req-132
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-132-consolidated-diagnostics-schema.md`
+- `projects/score2gp/reviews/2026-07-09-req-132-diagnostics-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- note-candidate diagnostics CLI commands correctly return the consolidated JSON format when `--json` is enabled.
+- note-candidate diagnostics CLI commands output a clean, formatted text table summary showing staves, pitches, and timeline measures when `--json` is false.
+- Covered by CLI integration tests.
+- No changes to ScoreIR, GP writer/package, or downstream conversion behavior.
+- `make verify` passes.
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 85 — Review consolidated diagnostics and CLI reporting implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-132-implementation-review-v0.1
+
+PR title:
+docs(review): approve consolidated diagnostics and CLI reporting implementation
+
+Purpose:
+Review the implementation of consolidated diagnostics and CLI reporting format.
+
+Requirement:
+Req-132
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-132-implementation-review.md`
 
 Outcome:
 - governance PR pending
