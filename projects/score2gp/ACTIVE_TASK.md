@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Req-127 / Task 68: Define clef-aware pitch mapping schema
-**Authorised Role**: Architect
-**Repository**: `score2gp-agentops`
+**Task**: Req-127 / Task 70: Implement clef-aware pitch mapping
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp`
 
 ## Status
 APPROVED
@@ -11,36 +11,39 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Architect must design the lookup tables and metadata schema for mapping staff positions to MIDI pitches based on the detected clef candidate (treble, bass, alto) as requested by Req-127, checking in the pitch translation lookup document.
+Developer must implement the pitch mapping translation inside `score2gp`, add unit tests verifying treble, bass, and alto mapping correctness, pass verification, push the branch, and open a product PR.
 
 ## 1. Baseline
-- Req-125 multi-clef candidate classification is complete, providing treble, bass, and alto candidates.
-- Req-128 whole and half rest candidate extraction is complete.
+- Req-127 pitch mapping schema is designed and approved.
+- Treble, Bass, and Alto clefs, and ledger lines are covered.
 
 ## 2. Context
-This is a post-completion continuation task. Having completed rest and clef classification candidate extraction, we can now design the pitch translation schema that maps staff lines/spaces to pitch.
+Having approved the mapping tables, we can now implement the translation functions in Python and bind them to the candidate diagnostics output.
 
 ## 3. Goal
-Create a pitch translation lookup document mapping staff positions to MIDI pitches for treble, bass, and alto clefs.
+Implement a helper or function in `score2gp` to map a notehead's `staff_step_index` to MIDI pitch using the active clef candidate.
 
 ## 4. Non-goals
-- Do not modify product code in score2gp.
-- Do not implement the mapping logic in Python.
-- Do not create ScoreIR events.
+- Do not create ScoreIR pitch-mapped note events.
+- Do not infer rhythm timelines.
 
 ## 5. Scope
-All changes must be within `score2gp-agentops`.
+Allowed files:
+- `src/score2gp/pdf_pitch_mapper.py` or new mapping modules
+- `src/score2gp/whole_note_recogniser.py`
+- `tests/` unit tests for pitch mapper
 
 ## 6. Suggested Work Branch
-`governance/req-127-pitch-mapping-schema-v0.1`
+`feature/req-127-pitch-mapping-v0.1`
 
 ## 7. Required Validation
-Check that the pitch lookup tables cover all 5 lines, 4 spaces, ledger lines (at least 3 above/below), and correct transpositions.
+Run the full verification suite `make verify`.
 
 ## 8. Acceptance Criteria
-- Pitch translation lookup document completed and approved.
-- Details the mapping formulas and lookup tables for Treble, Bass, and Alto clefs.
+- Pitch mapping translation logic is implemented.
+- Covered by unit tests for all 3 clefs and ledger lines.
+- `make verify` passes.
 
 ## 9. Next Steps
-- Review Req-127 pitch mapping schema.
-- Implement the python mapping logic.
+- Review Req-127 pitch mapping implementation.
+- Clef-aware pitch mapping schema is complete.
