@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-123 / Task 58: Real-world / approved-corpus audit for semantic candidates
+**Task**: Req-124 / Task 60: Implement semantic candidate model consolidation and schema hardening
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
@@ -11,4 +11,4 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must run semantic candidate extraction over the approved corpus (both public and private fixtures) and produce a governance report summarizing candidate statistics, false positive/negative risks, and failure categories.
+Developer must consolidate the candidate models (`LogicalClefCandidate` and `QuarterRestCandidate`) and schema definitions based on the corpus audit results, ensuring strict validations and updating necessary schemas.
