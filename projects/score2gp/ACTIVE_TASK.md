@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Req-130 / Task 74: Design accidental and key signature pitch mapping schema
-**Authorised Role**: Architect
-**Repository**: `score2gp-agentops`
+**Task**: Req-130 / Task 76: Implement accidental and key signature pitch mapping
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp`
 
 ## Status
 APPROVED
@@ -11,36 +11,40 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Architect must design the lookup tables, metadata schema, and modifier rules for modifying base MIDI pitches based on accidental candidates (sharps, flats, naturals) and key signatures under Req-130, checking in the accidental/key signature pitch translation lookup document.
+Developer must implement the accidental and key signature modifier logic inside `score2gp`, add unit tests verifying mapping correctness, pass verification, push the branch, and open a product PR.
 
 ## 1. Baseline
-- Req-129 pitch mapping diagnostic integration is complete.
-- Treble, Bass, and Alto clefs, and ledger lines are covered.
+- Req-130 accidental and key signature schema is designed and approved.
+- Clef-aware pitch mapping diagnostics are complete.
 
 ## 2. Context
-Having verified read-only pitch mapping for natural notes, we can now design the accidental and key signature schema to support sharps, flats, and key-specific pitch offsets.
+Having approved the accidental and key signature rules, we can now implement the mapping modifier calculation and state memory in Python.
 
 ## 3. Goal
-Create a pitch translation lookup document mapping accidental candidates and key signatures to base pitch modifiers.
+Implement the accidental modifier engine inside `score2gp` and update read-only note candidate diagnostics.
 
 ## 4. Non-goals
-- Do not modify product code in score2gp.
-- Do not implement the modifier logic in Python.
-- Do not create ScoreIR events.
+- Do not create ScoreIR events from standard-staff notes.
+- Do not change GP writer output.
 
 ## 5. Scope
-All changes must be within `score2gp-agentops`.
+Allowed files:
+- `src/score2gp/pdf_pitch_mapper.py`
+- `src/score2gp/whole_note_recogniser.py`
+- `tests/` unit tests for pitch mapper
 
 ## 6. Suggested Work Branch
-`governance/req-130-accidental-schema-v0.1`
+`feature/req-130-accidental-mapping-v0.1`
 
 ## 7. Required Validation
-Check that the lookup tables cover sharps, flats, naturals, and major/minor key signatures.
+Run the full verification suite `make verify`.
 
 ## 8. Acceptance Criteria
-- Accidental and key signature schema document completed and approved.
-- Details the modifiers for natural notes, accidental lookup tables, and key signatures.
+- Modifier calculation logic is implemented.
+- Key signatures and local accidentals are correctly supported.
+- Covered by unit tests.
+- `make verify` passes.
 
 ## 9. Next Steps
-- Review Req-130 accidental and key signature schema.
-- Implement the python modifier logic.
+- Review Req-130 accidental and key signature implementation.
+- Accidental mapping implementation is complete.
