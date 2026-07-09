@@ -2221,7 +2221,7 @@ Outcome:
 
 ## Task 72 — Apply clef-aware pitch mapping to read-only note diagnostics
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2252,13 +2252,13 @@ Acceptance:
 - no-ScoreIR leakage tests and artifact audit pass
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 73 — Review Req-129 read-only clef-aware pitch diagnostics
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2276,6 +2276,62 @@ Req-129
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-129-read-only-pitch-diagnostics-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 74 — Design accidental and key signature pitch mapping schema
+
+Status: ACTIVE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-130-accidental-schema-v0.1
+
+PR title:
+docs(pitch): design accidental and key signature schema
+
+Purpose:
+Design the lookup tables, metadata schema, and modifier rules for modifying base MIDI pitches based on accidental candidates (sharps, flats, naturals) and key signatures under Req-130.
+
+Requirement:
+Req-130
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-129-read-only-pitch-diagnostics-review.md`
+
+Acceptance:
+- Accidental and key signature schema document completed and approved.
+- Details the modifiers for natural notes, accidental lookup tables, and key signatures.
+
+Outcome:
+- governance PR pending
+
+---
+
+## Task 75 — Review accidental and key signature pitch mapping schema
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-130-review-v0.1
+
+PR title:
+docs(review): approve accidental and key signature schema design
+
+Purpose:
+Review the accidental and key signature pitch modifier schema design.
+
+Requirement:
+Req-130
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-130-accidental-review.md`
 
 Outcome:
 - governance PR pending
