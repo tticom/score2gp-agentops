@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-120 / Task 52: Implement semantic candidate CLI/reporting smoke path
+**Task**: Req-121 / Task 54: Implement fail-closed semantic coverage expansion
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
@@ -11,25 +11,25 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must implement command line interface option and diagnostic reporting to expose extracted semantic candidates (logical clefs and quarter rests).
+Developer must expand semantic candidate extraction coverage to verify fail-closed handling on complex rests (whole rests, half rests) and overlapping/polyphonic geometry clusters.
 
 ## 1. Baseline
-- The semantic candidate JSON snapshots (Req-119) have been implemented, tested, and merged.
-- We need to expose these semantic candidates through the CLI to enable maintainer audits.
+- The semantic candidate CLI/reporting path (Req-120) has been implemented, tested, and merged.
+- We need to expand candidate extraction coverage and verify that the heuristics fail closed safely under complex rests and polyphonic collisions.
 
 ## 2. Context
-Currently, the diagnostics CLI only outputs geometry candidates. Exposing semantic candidates (clef and quarter rests) via CLI or a diagnostic report will allow users to audit and verify extracted semantic features directly.
+Real-world scores frequently introduce whole rests, half rests, and polyphonic collisions where multiple voices share vertical space. We need to implement and test heuristics that safely ignore these structures (fail-closed) to protect downstream interpretation from invalid quarter-rest or clef classifications.
 
 ## 3. Goal
-Modify the CLI commands and diagnostic reporting to include semantic candidate outputs (logical clef and quarter rest candidates).
+Create synthetic tests and expand heuristics to prove that whole rests, half rests, and overlapping/polyphonic geometry clusters are safely ignored (fail closed).
 
 ## 4. Non-goals
-- Do not infer pitch or durations.
-- Do not modify legacy ScoreIR.
-- Do not add private fixtures.
+- Do not add pitch or rhythmic duration inference.
+- Do not build ScoreIR events.
+- Do not guess or map ambiguous symbols.
 
 ## 5. Required Output & Outcome
-A product PR exposing semantic candidates via the CLI/reporting, with accompanying tests.
+A product PR with test coverage and safe heuristics implementing the fail-closed boundary.
 
 ## 6. Next Steps
-- Promote the next valid task, likely Req-121, after Req-120 is reviewed and merged.
+- Promote the next valid task, likely Req-122, after Req-121 is reviewed and merged.
