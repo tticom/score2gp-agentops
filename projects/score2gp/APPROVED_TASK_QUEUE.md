@@ -1930,7 +1930,7 @@ Outcome:
 
 ## Task 62 — Multi-clef candidate classification (Bass and Alto)
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1950,13 +1950,13 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR merged
 
 ---
 
 ## Task 63 — Review Req-125 multi-clef candidate classification implementation
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -1976,7 +1976,7 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-125-multi-clef-candidate-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
