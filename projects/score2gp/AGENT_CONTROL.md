@@ -173,6 +173,30 @@ Examples of credible post-completion continuations:
 
 Successful completion is not a stop condition while an evidence-backed continuation exists.
 
+### Handoffless Role Transition Protocol
+
+Promoting a next task is not a completion point.
+
+After a governance PR merges and `ACTIVE_TASK.md` names a new approved task, the same autonomous run must immediately continue into that task when the work can be performed from the available repositories and tools.
+
+This applies even when the next task changes:
+
+- role, for example Reviewer -> Architect or Architect -> Developer;
+- repository, for example `score2gp-agentops` -> `score2gp`;
+- task type, for example review -> research -> implementation.
+
+The agent may pause only for the same stop conditions that would apply at the start of any active task. A role transition, repository switch, successful PR merge, or walkthrough/report update is not by itself a stop condition.
+
+When continuing across roles, the agent must:
+
+1. pull the relevant repository main branch after the merge;
+2. reread `ACTIVE_TASK.md`;
+3. create the suggested branch if the task permits branch work;
+4. execute the task's required role and validation;
+5. continue through review/promotion according to the normal queue rules.
+
+If the next active task is research-only or architecture-only, perform that task rather than stopping for human permission.
+
 ### Blocker Pivot Protocol
 
 When an active task encounters a blocker, agents must not default to `NO_ACTIVE_TASK_APPROVED`.
