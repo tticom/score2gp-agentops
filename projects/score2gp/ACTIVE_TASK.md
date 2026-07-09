@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Req-131 / Task 80: Implement read-only rhythm timeline diagnostics
-**Authorised Role**: Developer
-**Repository**: `tticom/score2gp`
+**Task**: Req-132 / Task 82: Design consolidated diagnostics schema and CLI reporting format
+**Authorised Role**: Architect
+**Repository**: `score2gp-agentops`
 
 ## Status
 APPROVED
@@ -11,39 +11,35 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must implement the `build_staff_timeline_preview` helper in `whole_note_recogniser.py` (reconstructing measure-local tick timelines and rest assignments as read-only preview diagnostics), write unit/integration tests, pass verification, push the branch, and open a product PR.
+Architect must design the JSON schema, CLI display parameters, and output formats for consolidating semantic candidates, pitch mapping, and timeline previews into a single diagnostic report under Req-132, checking in the consolidated diagnostics schema document.
 
 ## 1. Baseline
-- Req-131 rest/rhythm timeline schema is designed and approved.
-- Clef, rest, and pitch mappings are implemented and tested.
+- Req-131 read-only rhythm timeline diagnostics implementation is complete.
+- Page-level semantic candidates and staff-level timeline previews are integrated in Python.
 
 ## 2. Context
-Having approved the rhythm timeline schema, we can now implement the timeline reconstruction logic in a safe, read-only diagnostic preview block.
+Having completed the implementation of pitch and timeline previews, we can now design how these disparate diagnostic signals are merged into a single report schema and formatted for CLI display.
 
 ## 3. Goal
-Implement the timeline preview generator inside `score2gp`, collecting note/rest durations, updating voice cursors, resetting at barlines, and outputting to `"timeline_preview"`.
+Create a consolidated diagnostics schema and CLI display format document.
 
 ## 4. Non-goals
-- Do not modify core ScoreIR translation logic.
-- Do not modify playable GP export.
+- Do not modify product code in score2gp.
+- Do not implement CLI print formatting in Python.
 
 ## 5. Scope
-Allowed files:
-- `src/score2gp/whole_note_recogniser.py`
-- `tests/` unit/integration tests for rhythm diagnostics
+All changes must be within `score2gp-agentops`.
 
 ## 6. Suggested Work Branch
-`feature/req-131-rhythm-diagnostics-v0.1`
+`governance/req-132-consolidated-diagnostics-schema-v0.1`
 
 ## 7. Required Validation
-Run the full verification suite `make verify`.
+Check that the document defines JSON schema fields, CLI display tables, and error/validation reporting.
 
 ## 8. Acceptance Criteria
-- Timeline preview logic is implemented.
-- Correctly assigns quarter, half, whole rests.
-- Resets at barlines and clusters notes into vertical time slices.
-- Outputs diagnostics strictly under `"timeline_preview"`.
-- `make verify` passes.
+- Consolidated diagnostics schema document completed and approved.
+- Defines fields, CLI table formatting, and validation constraints.
 
 ## 9. Next Steps
-- Review Req-131 read-only rhythm timeline diagnostics implementation.
+- Review Req-132 consolidated diagnostics schema design.
+- Implement the consolidated report.
