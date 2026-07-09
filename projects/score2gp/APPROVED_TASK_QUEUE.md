@@ -2042,7 +2042,7 @@ Outcome:
 
 ## Task 66 — Whole and half rest semantic candidate extraction
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2073,13 +2073,13 @@ Acceptance:
 - no-ScoreIR leakage tests and artifact audit pass
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 67 — Review Req-128 whole and half rest semantic candidate extraction
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2097,6 +2097,63 @@ Req-128
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-128-whole-half-rest-candidates-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 68 — Define clef-aware pitch mapping schema
+
+Status: ACTIVE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-127-pitch-mapping-schema-v0.1
+
+PR title:
+docs(pitch): design clef-aware pitch mapping schema
+
+Purpose:
+Design the lookup tables and metadata schema for mapping staff positions to MIDI pitches based on the detected clef candidate (treble, bass, alto) as requested by Req-127.
+
+Requirement:
+Req-127
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-post-semantic-candidate-strategy-and-backlog-architecture.md`
+- `projects/score2gp/reviews/2026-07-09-req-125-multi-clef-candidate-review.md`
+
+Acceptance:
+- Pitch translation lookup document completed and approved.
+- Details the mapping formulas and lookup tables for Treble, Bass, and Alto clefs.
+
+Outcome:
+- governance PR pending
+
+---
+
+## Task 69 — Review Req-127 clef-aware pitch mapping schema
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-127-review-v0.1
+
+PR title:
+docs(review): approve Req-127 pitch mapping schema
+
+Purpose:
+Review the designed pitch mapping tables and lookup document for Treble, Bass, and Alto clefs.
+
+Requirement:
+Req-127
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-review.md`
 
 Outcome:
 - governance PR pending
