@@ -1930,7 +1930,7 @@ Outcome:
 
 ## Task 62 — Multi-clef candidate classification (Bass and Alto)
 
-Status: BLOCKED
+Status: ACTIVE
 
 Owning repo: score2gp
 
@@ -1950,7 +1950,7 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending due to missing bass/alto PDF fixtures blocker
+- Developer implementation PR pending
 
 ---
 
@@ -1982,7 +1982,7 @@ Outcome:
 
 ## Task 64 — Generate public bass and alto clef fixtures
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2010,13 +2010,13 @@ Acceptance:
 - no semantic classifier logic, ScoreIR output, GP writer behavior, pitch inference, or rhythm inference is changed
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 65 — Review Req-126 bass and alto clef fixture implementation
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2036,4 +2036,4 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-126-bass-alto-clef-fixture-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
