@@ -1,14 +1,6 @@
 # Active Task
 
-**Task**: Req-125 / Task 62: Multi-clef candidate classification (Bass and Alto)
-**Authorised Role**: Developer
-**Repository**: `tticom/score2gp`
+NO_ACTIVE_TASK_APPROVED
 
-## Status
-APPROVED
-
-## Task Authorised
-Yes
-
-## Completion Evidence
-Developer must extend the left-margin classifiers to extract and classify Bass and Alto clefs correctly on public fixtures, updating snapshot tests.
+## Blocker Recorded
+Req-125 is blocked because no public or private PDF fixtures containing Bass or Alto clefs are available to validate classification heuristics. We must first generate synthetic public PDF fixtures containing Bass and Alto clefs.
