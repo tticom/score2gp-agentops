@@ -1930,7 +1930,7 @@ Outcome:
 
 ## Task 62 — Multi-clef candidate classification (Bass and Alto)
 
-Status: ACTIVE
+Status: BLOCKED
 
 Owning repo: score2gp
 
@@ -1950,7 +1950,7 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR pending due to missing bass/alto PDF fixtures blocker
 
 ---
 
