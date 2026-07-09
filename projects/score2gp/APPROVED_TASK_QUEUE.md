@@ -1821,3 +1821,55 @@ Evidence basis:
 
 Outcome:
 - governance PR merged
+
+---
+
+## Task 58 — Real-world / approved-corpus audit for semantic candidates
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-123-corpus-audit-v0.1
+
+PR title:
+feat(pdf): perform real-world / approved-corpus semantic candidate audit
+
+Purpose:
+Perform the Developer phase of Req-123 by auditing the semantic candidate extraction model across public and private fixtures.
+
+Requirement:
+Req-123
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR pending
+
+---
+
+## Task 59 — Review Req-123 real-world / approved-corpus audit for semantic candidates implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-123-review-v0.1
+
+PR title:
+docs(review): approve Req-123 real-world / approved-corpus audit for semantic candidates implementation
+
+Purpose:
+Review the Developer's strategic audit report on semantic candidate extraction performance.
+
+Requirement:
+Req-123
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-123-corpus-audit-review.md`
+
+Outcome:
+- governance PR pending
