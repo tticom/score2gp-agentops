@@ -2037,3 +2037,66 @@ Evidence basis:
 
 Outcome:
 - governance PR merged
+
+---
+
+## Task 66 — Whole and half rest semantic candidate extraction
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-128-whole-half-rest-semantic-candidates-v0.1
+
+PR title:
+feat(pdf): add whole and half rest semantic candidates
+
+Purpose:
+Implement diagnostic-only whole rest and half rest semantic candidate extraction so rest coverage expands beyond quarter rests without changing ScoreIR, GP export, pitch inference, rhythm timelines, or voice assignment.
+
+Requirement:
+Req-128
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-post-semantic-candidate-strategy-and-backlog-architecture.md`
+- `projects/score2gp/reviews/2026-07-09-req-125-multi-clef-candidate-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- whole rest and half rest candidates have explicit diagnostic semantic candidate representation
+- public fixtures or generated public fixtures prove both candidate types are detected
+- quarter-rest extraction remains fail-closed for whole/half rests
+- semantic candidate snapshots include the new diagnostic fields
+- CLI/reporting surfaces the candidates consistently where semantic candidates are already exposed
+- no ScoreIR, GP writer, notation bridge, pitch, rhythm, or voice behavior changes
+- no-ScoreIR leakage tests and artifact audit pass
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 67 — Review Req-128 whole and half rest semantic candidate extraction
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-128-review-v0.1
+
+PR title:
+docs(review): approve Req-128 whole and half rest semantic candidates
+
+Purpose:
+Review the Developer's diagnostic-only whole and half rest candidate extraction, verify no ScoreIR/GP leakage, and promote the next credible continuation through the post-completion continuation protocol.
+
+Requirement:
+Req-128
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-128-whole-half-rest-candidates-review.md`
+
+Outcome:
+- governance PR pending
