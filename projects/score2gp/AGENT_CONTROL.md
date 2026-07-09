@@ -151,6 +151,28 @@ After finishing a task, the agent should:
 
 Queue status updates are operational bookkeeping only. Agents may report local task completion and next-task selection in their run report. Material queue edits, new tasks, reordering, scope changes, or removing tasks still require a governance PR and human merge.
 
+### Post-Completion Continuation Protocol
+
+When a task and its required review/promotion work are complete, agents must not default to `NO_ACTIVE_TASK_APPROVED`.
+
+Before stopping after successful completion, the agent must perform a continuation audit:
+
+1. Inspect `APPROVED_TASK_QUEUE.md`, current backlog reports, recent review reports, and active blockers.
+2. Promote the next eligible `APPROVED` queue item if its prerequisites are satisfied.
+3. If no approved queue item exists, identify the smallest credible continuation that stays inside the current product direction and does not require a new human product choice.
+4. Prefer product-functional diagnostic, fixture, schema, smoke-test, or fail-closed implementation work over administrative stopping when the next step is already supported by merged backlog or review evidence.
+5. Create a governance PR that records the completed work, adds the continuation task, and makes it active.
+6. Set `ACTIVE_TASK.md` to `NO_ACTIVE_TASK_APPROVED` only when the continuation audit finds no credible safe continuation, or when every candidate continuation would require a new product direction, destructive action, unapproved data source, or speculative musical inference.
+
+Examples of credible post-completion continuations:
+
+- clef classifier complete -> expand diagnostic-only rest candidate coverage before pitch mapping;
+- fixture gap closed -> resume the previously blocked feature task;
+- schema hardening complete -> add snapshot, CLI, or leakage gates that make the schema observable;
+- corpus audit complete -> implement the smallest model/schema correction backed by that audit.
+
+Successful completion is not a stop condition while an evidence-backed continuation exists.
+
 ### Blocker Pivot Protocol
 
 When an active task encounters a blocker, agents must not default to `NO_ACTIVE_TASK_APPROVED`.
@@ -332,6 +354,7 @@ Agents must stop and report if:
 - PR creation or branch push is blocked
 - `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`
 - the blocker pivot audit finds no credible safe pivot task
+- the post-completion continuation audit finds no credible safe continuation task
 - required preflight checks fail
 - the current branch is unexpected
 - the working tree contains unrelated changes
