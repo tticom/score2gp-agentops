@@ -2461,7 +2461,7 @@ Outcome:
 
 ## Task 80 — Implement read-only rhythm timeline diagnostics
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2492,13 +2492,13 @@ Acceptance:
 - `make verify` passes.
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 81 — Review read-only rhythm timeline diagnostics
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2516,6 +2516,62 @@ Req-131
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-131-implementation-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 82 — Design consolidated diagnostics schema and CLI reporting format
+
+Status: ACTIVE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-132-consolidated-diagnostics-schema-v0.1
+
+PR title:
+docs(diagnostics): design consolidated diagnostics and CLI reporting schema
+
+Purpose:
+Design the JSON schema, CLI display parameters, and output formats for consolidating semantic candidates, pitch mapping, and timeline previews into a single diagnostic report under Req-132.
+
+Requirement:
+Req-132
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-131-implementation-review.md`
+
+Acceptance:
+- Consolidated diagnostics schema document completed and approved.
+- Defines fields, CLI table formatting, and validation constraints.
+
+Outcome:
+- governance PR pending
+
+---
+
+## Task 83 — Review consolidated diagnostics schema and CLI reporting format
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-132-review-v0.1
+
+PR title:
+docs(review): approve consolidated diagnostics and CLI reporting schema design
+
+Purpose:
+Review the consolidated diagnostics and CLI reporting schema design.
+
+Requirement:
+Req-132
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-132-diagnostics-review.md`
 
 Outcome:
 - governance PR pending
