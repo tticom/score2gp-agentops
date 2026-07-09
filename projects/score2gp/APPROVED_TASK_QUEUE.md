@@ -1667,7 +1667,7 @@ Outcome:
 
 ## Task 52 — Implement semantic candidate CLI/reporting smoke path
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1682,6 +1682,59 @@ Implement the Developer phase of Req-120 by exposing semantic candidate extracti
 
 Requirement:
 Req-120
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR merged
+
+---
+
+## Task 53 — Review Req-120 semantic candidate CLI/reporting smoke path implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-120-review-v0.1
+
+PR title:
+docs(review): approve Req-120 semantic candidate CLI/reporting smoke path implementation
+
+Purpose:
+Review the Developer's integration of semantic candidates into CLI/reporting diagnostics.
+
+Requirement:
+Req-120
+
+Evidence basis:
+- product PR #354
+- `projects/score2gp/reviews/2026-07-09-req-120-semantic-cli-smoke-path-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 54 — Implement fail-closed semantic coverage expansion
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-121-fail-closed-semantic-coverage-v0.1
+
+PR title:
+feat(pdf): implement fail-closed semantic coverage expansion
+
+Purpose:
+Implement the Developer phase of Req-121 by expanding semantic candidate extraction coverage to verify fail-closed handling on complex rests (whole rests, half rests) and overlapping/polyphonic geometry clusters.
+
+Requirement:
+Req-121
 
 Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
