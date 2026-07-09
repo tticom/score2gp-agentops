@@ -1826,7 +1826,7 @@ Outcome:
 
 ## Task 58 — Real-world / approved-corpus audit for semantic candidates
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1846,13 +1846,13 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
-- Developer implementation PR pending
+- Developer implementation PR merged
 
 ---
 
 ## Task 59 — Review Req-123 real-world / approved-corpus audit for semantic candidates implementation
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -1872,4 +1872,30 @@ Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-123-corpus-audit-review.md`
 
 Outcome:
-- governance PR pending
+- governance PR merged
+
+---
+
+## Task 60 — Implement semantic candidate model consolidation and schema hardening
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-124-model-consolidation-v0.1
+
+PR title:
+feat(pdf): consolidate semantic candidate models and schema hardening
+
+Purpose:
+Implement the Developer phase of Req-124 by refining the LogicalClefCandidate and QuarterRestCandidate schemas and consolidating pydantic models based on the Req-123 audit results.
+
+Requirement:
+Req-124
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR pending
