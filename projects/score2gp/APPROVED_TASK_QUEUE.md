@@ -2340,7 +2340,7 @@ Outcome:
 
 ## Task 76 — Implement accidental and key signature pitch mapping
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -2373,13 +2373,13 @@ Acceptance:
 - `make verify` passes.
 
 Outcome:
-- product PR pending
+- product PR merged
 
 ---
 
 ## Task 77 — Review accidental and key signature pitch mapping implementation
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2396,7 +2396,63 @@ Requirement:
 Req-130
 
 Evidence basis:
-- `projects/score2gp/reviews/2026-07-09-req-130-implementation-review.md`
+- `projects/score2gp/reviews/2026-07-09-req-130-accidental-implementation-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 78 — Design rest mapping and rhythm timeline reconstruction schema
+
+Status: ACTIVE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-131-rest-timeline-schema-v0.1
+
+PR title:
+docs(rhythm): design rest mapping and rhythm timeline schema
+
+Purpose:
+Design the schema, voice alignment cursor rules, and duration reconstruction formulas for injecting quarter, half, and whole rests into ScoreIR and GP7 packages under Req-131.
+
+Requirement:
+Req-131
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-130-accidental-implementation-review.md`
+
+Acceptance:
+- Rest mapping and rhythm timeline schema document completed and approved.
+- Details voice cursors, polyphonic alignments, and rest insertion rules.
+
+Outcome:
+- governance PR pending
+
+---
+
+## Task 79 — Review rest mapping and rhythm timeline reconstruction schema
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-131-review-v0.1
+
+PR title:
+docs(review): approve rest mapping and rhythm timeline schema design
+
+Purpose:
+Review the rest mapping and rhythm timeline schema design.
+
+Requirement:
+Req-131
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-131-rhythm-review.md`
 
 Outcome:
 - governance PR pending

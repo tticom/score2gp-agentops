@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Req-130 / Task 76: Implement accidental and key signature pitch mapping
-**Authorised Role**: Developer
-**Repository**: `tticom/score2gp`
+**Task**: Req-131 / Task 78: Design rest mapping and rhythm timeline reconstruction schema
+**Authorised Role**: Architect
+**Repository**: `score2gp-agentops`
 
 ## Status
 APPROVED
@@ -11,46 +11,36 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must implement the accidental and key signature modifier logic inside `score2gp`, add unit tests verifying mapping correctness, pass verification, push the branch, and open a product PR.
+Architect must design the schema, voice alignment cursor rules, and duration reconstruction formulas for injecting quarter, half, and whole rests into ScoreIR and GP7 packages under Req-131, checking in the rest/rhythm pitch translation lookup document.
 
 ## 1. Baseline
-- Req-130 accidental and key signature schema is designed and approved.
-- Clef-aware pitch mapping diagnostics are complete.
+- Req-130 accidental and key signature pitch mapping implementation is complete.
+- Basic clefs, rests, and pitch mapping diagnostics are hardened.
 
 ## 2. Context
-Having approved the accidental and key signature rules, we can now implement the mapping modifier calculation and state memory in Python.
+Having completed clef-aware and accidental-aware pitch mapping, we can now design the timeline rules for inserting rests and reconstructing the musical timeline in ScoreIR.
 
 ## 3. Goal
-Implement the accidental modifier engine inside `score2gp` and update read-only note candidate diagnostics.
-
-If visual accidental or key-signature candidate extraction is not already available, do not stop. Implement the pure modifier engine and bounded read-only diagnostic integration against structured inputs/mocks, then document that visual accidental/key-signature detection remains a later task.
+Create a rest mapping and rhythm timeline reconstruction schema document.
 
 ## 4. Non-goals
-- Do not create ScoreIR events from standard-staff notes.
-- Do not change GP writer output.
-- Do not implement full visual accidental glyph detection if no existing candidate source exists.
-- Do not infer key signatures from arbitrary page text or MusicXML/GP oracle data.
+- Do not modify product code in score2gp.
+- Do not implement the timeline logic in Python.
+- Do not write playable GP files containing rests.
 
 ## 5. Scope
-Allowed files:
-- `src/score2gp/pdf_pitch_mapper.py`
-- `src/score2gp/whole_note_recogniser.py`
-- `tests/` unit tests for pitch mapper
+All changes must be within `score2gp-agentops`.
 
 ## 6. Suggested Work Branch
-`feature/req-130-accidental-mapping-v0.1`
+`governance/req-131-rest-timeline-schema-v0.1`
 
 ## 7. Required Validation
-Run the full verification suite `make verify`.
+Check that the document covers voice cursors, polyphonic alignments, and rest insertion rules.
 
 ## 8. Acceptance Criteria
-- Modifier calculation logic is implemented.
-- Key signatures and local accidentals are correctly supported.
-- Covered by unit tests.
-- If visual accidental/key-signature candidates are not available, structured-input tests prove the modifier engine and the implementation report records the deferred visual-detection dependency.
-- No ScoreIR, GP writer, MusicXML oracle, rhythm, timeline, or voice behavior changes.
-- `make verify` passes.
+- Rest mapping and rhythm timeline schema document completed and approved.
+- Details voice cursors, polyphonic alignments, and rest insertion rules.
 
 ## 9. Next Steps
-- Review Req-130 accidental and key signature implementation.
-- Accidental mapping implementation is complete.
+- Review Req-131 rest mapping and rhythm timeline schema design.
+- Implement the python timeline logic.
