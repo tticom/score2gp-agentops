@@ -1720,7 +1720,7 @@ Outcome:
 
 ## Task 54 — Implement fail-closed semantic coverage expansion
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1735,6 +1735,59 @@ Implement the Developer phase of Req-121 by expanding semantic candidate extract
 
 Requirement:
 Req-121
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR merged
+
+---
+
+## Task 55 — Review Req-121 fail-closed semantic coverage expansion implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-121-review-v0.1
+
+PR title:
+docs(review): approve Req-121 fail-closed semantic coverage expansion implementation
+
+Purpose:
+Review the Developer's integration of fail-closed checks for whole rests, half rests, and overlapping/polyphonic geometry clusters.
+
+Requirement:
+Req-121
+
+Evidence basis:
+- product PR #355
+- `projects/score2gp/reviews/2026-07-09-req-121-fail-closed-semantic-coverage-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 56 — Implement semantic candidate no-ScoreIR leakage gate
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-122-no-scoreir-leakage-gate-v0.1
+
+PR title:
+feat(pdf): implement semantic candidate no-ScoreIR leakage gate
+
+Purpose:
+Implement the Developer phase of Req-122 by adding/verifying a strict gate test proving that the presence of semantic candidates does not alter the legacy ScoreIR output or playable GP package.
+
+Requirement:
+Req-122
 
 Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`

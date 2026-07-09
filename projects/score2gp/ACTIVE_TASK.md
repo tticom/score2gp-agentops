@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-121 / Task 54: Implement fail-closed semantic coverage expansion
+**Task**: Req-122 / Task 56: Implement semantic candidate no-ScoreIR leakage gate
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
@@ -11,25 +11,24 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must expand semantic candidate extraction coverage to verify fail-closed handling on complex rests (whole rests, half rests) and overlapping/polyphonic geometry clusters.
+Developer must implement a strict test proving that the presence of semantic candidates does not alter the legacy ScoreIR output or playable GP package.
 
 ## 1. Baseline
-- The semantic candidate CLI/reporting path (Req-120) has been implemented, tested, and merged.
-- We need to expand candidate extraction coverage and verify that the heuristics fail closed safely under complex rests and polyphonic collisions.
+- The fail-closed semantic candidate coverage (Req-121) has been implemented, tested, and merged.
+- We need to establish a strict boundary test verifying that these candidates do not leak into downstream ScoreIR translation.
 
 ## 2. Context
-Real-world scores frequently introduce whole rests, half rests, and polyphonic collisions where multiple voices share vertical space. We need to implement and test heuristics that safely ignore these structures (fail-closed) to protect downstream interpretation from invalid quarter-rest or clef classifications.
+To maintain the safety and isolation boundary, we must guarantee that introducing new notation candidate diagnostics does not affect or corrupt the existing ScoreIR or playable .gp outputs.
 
 ## 3. Goal
-Create synthetic tests and expand heuristics to prove that whole rests, half rests, and overlapping/polyphonic geometry clusters are safely ignored (fail closed).
+Verify or implement a dedicated test suite ensuring complete decoupling of candidate diagnostics from ScoreIR translation.
 
 ## 4. Non-goals
-- Do not add pitch or rhythmic duration inference.
-- Do not build ScoreIR events.
-- Do not guess or map ambiguous symbols.
+- Do not make changes to ScoreIR formats.
+- Do not translate or map semantic candidates to playable notes or rests.
 
 ## 5. Required Output & Outcome
-A product PR with test coverage and safe heuristics implementing the fail-closed boundary.
+A product PR confirming the isolation gate with a dedicated test suite and PR verification.
 
 ## 6. Next Steps
-- Promote the next valid task, likely Req-122, after Req-121 is reviewed and merged.
+- Promote the next valid task after Req-122 is reviewed and merged.
