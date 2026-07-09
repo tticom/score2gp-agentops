@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Req-132 / Task 82: Design consolidated diagnostics schema and CLI reporting format
-**Authorised Role**: Architect
-**Repository**: `score2gp-agentops`
+**Task**: Req-132 / Task 84: Implement consolidated diagnostics and CLI reporting format
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp`
 
 ## Status
 APPROVED
@@ -11,35 +11,38 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Architect must design the JSON schema, CLI display parameters, and output formats for consolidating semantic candidates, pitch mapping, and timeline previews into a single diagnostic report under Req-132, checking in the consolidated diagnostics schema document.
+Developer must implement the formatted console print table and consolidated JSON reports inside the diagnostics CLI commands in `cli.py` under Req-132, write tests, pass verification, push the branch, and open a product PR.
 
 ## 1. Baseline
-- Req-131 read-only rhythm timeline diagnostics implementation is complete.
-- Page-level semantic candidates and staff-level timeline previews are integrated in Python.
+- Req-132 consolidated diagnostics schema is designed and approved.
+- All candidate metrics, pitch mappings, and timeline previews are available in `run_recognition_on_file`.
 
 ## 2. Context
-Having completed the implementation of pitch and timeline previews, we can now design how these disparate diagnostic signals are merged into a single report schema and formatted for CLI display.
+Having approved the display formats, we can now wire the final formatted CLI reports in `score2gp`.
 
 ## 3. Goal
-Create a consolidated diagnostics schema and CLI display format document.
+Update the CLI commands in `cli.py` to format the console summary tables and output consolidated JSON matching the version 1.0.0 schema.
 
 ## 4. Non-goals
-- Do not modify product code in score2gp.
-- Do not implement CLI print formatting in Python.
+- Do not modify core ScoreIR or conversion pipeline.
 
 ## 5. Scope
-All changes must be within `score2gp-agentops`.
+Allowed files:
+- `src/score2gp/cli.py`
+- `tests/` unit/integration tests for CLI reporting
 
 ## 6. Suggested Work Branch
-`governance/req-132-consolidated-diagnostics-schema-v0.1`
+`feature/req-132-diagnostics-implementation-v0.1`
 
 ## 7. Required Validation
-Check that the document defines JSON schema fields, CLI display tables, and error/validation reporting.
+Run the full verification suite `make verify`.
 
 ## 8. Acceptance Criteria
-- Consolidated diagnostics schema document completed and approved.
-- Defines fields, CLI table formatting, and validation constraints.
+- note-candidate diagnostics CLI commands correctly return the consolidated JSON format when `--json` is enabled.
+- note-candidate diagnostics CLI commands output a clean, formatted text table summary showing staves, pitches, and timeline measures when `--json` is false.
+- Covered by CLI integration tests.
+- No changes to ScoreIR, GP writer/package, or downstream conversion behavior.
+- `make verify` passes.
 
 ## 9. Next Steps
-- Review Req-132 consolidated diagnostics schema design.
-- Implement the consolidated report.
+- Review Req-132 consolidated diagnostics implementation.
