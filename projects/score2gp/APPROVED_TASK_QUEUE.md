@@ -2284,7 +2284,7 @@ Outcome:
 
 ## Task 74 — Design accidental and key signature pitch mapping schema
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2308,13 +2308,13 @@ Acceptance:
 - Details the modifiers for natural notes, accidental lookup tables, and key signatures.
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
 ## Task 75 — Review accidental and key signature pitch mapping schema
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2332,6 +2332,66 @@ Req-130
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-130-accidental-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 76 — Implement accidental and key signature pitch mapping
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-130-accidental-mapping-v0.1
+
+PR title:
+feat(pdf): implement accidental and key signature pitch mapping
+
+Purpose:
+Implement the modifier calculation and local/key signature mapping engine inside `score2gp`, enriching read-only notes with modified MIDI pitches and names, covered by unit tests.
+
+Requirement:
+Req-130
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-130-accidental-schema.md`
+- `projects/score2gp/reviews/2026-07-09-req-130-accidental-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- Modifier calculation logic is implemented.
+- Correctly handles local accidentals (measure-local scopes and barline resets) and key signatures.
+- Covered by unit tests for sharps, flats, and naturals.
+- `make verify` passes.
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 77 — Review accidental and key signature pitch mapping implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-130-implementation-review-v0.1
+
+PR title:
+docs(review): approve accidental and key signature pitch mapping implementation
+
+Purpose:
+Review the implementation of accidental and key signature modifier logic and unit test coverage.
+
+Requirement:
+Req-130
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-130-implementation-review.md`
 
 Outcome:
 - governance PR pending
