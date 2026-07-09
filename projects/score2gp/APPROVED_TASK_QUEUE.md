@@ -2353,6 +2353,9 @@ feat(pdf): implement accidental and key signature pitch mapping
 Purpose:
 Implement the modifier calculation and local/key signature mapping engine inside `score2gp`, enriching read-only notes with modified MIDI pitches and names, covered by unit tests.
 
+Clarification:
+If visual accidental or key-signature candidate extraction is not already available, implement the pure modifier engine and bounded read-only diagnostic integration against structured inputs/mocks. Do not stop merely because visual accidental detection is a future dependency.
+
 Requirement:
 Req-130
 
@@ -2365,6 +2368,8 @@ Acceptance:
 - Modifier calculation logic is implemented.
 - Correctly handles local accidentals (measure-local scopes and barline resets) and key signatures.
 - Covered by unit tests for sharps, flats, and naturals.
+- If visual accidental/key-signature candidates are not available, structured-input tests prove the modifier engine and the implementation report records the deferred visual-detection dependency.
+- No ScoreIR, GP writer, MusicXML oracle, rhythm, timeline, or voice behavior changes.
 - `make verify` passes.
 
 Outcome:
