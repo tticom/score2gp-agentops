@@ -1878,15 +1878,15 @@ Outcome:
 
 ## Task 60 — Implement semantic candidate model consolidation and schema hardening
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
 Branch:
-feature/req-124-model-consolidation-v0.1
+feature/req-124-semantic-model-schema-hardening-v0.1
 
 PR title:
-feat(pdf): consolidate semantic candidate models and schema hardening
+feat(pdf): consolidate semantic candidate models and harden schemas
 
 Purpose:
 Implement the Developer phase of Req-124 by refining the LogicalClefCandidate and QuarterRestCandidate schemas and consolidating pydantic models based on the Req-123 audit results.
@@ -1898,4 +1898,82 @@ Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
 
 Outcome:
+- Developer implementation PR merged
+
+---
+
+## Task 61 — Review Req-124 semantic candidate model consolidation and schema hardening implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-124-review-v0.1
+
+PR title:
+docs(review): approve Req-124 semantic candidate model consolidation and schema hardening implementation
+
+Purpose:
+Review the Developer's consolidation and validation hardening for LogicalClefCandidate and QuarterRestCandidate models.
+
+Requirement:
+Req-124
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-124-semantic-model-schema-hardening-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 62 — Multi-clef candidate classification (Bass and Alto)
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-125-multi-clef-candidate-v0.1
+
+PR title:
+feat(pdf): implement multi-clef candidate classification (bass and alto)
+
+Purpose:
+Implement the Developer phase of Req-125 by extending left-margin heuristics to detect and classify Bass and Alto clef geometries without OCR.
+
+Requirement:
+Req-125
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
 - Developer implementation PR pending
+
+---
+
+## Task 63 — Review Req-125 multi-clef candidate classification implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-125-review-v0.1
+
+PR title:
+docs(review): approve Req-125 multi-clef candidate classification implementation
+
+Purpose:
+Review the Developer's multi-clef candidate classification heuristics and test coverage.
+
+Requirement:
+Req-125
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-125-multi-clef-candidate-review.md`
+
+Outcome:
+- governance PR pending
