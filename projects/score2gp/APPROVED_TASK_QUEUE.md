@@ -1612,7 +1612,7 @@ Outcome:
 
 ## Task 50 — Implement semantic candidate JSON snapshot tests
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
@@ -1629,6 +1629,59 @@ Implement the Developer phase of Req-119 by creating deterministic JSON snapshot
 
 Requirement:
 Req-119
+
+Evidence basis:
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Outcome:
+- Developer implementation PR merged
+
+---
+
+## Task 51 — Review Req-119 semantic candidate snapshot tests implementation
+
+Status: DONE
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-119-review-v0.1
+
+PR title:
+docs(review): approve Req-119 semantic candidate snapshot tests implementation
+
+Purpose:
+Review the Developer's integration of deterministic public JSON snapshot tests for current semantic candidate outputs.
+
+Requirement:
+Req-119
+
+Evidence basis:
+- product PR #353
+- `projects/score2gp/reviews/2026-07-09-req-119-semantic-snapshot-tests-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 52 — Implement semantic candidate CLI/reporting smoke path
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-120-semantic-cli-smoke-path-v0.1
+
+PR title:
+feat(pdf): implement semantic candidate CLI/reporting smoke path
+
+Purpose:
+Implement the Developer phase of Req-120 by exposing semantic candidate extraction through the diagnostics CLI.
+
+Requirement:
+Req-120
 
 Evidence basis:
 - `projects/score2gp/ACTIVE_TASK.md`
