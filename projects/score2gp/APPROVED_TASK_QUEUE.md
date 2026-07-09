@@ -2405,7 +2405,7 @@ Outcome:
 
 ## Task 78 — Design rest mapping and rhythm timeline reconstruction schema
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2429,13 +2429,13 @@ Acceptance:
 - Details voice cursors, polyphonic alignments, and rest insertion rules.
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
 ## Task 79 — Review rest mapping and rhythm timeline reconstruction schema
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2453,6 +2453,69 @@ Req-131
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-131-rhythm-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 80 — Implement read-only rhythm timeline diagnostics
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-131-rhythm-diagnostics-v0.1
+
+PR title:
+feat(pdf): implement read-only rhythm timeline diagnostics
+
+Purpose:
+Implement the `build_staff_timeline_preview` helper in `whole_note_recogniser.py`, reconstructing the measure-local tick timelines and rest assignments as read-only diagnostic metadata, covered by unit and integration tests.
+
+Requirement:
+Req-131
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-131-rest-timeline-schema.md`
+- `projects/score2gp/reviews/2026-07-09-req-131-rhythm-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- Timeline preview logic is implemented.
+- Assigns quarter, half, and whole rests to voice cursors based on vertical/middle line position.
+- Clusters notes into time slices within tick duration limits.
+- Barlines reset voice cursors to 0.
+- All timeline info is output strictly under `"timeline_preview"` and is read-only.
+- No ScoreIR, GP writer/package, or downstream conversion changes.
+- `make verify` passes.
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 81 — Review read-only rhythm timeline diagnostics
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-131-implementation-review-v0.1
+
+PR title:
+docs(review): approve read-only rhythm timeline diagnostics implementation
+
+Purpose:
+Review the implementation of read-only rhythm timeline diagnostics.
+
+Requirement:
+Req-131
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-131-implementation-review.md`
 
 Outcome:
 - governance PR pending
