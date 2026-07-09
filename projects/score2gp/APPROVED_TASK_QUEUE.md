@@ -2105,7 +2105,7 @@ Outcome:
 
 ## Task 68 — Define clef-aware pitch mapping schema
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2130,13 +2130,13 @@ Acceptance:
 - Details the mapping formulas and lookup tables for Treble, Bass, and Alto clefs.
 
 Outcome:
-- governance PR pending
+- governance PR merged
 
 ---
 
 ## Task 69 — Review Req-127 clef-aware pitch mapping schema
 
-Status: APPROVED
+Status: DONE
 
 Owning repo: score2gp-agentops
 
@@ -2154,6 +2154,65 @@ Req-127
 
 Evidence basis:
 - `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-review.md`
+
+Outcome:
+- governance PR merged
+
+---
+
+## Task 70 — Implement clef-aware pitch mapping
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/req-127-pitch-mapping-v0.1
+
+PR title:
+feat(pdf): implement clef-aware pitch mapping
+
+Purpose:
+Implement the Developer phase of Req-127 by translating notehead staff positions to MIDI pitches using the active clef candidate.
+
+Requirement:
+Req-127
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-127-pitch-mapping-schema.md`
+- `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-review.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- Pitch mapping translation logic is implemented in product code.
+- Covered by unit tests for Treble, Bass, and Alto clefs, and ledger lines.
+- No ScoreIR/GP writer changes.
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 71 — Review Req-127 clef-aware pitch mapping implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-127-implementation-review-v0.1
+
+PR title:
+docs(review): approve Req-127 pitch mapping implementation
+
+Purpose:
+Review the Developer's pitch mapping implementation and unit test coverage.
+
+Requirement:
+Req-127
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-127-pitch-mapping-implementation-review.md`
 
 Outcome:
 - governance PR pending
