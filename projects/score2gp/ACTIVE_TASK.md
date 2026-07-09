@@ -23,9 +23,13 @@ Having approved the accidental and key signature rules, we can now implement the
 ## 3. Goal
 Implement the accidental modifier engine inside `score2gp` and update read-only note candidate diagnostics.
 
+If visual accidental or key-signature candidate extraction is not already available, do not stop. Implement the pure modifier engine and bounded read-only diagnostic integration against structured inputs/mocks, then document that visual accidental/key-signature detection remains a later task.
+
 ## 4. Non-goals
 - Do not create ScoreIR events from standard-staff notes.
 - Do not change GP writer output.
+- Do not implement full visual accidental glyph detection if no existing candidate source exists.
+- Do not infer key signatures from arbitrary page text or MusicXML/GP oracle data.
 
 ## 5. Scope
 Allowed files:
@@ -43,6 +47,8 @@ Run the full verification suite `make verify`.
 - Modifier calculation logic is implemented.
 - Key signatures and local accidentals are correctly supported.
 - Covered by unit tests.
+- If visual accidental/key-signature candidates are not available, structured-input tests prove the modifier engine and the implementation report records the deferred visual-detection dependency.
+- No ScoreIR, GP writer, MusicXML oracle, rhythm, timeline, or voice behavior changes.
 - `make verify` passes.
 
 ## 9. Next Steps
