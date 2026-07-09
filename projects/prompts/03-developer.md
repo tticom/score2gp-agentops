@@ -32,7 +32,7 @@ Rules:
 1. Work only in the developer worktree.
 2. Keep changes minimal.
 3. Do not rewrite unrelated modules.
-4. Do not commit private copyrighted or licence-unclear files.
+4. Use approved public fixtures and approved private fixture repositories as task evidence when relevant, but do not copy raw private fixture artifacts into unrelated commits.
 5. Do not commit generated work artifacts.
 6. Prefer deterministic public fixtures and tests.
 7. If private fixtures are used, report only sanitized counts, statuses, warning categories, and artifact paths.

@@ -41,7 +41,7 @@ Real progress is proven when **100% of playable fret candidates** extracted from
 Yes. The test suite reports a **99.7% pass rate (389 / 391 passed)** because almost all tests are written against pristine, synthetic, generated PDFs that do not contain the standard notation staff printed above the TAB staff, overlapping vectors, or clipped lines. This clean environment masked the massive layout conflation failures that occur on real engraving formats. We must introduce realistic, messy public fixtures to represent standard-notation-on-top-of-tab engraving styles.
 
 ### 6. Are private fixture results being reported safely and honestly?
-Yes. The private smoke workflow (`scripts/private_e2e_smoke.py`) successfully processes private inputs from `fixtures/private/` and outputs sanitized, anonymized counts (e.g. `private_input_1`) to public summaries under ignored `work/`. The Developer must strictly maintain this Git boundary: no copyrighted PDF/GP contents, exact note lists, or private filenames may ever be checked into Git.
+Yes. The private smoke workflow (`scripts/private_e2e_smoke.py`) successfully processes private inputs from `fixtures/private/` and outputs sanitized, anonymized counts (e.g. `private_input_1`) to public summaries under ignored `work/`. The Developer must strictly maintain this Git boundary: raw private PDF/GP contents, exact note lists, and private filenames must not be copied into unrelated Git commits.
 
 ### 7. What is the smallest acceptance test that proves real progress?
 Running `python scripts/private_e2e_smoke.py` on the local workspace and observing that **Major Triads Lesson 3** (`private_input_1` or custom):

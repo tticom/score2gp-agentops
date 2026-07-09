@@ -19,6 +19,6 @@ What must not change:
 - Do not resume whole-note work.
 - Do not claim 8th/16th-note support exists.
 - Do not make product capability claims without evidence.
-- Do not use private PDFs or copyrighted/downloaded scores.
+- Use only approved public fixtures, approved private fixture repositories, or local fixture paths explicitly authorised by the maintainer or active task.
 - Do not change the active task scope unless a blocker requires Supervisor decision.
 ```

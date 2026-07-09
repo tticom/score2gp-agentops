@@ -374,4 +374,4 @@ The following remain outside scope:
 - chord inference
 - ScoreIR event generation from standard-staff glyphs
 - scanned/OCR PDF handling
-- real/private/copyrighted PDF fixtures
+- unapproved PDF fixture artifacts
