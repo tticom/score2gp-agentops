@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-119 / Task 50: Implement semantic candidate JSON snapshot tests
+**Task**: Req-120 / Task 52: Implement semantic candidate CLI/reporting smoke path
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
@@ -11,27 +11,25 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must implement deterministic public JSON snapshot tests for current semantic candidate outputs:
-- logical clef candidate outputs
-- quarter rest candidate outputs
+Developer must implement command line interface option and diagnostic reporting to expose extracted semantic candidates (logical clefs and quarter rests).
 
 ## 1. Baseline
-- The logical clef recognition (Req-113) and quarter rest extraction (Req-114) are fully implemented, tested, and merged.
-- They extract semantic candidates but we lack deterministic JSON snapshot tests to prevent regressions on these parsed candidates.
+- The semantic candidate JSON snapshots (Req-119) have been implemented, tested, and merged.
+- We need to expose these semantic candidates through the CLI to enable maintainer audits.
 
 ## 2. Context
-We need to harden the observability of these semantic candidates by creating deterministic JSON snapshot tests for `QuarterRestCandidate` and `LogicalClefCandidate` outputs, mirroring the safety nets we built for primitive geometry in Req-105.
+Currently, the diagnostics CLI only outputs geometry candidates. Exposing semantic candidates (clef and quarter rests) via CLI or a diagnostic report will allow users to audit and verify extracted semantic features directly.
 
 ## 3. Goal
-Create a test suite in `score2gp` that serializes the extracted semantic candidates (`LogicalClefCandidate`, `QuarterRestCandidate`) from the public fixtures and compares them to checked-in JSON snapshots.
+Modify the CLI commands and diagnostic reporting to include semantic candidate outputs (logical clef and quarter rest candidates).
 
 ## 4. Non-goals
-- Do not add pitch, rhythm timeline, ScoreIR mapping, duration inference, or private fixtures.
-- Do not modify the existing extraction logic or rules.
-- Do not guess or infer missing structural features.
+- Do not infer pitch or durations.
+- Do not modify legacy ScoreIR.
+- Do not add private fixtures.
 
 ## 5. Required Output & Outcome
-A product PR containing the snapshot test implementation, the JSON snapshot fixtures, and passing test runs.
+A product PR exposing semantic candidates via the CLI/reporting, with accompanying tests.
 
 ## 6. Next Steps
-- Promote the next valid task, likely Req-120 (Semantic candidate CLI/reporting smoke path), after Req-119 is reviewed and merged.
+- Promote the next valid task, likely Req-121, after Req-120 is reviewed and merged.
