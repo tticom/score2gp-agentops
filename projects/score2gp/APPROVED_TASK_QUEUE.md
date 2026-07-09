@@ -1977,3 +1977,63 @@ Evidence basis:
 
 Outcome:
 - governance PR pending
+
+---
+
+## Task 64 — Generate public bass and alto clef fixtures
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+test/req-126-bass-alto-clef-fixtures-v0.1
+
+PR title:
+test(pdf): add bass and alto clef fixtures
+
+Purpose:
+Generate the smallest deterministic public PDF fixtures containing bass and alto clefs so Req-125 multi-clef classification can be implemented against real fixture evidence.
+
+Requirement:
+Req-126
+
+Evidence basis:
+- `projects/score2gp/reports/2026-07-09-req-125-missing-fixtures-blocker.md`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+Acceptance:
+- at least one public bass clef PDF fixture is committed
+- at least one public alto clef PDF fixture is committed
+- existing diagnostics can open/read the fixtures without crashing
+- fixture manifests or focused tests prove the fixtures are intentional public test inputs
+- no semantic classifier logic, ScoreIR output, GP writer behavior, pitch inference, or rhythm inference is changed
+
+Outcome:
+- product PR pending
+
+---
+
+## Task 65 — Review Req-126 bass and alto clef fixture implementation
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-126-review-v0.1
+
+PR title:
+docs(review): approve Req-126 bass and alto clef fixtures
+
+Purpose:
+Review the Developer's bass and alto clef fixture implementation, confirm it safely resolves the Req-125 blocker, and promote Req-125 again if deterministic fixture evidence is now available.
+
+Requirement:
+Req-126
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-126-bass-alto-clef-fixture-review.md`
+
+Outcome:
+- governance PR pending

@@ -151,6 +151,27 @@ After finishing a task, the agent should:
 
 Queue status updates are operational bookkeeping only. Agents may report local task completion and next-task selection in their run report. Material queue edits, new tasks, reordering, scope changes, or removing tasks still require a governance PR and human merge.
 
+### Blocker Pivot Protocol
+
+When an active task encounters a blocker, agents must not default to `NO_ACTIVE_TASK_APPROVED`.
+
+Before stopping, the agent must perform a bounded pivot audit:
+
+1. Identify whether the blocker has a credible unblocker within the project direction.
+2. Check whether the unblocker can be expressed as a smaller research, fixture, test, reporting, or feature task.
+3. Prefer an evidence-building pivot over waiting for the human when the pivot stays inside approved repositories, approved fixture locations, and existing product goals.
+4. If a credible pivot exists, create a governance update that records the blocker, marks the blocked task accurately, and promotes the smallest safe pivot task into `ACTIVE_TASK.md`.
+5. If no credible pivot exists, or every pivot would require a new product direction, destructive action, unapproved data source, or explicit human product choice, then set `ACTIVE_TASK.md` to `NO_ACTIVE_TASK_APPROVED` and explain why all credible alternatives were rejected.
+
+Examples of credible pivots:
+
+- missing fixtures -> generate or authorise the smallest fixture set;
+- insufficient evidence -> run a bounded corpus audit or focused research task;
+- unsafe classifier scope -> add fail-closed tests or schema/reporting guards;
+- stale PR/branch state -> perform branch hygiene before product work.
+
+Routine blockers are not stop conditions when a credible pivot task can unblock them.
+
 ## Permission Tiers
 
 ### Tier 0: Inspect Only
@@ -310,6 +331,7 @@ Agents must stop and report if:
 - a branch conflict requires human decision
 - PR creation or branch push is blocked
 - `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`
+- the blocker pivot audit finds no credible safe pivot task
 - required preflight checks fail
 - the current branch is unexpected
 - the working tree contains unrelated changes
