@@ -78,7 +78,7 @@ This is the default loop for low-risk tasks, including:
 Required only when a task involves:
 - Uncertain architecture or new recognition strategies.
 - Product behaviour changes or database schema modifications.
-- Policy exceptions, failed reviews, or private/copyrighted benchmark data claims.
+- Policy exceptions, failed reviews, or unapproved external-corpus/sensitive benchmark data claims.
 - **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> Reviewer Conformance Review -> PR Readiness Review -> Merge.
 
 ### Verification and Report Automation
@@ -86,6 +86,18 @@ Agents must execute and rely on product-level automation tools instead of copyin
 - Run `python scripts/agent_verify.py` to validate codebase correctness.
 - Run `python scripts/pr_body.py` to generate PR descriptions automatically.
 - Run `python scripts/artifact_audit.py` (which is run inside `agent_verify.py`) to verify repository hygiene.
+
+### Approved Fixture Access Policy
+
+Approved fixture inputs include:
+
+- tracked public fixtures in `score2gp`;
+- the sibling private fixture repository `score2gp-private-fixtures`;
+- local fixture paths explicitly named by the human maintainer or the active task.
+
+Agents may inspect, interrogate, and run diagnostics against approved fixture inputs when the active task allows fixture or corpus work. Fixture approval is a project/test-data boundary, not a publication claim.
+
+Agents must not copy raw private fixture files, generated conversion artifacts, screenshots, overlays, or logs into unrelated Git commits. Reports should prefer sanitized evidence such as counts, statuses, warning categories, command names, and artifact paths unless the active task explicitly authorizes a different artifact.
 
 Developer implementation work must not begin unless it is explicitly authorised in `projects/score2gp/ACTIVE_TASK.md`.
 
@@ -233,7 +245,7 @@ For research tasks, the result does not have to be predetermined. The point is t
 **Branches make exploration safe, but not uncontrolled.**
 It is acceptable to explore, test, refine, or discard work on a task branch. However, the branch does not remove the task boundary. Agents must still stop if:
 * the work exceeds approved scope
-* private/copyrighted/sensitive material would be exposed
+* sensitive material or unapproved fixture artifacts would be exposed
 * allowed files or repositories need expansion
 * destructive commands are required
 * tests fail and the cause is unclear
@@ -282,7 +294,7 @@ Within an approved task, agents are authorized to run and re-run relevant non-de
 Human approval is only needed if validation would:
 - exceed the approved task boundary
 - require destructive commands
-- use private/copyrighted/sensitive data
+- use sensitive data or fixture sources outside the approved public/private fixture locations
 - create large generated artifacts
 - need unexpected network access
 - alter dependencies/environment configuration

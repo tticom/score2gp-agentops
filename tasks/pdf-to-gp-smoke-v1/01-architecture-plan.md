@@ -23,7 +23,7 @@ The `score2gp` pipeline operates in a staged command-line sequence to translate 
 - **Status**: **99.7% Pass Rate** (389 passed, 1 skipped, 1 environment-related subprocess failure).
 - **Verification**: Running pytest against the codebase executes **391 test items** representing diverse layout, timing preflight, GPIF validation, and E2E integration proof cases. 
 - **Subprocess Resolution Note**: The single failure (`test_cli_diagnose_command` under `test_system_integration_diagnostics.py`) is an environmental artifact of the Windows host execution path. The test triggers a subprocess call to `python -m score2gp.cli`, which invokes the global system interpreter lacking the editable `score2gp` installation package rather than the active workspace virtual environment. This is an integration environment configuration issue, not a pipeline or code logic defect.
-- **Design Invariant**: All tests are completely public-safe and driven by deterministic, synthetic fixtures, keeping copyrighted materials isolated outside Git control.
+- **Design Invariant**: All tests are driven by deterministic, approved fixtures, keeping raw private artifacts isolated outside unrelated Git commits.
 
 ---
 

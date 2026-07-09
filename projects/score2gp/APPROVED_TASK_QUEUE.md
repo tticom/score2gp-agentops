@@ -269,7 +269,7 @@ git diff --check
 Acceptance criteria:
 - manifest paths exist
 - manifest asserts all fixtures are synthetic
-- no private/copyrighted/scanned/OCR fixture is listed
+- no fixture outside approved public/private fixture locations is listed
 
 ---
 
@@ -1227,7 +1227,7 @@ The following remain explicitly not approved:
 - rhythm interpretation
 - ScoreIR event generation from standard-staff glyphs
 - scanned/OCR PDF handling
-- real/private/copyrighted PDF fixtures
+- unapproved PDF fixture artifacts
 
 ## Task 36 — feat(pdf): expose primitive-level geometry diagnostics
 
