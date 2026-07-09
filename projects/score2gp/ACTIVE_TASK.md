@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Req-124 / Task 60: Implement semantic candidate model consolidation and schema hardening
+**Task**: Req-125 / Task 62: Multi-clef candidate classification (Bass and Alto)
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp`
 
@@ -11,4 +11,4 @@ APPROVED
 Yes
 
 ## Completion Evidence
-Developer must consolidate the candidate models (`LogicalClefCandidate` and `QuarterRestCandidate`) and schema definitions based on the corpus audit results, ensuring strict validations and updating necessary schemas.
+Developer must extend the left-margin classifiers to extract and classify Bass and Alto clefs correctly on public fixtures, updating snapshot tests.
