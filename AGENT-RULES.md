@@ -9,9 +9,9 @@ At the very start of any conversation session, the agent MUST:
 
 ## Global rules
 
-1. Tier B (compressed loop) is the default workflow loop for low-risk, bounded public-fixture and product tasks. Tier A (full loop) is required only for architecture uncertainty, private benchmark claims, broad behavior changes, policy exceptions, or failed review.
-2. Keep private copyrighted or licence-unclear fixtures local and untracked. Private fixtures reside in the sibling repository `score2gp-private-fixtures`.
-3. Do not place private PDFs, GP files, MXL/MusicXML files, screenshots, overlays, logs, or generated conversion artifacts in Git.
+1. Tier B (compressed loop) is the default workflow loop for low-risk, bounded fixture and product tasks. Tier A (full loop) is required only for architecture uncertainty, private benchmark claims, broad behavior changes, policy exceptions, or failed review.
+2. Approved fixture inputs include tracked public fixtures and the sibling repository `score2gp-private-fixtures`. Agents may inspect and run diagnostics against both when the active task allows fixture or corpus work.
+3. Do not copy raw private PDFs, GP files, MXL/MusicXML files, screenshots, overlays, logs, or generated conversion artifacts into unrelated Git commits. Private fixture files should remain in their approved repository or local workspace unless an active task explicitly allows otherwise.
 4. Use sanitized evidence only: counts, statuses, warning categories, command names, and artifact paths. Leverage product automation scripts (`scripts/agent_verify.py`, `scripts/agent_status.py`, `scripts/pr_body.py`, and `scripts/artifact_audit.py`) to gather status and generate reports rather than copy/pasting raw CLI outputs.
 5. Do not claim full PDF-to-GP conversion works unless proven by reproducible tests.
 6. Prefer public fixtures for automated tests.

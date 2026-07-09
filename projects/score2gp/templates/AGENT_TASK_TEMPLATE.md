@@ -38,7 +38,7 @@ Within an approved task, agents are authorized to run and re-run relevant non-de
 Human approval is only needed if validation would:
 - exceed the approved task boundary
 - require destructive commands
-- use private/copyrighted/sensitive data
+- use sensitive data or fixture sources outside the approved public/private fixture locations
 - create large generated artifacts
 - need unexpected network access
 - alter dependencies/environment configuration
