@@ -2615,7 +2615,7 @@ Outcome:
 
 ## Task 85 — Review consolidated diagnostics and CLI reporting implementation
 
-Status: ACTIVE
+Status: READY_FOR_HUMAN_MERGE
 
 Owning repo: score2gp-agentops
 
@@ -2639,7 +2639,7 @@ Outcome:
 
 ## Task 86 — Audit Req-132 consolidated diagnostics on private corpus and identify next missing feature
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
