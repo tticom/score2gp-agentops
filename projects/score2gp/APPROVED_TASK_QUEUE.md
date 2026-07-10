@@ -2580,7 +2580,7 @@ Outcome:
 
 ## Task 84 — Implement consolidated diagnostics and CLI reporting format
 
-Status: ACTIVE
+Status: READY_FOR_HUMAN_MERGE
 
 Owning repo: score2gp
 
@@ -2615,7 +2615,7 @@ Outcome:
 
 ## Task 85 — Review consolidated diagnostics and CLI reporting implementation
 
-Status: APPROVED
+Status: ACTIVE
 
 Owning repo: score2gp-agentops
 
@@ -2636,3 +2636,28 @@ Evidence basis:
 
 Outcome:
 - governance PR pending
+
+## Task 86 — Audit Req-132 consolidated diagnostics on private corpus and identify next missing feature
+
+Status: APPROVED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-133-corpus-audit-v0.1
+
+PR title:
+docs(audit): audit Req-132 consolidated diagnostics and identify next requirement
+
+Purpose:
+Use the new CLI diagnostics to audit the private corpus, evaluate robustness of current clef/rhythm features, and identify the smallest next missing feature.
+
+Requirement:
+Req-133
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-132-implementation-review.md`
+
+Acceptance:
+- Audit report generated.
+- Next requirement defined.
