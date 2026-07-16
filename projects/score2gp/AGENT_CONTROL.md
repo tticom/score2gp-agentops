@@ -133,10 +133,47 @@ and read:
   * repos are clean
   * the next task remains inside its written scope
   * the dependency relationship is clear (branching from current `main` for independent tasks, or stacking onto a dependent branch if the prior PR is unmerged)
-* Agents must stop at PR creation (or READY_FOR_HUMAN_MERGE) for each product PR. Human merge is still required for every PR. Agents must never merge to main.
+* Agents must stop at PR creation (or READY_FOR_HUMAN_MERGE) for each product PR unless an active Teamwork programme explicitly grants guarded autonomous merge authority. Agents must never push directly to main.
 * Agents must not skip, reorder, invent, or materially edit queue items unless a task is unblocked by another task.
 * Agents must stop if a queued task is ambiguous, stale, blocked, conflicts with current repo state, or would require expanding allowed files/repositories.
 * Human approval remains required to add, remove, reorder, or materially change queued tasks.
+
+### Teamwork Programme Exception
+
+A human may explicitly authorise a bounded multi-milestone programme in
+`ACTIVE_TASK.md`. This is for a connected product outcome that cannot honestly
+be delivered as a single microscopic task, such as correcting PDF-to-GP output
+across a defined corpus.
+
+For an active Teamwork programme:
+
+- the programme document is the executable task boundary and may authorise
+  coordinated Architect, Researcher, Developer, Reviewer, and Director work;
+- because product `AGENTS.md` declares this repository the governance truth,
+  this explicit exception supersedes any older local read-only or
+  human-merge-only wording for that programme only;
+- agents may create a sequence of small, independently reviewable product PRs
+  without a new human prompt between milestones;
+- agents must keep a durable milestone ledger, rerun the programme's output
+  evidence after every functional change, and stop only at a documented
+  decision gate or a real stop condition;
+- an agent may merge a PR only when the active programme expressly grants
+  merge authority and the guarded merge conditions below are all met;
+- programme authority never permits private artifacts in Git, force-pushes,
+  branch deletion, scope expansion beyond the named corpus/capabilities, or
+  treating a shallow metric as proof of output correctness.
+
+Guarded autonomous merge conditions:
+
+1. the PR has a concrete, passed product-output acceptance test;
+2. CI and required local verification are green;
+3. all review/Codex threads are explicitly dispositioned;
+4. the Reviewer has approved the exact PR against the programme evidence;
+5. the branch head SHA is re-read immediately before merge; and
+6. the merge operation is a normal merge or squash merge, never a bypass.
+
+If any condition is absent, the agent may continue with independent or
+stacked work, but must leave that PR open rather than declaring it complete.
 
 Continuous Execution Rule:
 After finishing a task, the agent should:
@@ -339,27 +376,60 @@ Agents operate under the following role boundaries during team operation:
 
 ### Forbidden Actions
 
-Agents must not merge PRs, push directly to main, force-push, delete branches, run `gh pr merge`, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done.
+Agents must not push directly to main, force-push, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. `gh pr merge` is allowed only for the guarded autonomous merge exception above.
 
 ### Human-Only Operations
 
-Only the human maintainer may merge PRs, approve scope expansion, approve movement to a different task, close or abandon task PRs, accept a known failing-check risk, or explicitly close a task without merge.
+Only the human maintainer may approve scope expansion, accept a known failing-check risk, or explicitly close/abandon a task without merge. PR merge remains human-only by default; the only exception is a Teamwork programme that records the maintainer's explicit guarded autonomous merge authority in `ACTIVE_TASK.md` and follows every condition above.
 
-## Deferred Product Boundaries
+## Product Boundaries
 
-Unless explicitly approved by the human maintainer, agents must not implement or integrate:
+The project is authorised to pursue deterministic PDF-to-Guitar-Pro conversion
+for the named approved corpus when an active task or Teamwork programme provides
+measurable product-output acceptance criteria. This may include clefs,
+noteheads, rests, dots, duration/timing, barlines, key/time signatures, ties,
+layout breaks, basic guitar position inference, and explicitly scoped
+embellishment detection.
 
-- pitch inference
-- clef handling
-- notehead scanning or classification
-- rhythm or duration extraction
-- voice assignment
-- bar-local timing grids
-- ScoreIR event creation from geometry diagnostics
-- scanned or OCR PDF support
-- direct integration of geometry clusters into playback mapping
+The following remain prohibited unless a later task explicitly changes the
+boundary:
 
-Geometry diagnostics remain diagnostic-only until separately approved.
+- opaque ML/model training or unmeasured OCR substitution;
+- reference-GP leakage: `--ref-gp` is validation only and must never alter
+  generated output, thresholds, tempo, structure, or inferred notes;
+- fixture-specific indexes, filenames, literal measure lists, or special cases
+  that make one private score pass;
+- suppressing warnings, adding rests, changing time signatures, or dropping
+  measures merely to make a coarse comparison pass;
+- committing private inputs, generated private GP/MusicXML, screenshots,
+  overlays, or reports containing extractable private content.
+
+Every functional change must be generic, traceable to PDF/MusicXML/GPIF
+evidence, covered by a public synthetic regression where feasible, and checked
+against more than one approved corpus input before it is claimed as a fix.
+
+## Product-Output Evidence Standard
+
+For recognition, conversion, MusicXML, ScoreIR, or GPIF work, passing unit
+tests and aggregate counts are necessary but not sufficient.
+
+Before an agent claims an output issue is fixed, it must inspect a fresh,
+no-reference conversion and produce durable structured evidence at the
+smallest relevant scope (usually a bar). The evidence must include, where
+applicable:
+
+- bar number and source PDF system/page location;
+- ordered event sequence including note versus rest;
+- onset, duration, dot state, tie state, chord membership, and pitches;
+- fret/string when tablature is emitted;
+- time/key/tempo changes;
+- barline style and requested system-break/layout marker;
+- expected/reference comparison when a reference exists; and
+- the first remaining mismatch, rather than a claim of general success.
+
+`compare_gp` aggregate fields are a smoke signal only. They must never be used
+as sole acceptance evidence for visual or musical correctness. A bar-level
+comparator and/or explicit generated-artifact inspection is required.
 
 ## Validation Permission
 
