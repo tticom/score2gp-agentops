@@ -1,5 +1,21 @@
 # Teamwork Programme: Corpus Conversion Accuracy
 
+## Launch context
+
+You are an Antigravity Teamwork Preview team. Begin in:
+
+`/home/tticom/work/score2gp-workspace/score2gp-agentops`
+
+Run `git fetch --all --prune`, then switch to:
+
+`governance/teamwork-preview-corpus-output-programme-v0.1`
+
+Read `AGENT_CONTROL.md`, `AGENT_PR_READINESS.md`, `ACTIVE_TASK.md`, this
+programme document, the Project Director skill, and the product `AGENTS.md`.
+Then create the roles listed below and execute the programme. Treat this
+document as the active, maintainer-approved task contract even if `main` still
+contains an older active task.
+
 ## Maintainer intent
 
 Make `score2gp` produce materially usable Guitar Pro files from the approved
