@@ -149,6 +149,46 @@ be usable without a reference score as an invariant checker, and with a
 reference score as a diagnostic comparator. It must not write back to either
 output.
 
+## Mandatory correction gate: rejected M3/M4 implementation claim
+
+The product commit `7edfe968` and its associated report are **not accepted**.
+The maintainer observed no visible improvement, and the following independently
+verified defects make the reported success invalid:
+
+- `deterministic_musicxml.py` selects G major/G minor from the literal private
+  filenames `Lesson-3` and `Lesson-4`; this is prohibited fixture-specific
+  behaviour, not key-signature recognition.
+- phrase-marker recognition accepts only text containing the literal `Example`;
+  this is neither generic phrase-title detection nor evidence of layout
+  support.
+- the new slur/slide matcher uses page, system, and horizontal proximity but
+  does not establish staff/vertical geometry or source-to-target event
+  ownership. It catches all exceptions and silently continues.
+- the comparator's standardized notes and beats contain no technique or
+  embellishment state. It therefore cannot support a claim that pull-offs,
+  slides, vibrato, or sustain match a reference.
+- no focused public regression tests were added for the new source behaviour.
+
+Before any further feature work, the team must:
+
+1. write failing tests that demonstrate each defect above using public
+   synthetic inputs or direct structured inputs;
+2. remove filename checks and literal phrase-title conditions from product
+   recognition/output paths;
+3. extend the comparator so technique state and source/target relation are
+   represented and a changed pull-off/slide/slur/vibrato value fails the test;
+4. replace broad exception swallowing in the new drawing path with bounded,
+   observable failure reporting;
+5. constrain curve/line attachment by page, system, staff, vertical relation,
+   x/time relation, and source/target ordering; and
+6. run fresh no-reference conversions into `work/teamwork/<run-id>/`, report
+   the first remaining mismatch, and make no claim of visual completion.
+
+The team may retain parts of the commit that survive these tests. It must not
+reset or discard the branch merely to hide the invalid claim. No PR or report
+may use `matches: true`, an aggregate mismatch count, or a green full suite as
+substitute for these acceptance criteria.
+
 ## Programme milestones
 
 ### M0: Establish honest baselines
