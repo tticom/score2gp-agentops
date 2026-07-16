@@ -189,6 +189,56 @@ reset or discard the branch merely to hide the invalid claim. No PR or report
 may use `matches: true`, an aggregate mismatch count, or a green full suite as
 substitute for these acceptance criteria.
 
+## Mandatory regression containment: rejected second correction
+
+The product commit `34159062` is also **not accepted**. Maintainer screenshots
+show that the generated score still lacks the required system break and phrase
+title, while introducing unwanted sharp/natural markings and unwanted technique
+labels. Treat this as a release-blocking regression.
+
+The immediate goal is not another broad feature pass. It is to preserve valid
+existing notes/durations while removing invented output and making the complete
+source-to-GPIF path observable.
+
+### Required containment work
+
+1. **Fail closed for embellishments.** Disable automatic HO/PO/slide/vibrato/
+   sustain emission in normal conversion unless a candidate has passed a
+   testable source-to-target association. Keep diagnostic candidates and their
+   evidence, but never place a technique mark in the `.gp` merely because a
+   raw PDF curve or diagonal line was nearby.
+2. **Fail closed for key signatures and accidentals.** Do not silently use
+   `C Major` as a recognised PDF key. A missing key classifier must be reported
+   as unknown, not converted into invented sharps/naturals. An explicitly
+   supplied CLI key is allowed only as a user override, recorded in the report;
+   it is not recognition evidence.
+3. **Prove layout and title propagation.** Add a trace report and integration
+   test for each source system: PDF staff-system identity -> selected first
+   measure -> MusicXML `print`/rehearsal -> ScoreIR bar -> actual GPIF
+   `MasterBar/Bar` elements. A title/system break may be claimed only when this
+   trace is complete. Do not use a closed list of title words or literal text.
+4. **Prove accidental semantics.** Add public structured tests for key-signature
+   accidental, natural cancellation, and an explicit accidental. The test must
+   demonstrate that a key change cannot become a stream of fabricated symbols.
+5. **Isolate a single generic embellishment before re-enabling it.** A candidate
+   must include page, system, staff, source event, target event, vertical
+   relation, x/time relation, geometry kind, confidence, and rejection reason.
+   Start with one technique only after its true-positive and false-positive
+   boundaries are proven. Chordal vibrato is a separate future candidate class;
+   do not label arbitrary chord-adjacent curves as vibrato.
+
+### Acceptance and stop rule
+
+- A fresh normal conversion must contain no new technique labels or accidental
+  symbols unless their evidence record identifies the exact source rule.
+- The known screenshots must be compared structurally before and after; the
+  report must name any remaining title, break, accidental, chord, or technique
+  mismatch without calling the score correct.
+- The product branch must have no root-level generated output or `tmp/` tree at
+  handoff; use `work/teamwork/<run-id>/` only.
+- Do not add another multi-feature commit. Each containment/re-enable change
+  needs its own focused tests and reviewer verdict.
+
 ## Programme milestones
 
 ### M0: Establish honest baselines
