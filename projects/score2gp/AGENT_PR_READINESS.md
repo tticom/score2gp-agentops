@@ -193,6 +193,20 @@ For Score2GP, product-level output evidence must include the relevant subset of:
 
 Passing tests do not prove readiness if the tests only check implementation details or file creation.
 
+### Visual/music-output completeness gate
+
+For PDF-to-MusicXML, ScoreIR, or GPIF changes, a PR is NOT READY when it uses
+only aggregate `compare_gp` fields, file creation, or note/bar totals as its
+acceptance proof. The Reviewer must inspect a fresh no-reference output and
+the relevant bar-level comparison/diagnostic evidence. The evidence must show
+the ordered note/rest events and timing for the claimed repaired bars, and
+must name the first remaining known mismatch.
+
+Claims such as "fully correct", "matches reference", or "no visible
+regressions" require evidence for event ordering, duration/dots, rests,
+barlines/layout when in scope, and non-regression on at least one distinct
+approved corpus input. Otherwise the readiness status is `NEEDS CHANGES`.
+
 ### Architecture-versus-implementation rule
 
 The Reviewer must not approve implementation merely because an architecture is possible.
