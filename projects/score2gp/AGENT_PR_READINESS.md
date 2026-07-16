@@ -207,6 +207,12 @@ regressions" require evidence for event ordering, duration/dots, rests,
 barlines/layout when in scope, and non-regression on at least one distinct
 approved corpus input. Otherwise the readiness status is `NEEDS CHANGES`.
 
+Maintainer visual inspection is product-output evidence. When it contradicts
+an earlier agent report, the Reviewer must treat the earlier claim as
+unverified, add a generic regression probe, and report the resulting evidence.
+The Reviewer must not downgrade the discrepancy to a caveat, use a coarse
+aggregate metric to dismiss it, or accept a fixture-specific workaround.
+
 ### Architecture-versus-implementation rule
 
 The Reviewer must not approve implementation merely because an architecture is possible.
