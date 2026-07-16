@@ -172,10 +172,15 @@ Before any new implementation, perform repository reconciliation and cleanup:
 4. remove only verified generated/ignored conversion outputs from known work
    directories after checking their resolved absolute paths are inside the
    product repository; and
-5. use a fresh ignored per-run work directory for every conversion.
+5. use `work/teamwork/<run-id>/` as the fresh ignored `--work-dir` and output
+   location for every conversion; never write generated `.gp`, MusicXML,
+   HTML, PNG, JSON, or overlay artifacts at the product repository root or
+   under unignored `tmp/`.
 
 Never run a blanket `git clean -fd` against unclassified files. A clean tree
-means no accidental product artifacts, not loss of candidate work.
+means no accidental product artifacts, not loss of candidate work. Before a
+role hands off or the programme reports, it must remove only the output tree it
+created and prove `git status --short` contains no generated conversion files.
 
 ### M1: Make correctness observable
 
