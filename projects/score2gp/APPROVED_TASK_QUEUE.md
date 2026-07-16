@@ -2580,7 +2580,7 @@ Outcome:
 
 ## Task 84 — Implement consolidated diagnostics and CLI reporting format
 
-Status: ACTIVE
+Status: READY_FOR_HUMAN_MERGE
 
 Owning repo: score2gp
 
@@ -2615,7 +2615,7 @@ Outcome:
 
 ## Task 85 — Review consolidated diagnostics and CLI reporting implementation
 
-Status: APPROVED
+Status: READY_FOR_HUMAN_MERGE
 
 Owning repo: score2gp-agentops
 
@@ -2637,6 +2637,35 @@ Evidence basis:
 Outcome:
 - governance PR pending
 
+## Task 86 — Audit Req-132 consolidated diagnostics on private corpus and identify next missing feature
+
+Status: SUPERSEDED
+
+Owning repo: score2gp-agentops
+
+Branch:
+governance/req-133-corpus-audit-v0.1
+
+PR title:
+docs(audit): audit Req-132 consolidated diagnostics and identify next requirement
+
+Purpose:
+Use the new CLI diagnostics to audit the private corpus, evaluate robustness of current clef/rhythm features, and identify the smallest next missing feature.
+
+Requirement:
+Req-133
+
+Evidence basis:
+- `projects/score2gp/reviews/2026-07-09-req-132-implementation-review.md`
+
+Acceptance:
+- Audit report generated.
+- Next requirement defined.
+
+Superseded reason:
+The user authorised the broader Task 87 delivery programme. Task 86's audit
+output remains valid input to its M0/M5 corpus evidence work.
+
 ---
 
 ## Task 87 — Teamwork corpus conversion accuracy programme
@@ -2651,9 +2680,7 @@ Programme contract:
 Purpose:
 Deliver measured, visibly correct improvement to deterministic conversion for
 the approved guitar-PDF corpus, starting from Lesson-3 and Lesson-4 but
-rejecting fixture-specific overfitting. This supersedes the pending Req-132
-diagnostic workflow as the active delivery vehicle; its diagnostics remain
-usable evidence.
+rejecting fixture-specific overfitting.
 
 Authorised capabilities:
 - deterministic recognition and conversion changes needed by the programme;

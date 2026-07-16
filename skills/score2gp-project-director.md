@@ -1,3 +1,8 @@
+---
+name: score2gp-project-director
+description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, promote the next safe task, merge clean PRs when authorised, and minimise routine human interaction.
+---
+
 # Skill: Score2GP Project Director
 
 ## Purpose
