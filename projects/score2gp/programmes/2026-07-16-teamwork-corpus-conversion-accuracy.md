@@ -239,6 +239,23 @@ source-to-GPIF path observable.
 - Do not add another multi-feature commit. Each containment/re-enable change
   needs its own focused tests and reviewer verdict.
 
+## Recovery decision
+
+The Teamwork branch accumulated extensive, unverified product changes while
+the maintainer observed no improvement and new regressions. It is frozen as
+forensic evidence. Do not add work to it, merge it, or harvest its code by
+default.
+
+Recovery starts from `recovery/pre-teamwork-score-output-baseline-v0.1` at
+`e70bddaa`. This is a new branch, not a reset: the failed work remains
+available for later, line-by-line review.
+
+The first recovery task is deliberately limited to restoring a reproducible
+no-reference baseline and proving one generic layout/title propagation trace.
+It excludes all key/accidental, duration, chord, and embellishment changes.
+The purpose is to regain a truthful feedback loop before attempting musical
+semantics again.
+
 ## Programme milestones
 
 ### M0: Establish honest baselines
