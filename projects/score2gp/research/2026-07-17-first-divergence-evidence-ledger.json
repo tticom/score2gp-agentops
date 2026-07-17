@@ -20,6 +20,59 @@
         "beats": "12",
         "tempo": "70"
       },
+      "measured_first_measure_evidence": {
+        "candidate_symbol_types": [
+          "eighth_note_candidate"
+        ],
+        "emitted_musicxml_note_rest_durations": [
+          480,
+          480,
+          480,
+          480,
+          480,
+          480,
+          480,
+          480,
+          1920
+        ],
+        "meter_scores": {
+          "12/8": 10.0,
+          "4/4": -1587.0,
+          "6/8": -2284.0
+        },
+        "per_voice_cursor_lengths": {
+          "cursor_1": 5760,
+          "cursor_2": 0
+        },
+        "time_slices_voices": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "time_slices_x_coords": [
+          71.265,
+          80.856,
+          90.446,
+          100.036,
+          109.627,
+          119.217,
+          128.808,
+          138.398,
+          147.988,
+          157.579,
+          167.169,
+          176.759
+        ]
+      },
       "omr_timeline_facts": {
         "detected_meter": "12/8"
       },
