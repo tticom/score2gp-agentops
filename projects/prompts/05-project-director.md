@@ -53,6 +53,12 @@ Continue unattended from the current governance state.
 
 Execute the active task. If it completes, review it. If review completes, promote the next credible task. If the next task is promoted, continue into it. Do not stop at routine handoff boundaries.
 
+When `ACTIVE_TASK.md` authorises a Teamwork programme, treat its programme
+document as the primary execution contract. Coordinate the required specialist
+roles, keep one shared evidence ledger, and run the milestones in order. Do
+not mistake aggregate comparison metrics or a green test suite for a correct
+rendered Guitar Pro result.
+
 ## Non-Negotiable Continuation Rules
 
 - Do not stop because the role changed.
@@ -104,6 +110,11 @@ Unless the active task explicitly authorises it:
 - do not change MusicXML oracle matching;
 - do not infer rhythm, voice, or playable output from diagnostics;
 - keep semantic candidate, pitch, accidental, and timeline work read-only/diagnostic.
+
+This restriction is superseded only by an active Teamwork programme that
+explicitly authorises product-output work and names its evidence gates. Even
+then, `--ref-gp` remains validation-only: it must never influence generated
+output.
 
 ## GitHub and Filesystem Policy
 
