@@ -2706,3 +2706,15 @@ Stop/pivot condition:
 - a capability may be deferred only after its evidence and a smallest credible
   pivot have been recorded. Green aggregate metrics or file creation are not
   completion evidence.
+
+### Visual Correctness Recovery Series
+
+Status: ACTIVE under Task 87.
+
+The ordered, maintainer-authorized recovery series is:
+`projects/score2gp/tasks/2026-07-17-visual-output-correctness-backlog.md`.
+
+CR-02 is the immediate active research task. CR-03 through CR-10 must execute
+in their documented dependency order. The prior Task 93 key-signature proposal
+is superseded by CR-06 and must not start before the visual meter, event, and
+layout evidence gates are satisfied.
