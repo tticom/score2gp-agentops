@@ -1,8 +1,8 @@
 # Active Task
 
-**Task**: Task 92: Hardened Import Verification and CLI Layout Auto-Fallback
-**Authorised Role**: Developer, Architect, Reviewer, and Project Director
-**Repository**: `tticom/score2gp`, `tticom/score2gp-agentops`, and the approved local fixture repository
+**Task**: CR-02: Build the Visual Output Probe and First-Divergence Ledger
+**Authorised Role**: Project Director, Corpus Analyst, Output Verifier, Architect, and Reviewer
+**Repository**: `tticom/score2gp-agentops`, with read-only inspection of `score2gp` and approved local fixtures
 
 ## Status
 
@@ -10,67 +10,49 @@ APPROVED
 
 ## Task Authorised
 
-Yes, branch and PR work authorized.
+Yes, Tier 1 research/documentation only.
 
-## Reason For This Promotion
+## Context
 
-The deep root-cause research identified two immediate deployment and observability blockers:
-1. Virtual environment package import mismatch.
-2. Auto-OMR timing refusal on born-digital TAB-only PDFs due to 0 standard notation staves.
+The maintainer's current rendered source/output comparison shows a source
+tempo of 70 and 4/4 being emitted as 12/8, followed by missing notes, ghost
+rests, incorrect grouping, and missing double bars and phrase titles. Earlier
+timing-gate success claims are therefore insufficient. Product PR #372 and
+stacked PR #371 remain open and blocked; do not merge, modify, or claim either
+as complete in this task.
 
-Task 92 will implement import-checking protection and a safe TAB-only handling
-path. It must not turn an unsafe approximate extraction into a normal strict
-conversion merely because no standard notation staves were detected.
+Read:
 
-## Start State
+1. `projects/score2gp/research/2026-07-17-maintainer-visual-observation-ledger.md`
+2. `projects/score2gp/programmes/2026-07-17-visual-output-correctness-recovery.md`
+3. `projects/score2gp/tasks/2026-07-17-visual-output-correctness-backlog.md`
+4. `projects/score2gp/reviews/2026-07-17-task-89-timing-milestone-and-release-blockers.md`
 
-- Canonical product worktree: `/home/tticom/work/score2gp-workspace/score2gp` on `feature/teamwork-corpus-conversion-accuracy-v0.1` at `34b7c2e5` (frozen).
-- Recovery worktree: `/home/tticom/work/score2gp-workspace/score2gp-recovery` on `feature/task-90-source-metadata-trace-fail-closed` at `fdaee5e4`.
-- Research report and evidence ledger committed in `score2gp-agentops`.
+## Required Work
 
-## Permissions and Boundaries
+1. Identify the exact approved input represented by VO-01 using title/tempo/
+   layout evidence. Do not guess its filename.
+2. Run the selected product branch source-first into an external run directory.
+   Record source facts, generated MusicXML, ScoreIR, and GPIF facts in a
+   sanitized per-system/per-measure first-divergence ledger.
+3. Run one distinct corpus input through the same probe.
+4. Determine whether 12/8 is selected during source meter detection, timeline
+   reconstruction, MusicXML emission, or a later conversion stage.
+5. Define CR-03 with one generic meter rule, public structured test plan,
+   acceptance facts, and pivot condition. If meter is not the first divergence,
+   promote the actual first-divergence task instead.
 
-- Tier 2 branch and PR work.
-- Allowed product files to modify in `score2gp`:
-  - `src/score2gp/cli.py`
-  - `scripts/import_check.py` [NEW] or similar helper scripts
-  - `tests/` for verification
-- Do not modify pitch, duration, rests, ties, key signatures, or embellishment logic.
-- Keep all modifications minimal and focused on import verification and TAB-only auto-fallback.
-- The existing PR #371 is blocked by review. It is not eligible for merge in
-  its current form.
+## Boundaries
 
-## Reviewer Correction
-
-A fresh source-first run of the proposed Masterclass fallback returned
-`status=success`, `stage=gp-write`, and `strict=true` while its own diagnostics
-reported `pdf_timing_mapping_not_implemented`, `partial_pdf_grouping`,
-`pdf_grouping_not_safe_for_build_ir`, and
-`pdf_layout_detection_requires_manual_review`. This is a release-blocking false
-success.
-
-The PR also compares 40 files and more than 5,000 additions against `main`,
-including Task 89/90 changes outside this task. It is not a focused Task 92 PR.
-
-Required correction:
-
-1. Normal `convert` must remain refused when grouping or timing is unsafe.
-2. An approximate tab-only artifact, if retained, must require explicit user
-   consent through a clearly named draft/approximate option and must report its
-   mode and missing timing evidence in JSON and HTML output. It must never be
-   represented as a strict success.
-3. Add public structured tests for both paths: unsafe normal conversion refuses;
-   explicit approximate conversion is marked as such.
-4. Recreate the product PR as a focused branch based on an approved parent, or
-   retain it as an explicitly stacked non-mergeable PR. Do not merge prerequisite
-   recovery work under Task 92.
+- No product code, product test, package, branch, PR, or installation changes.
+- No private fixture or generated artifact in Git.
+- No reference score influences generation.
+- Do not use a title, tempo, bar count, or fixture identity as an implementation
+  shortcut.
 
 ## Completion Evidence
 
-1. A verification script or CLI check validates that Python imports from the local recovery workspace.
-2. A normal conversion of an unsafe TAB-only PDF refuses with a precise stage
-   and remediation. No GP package is written.
-3. Any explicitly requested approximate TAB-only conversion is visibly marked
-   as approximate in the report and cannot claim strict timing correctness.
-4. Public tests, focused product tests, `python scripts/agent_verify.py`, and
-   `git diff --check origin/main...HEAD` are clean at the exact PR head.
+- A research report and sanitized JSON ledger are committed in AgentOps.
+- The report names one first causal transition for the 4/4-to-12/8 mismatch.
+- A Reviewer records the evidence and promotes the next smallest task without
+  routine maintainer approval.
