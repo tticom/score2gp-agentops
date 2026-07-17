@@ -2714,7 +2714,6 @@ Status: ACTIVE under Task 87.
 The ordered, maintainer-authorized recovery series is:
 `projects/score2gp/tasks/2026-07-17-visual-output-correctness-backlog.md`.
 
-CR-02 is the immediate active research task. CR-03 through CR-10 must execute
-in their documented dependency order. The prior Task 93 key-signature proposal
+CR-02 is complete. CR-03A and CR-04A are the next backlog tasks, and ACTIVE_TASK.md is currently set to NO_ACTIVE_TASK_APPROVED awaiting review and authorization of the CR-03A Architect phase. The prior Task 93 key-signature proposal
 is superseded by CR-06 and must not start before the visual meter, event, and
 layout evidence gates are satisfied.
