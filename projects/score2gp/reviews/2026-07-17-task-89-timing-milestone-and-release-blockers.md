@@ -68,6 +68,31 @@ as fatal failures: their recorded severity is `info`.
    changes provide no evidence for legato, pull-off, slide, chordal vibrato, or
    sustain output. Such labels must remain fail-closed.
 
+## Supplemental Review of the Claimed Completion Run
+
+The subsequent agent report must not replace this verdict.
+
+- It did run `939 passed, 1 skipped` against the recovery source. This is a
+  useful regression signal, but it is not output-quality evidence.
+- Its `run_final_all_fixed_v11` smoke matrix was explicitly non-strict and
+  records successful GP output only for Lessons 3 through 7. Seven of twelve
+  approved corpus inputs still refuse, time out, or have no timeline:
+  Derek Trucks BB King, Hal Leonard Rock Ballads, Jazz Classics, Just Practice,
+  LegatoLicks, CAGED Shapes, and Melodic Soloing Masterclass.
+- The matrix records neutral `0 fifths` for every successful Lesson conversion.
+  That confirms the key is defaulted rather than recognised.
+- `git diff --check` without a revision range only checked the final working
+  tree. `git diff --check e70bddaa..b7a2aa79` still reports 44 violations, so
+  the assertion that the recovery changes were clean is false.
+- The agent labelled absolute point cutoffs as generally correct despite no
+  scale-normalised corpus proof. Such thresholds require an explicit
+  cross-layout validation before they can be accepted as a generic rule.
+
+Therefore the completion language "all fixed", "successful E2E conversions",
+and "no regressions" is rejected. The narrow, accepted fact remains: the
+recovery branch avoids fatal timing refusals for Lessons 3 through 7 in the
+recorded source-first runs.
+
 ## Required Continuation
 
 Continue inside the existing Teamwork programme rather than opening another
