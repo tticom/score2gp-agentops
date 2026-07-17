@@ -2639,7 +2639,7 @@ Outcome:
 
 ## Task 86 — Audit Req-132 consolidated diagnostics on private corpus and identify next missing feature
 
-Status: ACTIVE
+Status: SUPERSEDED
 
 Owning repo: score2gp-agentops
 
@@ -2661,3 +2661,48 @@ Evidence basis:
 Acceptance:
 - Audit report generated.
 - Next requirement defined.
+
+Superseded reason:
+The user authorised the broader Task 87 delivery programme. Task 86's audit
+output remains valid input to its M0/M5 corpus evidence work.
+
+---
+
+## Task 87 — Teamwork corpus conversion accuracy programme
+
+Status: ACTIVE
+
+Owning repos: score2gp-agentops and score2gp
+
+Programme contract:
+`projects/score2gp/programmes/2026-07-16-teamwork-corpus-conversion-accuracy.md`
+
+Purpose:
+Deliver measured, visibly correct improvement to deterministic conversion for
+the approved guitar-PDF corpus, starting from Lesson-3 and Lesson-4 but
+rejecting fixture-specific overfitting.
+
+Authorised capabilities:
+- deterministic recognition and conversion changes needed by the programme;
+- no-reference MusicXML/ScoreIR/GPIF generation;
+- duration, rests, dots, ties, barlines, system breaks, key/time/tempo,
+  guitar-position inference, and bounded embellishment work when selected by
+  the programme decision gates;
+- guarded autonomous merge of qualifying PRs as defined in `AGENT_CONTROL.md`.
+
+Acceptance:
+- a reusable bar-level output comparator exists and is used as the primary
+  acceptance instrument;
+- Lesson-3 and Lesson-4 have fresh no-reference conversions with a durable,
+  truthful mismatch ledger;
+- each claimed repair is proven at bar level and checked against a distinct
+  corpus input;
+- no reference-GP data affects generation;
+- each milestone produces a reviewable PR and no private artifacts enter Git;
+- the final report distinguishes fixed, improved, deferred, and still-failing
+  corpus capabilities.
+
+Stop/pivot condition:
+- a capability may be deferred only after its evidence and a smallest credible
+  pivot have been recorded. Green aggregate metrics or file creation are not
+  completion evidence.
