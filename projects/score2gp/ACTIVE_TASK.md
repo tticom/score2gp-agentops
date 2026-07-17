@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: Task 89: Repair source-supported measure segmentation after meter detection
-**Authorised Role**: Project Director, Developer, and Reviewer
+**Task**: Task 90: Establish source-metadata evidence and fail-closed output
+**Authorised Role**: Project Director, Corpus Analyst, Recognition Engineer, Conversion Engineer, and Reviewer
 **Repository**: `tticom/score2gp-agentops` and `tticom/score2gp`
 
 ## Status
@@ -16,13 +16,15 @@ Yes
 
 Do not work on `feature/teamwork-corpus-conversion-accuracy-v0.1`.
 
-Continue from the recovery branch:
+Task 89 timing recovery has reached a narrow functional milestone. Continue
+from the recovery branch:
 
-`recovery/pre-teamwork-score-output-baseline-v0.1` at `0eea506d`
+`recovery/pre-teamwork-score-output-baseline-v0.1` at `b7a2aa79`
 
-The branch contains a source-evidence meter detector. Its report is not
-completion evidence: a fresh recovery run of `Lesson-5.pdf` detects `12/8`,
-but `build-ir` still refuses the generated MusicXML.
+Do not merge, rebase, copy into, or otherwise deploy the frozen Teamwork
+branch. The timing recovery is also not yet deployable; read
+`reviews/2026-07-17-task-89-timing-milestone-and-release-blockers.md` before
+working.
 
 Use the recovery source tree, not the editable install bound to the frozen
 worktree:
@@ -38,46 +40,84 @@ All generated output belongs under:
 
 Never write generated output to a repository-root `tmp/` directory.
 
-## Verified Failure
+## Verified Timing Milestone
 
-In a fresh `Lesson-5.pdf` recovery conversion, generated MusicXML measures
-1--18 use `12/8` correctly. At measure 19 the timeline emits 16 eighth-note
-events, or 7,680 divisions, into one `12/8` measure. The parser correctly
-reports `musicxml-overfull-bar`; the source-measure segmentation has merged
-multiple measures. Lesson-6 and Lesson-7 require the same general proof.
+Fresh source-first recovery conversions now write GP packages for Lessons 3
+through 7 with zero fatal parsed MusicXML timing issues. Their timing-analysis
+diagnostics are informational chord-stack and compound-meter reports, not
+refusals. This is a limited timing result, not visual or musical acceptance.
 
-The corpus reports committed after `0eea506d` must be corrected: their
-valid/invalid measure columns are not derived from parsed MusicXML timing and
-must not be used as completion evidence.
+The recovery branch still fails `git diff --check` against its baseline and
+has no completed product verification record at `b7a2aa79`. The canonical
+worktree remains on the failed Teamwork branch, so a normal canonical CLI
+invocation cannot demonstrate recovery behaviour.
+
+## User-Visible Release Blockers
+
+- Key signatures are defaulted because the MusicXML emitter writes a neutral
+  key unconditionally; source key recognition is absent.
+- Phrase-title extraction accepts a literal `Example` condition and can emit
+  false labels such as `P`.
+- Tempo, source system/page breaks, and double/final bars lack a complete,
+  inspectable source-to-GPIF trace.
+- No embellishment path has sufficient attachment evidence to emit normal
+  output. Legato, pull-off, slide, vibrato, and sustain must remain fail-closed.
+- The user has observed unchanged or regressed canonical Lesson-3 and Lesson-4
+  output. Do not claim an improvement from a generated file, an informational
+  timing diagnostic, or a passing unit test alone.
 
 ## Required Work
 
-1. Make the corpus runner derive timing-valid and timing-invalid counts only
-   from parsed MusicXML and `analyze_musicxml_timing`.
-2. Add public synthetic tests for a valid 12/8 sequence and for a merged
-   source-measure error.
-3. Repair the generic PDF barline/measure-anchor to timeline segmentation path.
-   A split is allowed only when source boundary evidence supports it; never
-   split solely because a measure is overfull.
-4. Demonstrate fresh no-reference recovery runs for Lessons 5, 6, and 7 with
-   no `musicxml_timing_risk` before claiming output success.
-5. Re-run Lessons 3 and 4 as no-reference regressions. Do not alter their
-   behavior merely to satisfy a check.
+1. Create a new branch from recovery head for this task. First make
+   `git diff --check` clean using a whitespace-only commit. Do not mix it with
+   behaviour changes.
+2. Run and record `python scripts/agent_verify.py`, artifact audit, focused
+   tests, and a full suite against the actual recovery source. The editable
+   environment must not silently import the canonical worktree.
+3. Add a severity-aware corpus evidence ledger. Fatal timing issues, warnings,
+   and informational diagnostics are separate fields. Record external output
+   paths, source commit, and whether a GP package exists.
+4. Build an inspectable source-metadata trace for each selected system:
+   PDF text/geometry -> page/system/staff -> measure anchor -> MusicXML ->
+   ScoreIR -> GPIF. The trace must represent tempo, key status (`detected`,
+   `unknown`, or explicit override), phrase-title candidate and rejection
+   reason, source system/page break, and barline style.
+5. Remove literal title matching and broad exception swallowing from the
+   metadata path. A rejected label must be observable in diagnostics and must
+   not be emitted as a phrase title.
+6. Make unknown source key status explicit. Do not emit a neutral key as though
+   it were recognised, and do not emit accidental symbols from unverified key
+   evidence.
+7. Add public structured true-positive and true-negative tests for title
+   anchoring, tempo attachment, key status, and source layout propagation.
+   Use Lessons 3 and 4 only as no-reference evidence probes; do not encode
+   their names, pages, bars, counts, or reference contents in product logic.
+8. Do not change pitch, duration, rest, tie, or embellishment output under this
+   task except to remove an output that lacks source evidence. The next task
+   will select one smallest evidence-backed layout or embellishment capability.
 
 ## Prohibited Shortcuts
 
 - No filename, page, bar-number, measure-count, or private-reference rules.
 - No broad duration scaling, dynamic meter inflation, or relaxed timing gate.
-- No generated GP file is evidence of success while parsed MusicXML has fatal
-  timing issues.
+- No generated GP file, green unit suite, or informational diagnostic is
+  visual-correctness evidence.
+- No generic text token, including `Example`, may be used as a phrase-title
+  classifier.
+- No broad exception swallowing or silent default metadata.
+- No technique label without a source-to-event evidence record.
 - Do not merge, cherry-pick, or copy from the failed Teamwork branch.
 
 ## Completion Evidence
 
-1. `git diff --check`, focused tests, full test suite, and artifact audit pass.
-2. The reviewer independently reruns the recovery command above.
-3. Corpus reporting distinguishes actual parser timing errors from predicted
-   timeline counts.
-4. The first remaining cross-corpus blocker is recorded without a success
-   claim, and the next eligible task is promoted without waiting for routine
-   maintainer permission.
+1. `git diff --check`, focused tests, full test suite, `agent_verify.py`, and
+   artifact audit pass at the exact product head.
+2. The reviewer independently reruns source-first no-reference conversions for
+   Lessons 3, 4, and one distinct corpus PDF, then verifies the ledger's
+   severity classification from parsed MusicXML.
+3. Tests prove a nearby notation label is rejected as a phrase title, an
+   unknown key is not represented as recognised, and detected source metadata
+   survives the complete trace to GPIF.
+4. The review identifies the first remaining user-visible mismatch without
+   calling the output complete, then immediately promotes the next smallest
+   eligible Teamwork task.
