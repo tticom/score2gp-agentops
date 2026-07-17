@@ -1,0 +1,65 @@
+{
+  "description": "Sanitized first-divergence evidence ledger for VO-01 and one distinct corpus input",
+  "entries": [
+    {
+      "emitted_musicxml_facts": {
+        "beat_type": "8",
+        "beats": "12",
+        "tempo": "70"
+      },
+      "first_divergence": {
+        "actual": "12/8",
+        "description": "The OMR duration heuristics incorrectly detected 12/8 instead of 4/4 because it treated eighth-note triplets as standard eighth notes (480 ticks each) without tuplet scaling, inflating the total measure duration from 3840 to 5760 ticks.",
+        "expected": "4/4",
+        "stage": "Timeline Reconstruction (detect_time_signature)"
+      },
+      "fixture_name": "Lesson-5.pdf",
+      "gpif_facts": {
+        "bars_count": 45,
+        "beat_type": "8",
+        "beats": "12",
+        "tempo": "70"
+      },
+      "omr_timeline_facts": {
+        "detected_meter": "12/8"
+      },
+      "score_ir_facts": {
+        "bars_count": 45,
+        "first_bar_events_count": 7,
+        "first_bar_time_signature": "None/None"
+      },
+      "source_facts": {
+        "expected_meter": "4/4",
+        "expected_tempo": 70
+      }
+    },
+    {
+      "emitted_musicxml_facts": {
+        "beat_type": "4",
+        "beats": "4",
+        "tempo": "120"
+      },
+      "first_divergence": null,
+      "fixture_name": "Lesson-3.pdf",
+      "gpif_facts": {
+        "bars_count": 66,
+        "beat_type": "4",
+        "beats": "4",
+        "tempo": "120"
+      },
+      "omr_timeline_facts": {
+        "detected_meter": "4/4"
+      },
+      "score_ir_facts": {
+        "bars_count": 66,
+        "first_bar_events_count": 8,
+        "first_bar_time_signature": "None/None"
+      },
+      "source_facts": {
+        "expected_meter": "4/4",
+        "expected_tempo": 120
+      }
+    }
+  ],
+  "ledger_version": "1.0"
+}
