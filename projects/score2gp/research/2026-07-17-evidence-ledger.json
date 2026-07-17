@@ -1,0 +1,424 @@
+{
+  "ledger_version": "1.0",
+  "canonical_worktree": {
+    "path": "/home/tticom/work/score2gp-workspace/score2gp",
+    "branch": "feature/teamwork-corpus-conversion-accuracy-v0.1",
+    "commit": "34b7c2e5"
+  },
+  "recovery_worktree": {
+    "path": "/home/tticom/work/score2gp-workspace/score2gp-recovery",
+    "branch": "feature/task-90-source-metadata-trace-fail-closed",
+    "commit": "fdaee5e4"
+  },
+  "entries": [
+    {
+      "pdf_name": "Lesson-3.pdf",
+      "pdf_type": "born-digital",
+      "pages": 4,
+      "canonical": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 66,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 90
+        }
+      },
+      "recovery": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 66,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 90
+        }
+      }
+    },
+    {
+      "pdf_name": "Lesson-4.pdf",
+      "pdf_type": "born-digital",
+      "pages": 5,
+      "canonical": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 79,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 48
+        }
+      },
+      "recovery": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 79,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 48
+        }
+      }
+    },
+    {
+      "pdf_name": "Lesson-5.pdf",
+      "pdf_type": "born-digital",
+      "pages": 3,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 45,
+          "invalid_measures": 45,
+          "fatal_timing_issues": 221,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 45,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 855
+        }
+      }
+    },
+    {
+      "pdf_name": "Lesson-6.pdf",
+      "pdf_type": "born-digital",
+      "pages": 6,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 72,
+          "invalid_measures": 72,
+          "fatal_timing_issues": 240,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 72,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 957
+        }
+      }
+    },
+    {
+      "pdf_name": "Lesson-7.pdf",
+      "pdf_type": "born-digital",
+      "pages": 5,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 50,
+          "invalid_measures": 50,
+          "fatal_timing_issues": 250,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "success",
+        "exit_code": 0,
+        "gp_written": true,
+        "stage": "gpif-generation",
+        "severity": "info",
+        "counts": {
+          "measures": 50,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 0,
+          "info_diagnostics": 900
+        }
+      }
+    },
+    {
+      "pdf_name": "Melodic Soloing Masterclass.pdf",
+      "pdf_type": "born-digital",
+      "pages": 1,
+      "canonical": {
+        "status": "failed",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "auto_omr_failed",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "failed",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "auto_omr_failed",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "Just-Practice-Like-THIS-Every-Day.pdf",
+      "pdf_type": "born-digital",
+      "pages": 2,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 51,
+          "invalid_measures": 7,
+          "fatal_timing_issues": 3,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 51,
+          "invalid_measures": 7,
+          "fatal_timing_issues": 20,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "Derek Trucks BB King.pdf",
+      "pdf_type": "born-digital",
+      "pages": 2,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 18,
+          "invalid_measures": 2,
+          "fatal_timing_issues": 2,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 3,
+        "gp_written": false,
+        "stage": "timing-gating",
+        "severity": "error",
+        "code": "musicxml_timing_risk",
+        "counts": {
+          "measures": 18,
+          "invalid_measures": 2,
+          "fatal_timing_issues": 2,
+          "warnings": 0,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "LegatoLicks.pdf",
+      "pdf_type": "mixed",
+      "pages": 1,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "missing_musicxml",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "missing_musicxml",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "Lick in All 5 CAGED Shapes start on the 5 _ guitar tab creator.pdf",
+      "pdf_type": "born-digital",
+      "pages": 1,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "missing_musicxml",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 1,
+        "gp_written": false,
+        "stage": "orchestration-gate",
+        "severity": "error",
+        "code": "missing_musicxml",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "Hal Leonard Corporation. Rock Ballads.pdf",
+      "pdf_type": "scanned",
+      "pages": 177,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 1,
+        "stage": "layout-gating",
+        "severity": "error",
+        "code": "pdf_input_class_scanned_pdf_unsupported",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 1,
+        "stage": "layout-gating",
+        "severity": "error",
+        "code": "pdf_input_class_scanned_pdf_unsupported",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      }
+    },
+    {
+      "pdf_name": "Jazz Classics for Solo Guitar- Chord Melody Arrangements.pdf",
+      "pdf_type": "scanned",
+      "pages": 105,
+      "canonical": {
+        "status": "refused",
+        "exit_code": 1,
+        "stage": "layout-gating",
+        "severity": "error",
+        "code": "pdf_input_class_scanned_pdf_unsupported",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      },
+      "recovery": {
+        "status": "refused",
+        "exit_code": 1,
+        "stage": "layout-gating",
+        "severity": "error",
+        "code": "pdf_input_class_scanned_pdf_unsupported",
+        "counts": {
+          "measures": 0,
+          "invalid_measures": 0,
+          "fatal_timing_issues": 0,
+          "warnings": 1,
+          "info_diagnostics": 0
+        }
+      }
+    }
+  ]
+}
