@@ -21,23 +21,26 @@ corpus input. No product code changes.
 Done only when the 4/4-to-12/8 mismatch is located to a single source-to-output
 transition and the next code task has a measurable rule and a public-test plan.
 
-## CR-03: Repair Generic Meter Evidence and Emission
+## CR-03A: Local tuplet-group evidence and meter resolution
 
 Blocked by CR-02.
 
-Implement only the meter rule proven by CR-02. It must distinguish 4/4, 6/8,
-and 12/8 using scale-normalised source evidence, and emit unknown/refusal when
-evidence is insufficient. Never choose a meter merely because it avoids an
-overfull bar.
+- **Clean-Base Rule**: Every product branch for CR-03A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
+- **Architect-First Handoff**: This task is Architect-first. No Developer/implementation work starts until the Architect's local tuplet-group association rule has been independently reviewed and approved.
+- **Adversarial Public Test Contract**: The synthetic extraction fixture must contain true tuplet `3` marks as well as adversarial elements—specifically TAB fret `3` digits, measure label `3` headers, and unrelated text containing the digit `3` (e.g. metadata `[3:50]`). The tests must prove that only the local standard-staff tuplet group is associated and scaled, ignoring all other unrelated/adversarial `3` candidates.
+- **Tuplet Association**: A tuplet must be associated with exactly one local group of three rhythmic events using geometry and rhythmic grouping evidence.
+- **No Fallbacks**: No global count threshold and no "11 eighth notes" fallback.
+- **Scope Limit**: Scope is explicitly limited to 3:2 eighth-note triplets unless evidence supports another ratio.
+- **Regression Guard**: Verify 4/4 triplets, ordinary 6/8, and ordinary 12/8 remain distinct.
 
-## CR-04: Repair Temporal Event Grammar
+## CR-04A: False-rest candidate and per-voice capacity gate
 
-Blocked by CR-03.
+Blocked by CR-03A.
 
-Correct event slicing under the proven meter: tuplets, beam/flag duration,
-chord versus sequential grouping, ordered rests, and dots. Acceptance includes
-no ghost rests or dropped notes in the affected visual probe and one distinct
-input.
+- **Clean-Base Rule**: Every product branch for CR-04A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
+- **False-Rest Rejection**: Investigate and remove/reject the Lesson-5 false-rest cause generically.
+- **Per-Voice Balance Gate**: Every emitted MusicXML measure must balance independently per voice. A measure with an extra rest or overfull voice must refuse rather than report strict success.
+- **Verification**: Verify emitted MusicXML event durations, voices, chords, and backups.
 
 ## CR-05: Repair Structural Layout and Titles
 
