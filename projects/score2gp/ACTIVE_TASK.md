@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: CR-03C: Revert CR-03A unauthorized scope - Developer Phase
-**Authorised Role**: Developer
+**Task**: CR-03D: Local tuplet-group evidence and meter resolution (Retry) - Architect Phase
+**Authorised Role**: Architect
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
@@ -10,22 +10,19 @@ APPROVED
 
 ## Task Authorised
 
-Yes, Tier 2 implementation phase authorized for product integrity restoration.
+Yes, Tier 1 architecture phase authorized.
 
 ## Permissions and Boundaries
 
-- Do not start CR-04A or any new product feature work.
-- Branch from current product `origin/main` to `cr-03c-revert`.
-- Execute `git revert 40d061517523fcfe714d49c3aa4e7b3191d56a80 --no-commit`.
-- Allowed files: `src/score2gp/whole_note_recogniser.py`, `src/score2gp/cli.py`, `src/score2gp/pdf_staff_geometry.py`, `src/score2gp/pdf_staff_notation_diagnostics.py`, `tests/test_pdf_only_tab.py`, `tests/test_tuplet_association.py`.
-- Do not import recovery branches or PRs #371/#372.
-- Do not modify other files or perform any other edits.
+- Do not modify product code/tests or create product branches in this phase.
+- Re-design the local tuplet association logic with strict geometric boundaries (lane + strict X tolerance) that enforces fail-closed behavior on an actual document pipeline.
+- Outline the exact required changes in `projects/score2gp/reports/2026-07-18-cr-03d-architect-report.md`.
+- No OMR orchestration or deterministic MusicXML emission is to be implemented.
 
 ## Completion Evidence
 
-1. Product tests (`pytest tests/`) must pass.
-2. A separate independent Reviewer approves the revert PR based on exact adherence to the allowed-file list and the `git log` proving a clean revert.
-3. The revert PR is squash-merged to `origin/main`.
+1. An Architect report defining the strictly scoped tuplet association logic, its fail-closed integration point, and its synthetic test plan.
+2. An independent Reviewer approval of the architecture report.
 
 ## Unattended Continuation
 
