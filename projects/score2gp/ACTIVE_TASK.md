@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: CR-03A: Local tuplet-group evidence and meter resolution - Architect Phase
-**Authorised Role**: Architect
+**Task**: CR-03A: Local tuplet-group evidence and meter resolution - Developer Phase
+**Authorised Role**: Developer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
@@ -10,20 +10,28 @@ APPROVED
 
 ## Task Authorised
 
-Yes, Tier 1 Architect phase authorized:
-- Read-only product inspection (`score2gp` and `score2gp-recovery`).
-- Read-only corpus/fixture inspection.
-- Drafting of the local tuplet-group association rules and architecture report.
-- Drafting of the public synthetic-fixture design.
+Yes, Tier 2 implementation phase authorized.
 
 ## Permissions and Boundaries
 
-- All product workspace access (`score2gp` and `score2gp-recovery`) must be strictly **READ-ONLY**.
-- Modification of product code, product tests, product branches, opening product PRs, or performing product merges is **STRICTLY FORBIDDEN**.
-- Working on governance documents under the `score2gp-agentops` repository is permitted.
+- Create the product branch from current product `origin/main` only.
+- Modify only `src/score2gp/whole_note_recogniser.py` and new or directly related
+  public tests for this association model.
+- Implement staff-local measure spans, `TupletMarkerEvidence`, and
+  `TupletAssociation` before `build_staff_timeline_preview` slices chords.
+- Test one genuine above-staff 3:2 tuplet and the TAB, measure-label, metadata,
+  and ambiguous-geometry rejection cases using public synthetic data.
+- Do not import, cherry-pick, copy, or depend on the recovery prototype or
+  product PRs #371/#372. Do not add automatic OMR orchestration or a
+  deterministic MusicXML emitter; neither is present on product `origin/main`.
+- Product PR creation is permitted after validation. Product PR merge is
+  forbidden pending independent Reviewer conformance review.
 
 ## Completion Evidence
 
-1. A comprehensive Architect report is written detailing the local tuplet-group association rules (associating tuplets to exactly one local group of three rhythmic events using geometry and grouping evidence).
-2. The report specifies the adversarial synthetic test fixture design (containing true tuplet `3` marks, TAB fret `3` digits, measure label `3` headers, and unrelated text containing the digit `3`).
-3. Explicit independent Reviewer approval of the Architect design is required before any Developer work may start.
+1. A public synthetic test proves one unique above-staff 3:2 association and
+   rejects TAB, measure-label, metadata, and ambiguous candidates.
+2. Association evidence retains marker, candidate, and span identities without
+   changing unrelated meter or event-slicing behavior.
+3. A focused product PR targets current product `origin/main` and records the
+   limitation that end-to-end deterministic MusicXML emission is not in scope.
