@@ -24,8 +24,9 @@ Yes, Tier 2 implementation phase authorized.
 - Do not import, cherry-pick, copy, or depend on the recovery prototype or
   product PRs #371/#372. Do not add automatic OMR orchestration or a
   deterministic MusicXML emitter; neither is present on product `origin/main`.
-- Product PR creation is permitted after validation. Product PR merge is
-  forbidden pending independent Reviewer conformance review.
+- Product PR creation is permitted after validation. Guarded autonomous merge
+  is permitted only after independent Reviewer conformance review and every
+  condition in `programmes/2026-07-18-unattended-consecutive-loop-protocol.md`.
 
 ## Completion Evidence
 
@@ -35,3 +36,11 @@ Yes, Tier 2 implementation phase authorized.
    changing unrelated meter or event-slicing behavior.
 3. A focused product PR targets current product `origin/main` and records the
    limitation that end-to-end deterministic MusicXML emission is not in scope.
+
+## Unattended Continuation
+
+This task opts into the Visual Output Correctness Recovery Programme's
+Unattended Consecutive Loop Protocol. After review, rework, or guarded merge,
+agents must continue to the next required role or eligible task without routine
+maintainer confirmation. Before a genuine stop, they must commit the required
+human-focused end-of-run report in AgentOps.
