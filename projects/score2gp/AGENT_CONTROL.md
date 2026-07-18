@@ -23,6 +23,35 @@ Before any work, run and report:
 - `git fetch --all --prune`
 - `git log --oneline --decorate --max-count=5`
 
+## Antigravity Automation Identity Gate
+
+This gate applies to Antigravity/Agy runs. It does not apply to a human
+maintainer or a separately authenticated Codex review session.
+
+Before an Agy run creates a branch, commits, pushes, creates a PR, comments on
+a PR, or performs any merge operation, it must prove that its active GitHub CLI
+identity is the machine user `tticom-automation`:
+
+```bash
+test "$(gh api user --jq .login)" = "tticom-automation"
+```
+
+It must also verify the local Git author identity in every repository it will
+write:
+
+```bash
+test "$(git config --local --get user.name)" = "tticom-automation"
+test "$(git config --local --get user.email)" = "tticomautomation@gmail.com"
+```
+
+If any check fails, Agy may inspect repositories but must make no remote or
+local write. It must report the failed identity check and stop. It must not
+switch to, use, or borrow the maintainer's `tticom` credentials.
+
+The automation machine user must never use `gh pr merge`, `--admin`, a bypass
+flag, direct pushes to `main`, force pushes, or branch deletion. It opens PRs
+and leaves them for an independently authenticated reviewer/integrator.
+
 Agents must then read, in this order:
 
 1. `projects/score2gp/AGENT_CONTROL.md`

@@ -30,6 +30,9 @@ At the start of every run:
 cd /home/tticom/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
+test "$(gh api user --jq .login)" = "tticom-automation"
+test "$(git config --local --get user.name)" = "tticom-automation"
+test "$(git config --local --get user.email)" = "tticomautomation@gmail.com"
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
 tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
 python3 scripts/score2gp_governance_audit.py
@@ -41,6 +44,8 @@ git log --oneline --decorate --max-count=8
 ```
 
 Verify live state. Do not trust previous agent summaries unless the repositories confirm them.
+For Agy, an identity-check failure is a hard no-write stop: do not use the
+maintainer account as a fallback, and do not create a PR or merge anything.
 
 ## Core operating loop
 
