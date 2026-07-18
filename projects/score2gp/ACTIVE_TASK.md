@@ -1,20 +1,20 @@
 # Active Task
 
-**Task**: CR-03A: Local tuplet-group evidence and meter resolution - Architect Phase
-**Authorised Role**: Architect
+**Task**: CR-03A: Local tuplet-group evidence and meter resolution - Reviewer Phase
+**Authorised Role**: Reviewer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
 
-APPROVED
+PR_OPEN
 
 ## Task Authorised
 
-Yes, Tier 1 Architect phase authorized:
+Yes, Tier 1 Reviewer phase authorized:
 - Read-only product inspection (`score2gp` and `score2gp-recovery`).
 - Read-only corpus/fixture inspection.
-- Drafting of the local tuplet-group association rules and architecture report.
-- Drafting of the public synthetic-fixture design.
+- Independent inspection and verification of the CR-03A Architect report.
+- Promote to Developer task only if the Architect report is robust, evidence-backed, and adheres to CR-03A constraints.
 
 ## Permissions and Boundaries
 
@@ -24,6 +24,6 @@ Yes, Tier 1 Architect phase authorized:
 
 ## Completion Evidence
 
-1. A comprehensive Architect report is written detailing the local tuplet-group association rules (associating tuplets to exactly one local group of three rhythmic events using geometry and grouping evidence).
-2. The report specifies the adversarial synthetic test fixture design (containing true tuplet `3` marks, TAB fret `3` digits, measure label `3` headers, and unrelated text containing the digit `3`).
-3. Explicit independent Reviewer approval of the Architect design is required before any Developer work may start.
+1. The Reviewer has independently inspected and verified the Architect report for CR-03A.
+2. The Reviewer appends their approval/feedback to the PR or writes a review report.
+3. The Reviewer promotes the task to Developer phase by updating `ACTIVE_TASK.md`.
