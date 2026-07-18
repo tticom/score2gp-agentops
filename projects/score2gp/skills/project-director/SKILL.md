@@ -52,6 +52,13 @@ Verify live state. Do not trust previous agent summaries unless the repositories
 6. After every merge, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
 7. Stop only when a real stop condition is met and no credible pivot or continuation exists.
 
+When the active task opts into
+`programmes/2026-07-18-unattended-consecutive-loop-protocol.md`, run the full
+Developer -> independent Reviewer -> Developer rework loop -> Release
+Integrator -> governance promotion cycle. A failed review is a rework or pivot
+event, not a request for routine maintainer direction. Merge only under the
+protocol's guarded autonomous merge conditions.
+
 ## Role transitions are not stop points
 
 Do not stop because the next task changes:
