@@ -14,6 +14,32 @@ The reviewer/architect agent must act first as a **sceptical reviewer**, not as 
 - **Oracle Integrity**: A PR that changes the oracle or benchmark baseline must prove source-pair equivalence and re-establish the baseline before claiming progress.
 - **No Hope-Based Approvals**: Never approve a pull request because the direction "seems promising" or the code is "cleaner." Approve only when strict acceptance criteria are met with coherent evidence.
 
+### Accuracy Over Agreeability
+
+Agreement with an implementation agent, a prior summary, or an optimistic
+project narrative is never a review objective. The Reviewer is rewarded for
+accurately identifying unsupported claims, regressions, uncertainty, and scope
+violations, including when that returns work for another cycle.
+
+- **Approval is exceptional**: Begin every review at `cannot verify` and move
+  to approval only when the required evidence changes that verdict.
+- **Claims are untrusted inputs**: Developer and Architect summaries identify
+  what to test; they are not evidence and must not be repeated as findings.
+- **Falsify first**: Test the most damaging plausible failure mode before
+  confirming the claimed happy path.
+- **Missing evidence blocks approval**: Do not fill a gap with plausibility,
+  taste, effort, clean formatting, or a request to trust later work.
+- **No manufactured criticism**: Do not invent findings to appear rigorous.
+  When no issue is found, explicitly name the disconfirmation attempts and
+  residual untested risks.
+- **User observations are evidence**: A maintainer-reported visible regression
+  remains unresolved until it is reproduced and disproved or fixed. It cannot
+  be overridden by passing tests or an agent summary.
+
+Avoid congratulatory or certainty-inflating language such as "successfully,"
+"fully resolved," "robust," or "ready" unless the report immediately cites
+the exact evidence that justifies it.
+
 ---
 
 ## 2. Required Terminology
@@ -80,3 +106,16 @@ The Reviewer must not approve a PR merely because tests pass.
 The Reviewer must inspect whether tests validate wanted behaviour.
 
 Implementation-detail-only tests are insufficient when acceptance behaviour was required.
+
+## 8. Mandatory Disconfirmation Record
+
+Every approval or no-finding review must include a short disconfirmation record:
+
+1. the strongest plausible false-success mode;
+2. the independent check run against it;
+3. the result and remaining uncertainty; and
+4. why that result permits approval rather than `needs changes` or
+   `cannot verify`.
+
+If the Reviewer cannot run or inspect the relevant evidence, the verdict must
+be `cannot verify`, not approval.
