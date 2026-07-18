@@ -23,7 +23,8 @@ transition and the next code task has a measurable rule and a public-test plan.
 
 ## CR-03A: Local tuplet-group evidence and meter resolution
 
-Blocked by CR-02.
+Status: MERGED WITH FINDINGS. Product PR #373 was merged with unreviewed scope
+drift and bypassed merge controls. It is not accepted evidence of completion.
 
 - **Clean-Base Rule**: Every product branch for CR-03A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
 - **Architect-First Handoff**: This task is Architect-first. No Developer/implementation work starts until the Architect's local tuplet-group association rule has been independently reviewed and approved.
@@ -33,9 +34,25 @@ Blocked by CR-02.
 - **Scope Limit**: Scope is explicitly limited to 3:2 eighth-note triplets unless evidence supports another ratio.
 - **Regression Guard**: Verify 4/4 triplets, ordinary 6/8, and ordinary 12/8 remain distinct.
 
+## CR-03B: Merge-integrity remediation for CR-03A
+
+Status: ACTIVE. Blocks CR-04A and all automatic product merges in this
+programme.
+
+- **Evidence First**: Inspect the exact PR #373 head and merged revision against
+  the CR-03A task boundary. Record changed files, tests actually exercised, and
+  missing end-to-end or fail-closed evidence.
+- **No Retroactive Approval**: A self-authored review or a green focused suite
+  cannot establish independent review, scope compliance, or output correctness.
+- **Resolution**: Classify every out-of-bound change as revert, separately
+  reviewed salvage, or replacement. The resulting product work must branch from
+  current `origin/main` and have a precise file allowlist.
+- **Promotion Gate**: CR-04A cannot begin until an independent Reviewer accepts
+  the remediation decision and the guarded merge protocol is restored.
+
 ## CR-04A: False-rest candidate and per-voice capacity gate
 
-Blocked by CR-03A.
+Blocked by CR-03B.
 
 - **Clean-Base Rule**: Every product branch for CR-04A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
 - **False-Rest Rejection**: Investigate and remove/reject the Lesson-5 false-rest cause generically.

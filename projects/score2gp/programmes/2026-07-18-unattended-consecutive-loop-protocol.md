@@ -39,16 +39,30 @@ completed report are never stop conditions.
 A Release Integrator may merge only when all of these are true:
 
 1. The PR is within the active programme and exact task boundary.
-2. The current head SHA has independent Reviewer approval.
-3. Required local validation and CI are green.
-4. Every Codex and reviewer comment is explicitly dispositioned.
-5. The PR body and evidence distinguish demonstrated behavior from deferred
+2. `git diff --name-only <approved-base>...<exact-head>` is recorded and every
+   changed path is explicitly allowed by `ACTIVE_TASK.md`; any additional path
+   is a required-changes finding, not incidental cleanup.
+3. The current head SHA has independent Reviewer approval from a context that
+   did not author, amend, or push the reviewed product changes.
+4. Required local validation and CI are green.
+5. Every Codex and reviewer comment is explicitly dispositioned.
+6. The PR body and evidence distinguish demonstrated behavior from deferred
    work; it makes no visual-output claim that was not verified.
-6. The merge is normal or squash, uses expected-head validation, and does not
-   push directly to `main`.
+7. The merge is normal or squash, uses expected-head validation, and does not
+   push directly to `main`, use `--admin`, use a bypass flag, or bypass the
+   repository's normal review protections.
 
 If any condition is absent, keep the PR open and continue the review, rework,
 or pivot loop. Do not call it done.
+
+## Scope-Breach Circuit Breaker
+
+If a merged PR is later found to have violated its approved file or behavioural
+boundary, immediately suspend automatic product merges for the programme. The
+Project Director must create a governance remediation task that identifies the
+exact merged revision, separates evidence from claims, and chooses a clean
+revert, salvage, or replacement path. No downstream task may start until an
+independent Reviewer accepts that remediation decision.
 
 ## End Of Run Report
 
