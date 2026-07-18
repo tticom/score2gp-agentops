@@ -17,6 +17,17 @@ correctness, not a green suite, an artifact, or absence of a fatal parser risk.
 - `--ref-gp` is diagnostic-only. It never informs generation or thresholds.
 - Product PRs are small and stacked only when the parent is explicitly open,
   reviewed, and named. No child merges before its parent.
+- `programmes/2026-07-18-unattended-consecutive-loop-protocol.md` governs
+  unattended review, rework, guarded merge, continuation, and end-of-run
+  reporting for this programme.
+
+## Unattended Run Authority
+
+The maintainer has explicitly granted the guarded autonomous merge authority
+defined by the Unattended Consecutive Loop Protocol for tasks that opt in via
+`ACTIVE_TASK.md`. Each merge remains conditional on its independent review,
+validation, comment disposition, and expected-head checks. This authority does
+not weaken the programme acceptance rules or permit source-specific shortcuts.
 
 ## Priority Order
 
