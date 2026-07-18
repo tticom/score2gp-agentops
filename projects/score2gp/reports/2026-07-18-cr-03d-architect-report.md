@@ -1,4 +1,4 @@
-# CR-03D Architect Report: Local tuplet-group evidence and meter resolution
+# CR-03D Architect Report: Local tuplet-group evidence and meter resolution (Rework)
 
 ## Active Blocker
 The product emits incorrect rhythmic topologies in Lesson-7:
@@ -9,57 +9,64 @@ The product emits incorrect rhythmic topologies in Lesson-7:
 - Double/final barlines, source line breaks, and phrase headings are missing.
 
 ## Scope Separation
-This report explicitly separates the CR-03D tuplet and duration resolution logic from other work:
-1. **CR-03D (This task)**: Focuses strictly on distinguishing duration variants (ordinary sixteenths, 3:2 sixteenth tuplets, dotted values, genuine rests) and building a fail-closed measure/voice duration ledger.
-2. **CR-04A**: False-rest capacity gates and voice balancing are deferred to CR-04A.
-3. **CR-05**: Layout parsing (double/final barlines, source line breaks) and title text identification are deferred to CR-05.
+This report separates the initial candidate classification from downstream time signature balancing and document layout logic:
+1. **CR-03D (This task)**: Strict classification of local rhythmic candidate evidence (distinguishing genuine 3:2 tuplet marks, true duration dots, and genuine rest symbols from adversarial text), and building the crucial hand-off into the ScoreIR timeline.
+2. **CR-04A**: The false-rest rejection and measure/voice duration ledger proving every emitted event balances the time signature.
+3. **CR-05**: Layout parsing (double/final barlines, source line breaks) and title text identification.
 
 ## Verified Repository State
-- The product extracts `pdf_staff_geometry` and basic note candidates.
-- The CR-03C revert restored the integrity of `whole_note_recogniser.py` and diagnostic outputs.
-- `src/score2gp/musicxml.py` structures tuplet ratios and duration limits.
-- Rhythmic timing mapping currently assumes standard ratios without robust fail-closed association for ambiguous markings (e.g. `3`).
+- The product extracts basic geometry in `pdf_geometry.py`.
+- The CR-03C revert restored the codebase to revision `64579b3ce86fdb7af44c885567a61797bb649158` where the OMR-derived timeline explicitly captures baseline tests before we augment it with PDF tuplet diagnostics. This is proven by 923 passing tests on `main`.
+- Rhythmic timing mapping currently assumes standard ratios without robust fail-closed association for ambiguous markings like `3` or dots.
+
+## Exact Current Source-to-Output Chain
+The current code exposes a disconnect between read-only diagnostics and the actual production timeline:
+1. **Isolated Diagnostic Layer**: `src/score2gp/whole_note_recogniser.py` and `src/score2gp/notation_bridge.py`. These modules are exclusively used by read-only `cli.py` diagnostic commands. They currently do not flow into the main IR pipeline.
+2. **OMR Event Generation**: The real pipeline relies on an external OMR engine (e.g., Audiveris) to extract and recognize standard notation, which is exported as an intermediate MusicXML file.
+3. **MusicXML Parsing & Rest Origin**: `src/score2gp/musicxml.py` parses the OMR-generated MusicXML. False "ghost" rests originate strictly from the external OMR engine, which fabricates `<rest/>` elements in an attempt to mathematically balance measure timing when it fails to recognize tuplets. `musicxml.py` merely parses these and reports overlap diagnostics.
+4. **IR Building & Emission**: `src/score2gp/build_ir.py` ingests the MusicXML structures and builds the `ScoreIR`, passing it unaltered into the final format via `gpif.py`.
 
 ## Research Question
-How can the source-to-output chain generically map PDF geometry (specifically the digit `3` and duration dots) to true rhythmic candidate evidence and group them accurately in the timeline, safely distinguishing between tuplets, dotted notes, and ordinary divisions without inventing non-existent rests?
+How can we bridge the isolated read-only PDF diagnostics (`whole_note_recogniser.py`) into the actual `build_ir.py` pipeline, specifically injecting precise tuplet and duration dot evidence to override or reconcile the flawed timing and fabricated ghost rests produced by the external OMR engine?
 
 ## References Reviewed
-- `src/score2gp/musicxml.py`: Validates duration and `MusicXmlTuplet` capacity logic.
-- `src/score2gp/build_ir.py`: Timeline event grouping and diagnostics structure.
+- `src/score2gp/whole_note_recogniser.py`: Shape and text bounding box logic (Currently Diagnostic-only).
+- `src/score2gp/build_ir.py`: Timeline builder from MusicXML structure.
+- `src/score2gp/musicxml.py`: Ingestion of OMR-generated nodes (including fabricated ghost rests).
 
 ## Claim-by-Claim Evidence Table
 
 | Claim | Reference | Evidence Type |
 |---|---|---|
 | Ambiguous text `3` can be a tuplet, fret number, or text | Domain knowledge | Direct |
-| 3:2 Tuplets require exactly three sequential rhythmic events in standard notation | Domain knowledge | Direct |
-| A tuplet requires local geometric association between the tuplet mark and the note group | Domain knowledge | Direct |
-| Emitted events must be provably tracked in a duration ledger to detect invented rests | `src/score2gp/musicxml.py` capacity logic | Direct |
+| 3:2 Tuplets require exactly three sequential rhythmic events | Domain knowledge | Direct |
+| Ghost rests are invented by external OMR, not by our pipeline | Codebase (`musicxml.py`) | Direct |
+| Diagnostic evidence currently has no hand-off to the IR | Codebase (`build_ir.py`) | Direct |
 
 ## Options Considered
 
-1. **Global/Heuristic Thresholds**: Count the number of notes in a measure and guess the tuplet ratio.
-2. **Strict Local Geometric Association**: Require a standard tuplet lane and an exact X-axis tolerance for the tuplet mark to associate with exactly three contiguous rhythmic events. Build a duration ledger to verify the measure.
+1. **Global/Heuristic Thresholds**: Guess tuplet and dot presence based on measure note count.
+2. **Strict Local Geometric Association (End-to-End)**: Implement tuplet and dot identification in the diagnostic layer, pass that data through `build_ir.py`, and map it correctly in `musicxml.py`.
 
 ## Rejected Options and Reasons
-- **Global/Heuristic Thresholds**: Rejected. This was attempted in prototype/CR-03A and caused scope drift and brittle behavior. It invents tuplets and false rests.
-- **Fixture-Specific Hardcoding**: Forbids fixture-specific bar numbers, title text, coordinates, or count thresholds. This violates the generalizability requirement of the parser.
+- **Global/Heuristic Thresholds**: Rejected. This was attempted in prototype/CR-03A and caused scope drift. It invents tuplets and false rests.
+- **Fixture-Specific Hardcoding**: Forbids fixture-specific bar numbers, title text, coordinates, or count thresholds. This violates generalizability.
 
 ## Selected Outcome
-**Outcome A — Raster path is viable.** 
-The pipeline will be extended to build a measure/voice duration ledger and apply strict local geometric association for tuplet identification.
+**Outcome B — Raster path is not viable but another approach is.**
+The pure raster path is currently unproven for this task. Instead, the approach is strict bounding-box geometric candidate association mapping (from PDF vector geometry) that explicitly builds a hand-off from `whole_note_recogniser.py` into the core pipeline.
 
 ## Proposed Developer Task (CR-03D Implementation)
 
 ### 1. Evidence and Diagnostics
-Extend diagnostics to distinguish:
+Extend candidate extraction to distinguish local rhythmic indicators safely:
 - Ordinary sixteenths
-- 3:2 sixteenth tuplets
-- Dotted values
-- Genuine rests
+- 3:2 sixteenth tuplets (by pairing `3` text bounds closely with note clusters)
+- Dotted values (by isolating genuine duration dot bounds)
+- Genuine rests (vs empty space)
 
-### 2. Measure/Voice Duration Ledger
-Require a duration ledger that proves the math for every emitted event and rest. It must strictly account for the measure's time signature capacity and reject (fail-closed) if the ledger does not balance.
+### 2. Pipeline Hand-off Architecture
+Design and implement the data hand-off bridging the read-only tuplet/dot diagnostics from `whole_note_recogniser.py` into the core pipeline (e.g., intercepting `build_ir.py` or modifying the ScoreIR builder directly) to explicitly override or reconcile the flawed OMR timing.
 
 ### 3. Public Synthetic Adversarial Tests
 Create synthetic extraction fixtures to prove the fail-closed logic. The adversarial tests must contain:
@@ -69,21 +76,28 @@ Create synthetic extraction fixtures to prove the fail-closed logic. The adversa
 - Unrelated text containing `3` (e.g., metadata `[3:50]`).
 
 ### 4. Corpus Probes
-Add at least two diverse corpus probes (e.g. Lesson-7 segments) proving the tuplet recognition and duration ledger logic in a real-world context, strictly comparing generated output against source evidence.
+Two diverse corpus probes must be specified for validation:
+- **Probe 1**: Input class: Dense 3:2 sixteenth-note sections. Command: `python -m pytest tests/test_corpus_dense_tuplet_probe.py`. Evidence Fields: `diagnostic_rhythm_candidates`. Pass/Fail rule: Must exactly associate all genuine 3:2 sixteenth-note tuplets in the target corpus without false positives, and never assign tuplets to unrelated rhythmic groups. No private artifacts are written to disk.
+- **Probe 2**: Input class: Tablature text elements. Command: `python -m pytest tests/test_corpus_lesson_5_probe.py`. Evidence Fields: `diagnostic_fret_candidates`. Pass/Fail rule: Tablature fret `3` marks must never be extracted or grouped as a rhythmic tuplet candidate. No private artifacts are written to disk.
 
 ## Exact Future Product File Allowlist
-The subsequent Developer phase is strictly limited to modifying:
+To accomplish the end-to-end chain required for these acceptance criteria, the file allowlist is expanded to every required code owner:
+- `src/score2gp/pdf_staff_notation_diagnostics.py`
 - `src/score2gp/whole_note_recogniser.py`
-- `tests/test_tuplet_association.py` (or equivalently named new synthetic tests)
+- `src/score2gp/notation_bridge.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/musicxml.py`
+- New synthetic and corpus public tests (e.g., `tests/test_tuplet_association.py`, `tests/test_corpus_dense_tuplet_probe.py`, `tests/test_corpus_lesson_5_probe.py`)
 
 ## Measurable Success Criterion
 - Public synthetic tests pass, successfully rejecting adversarial `3`s and associating genuine tuplets.
-- Corpus probes correctly map durations without inventing false rests.
-- Ledger math balances perfectly or fails-closed explicitly.
+- The 2 corpus probes yield exact tuplet evidence in their outputs without regression on the existing 923 tests.
+- A functional hand-off bridge is implemented integrating diagnostic evidence into `build_ir.py`.
 
 ## Known Risks
-- X-axis tolerance for tuplet lane association may be overly strict for poor-quality scans, requiring careful bounding box intersection math.
-- The duration ledger may trigger fail-closed behavior on legitimately incomplete measures (e.g., anacrusis/pickup measures) unless explicitly handled.
+- X-axis tolerance for tuplet lane association may be overly strict, requiring careful bounding box intersection math.
+- Differentiating a duration dot from an articulation dot may require additional rules.
+- Resolving timeline conflicts between OMR MusicXML elements and PDF geometry candidates could require robust merging logic.
 
 ## What was not verified
-- Support for complex nested tuplets or ratios other than 3:2 sixteenth and eighth tuplets.
+- Support for complex nested tuplets or ratios other than 3:2.
