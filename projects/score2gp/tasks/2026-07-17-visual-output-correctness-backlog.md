@@ -51,15 +51,26 @@ Status: DONE. Remediation identified and approved. Replaced by CR-03C.
 
 ## CR-03C: Revert CR-03A unauthorized scope
 
-Status: ACTIVE. Blocks CR-04A.
+Status: DONE. Product baseline restored via PR #374.
 
 - **Clean Revert**: Execute a clean git revert of `40d061517523fcfe714d49c3aa4e7b3191d56a80` to restore product integrity.
 - **Scope Limit**: The branch must only contain the revert operation for the exact files changed in the target commit (`whole_note_recogniser.py`, `cli.py`, `pdf_staff_geometry.py`, `pdf_staff_notation_diagnostics.py`, `test_pdf_only_tab.py`, `test_tuplet_association.py`).
 - **Validation**: All public tests must pass post-revert to ensure the product is back to a known-good baseline before attempting CR-03A logic again.
 
+## CR-03D: Local tuplet-group evidence and meter resolution (Retry)
+
+Status: ACTIVE. Blocks CR-04A.
+
+- **Clean-Base Rule**: Branch from `origin/main` after CR-03C merge.
+- **Goal**: Re-implement the CR-03A local tuplet-group association rule.
+- **Adversarial Public Test Contract**: The synthetic extraction fixture must contain true tuplet `3` marks as well as adversarial elements (TAB fret `3`, measure label `3`, metadata `[3:50]`). 
+- **Tuplet Association**: A tuplet must be associated with exactly one local group of three rhythmic events using geometry and rhythmic grouping evidence.
+- **Fail-Closed Verification**: The tests must prove the system surfaces ambiguous failures safely, and the pipeline does not discard calculated tuplet statuses silently.
+- **File Limit**: Modify only `src/score2gp/whole_note_recogniser.py` and new or directly related public tests.
+
 ## CR-04A: False-rest candidate and per-voice capacity gate
 
-Blocked by CR-03C.
+Blocked by CR-03D.
 
 - **Clean-Base Rule**: Every product branch for CR-04A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
 - **False-Rest Rejection**: Investigate and remove/reject the Lesson-5 false-rest cause generically.
