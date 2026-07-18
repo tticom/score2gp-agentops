@@ -13,14 +13,14 @@ How can we definitively associate a printed tuplet `3` to exactly three sequenti
 
 ## Product Data Model and Integration Points
 Tuplet association must occur **before chord slicing** and timeline coalescence to ensure sequential duration modifications are applied accurately.
-- **Integration Point**: The tuplet recognizer should be invoked during or immediately after the raw notation event assembly (`ScoreIR` construction phase), before timeline coalescence groups notes into chords or evaluates measure tick capacity.
+- **Integration Point**: The tuplet recognizer should be invoked within the vector event parser pipeline immediately before `build_staff_timeline_preview` attempts X-delta proximity chord grouping, ensuring the note duration is scaled prior to any measure tick-capacity evaluation.
 - **3:2 Duration Handling**: Each note in an associated three-event eighth-note tuplet group has its base duration modified to represent exactly 2/3 of its standard length (i.e. three 8th notes span the duration of two 8th notes, taking exactly 1 quarter note).
 - **MusicXML Time-Modification Emission**: When generating MusicXML, the parser must emit the `<time-modification>` tags (`<actual-notes>3</actual-notes>`, `<normal-notes>2</normal-notes>`) alongside the `<tuplet>` bracket notations to faithfully represent the triplet without padding or false rests.
 
 ## Precise Local Geometric Tuplet Association Rule
 A valid tuplet `3` association strictly demands:
-1. **Normalized Tuplet Lane (Y-bounds)**: The digit `3` must exist strictly within the expected notation lane (just above or just below the standard 5-line staff). It must not impinge upon the TAB staff bounding box or the system header/measure box regions.
-2. **X Tolerance**: The bounding box of the digit `3` (and any associated bracket lines) must horizontally overlap or span between the X-bounds of the first and third notehead of the candidate sequence. A strict X-delta threshold must be applied to prevent wide association.
+1. **Normalized Tuplet Lane (Y-bounds)**: Defined as the vertical region extending up to 2 staff-space heights above the top line or below the bottom line of the standard 5-line staff. The digit `3` must exist strictly within this lane and must not impinge upon the TAB staff bounding box or the system header/measure box regions.
+2. **X Tolerance (Strict)**: Defined such that the tuplet mark's X-center must fall strictly between the X-coordinate of the first notehead and the X-coordinate of the third notehead of the candidate sequence. The tuplet's bounding box must not exceed the horizontal span of the 3-note group.
 3. **Hierarchy Ownership**: Both the tuplet digit `3` and the three candidate events must share the exact same `page`, `system`, `staff`, and `measure` ownership hierarchy.
 4. **Exact Three-Event Sequential Group**: The associated events must be exactly three *sequential* eighth-note events on the standard staff, containing no intervening events of other durations or rests.
 5. **Fail-Closed Ambiguity Behavior**: If the geometric association is ambiguous (e.g., tuplet label overlaps the TAB region or is X-shifted such that two different 3-note groups could claim it), the parser must fail closed for that measure. It must emit a specific tuplet-ambiguity warning and refuse to guess, avoiding downstream tick-corruption.
