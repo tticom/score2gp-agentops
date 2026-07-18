@@ -36,8 +36,7 @@ drift and bypassed merge controls. It is not accepted evidence of completion.
 
 ## CR-03B: Merge-integrity remediation for CR-03A
 
-Status: ACTIVE. Blocks CR-04A and all automatic product merges in this
-programme.
+Status: DONE. Remediation identified and approved. Replaced by CR-03C.
 
 - **Evidence First**: Inspect the exact PR #373 head and merged revision against
   the CR-03A task boundary. Record changed files, tests actually exercised, and
@@ -50,9 +49,17 @@ programme.
 - **Promotion Gate**: CR-04A cannot begin until an independent Reviewer accepts
   the remediation decision and the guarded merge protocol is restored.
 
+## CR-03C: Revert CR-03A unauthorized scope
+
+Status: ACTIVE. Blocks CR-04A.
+
+- **Clean Revert**: Execute a clean git revert of `40d061517523fcfe714d49c3aa4e7b3191d56a80` to restore product integrity.
+- **Scope Limit**: The branch must only contain the revert operation for the exact files changed in the target commit (`whole_note_recogniser.py`, `cli.py`, `pdf_staff_geometry.py`, `pdf_staff_notation_diagnostics.py`, `test_pdf_only_tab.py`, `test_tuplet_association.py`).
+- **Validation**: All public tests must pass post-revert to ensure the product is back to a known-good baseline before attempting CR-03A logic again.
+
 ## CR-04A: False-rest candidate and per-voice capacity gate
 
-Blocked by CR-03B.
+Blocked by CR-03C.
 
 - **Clean-Base Rule**: Every product branch for CR-04A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
 - **False-Rest Rejection**: Investigate and remove/reject the Lesson-5 false-rest cause generically.
