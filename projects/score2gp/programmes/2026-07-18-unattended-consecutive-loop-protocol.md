@@ -4,10 +4,10 @@
 
 This protocol applies to the Visual Output Correctness Recovery Programme while
 the active task explicitly opts in. The maintainer authorizes unattended
-Architect, Developer, Reviewer, Project Director, and Release Integrator role
-transitions, including guarded PR merges. It does not authorize pushing to
-`main`, force-pushing, branch deletion, scope expansion, private artifacts in
-Git, or acceptance of known failing validation.
+Architect, Developer, Reviewer, and Project Director role transitions. It does
+not authorize Agy to merge PRs, push to `main`, force-push, delete branches,
+expand scope, place private artifacts in Git, or accept known failing
+validation.
 
 ## Consecutive Loop
 
@@ -24,19 +24,22 @@ Git, or acceptance of known failing validation.
 5. If the same root cause survives two review cycles, the Reviewer records an
    evidence-backed pivot in AgentOps. The Project Director promotes the
    smallest safe research, diagnostic, or implementation task and continues.
-6. If the PR is accepted, the Release Integrator re-reads the exact head SHA
-   and guarded-merge conditions, merges normally or by squash, pulls `main`,
-   then begins the governance completion/promotion loop.
-7. The Project Director updates the task state through a governance PR, merges
-   it under the same guarded conditions, rereads `ACTIVE_TASK.md`, and begins
-   the next eligible task immediately.
+6. If the PR is accepted, Agy records `READY_FOR_EXTERNAL_MERGE` with the exact
+   head SHA, validation, risks, and blocked dependent task. It must not merge
+   the PR, merge a governance PR, or advance a dependent task as though either
+   PR had landed.
+7. The human maintainer or separately operated external release integrator
+   merges and promotes work. Agy may then reread the merged `ACTIVE_TASK.md`
+   and resume the next eligible task.
 
-Role changes, PR creation, a successful merge, a failing first approach, and a
-completed report are never stop conditions.
+Role changes, PR creation, a failing first approach, and a completed report
+are never stop conditions. An accepted PR awaiting external merge blocks only
+work that depends on that merge; Agy may continue an independent approved
+research or diagnostic task.
 
-## Guarded Autonomous Merge
+## External Merge Handoff
 
-A Release Integrator may merge only when all of these are true:
+Before an external release integrator merges, Agy must record all of these:
 
 1. The PR is within the active programme and exact task boundary.
 2. `git diff --name-only <approved-base>...<exact-head>` is recorded and every
@@ -48,12 +51,12 @@ A Release Integrator may merge only when all of these are true:
 5. Every Codex and reviewer comment is explicitly dispositioned.
 6. The PR body and evidence distinguish demonstrated behavior from deferred
    work; it makes no visual-output claim that was not verified.
-7. The merge is normal or squash, uses expected-head validation, and does not
-   push directly to `main`, use `--admin`, use a bypass flag, or bypass the
-   repository's normal review protections.
+7. The external integrator must use a normal or squash merge with
+   expected-head validation and must not use `--admin`, a bypass flag, or
+   bypass repository review protections.
 
 If any condition is absent, keep the PR open and continue the review, rework,
-or pivot loop. Do not call it done.
+or pivot loop. Do not call it done. Agy never performs the merge.
 
 ## Scope-Breach Circuit Breaker
 

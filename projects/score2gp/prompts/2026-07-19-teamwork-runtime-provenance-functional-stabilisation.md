@@ -4,8 +4,9 @@ Run the Runtime-Provenance and Functional-Stabilisation Programme unattended.
 The objective is a committed, reproducible conversion path that can reach a
 liveable baseline for Lessons 3-7 before any `whole_note_recogniser.py`
 refactor. Do not ask for routine approval. Continue through role changes,
-review, rework, guarded merge, governance promotion, and the next eligible
-task unless a genuine stop condition applies.
+review, and rework. Agy must never merge a product or governance PR; after
+acceptance it must prepare an external-merge handoff and must not promote
+dependent work until an external maintainer has merged it.
 
 ## Start State
 
@@ -35,7 +36,8 @@ the maintainer identity as a fallback.
 1. Begin every task from `origin/main`; never use historical local branches as
    a base.
 2. Never amend a published commit, force-push, push directly to `main`, use a
-   bypass, or delete an open PR branch.
+   bypass, delete an open PR branch, run `gh pr merge`, use `--admin`, use a
+   merge API, or merge through a web UI. No programme exception applies.
 3. Use one task branch and one PR per task. Fix review findings with new
    commits on that same branch.
 4. Never describe an executable path, external OMR engine, timing source, or
@@ -50,35 +52,27 @@ the maintainer identity as a fallback.
 8. Reviewer contexts are adversarial: seek disproof before approval. A green
    suite or generated GP is not sufficient evidence.
 
-## Execute FS-01 Now
+## Execute FS-01R Now
 
-As Developer, implement only FS-01.
+As Developer, implement only FS-01R.
 
-1. Inspect and reuse `scripts/private_e2e_smoke.py`,
-   `scripts/private_diagnostic_smoke.py`, and their public tests where useful.
-2. Add a commandable, private-safe provenance record for every corpus run. It
-   must include product SHA, clean/dirty status, resolved executable/import
-   path, exact command, input classification, sidecar path/hash/provenance,
-   output/report path, exit status, stage, refusal code, and sanitized
-   structural counts when available.
-3. Add public tests for the record schema and for the distinction between a
-   committed runtime and an `uncontrolled_runtime`. Do not add private
-   fixtures to Git.
-4. Run public tests, `git diff --check`, and the harness locally against
-   Lessons 3-7. Keep raw artefacts ignored. Record only sanitized findings in
-   the PR body and a governance report.
-5. Open a product PR. A fresh Reviewer context must inspect the exact head,
-   rerun focused tests, inspect the private-safe record, and verify that the
-   runner changes no conversion behaviour.
-6. If the Reviewer finds a defect, return to Developer, commit a normal
-   follow-up, and review again. Do not stop for this loop.
-7. If accepted, the Release Integrator performs the guarded merge protocol,
-   deletes only the merged branch, updates governance through a normal
-   governance PR, and promotes FS-02.
+1. On a product branch based on `origin/main`, create a normal narrow revert
+   for the merge commit that merged product PR #376.
+2. Do not salvage, extend, or reimplement #376. The only intended product
+   change is restoring the pre-#376 state.
+3. Run focused tests for the reverted files and `git diff --check`. Open one
+   product PR and state the exact reverted merge SHA in its body.
+4. A fresh Reviewer context must inspect the exact head and verify the diff is
+   solely the narrow revert. If it finds a defect, return to Developer, commit
+   a normal follow-up, and review again without stopping.
+5. If accepted, record `READY_FOR_EXTERNAL_MERGE`, the exact head SHA,
+   validation, risks, and that FS-01 remains blocked. Do not merge the PR or
+   create a governance promotion that assumes it has landed.
 
 ## Continue The Programme
 
-After FS-01, reread `ACTIVE_TASK.md` and continue without asking:
+After an external maintainer merges FS-01R, reread `ACTIVE_TASK.md` and
+continue without asking:
 
 - **FS-02:** reconcile the committed conversion entry point. If the user-facing
   auto-OMR behaviour is not on `main`, prove the divergence and either submit a

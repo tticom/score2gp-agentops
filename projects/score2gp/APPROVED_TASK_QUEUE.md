@@ -2688,7 +2688,8 @@ Authorised capabilities:
 - duration, rests, dots, ties, barlines, system breaks, key/time/tempo,
   guitar-position inference, and bounded embellishment work when selected by
   the programme decision gates;
-- guarded autonomous merge of qualifying PRs as defined in `AGENT_CONTROL.md`.
+- external-merge handoff for qualifying PRs as defined in `AGENT_CONTROL.md`;
+  Agy may never merge those PRs.
 
 Acceptance:
 - a reusable bar-level output comparator exists and is used as the primary
@@ -2725,7 +2726,8 @@ make the committed `convert` path usable before any naming or package refactor.
 
 | Priority | Requirement | Role | Ready when | Done when |
 |---|---|---|---|---|
-| P0 | FS-01 Runtime provenance baseline and corpus stabilisation harness | Developer | `ACTIVE_TASK.md` authorises FS-01 | Each selected local corpus run records SHA, runtime/import provenance, command, sidecar provenance, output status, and refusal facts without private artefacts entering Git. |
+| P0 | FS-01R Remediate invalid FS-01 merge (#376) | Developer -> Reviewer | Product #376 is confirmed as an invalid FS-01 merge | A normal, narrow revert PR for #376 is independently reviewed and left `READY_FOR_EXTERNAL_MERGE`; only its external merge unblocks a fresh FS-01. |
+| P0 | FS-01 Runtime provenance baseline and corpus stabilisation harness | Developer | FS-01R revert is externally merged | Each selected local corpus run records SHA, runtime/import provenance, command, sidecar provenance, output status, and refusal facts without private artefacts entering Git. |
 | P0 | FS-02 Reconcile uncontrolled runtime and canonical conversion entry point | Architect -> Reviewer -> Developer | FS-01 identifies the actual runtime divergence or proves a committed route | The intended command is implemented on `main`, its source-to-output call chain is named, and a corpus run no longer relies on uncommitted code. |
 | P0 | FS-03 Corpus functional stabilisation gates | Developer -> Reviewer | FS-02 identifies a committed entry point | Lessons 3-7 have reproducible local status records; failures are classified by first divergence rather than aggregate success. |
 | P1 | FS-04 Vertical defect repairs | Developer -> Reviewer | FS-03 names the first shared defect class | Each PR fixes one proven defect class across a distinct-corpus check: timing/meter, duration/tuplets/dots, rest provenance, or event grouping. No filename, bar-number, coordinate, or reference-GP shortcut is permitted. |
@@ -2733,8 +2735,9 @@ make the committed `convert` path usable before any naming or package refactor.
 | P1 | FS-06 Notation OMR modularisation architecture | Architect -> Reviewer | FS-05 is accepted | A compatibility-first package migration plan defines the public API, module ownership, test seams, and rollback; it does not change behaviour. |
 | P2 | FS-07 Behaviour-preserving modularisation | Developer -> Reviewer | FS-06 is accepted | The legacy `whole_note_recogniser.py` is a temporary compatibility shim and corpus outputs remain unchanged except for approved fixes. |
 
-Automatic continuation: after each accepted task, the Release Integrator
-updates governance and promotes the next eligible row. A role transition,
-review completion, or merged PR is not a stop condition. The series stops only
-for an evidenced missing direction, unavailable credentials, or an unsafe
-inference that has no credible research pivot.
+Automatic continuation: after each accepted task, Agy records an external-merge
+handoff and may continue only with independent eligible work. A human maintainer
+or external release integrator updates governance and promotes dependent work
+after merge. A role transition, review completion, or merged PR is not a stop
+condition. The series stops only for an evidenced missing direction, unavailable
+credentials, or an unsafe inference that has no credible research pivot.
