@@ -35,9 +35,10 @@ the maintainer identity as a fallback.
 
 1. Begin every task from `origin/main`; never use historical local branches as
    a base.
-2. Never amend a published commit, force-push, push directly to `main`, use a
-   bypass, delete an open PR branch, run `gh pr merge`, use `--admin`, use a
-   merge API, or merge through a web UI. No programme exception applies.
+2. Never amend a published commit, force-push, push directly to `main`, run
+   `git reset --hard`, run `git clean` with deletion flags, use a bypass,
+   delete an open PR branch, run `gh pr merge`, use `--admin`, use a merge API,
+   or merge through a web UI. No programme exception applies.
 3. Use one task branch and one PR per task. Fix review findings with new
    commits on that same branch.
 4. Never describe an executable path, external OMR engine, timing source, or
