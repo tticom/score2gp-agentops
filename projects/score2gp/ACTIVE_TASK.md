@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: FS-02: Canonical Entry-Point Reconciliation - Reviewer Phase
-**Authorised Role**: Reviewer
+**Task**: FS-01: Runtime provenance baseline and corpus stabilisation harness - Developer Phase
+**Authorised Role**: Developer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
