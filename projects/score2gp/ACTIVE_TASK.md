@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: CR-03D: Local tuplet-group evidence and meter resolution (Retry) - Architect Phase
-**Authorised Role**: Architect
+**Task**: FS-01: Runtime provenance baseline and corpus stabilisation harness - Developer Phase
+**Authorised Role**: Developer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
@@ -10,19 +10,34 @@ APPROVED
 
 ## Task Authorised
 
-Yes, Tier 1 architecture phase authorized.
+Yes. The Runtime-Provenance and Functional-Stabilisation Programme is
+authorized for unattended execution under its guarded continuation rules.
 
 ## Permissions and Boundaries
 
-- Do not modify product code/tests or create product branches in this phase.
-- Re-design the local tuplet association logic with strict geometric boundaries (lane + strict X tolerance) that enforces fail-closed behavior on an actual document pipeline.
-- Outline the exact required changes in `projects/score2gp/reports/2026-07-18-cr-03d-architect-report.md`.
-- No OMR orchestration or deterministic MusicXML emission is to be implemented.
+- Start from `origin/main` in both repositories. Do not use any historical
+  branch or uncommitted implementation as a baseline.
+- Implement only FS-01 as defined in
+  `projects/score2gp/programmes/2026-07-19-runtime-provenance-functional-stabilisation.md`.
+- The product change is limited to a reproducible, private-safe runtime
+  provenance and corpus-harness capability. It must not change recognition,
+  timing, MusicXML, ScoreIR, GPIF, or conversion semantics.
+- Reuse or extend the existing private smoke tooling where appropriate. Private
+  PDFs, GP files, MusicXML sidecars, and detailed diagnostics remain ignored.
+- Create one product PR, obtain a distinct Reviewer verdict, address review
+  findings on the same branch without amending or force-pushing, then use the
+  guarded continuation protocol to move to FS-02.
 
 ## Completion Evidence
 
-1. An Architect report defining the strictly scoped tuplet association logic, its fail-closed integration point, and its synthetic test plan.
-2. An independent Reviewer approval of the architecture report.
+1. A commandable corpus harness writes an ignored machine-readable provenance
+   record for each selected input.
+2. The record proves product SHA, clean/dirty classification, executable and
+   import path, command, sidecar SHA/provenance when present, output/report
+   path, exit status, and refusal codes.
+3. Public tests cover record validation and no private artefact is tracked.
+4. A distinct Reviewer verifies the exact PR head and the reports distinguish
+   observed facts from unknowns.
 
 ## Unattended Continuation
 

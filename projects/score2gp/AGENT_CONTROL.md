@@ -48,9 +48,38 @@ If any check fails, Agy may inspect repositories but must make no remote or
 local write. It must report the failed identity check and stop. It must not
 switch to, use, or borrow the maintainer's `tticom` credentials.
 
-The automation machine user must never use `gh pr merge`, `--admin`, a bypass
-flag, direct pushes to `main`, force pushes, or branch deletion. It opens PRs
-and leaves them for an independently authenticated reviewer/integrator.
+The automation machine user must never use `--admin`, a bypass flag, direct
+pushes to `main`, force pushes, or branch deletion for an open PR. It opens PRs
+and leaves them for an independently authenticated reviewer/integrator. A
+Release Integrator may use `gh pr merge` and delete the just-merged branch only
+when the active programme explicitly grants guarded autonomous merge authority
+and every guarded-merge condition is recorded. This exception never permits a
+force push or an amended published commit.
+
+## Runtime Provenance Gate
+
+Before an agent diagnoses or changes `score2gp convert` behaviour, it must
+prove the runtime being discussed. Record, in an ignored work directory and in
+the PR evidence summary:
+
+```bash
+git rev-parse HEAD
+git status --short
+command -v score2gp
+python -c 'import score2gp, pathlib; print(pathlib.Path(score2gp.__file__).resolve())'
+```
+
+The record must also include the exact conversion command, PDF path class,
+MusicXML sidecar path and SHA-256 when one is used, generated report path, and
+the conversion exit status. A claim applies only to that recorded runtime. If
+the executable, import path, or uncommitted source differs from the approved
+branch, classify it as `uncontrolled_runtime`; do not invent a code path or
+implement a repair until the divergence is committed, reviewed, or discarded.
+
+Private inputs and generated diagnostics may be read and written locally, but
+they must remain in ignored directories and must not be committed. Sanitized
+facts such as counts, status codes, hashes, and source revisions are allowed in
+PR evidence.
 
 Agents must then read, in this order:
 
@@ -334,7 +363,8 @@ Branching Rules:
 - If the task is independent: branch from current `main`.
 - If the task depends on an unmerged task PR: branch from the dependent task branch (creating a stacked/dependent branch).
 - Require stacked PRs to clearly state their dependency in the PR body.
-- Do not force-push unless explicitly instructed by a human.
+- Do not amend a published commit or force-push. Only the human maintainer may
+  intentionally rewrite history, outside an unattended task run.
 - Do not merge main.
 - Do not push to main.
 - Do not combine unrelated tasks into one branch.

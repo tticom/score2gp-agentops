@@ -2717,3 +2717,24 @@ The ordered, maintainer-authorized recovery series is:
 CR-02 is complete. CR-03A and CR-04A are the next backlog tasks, and ACTIVE_TASK.md is currently set to NO_ACTIVE_TASK_APPROVED awaiting review and authorization of the CR-03A Architect phase. The prior Task 93 key-signature proposal
 is superseded by CR-06 and must not start before the visual meter, event, and
 layout evidence gates are satisfied.
+
+### Runtime-Provenance and Functional-Stabilisation Series
+
+Status: ACTIVE. This series supersedes the unmerged CR-03D retry. It exists to
+make the committed `convert` path usable before any naming or package refactor.
+
+| Priority | Requirement | Role | Ready when | Done when |
+|---|---|---|---|---|
+| P0 | FS-01 Runtime provenance baseline and corpus stabilisation harness | Developer | `ACTIVE_TASK.md` authorises FS-01 | Each selected local corpus run records SHA, runtime/import provenance, command, sidecar provenance, output status, and refusal facts without private artefacts entering Git. |
+| P0 | FS-02 Reconcile uncontrolled runtime and canonical conversion entry point | Architect -> Reviewer -> Developer | FS-01 identifies the actual runtime divergence or proves a committed route | The intended command is implemented on `main`, its source-to-output call chain is named, and a corpus run no longer relies on uncommitted code. |
+| P0 | FS-03 Corpus functional stabilisation gates | Developer -> Reviewer | FS-02 identifies a committed entry point | Lessons 3-7 have reproducible local status records; failures are classified by first divergence rather than aggregate success. |
+| P1 | FS-04 Vertical defect repairs | Developer -> Reviewer | FS-03 names the first shared defect class | Each PR fixes one proven defect class across a distinct-corpus check: timing/meter, duration/tuplets/dots, rest provenance, or event grouping. No filename, bar-number, coordinate, or reference-GP shortcut is permitted. |
+| P1 | FS-05 Liveable baseline decision | Project Director -> Reviewer | FS-04 has exhausted the currently evidenced shared defects | The committed corpus command produces GP output for the selected Lesson inputs with traceable timing source, no untraced ghost rests, and no unresolved timing refusal. Deferred layout and embellishment work is listed explicitly. |
+| P1 | FS-06 Notation OMR modularisation architecture | Architect -> Reviewer | FS-05 is accepted | A compatibility-first package migration plan defines the public API, module ownership, test seams, and rollback; it does not change behaviour. |
+| P2 | FS-07 Behaviour-preserving modularisation | Developer -> Reviewer | FS-06 is accepted | The legacy `whole_note_recogniser.py` is a temporary compatibility shim and corpus outputs remain unchanged except for approved fixes. |
+
+Automatic continuation: after each accepted task, the Release Integrator
+updates governance and promotes the next eligible row. A role transition,
+review completion, or merged PR is not a stop condition. The series stops only
+for an evidenced missing direction, unavailable credentials, or an unsafe
+inference that has no credible research pivot.
