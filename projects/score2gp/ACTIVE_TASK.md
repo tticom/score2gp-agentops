@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: FS-01: Runtime provenance baseline and corpus stabilisation harness - Developer Phase
-**Authorised Role**: Developer
+**Task**: FS-01: Runtime provenance baseline and corpus stabilisation harness - Reviewer Phase
+**Authorised Role**: Reviewer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
