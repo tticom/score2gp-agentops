@@ -2726,7 +2726,7 @@ make the committed `convert` path usable before any naming or package refactor.
 
 | Priority | Requirement | Role | Ready when | Done when |
 |---|---|---|---|---|
-| P0 | FS-01R Remediate invalid FS-01 merge (#376) | Developer -> Reviewer | Product #376 is confirmed as an invalid FS-01 merge | A normal, narrow revert PR for #376 is independently reviewed and left `READY_FOR_EXTERNAL_MERGE`; only its external merge unblocks a fresh FS-01. |
+| P0 | FS-01R Remediate invalid FS-01 merge (#376) | Completed | Product #376 was confirmed as an invalid FS-01 merge | Completed by independently reviewed product PR #377, externally merged as `e869940d0f12493aa0cb833c4b3ae9ace7e55cfb`; a fresh FS-01 is unblocked. |
 | P0 | FS-01 Runtime provenance baseline and corpus stabilisation harness | Developer | FS-01R revert is externally merged | Each selected local corpus run records SHA, runtime/import provenance, command, sidecar provenance, output status, and refusal facts without private artefacts entering Git. |
 | P0 | FS-02 Reconcile uncontrolled runtime and canonical conversion entry point | Architect -> Reviewer -> Developer | FS-01 identifies the actual runtime divergence or proves a committed route | The intended command is implemented on `main`, its source-to-output call chain is named, and a corpus run no longer relies on uncommitted code. |
 | P0 | FS-03 Corpus functional stabilisation gates | Developer -> Reviewer | FS-02 identifies a committed entry point | Lessons 3-7 have reproducible local status records; failures are classified by first divergence rather than aggregate success. |

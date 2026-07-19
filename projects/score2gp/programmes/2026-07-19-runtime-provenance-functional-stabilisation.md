@@ -40,6 +40,11 @@ public tests, and be reviewed independently. Agy may open and revise this PR,
 but it must leave it `READY_FOR_EXTERNAL_MERGE`; it must never merge it. Only
 after the revert lands may a fresh FS-01 implementation begin from `main`.
 
+Completed 2026-07-19: product PR #377 was independently reviewed as an exact
+inverse of the #376 merge relative to its first parent, then externally merged
+as `e869940d0f12493aa0cb833c4b3ae9ace7e55cfb`. FS-01 starts from that clean
+baseline; none of #376's provenance claims are accepted.
+
 ### FS-01: Runtime Provenance Baseline And Corpus Harness
 
 Extend the existing private smoke tooling or add a small adjacent runner. For
