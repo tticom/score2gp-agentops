@@ -22,3 +22,6 @@ evidence/private*
 .antigravitycli/
 __pycache__/
 *.pyc
+
+# Local command-body scratch file used by unattended agents.
+/commit_msg.txt
