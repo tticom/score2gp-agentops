@@ -135,6 +135,8 @@ The Project Director must not:
 - invent product direction that is not supported by backlog/review evidence;
 - hide blockers;
 - bypass required validation;
+- run `git reset --hard` or `git clean` with deletion flags during
+  synchronisation or cleanup;
 - commit unrelated local files;
 - revert user changes;
 - widen task scope because the next step is interesting;

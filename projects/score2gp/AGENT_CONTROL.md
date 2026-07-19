@@ -49,7 +49,8 @@ local write. It must report the failed identity check and stop. It must not
 switch to, use, or borrow the maintainer's `tticom` credentials.
 
 The automation machine user must never use `--admin`, a bypass flag, direct
-pushes to `main`, force pushes, branch deletion for an open PR, or **any PR
+pushes to `main`, force pushes, `git reset --hard`, `git clean` with deletion
+flags, branch deletion for an open PR, or **any PR
 merge command or API**. In particular, Agy must never run `gh pr merge`, merge
 through the GitHub web UI, invoke a merge API, or treat a PR as merged because
 its own checks pass. It opens and revises PRs, then leaves them for an
@@ -438,7 +439,7 @@ Agents operate under the following role boundaries during team operation:
 
 ### Forbidden Actions
 
-Agents must not push directly to `main`, force-push, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. Agy must never run `gh pr merge`, use `--admin`, use a merge API, or merge through a web UI.
+Agents must not push directly to `main`, force-push, run `git reset --hard`, run `git clean` with deletion flags, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. Agy must never run `gh pr merge`, use `--admin`, use a merge API, or merge through a web UI.
 
 ### Human-Only Operations
 
