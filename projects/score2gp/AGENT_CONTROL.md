@@ -256,10 +256,10 @@ When a task and its required review/promotion work are complete, agents must not
 Before stopping after successful completion, the agent must perform a continuation audit:
 
 1. Inspect `APPROVED_TASK_QUEUE.md`, current backlog reports, recent review reports, and active blockers.
-2. Promote the next eligible `APPROVED` queue item if its prerequisites are satisfied.
+2. Identify the next eligible `APPROVED` queue item if its prerequisites are satisfied. Do not promote a dependent task until the required product and governance PRs have been externally merged.
 3. If no approved queue item exists, identify the smallest credible continuation that stays inside the current product direction and does not require a new human product choice.
 4. Prefer product-functional diagnostic, fixture, schema, smoke-test, or fail-closed implementation work over administrative stopping when the next step is already supported by merged backlog or review evidence.
-5. Create a governance PR that records the completed work, adds the continuation task, and makes it active.
+5. Create a governance PR that records the proposed continuation. Leave it `READY_FOR_EXTERNAL_MERGE`; do not treat its task state as active until the governance PR is externally merged.
 6. Set `ACTIVE_TASK.md` to `NO_ACTIVE_TASK_APPROVED` only when the continuation audit finds no credible safe continuation, or when every candidate continuation would require a new product direction, destructive action, unapproved data source, or speculative musical inference.
 
 Examples of credible post-completion continuations:

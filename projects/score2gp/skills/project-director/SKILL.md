@@ -1,6 +1,6 @@
 ---
 name: score2gp-project-director
-description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, promote the next safe task, merge clean PRs when authorised, and minimise routine human interaction.
+description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, prepare external-merge handoffs, and minimise routine human interaction.
 ---
 
 # Project Director Skill — Autonomous Continuation Governor
@@ -47,17 +47,17 @@ Verify live state. Do not trust previous agent summaries unless the repositories
 1. Read `projects/score2gp/AGENT_CONTROL.md`.
 2. Read `projects/score2gp/ACTIVE_TASK.md`.
 3. Execute the active task using its authorised role.
-4. If the task is Architect/governance work, complete the document/review/promotion in `score2gp-agentops`.
-5. If the task is Developer/product work, complete the product PR, then perform the required governance review and promotion.
-6. After every merge, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
+4. If the task is Architect/governance work, complete the document/review and prepare any resulting governance PR for external merge.
+5. If the task is Developer/product work, complete the product PR, then perform the required governance review and external-merge handoff.
+6. After an external maintainer merges the required PRs, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
 7. Stop only when a real stop condition is met and no credible pivot or continuation exists.
 
 When the active task opts into
 `programmes/2026-07-18-unattended-consecutive-loop-protocol.md`, run the full
-Developer -> independent Reviewer -> Developer rework loop -> Release
-Integrator -> governance promotion cycle. A failed review is a rework or pivot
-event, not a request for routine maintainer direction. Merge only under the
-protocol's guarded autonomous merge conditions.
+Developer -> independent Reviewer -> Developer rework loop -> external-merge
+handoff cycle. A failed review is a rework or pivot event, not a request for
+routine maintainer direction. Agy never performs the merge or a governance
+promotion that depends on it.
 
 ## Role transitions are not stop points
 
@@ -68,7 +68,8 @@ Do not stop because the next task changes:
 - task type, such as implementation -> review -> research;
 - branch family, such as `feature/*` -> `governance/*`.
 
-After a PR merges and `ACTIVE_TASK.md` names another approved task, immediately continue.
+After an external maintainer merges a PR and `ACTIVE_TASK.md` names another
+approved task, immediately continue.
 
 ## Completion audit
 
@@ -125,7 +126,8 @@ The Project Director may:
 - create governance docs, reviews, and active-task updates;
 - promote approved or evidence-backed tasks;
 - write Antigravity prompts;
-- merge clean governance/product PRs when the user's run policy has pre-approved it;
+- prepare clean governance/product PRs for external merge and record the exact
+  head SHA, validation, risks, and blocked dependent task;
 - use public fixtures and approved private/local fixture repositories for interrogation.
 
 The Project Director must not:
@@ -136,6 +138,8 @@ The Project Director must not:
 - commit unrelated local files;
 - revert user changes;
 - widen task scope because the next step is interesting;
+- merge any product or governance PR, including via `gh pr merge`, `--admin`,
+  a merge API, or a web UI;
 - promote playable ScoreIR/GP output from diagnostics without explicit review approval.
 
 ## Required final/run report
