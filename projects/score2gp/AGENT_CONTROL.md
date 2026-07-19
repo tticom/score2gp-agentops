@@ -49,12 +49,13 @@ local write. It must report the failed identity check and stop. It must not
 switch to, use, or borrow the maintainer's `tticom` credentials.
 
 The automation machine user must never use `--admin`, a bypass flag, direct
-pushes to `main`, force pushes, or branch deletion for an open PR. It opens PRs
-and leaves them for an independently authenticated reviewer/integrator. A
-Release Integrator may use `gh pr merge` and delete the just-merged branch only
-when the active programme explicitly grants guarded autonomous merge authority
-and every guarded-merge condition is recorded. This exception never permits a
-force push or an amended published commit.
+pushes to `main`, force pushes, branch deletion for an open PR, or **any PR
+merge command or API**. In particular, Agy must never run `gh pr merge`, merge
+through the GitHub web UI, invoke a merge API, or treat a PR as merged because
+its own checks pass. It opens and revises PRs, then leaves them for an
+independently authenticated human maintainer or external release integrator.
+No programme, task, prompt, or role transition may create an exception to this
+rule. This rule also never permits an amended published commit.
 
 ## Runtime Provenance Gate
 
@@ -191,7 +192,7 @@ and read:
   * repos are clean
   * the next task remains inside its written scope
   * the dependency relationship is clear (branching from current `main` for independent tasks, or stacking onto a dependent branch if the prior PR is unmerged)
-* Agents must stop at PR creation (or READY_FOR_HUMAN_MERGE) for each product PR unless an active Teamwork programme explicitly grants guarded autonomous merge authority. Agents must never push directly to main.
+* Agents must stop at PR creation (or `READY_FOR_EXTERNAL_MERGE`) for each product PR. Agy must never push directly to `main` or merge a PR.
 * Agents must not skip, reorder, invent, or materially edit queue items unless a task is unblocked by another task.
 * Agents must stop if a queued task is ambiguous, stale, blocked, conflicts with current repo state, or would require expanding allowed files/repositories.
 * Human approval remains required to add, remove, reorder, or materially change queued tasks.
@@ -208,26 +209,28 @@ For an active Teamwork programme:
 - the programme document is the executable task boundary and may authorise
   coordinated Architect, Researcher, Developer, Reviewer, and Director work;
 - because product `AGENTS.md` declares this repository the governance truth,
-  this explicit exception supersedes any older local read-only or
-  human-merge-only wording for that programme only;
+  the programme may coordinate the named roles but does not override this
+  document's no-merge rule for Agy;
 - agents may create a sequence of small, independently reviewable product PRs
   without a new human prompt between milestones;
 - agents must keep a durable milestone ledger, rerun the programme's output
   evidence after every functional change, and stop only at a documented
   decision gate or a real stop condition;
-- an agent may merge a PR only when the active programme expressly grants
-  merge authority and the guarded merge conditions below are all met;
+- after an accepted PR, Agy must mark it `READY_FOR_EXTERNAL_MERGE`, record the
+  exact head SHA and validation evidence, and await an external merge; it must
+  not advance a dependent task as though the PR had landed;
 - programme authority never permits private artifacts in Git, force-pushes,
   branch deletion, scope expansion beyond the named corpus/capabilities, or
   treating a shallow metric as proof of output correctness.
 
-Guarded autonomous merge conditions:
+External merge handoff requirements:
 
 1. the PR has a concrete, passed product-output acceptance test;
 2. CI and required local verification are green;
 3. all review/Codex threads are explicitly dispositioned;
-4. the Reviewer has approved the exact PR against the programme evidence;
-5. the branch head SHA is re-read immediately before merge; and
+4. the Reviewer has assessed the exact PR head against the programme evidence;
+5. the handoff records the exact head SHA, intended merge method, validation,
+   unresolved risks, and the dependent task that remains blocked on merge.
 6. the merge operation is a normal merge or squash merge, never a bypass.
 
 If any condition is absent, the agent may continue with independent or
@@ -435,11 +438,11 @@ Agents operate under the following role boundaries during team operation:
 
 ### Forbidden Actions
 
-Agents must not push directly to main, force-push, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. `gh pr merge` is allowed only for the guarded autonomous merge exception above.
+Agents must not push directly to `main`, force-push, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. Agy must never run `gh pr merge`, use `--admin`, use a merge API, or merge through a web UI.
 
 ### Human-Only Operations
 
-Only the human maintainer may approve scope expansion, accept a known failing-check risk, or explicitly close/abandon a task without merge. PR merge remains human-only by default; the only exception is a Teamwork programme that records the maintainer's explicit guarded autonomous merge authority in `ACTIVE_TASK.md` and follows every condition above.
+Only the human maintainer or a separately operated external release integrator may merge a PR, approve scope expansion, accept a known failing-check risk, or explicitly close/abandon a task without merge. Agy has no merge exception, including for a Teamwork programme.
 
 ## Product Boundaries
 

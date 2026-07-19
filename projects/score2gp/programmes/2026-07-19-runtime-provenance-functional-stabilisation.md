@@ -28,6 +28,18 @@ fixture filename, bar number, fixed coordinate, title, or reference GP data.
 
 ## Ordered Work
 
+### FS-01R: Remediate Invalid FS-01 Merge
+
+Product PR #376 was merged without a valid independent review and does not
+satisfy FS-01: its provenance claims are not supported by its implementation.
+It must not be treated as FS-01 completion or as a base for FS-02.
+
+Create one normal product revert PR for the #376 merge commit. The revert PR
+must identify that merge commit, contain no unrelated change, run the relevant
+public tests, and be reviewed independently. Agy may open and revise this PR,
+but it must leave it `READY_FOR_EXTERNAL_MERGE`; it must never merge it. Only
+after the revert lands may a fresh FS-01 implementation begin from `main`.
+
 ### FS-01: Runtime Provenance Baseline And Corpus Harness
 
 Extend the existing private smoke tooling or add a small adjacent runner. For
@@ -81,16 +93,15 @@ the FS corpus record is stable.
 
 ## Review And Merge Rules
 
-This programme opts into the Unattended Consecutive Loop Protocol. Developer,
-Reviewer, and Release Integrator contexts must be distinct. Reviewers begin
+This programme opts into the Unattended Consecutive Loop Protocol. Developer
+and Reviewer contexts must be distinct. Reviewers begin
 from fresh state and look first for unsupported causal claims, hidden runtime
 differences, fixture-specific logic, and claimed behaviour that the evidence
 does not demonstrate.
 
-A Release Integrator may merge only after the guarded checks in the protocol
-pass, the exact head is re-read, all review comments are dispositioned, and the
-PR body contains the generated provenance summary. Published PR commits are
-never amended or force-pushed.
+Agy may never merge. After its reviewer accepts an exact head, it records an
+external-merge handoff containing the generated provenance summary, validation,
+and risks. Published PR commits are never amended or force-pushed.
 
 ## Stop And Pivot
 
