@@ -52,26 +52,35 @@ the maintainer identity as a fallback.
 8. Reviewer contexts are adversarial: seek disproof before approval. A green
    suite or generated GP is not sufficient evidence.
 
-## Execute FS-01R Now
+## Execute FS-01 Now
 
-As Developer, implement only FS-01R.
+As Developer, implement only FS-01.
 
-1. On a product branch based on `origin/main`, create a normal narrow revert
-   for the merge commit that merged product PR #376.
-2. Do not salvage, extend, or reimplement #376. The only intended product
-   change is restoring the pre-#376 state.
-3. Run focused tests for the reverted files and `git diff --check`. Open one
-   product PR and state the exact reverted merge SHA in its body.
-4. A fresh Reviewer context must inspect the exact head and verify the diff is
-   solely the narrow revert. If it finds a defect, return to Developer, commit
-   a normal follow-up, and review again without stopping.
-5. If accepted, record `READY_FOR_EXTERNAL_MERGE`, the exact head SHA,
-   validation, risks, and that FS-01 remains blocked. Do not merge the PR or
+1. Inspect and reuse `scripts/private_e2e_smoke.py`,
+   `scripts/private_diagnostic_smoke.py`, and their public tests where useful.
+2. Add a commandable, private-safe provenance record for every corpus run. It
+   must include product SHA, clean/dirty status, resolved executable/import
+   path, exact command, input classification, sidecar path/hash/provenance,
+   output/report path, exit status, stage, refusal code, and sanitized
+   structural counts when available.
+3. Add public tests for the record schema and for the distinction between a
+   committed runtime and an `uncontrolled_runtime`. Do not add private
+   fixtures to Git.
+4. Run public tests, `git diff --check`, and the harness locally against
+   Lessons 3-7. Keep raw artefacts ignored. Record only sanitized findings in
+   the PR body and a governance report.
+5. Open a product PR. A fresh Reviewer context must inspect the exact head,
+   rerun focused tests, inspect the private-safe record, and verify that the
+   runner changes no conversion behaviour.
+6. If the Reviewer finds a defect, return to Developer, commit a normal
+   follow-up, and review again. Do not stop for this loop.
+7. If accepted, record `READY_FOR_EXTERNAL_MERGE`, the exact head SHA,
+   validation, risks, and that FS-02 remains blocked. Do not merge the PR or
    create a governance promotion that assumes it has landed.
 
 ## Continue The Programme
 
-After an external maintainer merges FS-01R, reread `ACTIVE_TASK.md` and
+After an external maintainer merges FS-01, reread `ACTIVE_TASK.md` and
 continue without asking:
 
 - **FS-02:** reconcile the committed conversion entry point. If the user-facing
