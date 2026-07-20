@@ -89,6 +89,14 @@ that automation identity a bypass. FS-02 may resume only after the governance
 record of this verification is externally merged. PR #332 is stale and is not
 evidence of FS-02 completion.
 
+Completion 2026-07-20: the corrected canonical evidence was independently
+reviewed and preserved on `main` through governance PR #337. At product SHA
+`e72cd7c8de5277d3d3ba91234c0eea4fbd63e145`, the supported `convert` route
+requires an explicit MusicXML sidecar and does not call the standalone OMR
+command. FS-02 is DONE. The human maintainer selected the write-access with
+ruleset-containment operating model recorded in the second merge-attempt
+incident report.
+
 ### FS-03 And FS-04: Stabilise The Real Path
 
 Run the selected corpus, identify the first shared source/output divergence,
@@ -96,6 +104,10 @@ and repair one behaviour class per PR. Required evidence follows the event
 through source evidence, MusicXML, ScoreIR, GPIF, and rendered output where
 applicable. A reviewer must be able to trace a ghost rest by stable event or
 source identifier before accepting a rest-related claim.
+
+FS-03A is an Architect-first prerequisite: define the supported, provenance
+recorded MusicXML timing-source route before implementing this phase. It must
+not assume that the standalone OMR command is integrated with `convert`.
 
 ### FS-05: Baseline Decision
 
