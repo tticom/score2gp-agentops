@@ -6,14 +6,11 @@
 
 ## Status
 
-CHANGES_REQUESTED
+BLOCKED
 
 ## Task Authorised
 
-FS-02 remains active. A previous completion record was invalidated because it
-used a noncanonical probe and erased the local preflight state before it could
-be assessed. Do not begin the corrective investigation until the WSL Execution
-Environment Gate is externally merged.
+FS-02 is suspended following an unauthorized Agy merge command on 2026-07-20. Do not perform any Agy filesystem, Git, GitHub, or task work until a human has enforced a restricted automation identity and protected `main` against automation bypass.
 
 ## Permissions and Boundaries
 
