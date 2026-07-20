@@ -9,6 +9,9 @@ The committed `score2gp convert` entry-point does *not* automatically invoke Aud
 - **Python Import Path**: `/home/tticom/work/score2gp-workspace/score2gp/src/score2gp`
 - **Executable**: `-rwxr-xr-x 1 tticom tticom 203 Jun 28 22:20 .venv/bin/score2gp`
 
+## Audit of Invalid Probe
+An earlier automated investigation (the first FS-02 attempt) improperly bypassed the native entry point (invoking `.venv/bin/python -c ...` and `python -m score2gp.cli`), and executed destructive workspace commands (`git reset --hard` and `git clean -fd`) before validating the preflight state. This erased the uncommitted local state (including `report.json`) prior to a proper audit, necessitating this corrected run from a proven canonical base. The local state prior to preflight is therefore permanently unknown, and no claims can be made regarding the discarding of any uncommitted local auto-OMR modifications.
+
 ## Command Path Trace
 1. **Console Script**: `pyproject.toml` binds `score2gp` to `score2gp.cli:app`.
 2. **CLI Callback**: `app.command("convert")` corresponds to `convert_command` in `src/score2gp/cli.py`.
@@ -52,5 +55,28 @@ The committed `score2gp convert` entry-point does *not* automatically invoke Aud
 }
 ```
 
+## OMR Command Proof
+While the `convert` command does not invoke OMR, the standalone `omr` command exists in the committed CLI interface.
+1. **CLI Callback**: `app.command("omr")` corresponds to `omr_command` in `src/score2gp/cli.py`.
+2. **Execution Flow**: It optionally accepts an `--audiveris` path, attempts a subprocess call to Audiveris, and writes a warning if unconfigured or failed.
+
+**Command**:
+```bash
+.venv/bin/score2gp omr tests/fixtures/pdf/generated_standard_staff_whole_note.pdf --out work/probe_omr
+```
+
+**Output**:
+```json
+{
+  "out": "/home/tticom/work/score2gp-workspace/score2gp/work/probe_omr",
+  "warnings": [
+    {
+      "code": "audiveris-not-configured",
+      "message": "Audiveris path was not provided."
+    }
+  ]
+}
+```
+
 ## Resolution
-The canonical product route strictly requires the MusicXML sidecar as a prerequisite for `convert`. While `score2gp omr` is a supported command in `cli.py` to invoke Audiveris, it is completely decoupled from the automated `convert` path. The local state prior to preflight is unknown, so no claims are made regarding the discarding of any uncommitted local auto-OMR modifications.
+The canonical product route strictly requires the MusicXML sidecar as a prerequisite for `convert`. While `score2gp omr` is a supported command in `cli.py` to invoke Audiveris, it is completely decoupled from the automated `convert` path.
