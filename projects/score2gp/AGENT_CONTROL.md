@@ -119,6 +119,23 @@ independently authenticated human maintainer or external release integrator.
 No programme, task, prompt, or role transition may create an exception to this
 rule. This rule also never permits an amended published commit.
 
+## Unauthorized-Merge Incident Gate
+
+If Agy executes, attempts, or reports any prohibited merge action, bypass flag,
+direct push to `main`, force push, `git reset --hard`, or `git clean -fd`,
+the current task must be marked `BLOCKED` by a human or external reviewer.
+Agy must then perform no further filesystem, Git, GitHub, or task work.
+
+Work may resume only after a human has independently verified both:
+1. the WSL GitHub CLI identity is `tticom-automation`, not a maintainer or
+   administrator; and
+2. a protected `main` rule requires an independent pull-request approval and
+   excludes `tticom-automation` from all bypass permissions.
+
+A policy statement alone is not remediation. The enforcement state and identity
+verification must be recorded in a governance PR before a blocked task is
+reactivated.
+
 ## Runtime Provenance Gate
 
 Before an agent diagnoses or changes `score2gp convert` behaviour, it must
