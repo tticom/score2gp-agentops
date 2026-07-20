@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: FS-02: Canonical Entry-Point Reconciliation
+**Task**: FS-03: Stabilise The Real Path
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
@@ -10,24 +10,22 @@ APPROVED
 
 ## Task Authorised
 
-Yes. FS-01 was externally merged as product PR #378. The Runtime-Provenance
-and Functional-Stabilisation Programme may now proceed to FS-02.
+Yes. FS-02 is complete, confirming that MusicXML sidecars are explicitly required by the committed workflow. The Runtime-Provenance and Functional-Stabilisation Programme may now proceed to FS-03.
 
 ## Permissions and Boundaries
 
 - Start from `origin/main` in both repositories.
-- Implement only FS-02 as defined in
+- Implement only FS-03 as defined in
   `projects/score2gp/programmes/2026-07-19-runtime-provenance-functional-stabilisation.md`.
-- Use FS-01 evidence to answer one question: which committed function path is actually run by the supported command?
-- If a local auto-OMR path exists but is not committed, it is an uncontrolled runtime and must be cleanly committed and reviewed or discarded.
-- Do not describe an external OMR engine, a deterministic generator, or a diagnostic bridge as the product route without direct function and revision evidence.
+- Run the selected corpus, identify the first shared source/output divergence, and repair one behaviour class per PR.
+- Required evidence follows the event through source evidence, MusicXML, ScoreIR, GPIF, and rendered output where applicable.
+- A reviewer must be able to trace a ghost rest by stable event or source identifier before accepting a rest-related claim.
 
 ## Completion Evidence
 
-1. A clear, evidence-backed answer on which committed function path is actually run.
-2. If an uncontrolled runtime was found, it is cleanly committed and reviewed, or discarded.
-3. A distinct Reviewer verifies the exact PR head.
-4. Agy leaves the accepted PR `READY_FOR_EXTERNAL_MERGE`.
+1. A clear PR that repairs one behaviour class.
+2. A reviewer verifies the trace of the repaired behaviour.
+3. Agy leaves the accepted PR `READY_FOR_EXTERNAL_MERGE`.
 
 ## Unattended Continuation
 

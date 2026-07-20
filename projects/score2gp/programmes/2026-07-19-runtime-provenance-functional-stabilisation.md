@@ -74,6 +74,8 @@ reviewed or discarded. Do not describe an external OMR engine, a deterministic
 generator, or a diagnostic bridge as the product route without direct function
 and revision evidence.
 
+Completed 2026-07-20: FS-02 completed. The real product route explicitly requires a pre-existing MusicXML sidecar and does not automatically invoke Audiveris. Uncontrolled local auto-OMR paths are discarded from the supported workflow.
+
 ### FS-03 And FS-04: Stabilise The Real Path
 
 Run the selected corpus, identify the first shared source/output divergence,
