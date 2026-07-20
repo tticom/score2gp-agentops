@@ -6,7 +6,7 @@
 
 ## Status
 
-CHANGES_REQUESTED
+READY_FOR_EXTERNAL_MERGE
 
 ## Task Authorised
 
