@@ -58,6 +58,32 @@ If the WSL proof cannot be established, Agy must make no filesystem, Git, or
 GitHub write and stop. It must not compensate by resetting, cleaning, copying,
 or recreating a checkout.
 
+## WSL Edit Coherency Gate
+
+An IDE “Edited” event is not evidence that the canonical WSL worktree changed.
+Before the first write in a task, Agy must prove that its edit mechanism and
+its WSL Git commands address the same checkout.
+
+For each file it intends to change, it must use the canonical WSL environment
+to run:
+
+```bash
+pwd -P
+git rev-parse --show-toplevel
+git status --short
+git diff -- <intended-path>
+```
+
+Immediately after an edit and before staging, it must run the same WSL
+`git diff -- <intended-path>` command. It may stage only the exact intended
+diff displayed from the canonical WSL worktree.
+
+If the editor says a file changed but the WSL diff is empty, or if the path,
+worktree root, or branch differs, the editor is attached to a different
+checkout. Agy must stop without copying, recreating, resetting, cleaning, or
+otherwise synchronizing files between environments. It must report the
+mismatch for human workspace correction.
+
 ## Antigravity Automation Identity Gate
 
 This gate applies to Antigravity/Agy runs. It does not apply to a human
