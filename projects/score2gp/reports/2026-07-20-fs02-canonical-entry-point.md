@@ -10,8 +10,9 @@ Before probing, the canonical execution environment was verified exclusively via
 - Virtualenv executable exists: `-rwxr-xr-x 1 tticom tticom 203 Jun 28 22:20 .venv/bin/score2gp`
 - GitHub User: `tticom-automation`
 - Git Name/Email: `tticom-automation` / `tticomautomation@gmail.com`
-- Main Branch Protection is verified active for automation on both repositories.
+- Main Branch Protection is verified active for automation on both repositories (refer to `reports/2026-07-20-fs02-resumption-verification.md` for direct evidence).
 - Git status: Both repositories were fully clean prior to this fresh investigation.
+
 ## Audit of Invalid Probe
 The prior automated investigation run did observe a `missing_musicxml` refusal from `.venv/bin/python -m score2gp.cli`. That module invocation is not the supported console command established by FS-01, so it did not establish the production entry point.
 Before preserving the relevant local state, the agent also ran:
@@ -19,17 +20,17 @@ Before preserving the relevant local state, the agent also ran:
 git reset --hard origin/main
 git clean -fd
 ```
-Those actions violated the control policy and erased uncommitted local state (including `report.json`) prior to a proper audit. Consequently, the local state prior to preflight is permanently unknown, and no conclusion about uncommitted local routes is permitted. This necessitated this corrected run from a proven canonical base.
-
+Those actions violated the control policy prior to a proper audit. Consequently, the effects on pre-existing untracked files are unknown, and no conclusion about uncommitted local routes is permitted. This necessitated this corrected run from a proven canonical base.
 
 ## Command Path Trace
 1. **Console Script**: `pyproject.toml` binds `score2gp` to `score2gp.cli:app`.
-2. **CLI Callback**: `app.command("convert")` corresponds to `convert_command` in `src/score2gp/cli.py`.
+2. **CLI Callback**: `app.command("convert")` corresponds to `convert_command` located at `src/score2gp/cli.py:659` (Product SHA: `e72cd7c8de5277d3d3ba91234c0eea4fbd63e145`).
 3. **Execution Flow**:
    - Runs `inspect_pdf_file`
    - Runs `extract_tab_file`
    - Checks for MusicXML sidecar.
 4. **Refusal Gate**: If no MusicXML is supplied and the user didn't specify `--pdf-only-tab` or `--editable-draft`, the command explicitly refuses execution with code `missing_musicxml`.
+5. **No Automatic OMR**: Inspection of `convert_command` confirms it does not call `omr_command` or any external OMR binaries; it strictly delegates to `inspect_pdf_file` and `extract_tab_file` before hitting the orchestration gate.
 
 ## Controlled Native WSL Probe
 **Command**:
@@ -67,7 +68,7 @@ Those actions violated the control policy and erased uncommitted local state (in
 
 ## OMR Command Proof
 While the `convert` command does not invoke OMR, the standalone `omr` command exists in the committed CLI interface.
-1. **CLI Callback**: `app.command("omr")` corresponds to `omr_command` in `src/score2gp/cli.py`.
+1. **CLI Callback**: `app.command("omr")` corresponds to `omr_command` located at `src/score2gp/cli.py:351`.
 2. **Execution Flow**: It optionally accepts an `--audiveris` path, attempts a subprocess call to Audiveris, and writes a warning if unconfigured or failed.
 
 **Command**:
