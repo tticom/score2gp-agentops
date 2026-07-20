@@ -63,6 +63,8 @@ The public repository may test record schema and runner behaviour using
 synthetic/public inputs. Private corpus records remain under an ignored work
 directory. FS-01 changes no conversion semantics.
 
+Completed 2026-07-20: product PR #378 was externally merged as `e72cd7c8de5277d3d3ba91234c0eea4fbd63e145` (PR head `a8ba0e75d57f558d07acfaa0e5292f753025b533`). The native corpus baseline truthfully observed `missing_musicxml` rather than successful conversion.
+
 ### FS-02: Canonical Entry-Point Reconciliation
 
 Use FS-01 evidence to answer one question: which committed function path is
