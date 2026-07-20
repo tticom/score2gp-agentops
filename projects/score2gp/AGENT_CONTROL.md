@@ -23,6 +23,41 @@ Before any work, run and report:
 - `git fetch --all --prune`
 - `git log --oneline --decorate --max-count=5`
 
+## WSL Execution Environment Gate
+
+All Score2GP product and governance work must execute in the Ubuntu WSL
+workspace, not in a Windows checkout, PowerShell, Command Prompt, or a
+`/mnt/c` mirror. A Windows-host `wsl.exe` wrapper is allowed only to enter
+the Linux environment; the command it runs must then execute in WSL.
+
+Before reading, writing, testing, or running GitHub CLI commands, Agy must
+prove and report:
+
+```bash
+test "$(uname -s)" = "Linux"
+test "$(pwd -P)" = "/home/tticom/work/score2gp-workspace/score2gp-agentops"
+test "$(git rev-parse --show-toplevel)" = "/home/tticom/work/score2gp-workspace/score2gp-agentops"
+test -x /home/tticom/work/score2gp-workspace/score2gp/.venv/bin/python
+```
+
+When product work begins, it must similarly prove:
+
+```bash
+test "$(pwd -P)" = "/home/tticom/work/score2gp-workspace/score2gp"
+test "$(git rev-parse --show-toplevel)" = "/home/tticom/work/score2gp-workspace/score2gp"
+```
+
+Bare Windows-host `git`, `python`, `gh`, PowerShell, Command Prompt,
+`explorer.exe`, `start`, Windows paths such as `C:\\...`, and
+`/mnt/c` project worktrees are prohibited for Agy. An "Open using..." chooser
+or any attempt to open a project artefact through a Windows application is an
+environment-boundary failure: do not select an app, do not continue the task,
+and report the command and intended file/URI.
+
+If the WSL proof cannot be established, Agy must make no filesystem, Git, or
+GitHub write and stop. It must not compensate by resetting, cleaning, copying,
+or recreating a checkout.
+
 ## Antigravity Automation Identity Gate
 
 This gate applies to Antigravity/Agy runs. It does not apply to a human
