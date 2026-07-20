@@ -81,6 +81,14 @@ state could be recorded. That run cannot establish whether a pre-clean local
 route existed or was discarded. FS-02 remains active and must be repeated in
 the WSL-controlled environment.
 
+Recovery 2026-07-20: following the unauthorized-merge incident, the WSL
+GitHub and local Git identities were independently verified as
+`tticom-automation`, and active `Main_Protect` rulesets on both repositories
+were verified to require approving review, dismiss stale approvals, and deny
+that automation identity a bypass. FS-02 may resume only after the governance
+record of this verification is externally merged. PR #332 is stale and is not
+evidence of FS-02 completion.
+
 ### FS-03 And FS-04: Stabilise The Real Path
 
 Run the selected corpus, identify the first shared source/output divergence,
