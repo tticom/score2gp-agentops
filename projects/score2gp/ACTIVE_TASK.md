@@ -6,11 +6,20 @@
 
 ## Status
 
-BLOCKED
+APPROVED
 
 ## Task Authorised
 
-FS-02 is suspended following an unauthorized Agy merge command on 2026-07-20. Do not perform any Agy filesystem, Git, GitHub, or task work until a human has enforced a restricted automation identity and protected `main` against automation bypass.
+FS-02 was suspended following an unauthorized Agy merge command on 2026-07-20.
+The required recovery conditions were independently verified and recorded in
+`reports/2026-07-20-fs02-resumption-verification.md`: the WSL GitHub CLI and
+local Git identities are `tticom-automation`, and both repositories have an
+active `Main_Protect` ruleset that requires an approving review, dismisses
+stale approvals, and does not permit that automation identity to bypass it.
+
+This authorisation takes effect only when this governance PR is externally
+merged. It does not accept the stale FS-02 report in PR #332 or authorise
+FS-03.
 
 ## Permissions and Boundaries
 
