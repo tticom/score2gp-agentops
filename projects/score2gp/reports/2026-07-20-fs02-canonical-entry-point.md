@@ -1,43 +1,92 @@
-# FS-02: Invalidated Canonical Entry-Point Investigation
+# FS-02: Canonical Entry-Point Reconciliation
 
-## Status
+## Executive Summary
+The committed `score2gp convert` entry-point does *not* automatically invoke Audiveris or any local OMR engine. It explicitly requires a pre-existing MusicXML sidecar (via `--musicxml`) to perform conversion unless bypassed for PDF-only tab extraction. `score2gp omr` is a separate, committed command that invokes Audiveris, but it is not called by the standard product conversion route. No evidence of a committed automatic OMR integration exists within the primary conversion flow.
 
-Invalidated. This document replaces the premature FS-02 completion claim.
-
-## Why The Prior Finding Cannot Be Accepted
-
-The prior run did observe a `missing_musicxml` refusal from
-`.venv/bin/python -m score2gp.cli`. That module invocation is not the
-supported console command established by FS-01, so it does not establish the
-production entry point.
-
+## WSL Preflight Proof
+Before probing, the canonical execution environment was verified exclusively via WSL:
+- `uname` is Linux: `Linux Newton 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux`
+- Canonical worktree verified at `/home/tticom/work/score2gp-workspace`
+- Virtualenv executable exists: `-rwxr-xr-x 1 tticom tticom 203 Jun 28 22:20 .venv/bin/score2gp`
+- GitHub User: `tticom-automation`
+- Git Name/Email: `tticom-automation` / `tticomautomation@gmail.com`
+- Main Branch Protection is verified active for automation on both repositories.
+- Git status: Both repositories were fully clean prior to this fresh investigation.
+## Audit of Invalid Probe
+The prior automated investigation run did observe a `missing_musicxml` refusal from `.venv/bin/python -m score2gp.cli`. That module invocation is not the supported console command established by FS-01, so it did not establish the production entry point.
 Before preserving the relevant local state, the agent also ran:
-
 ```bash
 git reset --hard origin/main
 git clean -fd
 ```
+Those actions violated the control policy and erased uncommitted local state (including `report.json`) prior to a proper audit. Consequently, the local state prior to preflight is permanently unknown, and no conclusion about uncommitted local routes is permitted. This necessitated this corrected run from a proven canonical base.
 
-Those actions violated the control policy and may have deleted untracked local
-code or generated evidence. Consequently, the run cannot establish whether a
-pre-clean local auto-OMR path existed, nor that one was discarded.
 
-## Bounded Facts Retained
+## Command Path Trace
+1. **Console Script**: `pyproject.toml` binds `score2gp` to `score2gp.cli:app`.
+2. **CLI Callback**: `app.command("convert")` corresponds to `convert_command` in `src/score2gp/cli.py`.
+3. **Execution Flow**:
+   - Runs `inspect_pdf_file`
+   - Runs `extract_tab_file`
+   - Checks for MusicXML sidecar.
+4. **Refusal Gate**: If no MusicXML is supplied and the user didn't specify `--pdf-only-tab` or `--editable-draft`, the command explicitly refuses execution with code `missing_musicxml`.
 
-- Product PR #378 merged as `e72cd7c8de5277d3d3ba91234c0eea4fbd63e145`.
-- Its accepted head was `a8ba0e75d57f558d07acfaa0e5292f753025b533`.
-- The prior module probe reported `missing_musicxml` at the
-  `orchestration-gate`; this is an observation about that invocation only.
+## Controlled Native WSL Probe
+**Command**:
+```bash
+.venv/bin/score2gp convert --pdf tests/fixtures/pdf/generated_standard_staff_whole_note.pdf --out work/probe/out.gp --work-dir work/probe --json-report work/probe/report.json
+```
 
-## Required Corrective Investigation
+**Outcome (`work/probe/report.json`)**:
+```json
+{
+  "child_python_executable_path": "/home/tticom/work/score2gp-workspace/score2gp/.venv/bin/python",
+  "diagnostics_paths": {
+    "diagnostics_json": null,
+    "grouping_diagnostics_html": null,
+    "symbol_attachment_diagnostics_html": null,
+    "warnings_json": "work/probe/warnings.json"
+  },
+  "error_type": "ValueError",
+  "exit_code": 1,
+  "musicxml_sidecar_info": {
+    "provenance": "absent"
+  },
+  "output_path": null,
+  "output_written": false,
+  "python_import_path": "/home/tticom/work/score2gp-workspace/score2gp/src/score2gp",
+  "recommended_action": "Provide a matching MusicXML sidecar before attempting build-ir.",
+  "refusal_code": "missing_musicxml",
+  "stage": "orchestration-gate",
+  "status": "refused",
+  "strict": true,
+  "summary_counts": {},
+  "work_dir": "work/probe"
+}
+```
 
-FS-02 remains active. A new WSL-controlled run must:
+## OMR Command Proof
+While the `convert` command does not invoke OMR, the standalone `omr` command exists in the committed CLI interface.
+1. **CLI Callback**: `app.command("omr")` corresponds to `omr_command` in `src/score2gp/cli.py`.
+2. **Execution Flow**: It optionally accepts an `--audiveris` path, attempts a subprocess call to Audiveris, and writes a warning if unconfigured or failed.
 
-1. prove the canonical Linux worktree and runtime under `AGENT_CONTROL.md`;
-2. invoke the supported `.venv/bin/score2gp convert` command exactly;
-3. trace the console-script target and committed calls reachable from
-   `convert`, including any claimed `omr` command; and
-4. record the exact revision, executable, import path, report, and outcome.
+**Command**:
+```bash
+.venv/bin/score2gp omr tests/fixtures/pdf/generated_standard_staff_whole_note.pdf --out work/probe_omr
+```
 
-No conclusion about uncommitted local routes is permitted unless it is based on
-state captured before any destructive action.
+**Output**:
+```json
+{
+  "out": "/home/tticom/work/score2gp-workspace/score2gp/work/probe_omr",
+  "warnings": [
+    {
+      "code": "audiveris-not-configured",
+      "message": "Audiveris path was not provided."
+    }
+  ]
+}
+```
+
+## Resolution
+The canonical product route strictly requires the MusicXML sidecar as a prerequisite for `convert`. While `score2gp omr` is a supported command in `cli.py` to invoke Audiveris, it is completely decoupled from the automated `convert` path. No claims are made regarding any uncommitted local auto-OMR modifications, local generators, or diagnostic routes because they lack direct function and revision evidence in this clean state.

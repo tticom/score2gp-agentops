@@ -6,7 +6,7 @@
 
 ## Status
 
-APPROVED
+READY_FOR_HUMAN_MERGE
 
 ## Task Authorised
 
