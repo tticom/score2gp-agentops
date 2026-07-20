@@ -1,31 +1,46 @@
 # Active Task
 
-**Task**: FS-03: Stabilise The Real Path
+**Task**: FS-02: Canonical Entry-Point Reconciliation
 **Authorised Role**: Developer
 **Repository**: `tticom/score2gp` (product) and `tticom/score2gp-agentops` (governance)
 
 ## Status
 
-APPROVED
+CHANGES_REQUESTED
 
 ## Task Authorised
 
-Yes. FS-02 is complete, confirming that MusicXML sidecars are explicitly required by the committed workflow. The Runtime-Provenance and Functional-Stabilisation Programme may now proceed to FS-03.
+FS-02 remains active. A previous completion record was invalidated because it
+used a noncanonical probe and erased the local preflight state before it could
+be assessed. Do not begin the corrective investigation until the WSL Execution
+Environment Gate is externally merged.
 
 ## Permissions and Boundaries
 
-- Start from `origin/main` in both repositories.
-- Implement only FS-03 as defined in
+- Start from `origin/main` in both repositories, using the Linux workspace
+  required by `AGENT_CONTROL.md`.
+- Implement only FS-02 as defined in
   `projects/score2gp/programmes/2026-07-19-runtime-provenance-functional-stabilisation.md`.
-- Run the selected corpus, identify the first shared source/output divergence, and repair one behaviour class per PR.
-- Required evidence follows the event through source evidence, MusicXML, ScoreIR, GPIF, and rendered output where applicable.
-- A reviewer must be able to trace a ghost rest by stable event or source identifier before accepting a rest-related claim.
+- Use FS-01 evidence to answer one question: which committed function path is
+  actually run by the supported command.
+- Probe the supported `.venv/bin/score2gp convert` command, not an inferred
+  module invocation.
+- If a local auto-OMR path exists but is not committed, classify it as an
+  uncontrolled runtime. Do not claim it was discarded unless its state was
+  recorded before any destructive action.
+- Do not describe an external OMR engine, a deterministic generator, or a
+  diagnostic bridge as the product route without direct function and revision
+  evidence.
 
 ## Completion Evidence
 
-1. A clear PR that repairs one behaviour class.
-2. A reviewer verifies the trace of the repaired behaviour.
-3. Agy leaves the accepted PR `READY_FOR_EXTERNAL_MERGE`.
+1. A clear, evidence-backed answer on which committed function path is actually run.
+2. A native WSL probe of the supported command, with exact executable, import
+   path, product SHA, report, stage, and refusal/output outcome.
+3. Any uncontrolled runtime is accurately classified without deleting or
+   recreating evidence.
+4. A distinct Reviewer verifies the exact PR head.
+5. Agy leaves the accepted PR `READY_FOR_EXTERNAL_MERGE`.
 
 ## Unattended Continuation
 
