@@ -160,6 +160,25 @@ correctness from output creation. This task determines whether the missing
 grouping in FS-03C was solely a fixture mismatch and names the first shared
 product divergence only when the exact route demonstrates one.
 
+Completed 2026-07-21: governance PR #347 was externally merged as
+`cbc9e983d85750fd69d43bfadadd1642bd2fad8f`. Rootless Audiveris produced
+validated sidecars and explicit conversion reached `gp-write` for both public
+paired notation-and-TAB fixtures. The converted results had zero events and
+zero matched candidates, leaving extracted TAB candidates unused. This is an
+observed handoff, not a supported functional route.
+
+### FS-03E: Sidecar-to-ScoreIR Event-Loss Trace
+
+Use the exact FS-03D public fixtures and product revision to determine the
+first data-loss, filtering, or unsupported transformation between the
+Audiveris sidecar and the empty ScoreIR result. This is Architect-led,
+evidence-only work: reproduce the explicit sidecar route, capture counts at
+each observable boundary, map the committed parser-to-ScoreIR source path, and
+name the first observed non-zero-to-zero transition. If existing diagnostics
+cannot expose it, record that observability limit instead of adding
+instrumentation or guessing a cause. No product repair or refactor may begin
+until this trace is independently reviewed.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
