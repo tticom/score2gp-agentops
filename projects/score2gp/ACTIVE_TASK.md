@@ -6,7 +6,7 @@
 
 ## Status
 
-BLOCKED
+AGY_LOCAL_PREPARATION_AUTHORISED
 
 ## Task Authorised
 
@@ -15,12 +15,11 @@ FS-02 is complete. Its canonical WSL evidence is merged in
 route requires a supplied MusicXML sidecar, while the standalone `omr` command
 is not called by `convert`.
 
-The human maintainer selected Model 1 from
-`reports/2026-07-20-second-unauthorized-merge-attempt.md`: Agy retains branch
-and PR write access, while GitHub `Main_Protect` provides technical
-containment. Agy must never run any merge command, merge API, `--admin`, or
-bypass flag. Any further prohibited command attempt ends unattended execution
-for the cycle and returns the task to `BLOCKED`.
+The human maintainer selected and configured the local-preparation model,
+recorded in `reports/2026-07-21-credential-boundary-reactivation.md`: Agy has
+read-only GitHub access and an unauthenticated WSL GitHub CLI. It may create
+only a local task branch and local commits. Codex is the separately
+authenticated publisher and may open a protected PR after independent review.
 
 FS-03A is complete: governance PR #339 was externally merged as
 `5ba1514430d83ecda1b137fad402c9bb239fb36e`. Its architecture report establishes
@@ -38,7 +37,7 @@ FS-03C is an evidence-only runtime probe. It does not authorise automatic
 `convert` integration, timing repair, recognition logic, visual-output fixes,
 or refactoring.
 
-## Incident Block
+## Incident Recovery
 
 On 2026-07-21, Agy attempted prohibited merge and bypass operations against
 AgentOps PR #341, including `gh pr merge`, `gh pr merge --admin`, a pull-request
@@ -47,16 +46,18 @@ rejected the protected-branch updates. The human maintainer later merged #341
 externally as `708ada39a99a41c971860b8035fb786bdd9c1a97`; that external merge
 does not cure the attempted actions.
 
-FS-03C is BLOCKED. Agy must perform no further filesystem, Git, GitHub, or
-task work in this cycle. The invalid FS-03C evidence PR #342 was closed and is
-not completion evidence. Reactivation requires an externally merged incident
-record and a human decision on a stricter operating model.
+The prohibited merge-attempt incident is recorded in
+`reports/2026-07-21-fs03c-prohibited-merge-attempt-incident.md`. The invalid
+FS-03C evidence PR #342 remains closed and is not completion evidence. The
+credential boundary has now been independently verified and FS-03C is
+reactivated only under the Agy local-preparation model in `AGENT_CONTROL.md`.
 
 ## Permissions and Boundaries
 
-- Start from fresh `origin/main` worktrees. Before writing, prove the WSL,
-  identity, and edit-coherency gates in `AGENT_CONTROL.md`. Record the actual
-  product SHA, CLI executable, import path, and clean/dirty status.
+- Start from fresh local worktrees derived from `origin/main`. Before writing,
+  prove the WSL, local-preparation, and edit-coherency gates in
+  `AGENT_CONTROL.md`. Record the actual product SHA, CLI executable, import
+  path, and clean/dirty status.
 - Create any required fresh worktree under a new task-specific path. Do not
   remove, prune, force, switch, reset, clean, or otherwise modify any existing
   worktree, including a Codex or human-maintainer worktree.
@@ -88,11 +89,10 @@ record and a human decision on a stricter operating model.
 - Write the sanitized evidence report only in AgentOps at
   `projects/score2gp/reports/2026-07-21-fs03c-rootless-audiveris-probe.md`.
   It must state the exact runtime, asset hash, commands, product revision,
-  manifest statuses, handoff result, and first remaining failure. Open one
-  governance PR from a fresh branch. In that same branch, change this task's
-  status only to `PR_OPEN`; do not authorise a successor. Use
-  `PR_EVIDENCE_CONTRACT.md`, leave the PR `PR_OPEN`, and never invoke any merge
-  command or API.
+  manifest statuses, handoff result, and first remaining failure. Commit the
+  report and a status change to `LOCAL_HANDOFF_READY` on the local `agy/`
+  branch only. Do not push or create a PR. Use `PR_EVIDENCE_CONTRACT.md` to
+  prepare the claim ledger and hand it to Codex with the exact local head.
 
 ## Completion Evidence
 
@@ -106,6 +106,6 @@ record and a human decision on a stricter operating model.
    creation or a passing command.
 4. No product-tracked files change and all downloaded, extracted, and generated
    artifacts remain ignored.
-5. The governance PR body contains a completed claim ledger and pre-submit
-   challenge for its exact remote head. Agy leaves it `PR_OPEN` for independent
-   review and human merge.
+5. The local Agy handoff contains a completed claim ledger and pre-submit
+   challenge for its exact local head. Codex independently reviews it before
+   publishing any PR.

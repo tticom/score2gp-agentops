@@ -30,21 +30,28 @@ workspace, not in a Windows checkout, PowerShell, Command Prompt, or a
 `/mnt/c` mirror. A Windows-host `wsl.exe` wrapper is allowed only to enter
 the Linux environment; the command it runs must then execute in WSL.
 
-Before reading, writing, testing, or running GitHub CLI commands, Agy must
-prove and report:
+Before reading, writing, or testing, Agy must prove and report that it is in a
+canonical repository or a task-specific WSL worktree below the canonical
+workspace:
 
 ```bash
 test "$(uname -s)" = "Linux"
-test "$(pwd -P)" = "/home/tticom/work/score2gp-workspace/score2gp-agentops"
-test "$(git rev-parse --show-toplevel)" = "/home/tticom/work/score2gp-workspace/score2gp-agentops"
+test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
+case "$(git rev-parse --show-toplevel)" in
+  /home/tticom/work/score2gp-workspace/score2gp-agentops|/home/tticom/work/score2gp-workspace/score2gp-agentops-*) ;;
+  *) exit 1 ;;
+esac
 test -x /home/tticom/work/score2gp-workspace/score2gp/.venv/bin/python
 ```
 
 When product work begins, it must similarly prove:
 
 ```bash
-test "$(pwd -P)" = "/home/tticom/work/score2gp-workspace/score2gp"
-test "$(git rev-parse --show-toplevel)" = "/home/tticom/work/score2gp-workspace/score2gp"
+test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
+case "$(git rev-parse --show-toplevel)" in
+  /home/tticom/work/score2gp-workspace/score2gp|/home/tticom/work/score2gp-workspace/score2gp-*) ;;
+  *) exit 1 ;;
+esac
 ```
 
 Bare Windows-host `git`, `python`, `gh`, PowerShell, Command Prompt,
@@ -84,43 +91,49 @@ checkout. Agy must stop without copying, recreating, resetting, cleaning, or
 otherwise synchronizing files between environments. It must report the
 mismatch for human workspace correction.
 
-## Antigravity Automation Identity Gate
+## Agy Local-Preparation Boundary
 
 This gate applies to Antigravity/Agy runs. It does not apply to a human
-maintainer or a separately authenticated Codex review session.
+maintainer or the separately authenticated `tticom-codex` release session.
 
-Before an Agy run creates a branch, commits, pushes, creates a PR, comments on
-a PR, or performs any merge operation, it must prove that its active GitHub CLI
-identity is the machine user `tticom-automation`:
+`tticom-automation` is deliberately read-only on GitHub. Agy prepares local,
+reviewable work; it is not a GitHub publisher, reviewer, or merge operator.
 
-```bash
-test "$(gh api user --jq .login)" = "tticom-automation"
-```
-
-It must also verify the local Git author identity in every repository it will
-write:
+Before Agy writes, it must prove both of these facts in WSL:
 
 ```bash
+! gh auth status >/dev/null 2>&1
 test "$(git config --local --get user.name)" = "tticom-automation"
 test "$(git config --local --get user.email)" = "tticomautomation@gmail.com"
 ```
 
-If any check fails, Agy may inspect repositories but must make no remote or
-local write. It must report the failed identity check and stop. It must not
-switch to, use, or borrow the maintainer's `tticom` credentials.
+If the GitHub CLI is authenticated, the local Git identity differs, or either
+proof cannot be established, Agy may inspect but must make no local or remote
+write. It must report and stop. It must never use, borrow, configure, or invoke
+the `tticom-codex` or maintainer credential, including through a Windows-host
+executable.
 
-The automation machine user must never use `--admin`, a bypass flag, direct
-pushes to `main`, force pushes, `git reset --hard`, `git clean` with deletion
-flags, `git worktree remove`, `git worktree prune`, any `git worktree` force
-flag, branch deletion for an open PR, or **any PR
-merge command or API**. In particular, Agy must never run `gh pr merge`, merge
-through the GitHub web UI, invoke a merge API, or treat a PR as merged because
-its own checks pass. It opens and revises PRs, then leaves them for an
-independently authenticated human maintainer or external release integrator.
-No programme, task, prompt, or role transition may create an exception to this
-rule. Agy may create a new worktree only for the current task and must leave
-every pre-existing worktree untouched. This rule also never permits an amended
-published commit.
+Agy may create one new task-specific local worktree and local branch from
+`origin/main`, make authorised changes, run validation, and create ordinary
+local commits. Its branch must begin `agy/` and it must leave every pre-existing
+worktree untouched. It must not run `gh` after the authentication proof and
+must never push, create or edit a pull request, comment, approve, request
+auto-merge, invoke a merge API, open GitHub in a browser, or otherwise write
+to GitHub.
+
+At handoff Agy must report the local branch, exact local head SHA, base SHA,
+clean/dirty status, changed-file list, validation results, and remaining risks.
+It leaves the branch and worktree in place for Codex. It must not amend a
+published commit, force-push, directly push to `main`, use `--admin` or any
+bypass flag, run `git reset --hard`, run `git clean` with deletion flags, run
+`git worktree remove` or `git worktree prune`, use any `git worktree` force
+flag, or delete a branch for an open PR.
+
+Codex independently reviews the local handoff in a separate clean worktree. If
+it is acceptable, Codex creates the remote task branch and pull request using
+the `tticom-codex` credential. Only a protected pull request with independent
+human approval may be merged. No programme, task, prompt, or role transition
+creates an exception to this boundary.
 
 ## Unauthorized-Merge Incident Gate
 
@@ -130,9 +143,8 @@ direct push to `main`, force push, destructive worktree command, `git reset
 the current task must be marked `BLOCKED` by a human or external reviewer.
 Agy must then perform no further filesystem, Git, GitHub, or task work.
 
-Work may resume only after a human has independently verified both:
-1. the WSL GitHub CLI identity is `tticom-automation`, not a maintainer or
-   administrator; and
+Work may resume only after a human or Codex has independently verified both:
+1. the WSL GitHub CLI has no authenticated account available to Agy; and
 2. a protected `main` rule requires an independent pull-request approval and
    excludes `tticom-automation` from all bypass permissions.
 
