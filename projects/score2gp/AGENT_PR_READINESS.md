@@ -2,6 +2,18 @@
 
 This document defines the strict workflow for evaluating and reporting Pull Request readiness. Agents must follow these rules before declaring a PR complete or ready for human review.
 
+## 0. Author Evidence Gate
+
+Before opening or revising a PR, the author must obey
+`projects/score2gp/PR_EVIDENCE_CONTRACT.md`. The PR body must include its
+required claim ledger and pre-submit challenge. A reviewer must reject a PR
+whose body merely summarizes intent, test totals, or optimistic conclusions.
+
+Authors must not submit a GitHub self-review, reply to their own review as an
+independent verification, or describe a PR as "approved", "complete", or
+"ready for merge". The permitted pre-review state is `PR_OPEN — awaiting
+independent review`.
+
 ## 1. Readiness Verification
 
 Do not report a PR as ready until CI/checks have completed and all Codex comments, review submissions, inline review threads, unresolved review threads, and normal PR comments have been inspected and explicitly dispositioned.

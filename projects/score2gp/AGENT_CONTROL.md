@@ -165,10 +165,16 @@ Agents must then read, in this order:
 
 1. `projects/score2gp/AGENT_CONTROL.md`
 2. `projects/score2gp/AGENT_PR_READINESS.md`
-3. `projects/score2gp/ACTIVE_TASK.md`
-4. `projects/score2gp/APPROVED_TASK_QUEUE.md`
-5. `projects/score2gp/TASKS.md`
-6. Relevant task template(s) under `projects/score2gp/templates/`
+3. `projects/score2gp/PR_EVIDENCE_CONTRACT.md` before creating or revising a PR
+4. `projects/score2gp/ACTIVE_TASK.md`
+5. `projects/score2gp/APPROVED_TASK_QUEUE.md`
+6. `projects/score2gp/TASKS.md`
+7. Relevant task template(s) under `projects/score2gp/templates/`
+
+The PR Evidence Contract is an author-side gate. It does not replace the
+adversarial Reviewer role or human merge requirement. Its purpose is to make
+the exact claims, proof, limits, and remaining unknowns inspectable in one
+review pass before a PR is opened.
 
 ### Role skill loading
 

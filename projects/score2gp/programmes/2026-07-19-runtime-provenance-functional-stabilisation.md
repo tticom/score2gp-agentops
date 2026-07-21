@@ -109,6 +109,22 @@ FS-03A is an Architect-first prerequisite: define the supported, provenance
 recorded MusicXML timing-source route before implementing this phase. It must
 not assume that the standalone OMR command is integrated with `convert`.
 
+Completed 2026-07-21: governance PR #339 was externally merged as
+`5ba1514430d83ecda1b137fad402c9bb239fb36e`. It established that the explicit
+MusicXML sidecar is the only supported timing-source route at the examined
+product revision, and that the standalone `omr` route remains unproven until
+it has an artifact contract.
+
+### FS-03B: OMR Artifact Contract
+
+Create the smallest public-testable contract around the existing standalone
+`omr` command: deterministic XML/MXL discovery, zero/multiple candidate
+refusals, XML/MXL validation, PDF/artifact hashes, a machine-readable manifest,
+and an explicit `convert --musicxml` handoff path. It must not call `convert`,
+make `convert` call `omr`, require Audiveris in public CI, or alter recognition,
+timing semantics, ScoreIR, GPIF, layout, or embellishment behaviour. The
+product PR must obey `PR_EVIDENCE_CONTRACT.md`.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
