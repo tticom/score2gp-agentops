@@ -1,12 +1,12 @@
 # Active Task
 
-**Task**: FS-03A: Supported Timing-Source Route Architecture
-**Authorised Role**: Architect
-**Repository**: `tticom/score2gp` (read-only) and `tticom/score2gp-agentops`
+**Task**: FS-03B: OMR Artifact Contract
+**Authorised Role**: Developer
+**Repository**: `tticom/score2gp` and `tticom/score2gp-agentops`
 
 ## Status
 
-PR_OPEN
+APPROVED
 
 ## Task Authorised
 
@@ -22,34 +22,44 @@ containment. Agy must never run any merge command, merge API, `--admin`, or
 bypass flag. Any further prohibited command attempt ends unattended execution
 for the cycle and returns the task to `BLOCKED`.
 
-FS-03A defines the smallest credible supported timing-source route before any
-product implementation. It does not authorise FS-03 implementation, FS-04,
-or refactoring.
+FS-03A is complete: governance PR #339 was externally merged as
+`5ba1514430d83ecda1b137fad402c9bb239fb36e`. Its architecture report establishes
+that `convert` requires an explicit MusicXML sidecar and that the standalone
+`omr` command has no proven artifact contract or supported handoff.
+
+FS-03B is the smallest implementation needed to establish that contract. It
+does not authorise automatic `convert` integration, timing repair, recognition
+logic, visual-output fixes, or refactoring.
 
 ## Permissions and Boundaries
 
-- Read the product repository and existing public/private fixture evidence;
-  do not modify product files.
-- Write one governance architecture report and, if necessary, update only this
-  active task to `PR_OPEN` on the task branch.
-- Establish the contract for obtaining, validating, and recording a MusicXML
-  timing source for `score2gp convert`.
-- Assess the committed standalone `omr` command, its Audiveris dependency, and
-  any other committed option. Classify unavailable or uncommitted routes as
-  unavailable or uncontrolled; do not invent an integration.
-- Define a corpus acceptance matrix for Lessons 3 through 7 and the first
-  source-to-output divergence to address after a timing source exists.
-- Keep the refactor deferred. `whole_note_recogniser.py` naming and package
-  design are not in scope until the functional route is stable.
+- Begin a fresh product branch from `origin/main`; do not use an earlier spike
+  or prototype branch.
+- Implement a bounded artifact-contract helper for the existing `score2gp omr`
+  route. Given a PDF and an OMR output directory, it must deterministically
+  discover exactly one candidate MusicXML artifact, reject zero or multiple
+  candidates, validate XML or MXL structure, and write a machine-readable
+  manifest containing PDF and artifact SHA-256 values, product SHA, configured
+  executable, discovery result, validation status, and explicit handoff path.
+- The command must fail with stable, documented refusal codes for no artifact,
+  multiple artifacts, malformed XML/MXL, and unbound or invalid artifact.
+- Public tests must use synthetic output directories and fixtures or mocks;
+  public CI must not require Audiveris. A private probe is optional evidence
+  only and must remain ignored.
+- Do not call `convert` from `omr`, do not make `convert` invoke `omr`, and do
+  not change ScoreIR, GPIF, timing, recognition, layout, or refactor modules.
+- Follow `PR_EVIDENCE_CONTRACT.md` before creating the product PR. Leave the
+  PR open for independent review and human merge; never invoke a merge command.
 
 ## Completion Evidence
 
-1. A revision-bound source-to-output map for each candidate timing-source
-   route.
-2. A recommended supported route, with prerequisites, failure behaviour,
-   provenance fields, and a reason it is preferable to the alternatives.
-3. Explicitly deferred work and a narrowly scoped first implementation task.
-4. No product code changes, no fixtures or generated artifacts committed, and
-   a clean named-file diff.
+1. Unit tests demonstrate each discovery and validation failure mode and one
+   valid XML/MXL manifest path without calling an external OMR binary.
+2. The manifest makes the artifact path and explicit next `convert --musicxml`
+   handoff unambiguous, without automatically running conversion.
+3. Product verification is run from the canonical WSL executable, and private
+   evidence remains ignored.
+4. The product PR body contains a completed claim ledger and pre-submit
+   challenge for its exact remote head.
 5. A distinct Reviewer verifies the exact remote PR head. Agy leaves the PR
    for human merge and never invokes a merge command.
