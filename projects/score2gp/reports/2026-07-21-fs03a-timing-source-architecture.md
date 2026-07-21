@@ -21,31 +21,28 @@ It is completely decoupled from the `convert` command.
 ## 2. Integration Feasibility
 
 Can Audiveris output become a validated MusicXML sidecar in the supported route?
-**Yes.** The decoupled nature of the `omr` command allows Audiveris to generate a MusicXML (`.mxl` or `.xml`) artifact independently. This output file can be explicitly fed into the supported `convert --musicxml` route, fulfilling the timing-source requirement without violating the explicit separation of OMR logic from the deterministic build phase.
+**Unproven.** The current `omr` command merely launches Audiveris as a subprocess and records warnings. It does not establish an explicit output contract, nor has it been proven that it consistently produces a discoverable, valid `.xml` or `.mxl` artifact. While the decoupled architecture allows an artifact to be fed into `convert --musicxml`, the reliable generation and discovery of that artifact remains unverified.
 
 ## 3. Route Classification
 
-- **Supported Route**: Two-step decoupled process:
-  1. Generate MusicXML sidecar (e.g., using `score2gp omr`).
-  2. Execute `score2gp convert --pdf <path> --musicxml <path>`.
-- **Unavailable Route**: Fully automated end-to-end `convert` that invisibly invokes Audiveris.
-- **Uncontrolled Route**: Any uncommitted script or modified entry point that attempts to pipeline `omr` directly into `convert` in a single unmonitored execution without recording the intermediate artifact.
+- **Supported Route**: Providing a valid MusicXML sidecar to `score2gp convert --pdf <path> --musicxml <sidecar_path>`.
+- **Unavailable Route**: Fully automated end-to-end `convert` that invisibly invokes Audiveris, or relying on `omr` output without an explicit, proven artifact contract.
+- **Uncontrolled Route**: Any uncommitted script or modified entry point that attempts to pipeline `omr` directly into `convert` in a single unmonitored execution.
 
 ## 4. Governance Constraints
 
 - **Provenance**: The source of timing data (the sidecar) must remain explicit on the CLI invocation (`--musicxml`).
-- **Validation**: Any generated sidecar must be valid MusicXML prior to integration. `convert` performs semantic validation in its orchestration gate.
+- **Validation**: The `convert` command currently only verifies the existence of the sidecar file before proceeding to `build-ir`. It does not perform semantic validation at the orchestration gate. Therefore, the artifact contract must guarantee valid MusicXML.
 - **Failure Behaviour**:
-  - If Audiveris fails to produce MusicXML, the `omr` command fails cleanly and writes to the warnings manifest.
-  - If `convert` receives an invalid or missing sidecar, it fails in the `orchestration-gate` phase.
+  - The `omr` command currently only reports if the subprocess fails or writes to a log.
+  - If `convert` receives a structurally invalid sidecar, it will fail downstream during `build-ir` processing.
 - **Lessons 3-7 Corpus Acceptance Matrix**:
-  - The integration will be tested against the Lessons 3-7 corpus.
-  - Acceptance requires the decoupled process to yield successful alignments and valid `.gp` package generation for the corpus, matching the expected output baseline.
+  - Acceptance requires proving that an explicit Audiveris artifact contract can yield successful alignments and valid `.gp` package generation for the corpus, matching expected output baselines.
 
 ## 5. Recommendation
 
 **Smallest First Product Implementation Task**:
-Implement a CI or diagnostic script that orchestrates the two-step supported route for a single fixture from the Lessons 3-7 corpus: first running `score2gp omr`, asserting output existence, and then running `score2gp convert --musicxml` using that artifact. This validates the pipeline practically before further tooling.
+Before attempting to orchestrate the full pipeline, the project must establish a proper artifact contract for the `omr` command. The recommended first task is to prove that Audiveris produces a discoverable, valid `.xml`/`.mxl` artifact for a single fixture, and to define the exact pathing and validation rules for that artifact.
 
 ## 6. Recogniser Refactoring
 
