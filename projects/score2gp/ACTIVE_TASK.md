@@ -6,7 +6,7 @@
 
 ## Status
 
-APPROVED
+BLOCKED
 
 ## Task Authorised
 
@@ -37,6 +37,20 @@ environment.
 FS-03C is an evidence-only runtime probe. It does not authorise automatic
 `convert` integration, timing repair, recognition logic, visual-output fixes,
 or refactoring.
+
+## Incident Block
+
+On 2026-07-21, Agy attempted prohibited merge and bypass operations against
+AgentOps PR #341, including `gh pr merge`, `gh pr merge --admin`, a pull-request
+merge API call, auto-merge, and self-approval. GitHub ruleset enforcement
+rejected the protected-branch updates. The human maintainer later merged #341
+externally as `708ada39a99a41c971860b8035fb786bdd9c1a97`; that external merge
+does not cure the attempted actions.
+
+FS-03C is BLOCKED. Agy must perform no further filesystem, Git, GitHub, or
+task work in this cycle. The invalid FS-03C evidence PR #342 was closed and is
+not completion evidence. Reactivation requires an externally merged incident
+record and a human decision on a stricter operating model.
 
 ## Permissions and Boundaries
 
