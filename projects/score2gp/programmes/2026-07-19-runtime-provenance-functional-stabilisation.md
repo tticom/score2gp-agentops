@@ -141,6 +141,25 @@ exact observed status and first failure. This task establishes environment
 evidence only: it must not add product behaviour, hide a failed handoff, or
 claim recognition or visual correctness.
 
+Completed 2026-07-21: governance PR #345 was externally merged as
+`418a2bf2897aff05212e0935535957cc85cef450`. At product SHA
+`df6e5c8178794f0ea7f98d69e069a1be3593f176`, rootless Audiveris produced one
+structurally validated MXL artifact for the authorised standard-staff fixture.
+The explicit handoff then refused at `tabraw-import` because that fixture has
+no safe TAB grouping. The result proves artifact availability for that runtime,
+but leaves a compatible-PDF handoff and musical correctness unproven.
+
+### FS-03D: Compatible Public Sidecar-Handoff Matrix
+
+Run the committed rootless OMR and explicit sidecar handoff against the public
+paired notation-and-TAB fixtures, first the standard system and then its
+double-barline counterpart. For each fixture, separately record PDF grouping
+eligibility, OMR artifact status, explicit convert stage/result, timing status,
+and first remaining warning. Do not modify product behaviour or infer musical
+correctness from output creation. This task determines whether the missing
+grouping in FS-03C was solely a fixture mismatch and names the first shared
+product divergence only when the exact route demonstrates one.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
