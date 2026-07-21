@@ -5,16 +5,16 @@
 **Product SHA**: `e72cd7c8de5277d3d3ba91234c0eea4fbd63e145` (from `score2gp` main)
 
 **Exact Current `convert --musicxml` Route**:
-The supported route for PDF conversion invokes `score2gp convert --pdf <path> --musicxml <sidecar_path>`. The command (defined in `src/score2gp/cli.py`):
+The supported route for PDF conversion invokes `score2gp convert --pdf <path> --musicxml <sidecar_path>`. The command (defined at `src/score2gp/cli.py:658`, `convert_command`):
 1. Validates the PDF file.
 2. Inspects and extracts tab vectors from the PDF.
-3. Requires the MusicXML sidecar path and verifies its existence.
+3. Requires the MusicXML sidecar path and verifies its existence (`src/score2gp/cli.py:796-847`).
 4. Proceeds to `build-ir` if the sidecar and valid vector geometries are provided.
 
 **Standalone `omr` Route**:
-The product supports a standalone OMR capability via `score2gp omr <pdf_path> --audiveris <audiveris_path>`. The command (defined in `src/score2gp/cli.py`):
+The product supports a standalone OMR capability via `score2gp omr <pdf_path> --audiveris <audiveris_path>`. The command (defined at `src/score2gp/cli.py:350`, `omr_command`):
 1. Resolves the input PDF and Audiveris executable paths.
-2. Invokes Audiveris via a subprocess: `audiveris -batch -export -output <out> <pdf>`.
+2. Invokes Audiveris via a subprocess: `audiveris -batch -export -output <out> <pdf>` (`src/score2gp/cli.py:364-370`).
 3. Records stdout/stderr to a log and captures the result/warnings.
 It does not validate the input PDF content or establish an explicit artifact contract. It is completely decoupled from the `convert` command.
 
@@ -40,7 +40,11 @@ Can Audiveris output become a validated MusicXML sidecar in the supported route?
 - **Lessons 3-7 Corpus Acceptance Matrix**:
   | Input | Timing Source | Expected Stage | Pass/Refusal Outcome |
   | :--- | :--- | :--- | :--- |
-  | `lesson-*.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
+  | `lesson-3.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
+  | `lesson-4.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
+  | `lesson-5.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
+  | `lesson-6.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
+  | `lesson-7.pdf` + Sidecar | Provided via `--musicxml` | `build-ir` | Pass (Valid GP Output) |
   | Any PDF + Missing Sidecar | None | `orchestration-gate` | Refusal (`missing_musicxml`) |
   | Any PDF + Invalid Sidecar | Invalid | `build-ir` | Refusal (Parse/Validation Error) |
   | `omr` (No Audiveris) | None | `omr` | Refusal (`audiveris-not-configured`) |
