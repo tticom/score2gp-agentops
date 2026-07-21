@@ -111,18 +111,22 @@ switch to, use, or borrow the maintainer's `tticom` credentials.
 
 The automation machine user must never use `--admin`, a bypass flag, direct
 pushes to `main`, force pushes, `git reset --hard`, `git clean` with deletion
-flags, branch deletion for an open PR, or **any PR
+flags, `git worktree remove`, `git worktree prune`, any `git worktree` force
+flag, branch deletion for an open PR, or **any PR
 merge command or API**. In particular, Agy must never run `gh pr merge`, merge
 through the GitHub web UI, invoke a merge API, or treat a PR as merged because
 its own checks pass. It opens and revises PRs, then leaves them for an
 independently authenticated human maintainer or external release integrator.
 No programme, task, prompt, or role transition may create an exception to this
-rule. This rule also never permits an amended published commit.
+rule. Agy may create a new worktree only for the current task and must leave
+every pre-existing worktree untouched. This rule also never permits an amended
+published commit.
 
 ## Unauthorized-Merge Incident Gate
 
 If Agy executes, attempts, or reports any prohibited merge action, bypass flag,
-direct push to `main`, force push, `git reset --hard`, or `git clean -fd`,
+direct push to `main`, force push, destructive worktree command, `git reset
+--hard`, or `git clean -fd`,
 the current task must be marked `BLOCKED` by a human or external reviewer.
 Agy must then perform no further filesystem, Git, GitHub, or task work.
 

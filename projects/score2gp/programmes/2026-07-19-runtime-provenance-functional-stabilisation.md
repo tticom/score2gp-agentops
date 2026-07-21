@@ -125,6 +125,22 @@ make `convert` call `omr`, require Audiveris in public CI, or alter recognition,
 timing semantics, ScoreIR, GPIF, layout, or embellishment behaviour. The
 product PR must obey `PR_EVIDENCE_CONTRACT.md`.
 
+Completed 2026-07-21: product PR #379 was externally merged as
+`df6e5c8178794f0ea7f98d69e069a1be3593f176` from reviewed head
+`60b0fa1622292f42032aa98f0b3d99e7b5240d29`. It adds deterministic standalone
+OMR artifact discovery, validation, and manifest generation. It does not prove
+that Audiveris is installed or that its output can be handed to `convert`.
+
+### FS-03C: Rootless Audiveris Runtime Probe
+
+Use the official pinned Audiveris 5.7.0 Ubuntu 24.04 x86_64 package in an
+ignored, user-local WSL probe directory. Verify the published SHA-256 before
+extracting it without root privileges, run one public-fixture `omr` invocation,
+then explicitly pass any validated sidecar to `convert --musicxml`. Record the
+exact observed status and first failure. This task establishes environment
+evidence only: it must not add product behaviour, hide a failed handoff, or
+claim recognition or visual correctness.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
