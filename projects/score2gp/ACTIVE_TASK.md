@@ -43,6 +43,9 @@ or refactoring.
 - Start from fresh `origin/main` worktrees. Before writing, prove the WSL,
   identity, and edit-coherency gates in `AGENT_CONTROL.md`. Record the actual
   product SHA, CLI executable, import path, and clean/dirty status.
+- Create any required fresh worktree under a new task-specific path. Do not
+  remove, prune, force, switch, reset, clean, or otherwise modify any existing
+  worktree, including a Codex or human-maintainer worktree.
 - Use only the official Audiveris 5.7.0 Ubuntu 24.04 x86_64 release asset:
   `Audiveris-5.7.0-ubuntu24.04-x86_64.deb`,
   `https://github.com/Audiveris/audiveris/releases/download/5.7.0/Audiveris-5.7.0-ubuntu24.04-x86_64.deb`,
