@@ -6,7 +6,7 @@
 
 ## Status
 
-AGY_LOCAL_PREPARATION_AUTHORISED
+PR_OPEN
 
 ## Task Authorised
 
