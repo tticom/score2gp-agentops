@@ -3,7 +3,7 @@
 **Authorised Role**: Architect, Tier B evidence-only
 **Repository**: `tticom/score2gp` and `tticom/score2gp-agentops`
 **Date**: 2026-07-22
-**AgentOps Local Head**: Pending final local commit (supersedes historical evidence commits `4a0dd9c3bde0c1332d2d58dce89d7ad46d78ea89` and `23c7e6bd2ea2ae34227e63f20920041831aeccb4`; branch `agy/fs03e-event-loss-trace`)
+**Agy Local Evidence Commits**: `4a0dd9c3bde0c1332d2d58dce89d7ad46d78ea89`, `23c7e6bd2ea2ae34227e63f20920041831aeccb4`, and `5ed1a08b9af7e7151d87e8547f12fa79e30ea1bb` on branch `agy/fs03e-event-loss-trace`
 **Product Local Head**: `df6e5c8178794f0ea7f98d69e069a1be3593f176` (branch `agy/fs03e-event-loss-trace-product`)
 **Worktree-Local Python Interpreter**: `/home/tticom/work/score2gp-workspace/score2gp-agy-fs03e-trace/.venv/bin/python`
 **Canonical CLI Executable**: `/home/tticom/work/score2gp-workspace/score2gp-agy-fs03e-trace/.venv/bin/score2gp`
@@ -115,7 +115,7 @@ At product SHA `df6e5c8178794f0ea7f98d69e069a1be3593f176`, the canonical `.venv/
 ### Component Inspection Details
 
 1. **`cli.convert`**: Entry point for conversion CLI command in `src/score2gp/cli.py`.
-2. **`build_ir_with_diagnostics_from_files`**: Located in `src/score2gp/build_ir.py`. Calls `parse_musicxml` on the sidecar path and `extract_tab_candidates_from_pdf` / `TabRaw` on the PDF path.
+2. **`cli.convert` preparation and `build_ir_with_diagnostics_from_files`**: `cli.convert` first writes the PDF extraction to `tab_raw.json` through `extract_tab_file`. `build_ir_with_diagnostics_from_files`, in `src/score2gp/build_ir.py`, then loads that `TabRaw` from its path and calls `parse_musicxml` on the sidecar path.
 3. **`parse_musicxml`**: Located in `src/score2gp/musicxml.py`. Iterates through XML `<part>` and `<measure>` nodes. Because `<note>` tags are absent in the Audiveris `.mxl` file, `measure.notes` is returned as an empty list (`[]`), instantiating 0 `MusicXmlNote` objects.
 4. **`build_ir_with_diagnostics_from_imports`**: Located in `src/score2gp/build_ir.py`. Selects `musicxml.parts[0]` (`P1`). Since Audiveris produced 2 parts (`P1` and `P2`), it logs `MusicXmlWarning` code `musicxml-extra-parts-ignored` for `P2`.
 5. **`CandidatePools.from_tabraw`**: Located in `src/score2gp/build_ir.py`. Loads TabRaw candidates (3 for Candidate 1, 2 for Candidate 2) into candidate pools.
@@ -191,7 +191,7 @@ The cause of zero notes in the Audiveris-generated MusicXML remains **unproven**
 ## 9. Local Handoff Verification
 
 - AgentOps Branch: `agy/fs03e-event-loss-trace`
-- AgentOps Historical Evidence Commits: `4a0dd9c3bde0c1332d2d58dce89d7ad46d78ea89` and `23c7e6bd2ea2ae34227e63f20920041831aeccb4`
+- AgentOps Local Evidence Commits: `4a0dd9c3bde0c1332d2d58dce89d7ad46d78ea89`, `23c7e6bd2ea2ae34227e63f20920041831aeccb4`, and `5ed1a08b9af7e7151d87e8547f12fa79e30ea1bb`
 - Product Branch: `agy/fs03e-event-loss-trace-product`
 - Product HEAD: `df6e5c8178794f0ea7f98d69e069a1be3593f176`
 - Changed Files in AgentOps:
