@@ -179,6 +179,12 @@ cannot expose it, record that observability limit instead of adding
 instrumentation or guessing a cause. No product repair or refactor may begin
 until this trace is independently reviewed.
 
+Completed 2026-07-23: governance PR #349 was externally merged as 9004ea5. The canonical Audiveris sidecars for both paired public fixtures already contained zero MusicXML note, pitch, and rest elements. The supported conversion route then produced zero ScoreIR events without an observed Score2GP-side loss. The cause of the empty OMR artifact remains unproven.
+
+### FS-03F: Valid Public MusicXML Sidecar Handoff Verification
+
+Verify the explicit sidecar route independently of Audiveris using the existing public generated_tiny_tab.pdf and matching generated_tiny_tab.musicxml fixtures. Run the worktree-local committed CLI; record input hashes and MusicXML, ScoreIR, and report counts; establish whether it produces non-zero events and consumes at least one TAB candidate. Record unmatched candidates and warnings. Do not claim musical equivalence or alter product behaviour or fixtures.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
