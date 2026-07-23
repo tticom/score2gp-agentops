@@ -4,9 +4,11 @@ This file is the governance control policy for agentic work on `score2gp`.
 
 Agents must not treat task lists, backlog files, research notes, handoffs, or unchecked checklist items as permission to execute.
 
-The only executable task source is:
+The normal executable task source is:
 
 `projects/score2gp/ACTIVE_TASK.md`
+
+The Agy Fast Delivery Lane below is the explicit exception: its executable task source is the versioned prompt selected by `projects/score2gp/prompts/NEXT.md`.
 
 If `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`, the agent must stop after preflight and report.
 
@@ -91,49 +93,23 @@ checkout. Agy must stop without copying, recreating, resetting, cleaning, or
 otherwise synchronizing files between environments. It must report the
 mismatch for human workspace correction.
 
-## Agy Local-Preparation Boundary
+## Agy Fast Delivery Lane
 
-This gate applies to Antigravity/Agy runs. It does not apply to a human
-maintainer or the separately authenticated `tticom-codex` release session.
+This section supersedes every conflicting local-preparation or GitHub restriction below. It applies only to the authenticated GitHub account tticom-automation.
 
-`tticom-automation` is deliberately read-only on GitHub. Agy prepares local,
-reviewable work; it is not a GitHub publisher, reviewer, or merge operator.
+The user command next or go means: read projects/score2gp/prompts/NEXT.md and execute the one versioned prompt named there. Do not ask for confirmation between normal task steps.
 
-Before Agy writes, it must prove both of these facts in WSL:
+Agy may:
+- use authenticated WSL gh as tticom-automation after proving the account and local Git identity;
+- fetch, create a branch beginning agy/, commit, push that branch, and create or update a pull request;
+- run relevant tests and write task-scoped reports or product changes authorized by the current versioned prompt.
 
-```bash
-! gh auth status >/dev/null 2>&1
-test "$(git config --local --get user.name)" = "tticom-automation"
-test "$(git config --local --get user.email)" = "tticomautomation@gmail.com"
-```
+Agy must never:
+- push directly to main, force-push, delete branches, reset or clean destructively, use admin or bypass flags, enable auto-merge, call a merge API, or merge any pull request;
+- begin a second task while its current task PR is open;
+- claim musical correctness, a fix, or completion without the prompt's required evidence.
 
-If the GitHub CLI is authenticated, the local Git identity differs, or either
-proof cannot be established, Agy may inspect but must make no local or remote
-write. It must report and stop. It must never use, borrow, configure, or invoke
-the `tticom-codex` or maintainer credential, including through a Windows-host
-executable.
-
-Agy may create one new task-specific local worktree and local branch from
-`origin/main`, make authorised changes, run validation, and create ordinary
-local commits. Its branch must begin `agy/` and it must leave every pre-existing
-worktree untouched. It must not run `gh` after the authentication proof and
-must never push, create or edit a pull request, comment, approve, request
-auto-merge, invoke a merge API, open GitHub in a browser, or otherwise write
-to GitHub.
-
-At handoff Agy must report the local branch, exact local head SHA, base SHA,
-clean/dirty status, changed-file list, validation results, and remaining risks.
-It leaves the branch and worktree in place for Codex. It must not amend a
-published commit, force-push, directly push to `main`, use `--admin` or any
-bypass flag, run `git reset --hard`, run `git clean` with deletion flags, run
-`git worktree remove` or `git worktree prune`, use any `git worktree` force
-flag, or delete a branch for an open PR.
-
-Codex independently reviews the local handoff in a separate clean worktree. If
-it is acceptable, Codex creates the remote task branch and pull request using
-the `tticom-codex` credential. Only a protected pull request with independent
-human approval may be merged. No programme, task, prompt, or role transition
-creates an exception to this boundary.
+The cadence is one governance step followed by one development step. Agy does the implementation or evidence collection and publishes its PR. Codex reviews, makes any small publication correction, and merges. Agy may approve a Codex-authored governance PR only when its versioned prompt explicitly identifies that PR; it still must not merge it.
 
 ## Unauthorized-Merge Incident Gate
 
@@ -144,7 +120,7 @@ the current task must be marked `BLOCKED` by a human or external reviewer.
 Agy must then perform no further filesystem, Git, GitHub, or task work.
 
 Work may resume only after a human or Codex has independently verified both:
-1. the WSL GitHub CLI has no authenticated account available to Agy; and
+1. the WSL GitHub CLI identifies `tticom-automation` and the local Git identity matches it; and
 2. a protected `main` rule requires an independent pull-request approval and
    excludes `tticom-automation` from all bypass permissions.
 
