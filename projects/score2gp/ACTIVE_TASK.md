@@ -6,7 +6,7 @@
 
 ## Status
 
-AGY_EXECUTION_AUTHORISED
+PR_OPEN
 
 ## Context
 
