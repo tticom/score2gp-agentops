@@ -49,6 +49,7 @@ The proposed package layout partitions existing functions into single-purpose su
 src/score2gp/
 ├── notation_omr/
 │   ├── __init__.py                # Package exports
+│   ├── evidence.py                # Shared candidate-evidence shaping
 │   ├── staff_geometry.py          # Staff bounds, system clustering, ledger lines
 │   ├── clef.py                    # Treble clef detection and clef-resolved coverage
 │   ├── notehead.py                # Whole, half, quarter, and cluster notehead candidates
@@ -65,7 +66,7 @@ src/score2gp/
 
 | Committed Symbol (`whole_note_recogniser.py`) | Source Line Range | Target Submodule (`score2gp.notation_omr`) | Purpose |
 |---|---|---|---|
-| `shape_candidate_evidence` | L3-L45 | `staff_geometry.py` | Generic candidate location dictionary shaper |
+| `shape_candidate_evidence` | L3-L45 | `evidence.py` | Generic candidate location dictionary shaper |
 | `extract_treble_clef_candidate_evidence` | L46-L200 | `clef.py` | Treble clef evidence extraction |
 | `shape_whole_note_candidate_evidence` | L201-L207 | `notehead.py` | Whole note candidate shaping |
 | `shape_half_note_candidate_evidence` | L208-L214 | `notehead.py` | Half note candidate shaping |
@@ -100,9 +101,9 @@ src/score2gp/
 
 ## Migration Sequence (Ordered PRs)
 
-### PR 1 (FS-06B): Staff Geometry Module Extraction
-- **Scope**: Create `score2gp.notation_omr` package with `staff_geometry.py`. Move 6 committed staff geometry functions to `staff_geometry.py` and re-export via `whole_note_recogniser.py` shim.
-- **Allowed Files**: `src/score2gp/notation_omr/__init__.py`, `src/score2gp/notation_omr/staff_geometry.py`, `src/score2gp/whole_note_recogniser.py`, `tests/test_notation_omr_staff_geometry.py`.
+### PR 1 (FS-06B): Shared Evidence and Staff Geometry Extraction
+- **Scope**: Create `score2gp.notation_omr` with `evidence.py` and `staff_geometry.py`. Move the shared candidate-evidence shaper to `evidence.py` and five staff-geometry functions to `staff_geometry.py`; re-export each through the `whole_note_recogniser.py` shim.
+- **Allowed Files**: `src/score2gp/notation_omr/__init__.py`, `src/score2gp/notation_omr/evidence.py`, `src/score2gp/notation_omr/staff_geometry.py`, `src/score2gp/whole_note_recogniser.py`, `tests/test_notation_omr_staff_geometry.py`.
 - **Test Command**: `pytest tests/test_whole_note_staff_association.py tests/test_note_candidate_recognition_report.py tests/test_notation_omr_staff_geometry.py`.
 
 ### PR 2 (FS-06C): Clef & Pitch Module Extraction
@@ -125,30 +126,27 @@ src/score2gp/
 
 ---
 
-## First Implementation Task (FS-06B) - Rebuilt from Committed Symbols
+## First Implementation Task (FS-06B) - Rebuilt from 30 Committed Symbols
 
-The smallest, highest-confidence first implementation step is **FS-06B: Staff Geometry Extraction**:
+The smallest, highest-confidence first implementation step is **FS-06B: Shared Evidence and Staff Geometry Extraction**:
 
 1. **Target Package**: `src/score2gp/notation_omr/`
-2. **New Module**: `src/score2gp/notation_omr/staff_geometry.py`
-3. **Exact Committed Symbols Moved to `staff_geometry.py`**:
-   - `shape_candidate_evidence` (L3-L45)
-   - `shape_ledger_line_candidate_evidence` (L286-L330)
-   - `map_ledger_line_candidates_to_read_only_outcomes` (L547-L560)
-   - `map_staff_geometry_to_read_only_report` (L661-L683)
-   - `_associate_staves` (L684-L758)
-   - `map_ledger_lines_to_note_candidates` (L1623-L1695)
-4. **Shim Modification**: `src/score2gp/whole_note_recogniser.py` imports and re-exports all 6 symbols from `score2gp.notation_omr.staff_geometry`.
-5. **New Unit Test**: `tests/test_notation_omr_staff_geometry.py` directly tests `score2gp.notation_omr.staff_geometry` functions.
+2. **New Modules**: `src/score2gp/notation_omr/evidence.py` and `src/score2gp/notation_omr/staff_geometry.py`
+3. **Exact Committed Symbols Moved**:
+   - `shape_candidate_evidence` (L3-L45) to `evidence.py`.
+   - `shape_ledger_line_candidate_evidence` (L286-L330), `map_ledger_line_candidates_to_read_only_outcomes` (L547-L560), `map_staff_geometry_to_read_only_report` (L661-L683), `_associate_staves` (L684-L758), and `map_ledger_lines_to_note_candidates` (L1623-L1695) to `staff_geometry.py`.
+4. **Shim Modification**: `src/score2gp/whole_note_recogniser.py` imports and re-exports `shape_candidate_evidence` from `score2gp.notation_omr.evidence` and the five staff-geometry symbols from `score2gp.notation_omr.staff_geometry`.
+5. **New Unit Test**: `tests/test_notation_omr_staff_geometry.py` directly tests the `evidence.py` import and representative staff-geometry functions.
 6. **Allowed Files**:
    - `[NEW] src/score2gp/notation_omr/__init__.py`
+   - `[NEW] src/score2gp/notation_omr/evidence.py`
    - `[NEW] src/score2gp/notation_omr/staff_geometry.py`
    - `[MODIFY] src/score2gp/whole_note_recogniser.py`
    - `[NEW] tests/test_notation_omr_staff_geometry.py`
 7. **Test Command**:
    `pytest tests/test_whole_note_staff_association.py tests/test_note_candidate_recognition_report.py tests/test_notation_omr_staff_geometry.py`
 8. **Acceptance Criteria**:
-   - The 6 committed staff geometry functions reside in `src/score2gp/notation_omr/staff_geometry.py`.
+   - `shape_candidate_evidence` resides in `src/score2gp/notation_omr/evidence.py`; the five staff-geometry functions reside in `src/score2gp/notation_omr/staff_geometry.py`.
    - `whole_note_recogniser.py` re-exports them without changing signature, behavior, or dictionary structures.
    - All tests pass 100% with 0 regressions.
 
@@ -156,6 +154,6 @@ The smallest, highest-confidence first implementation step is **FS-06B: Staff Ge
 
 ## Pre-Submit Challenge
 1. **Did product code change in this architecture task?** No. Product worktree is clean.
-2. **Are file and symbol names verified against active committed code?** Yes. All 28 functions in `whole_note_recogniser.py` and 15 calling test files were mapped with exact line numbers from committed `origin/main`. No speculative dataclasses or uncommitted model classes are introduced.
+2. **Are file and symbol names verified against active committed code?** Yes. All 30 functions in `whole_note_recogniser.py` and 15 calling test files were mapped with exact line numbers from committed `origin/main`. No speculative dataclasses or uncommitted model classes are introduced.
 3. **Was the report generated natively in WSL without shell-quoted multiline strings?** Yes. Written directly via native file writing without passing Markdown through a shell-quoted Python string.
 4. **Is the ASCII control-character scan clean?** Yes. 0 control characters detected.
