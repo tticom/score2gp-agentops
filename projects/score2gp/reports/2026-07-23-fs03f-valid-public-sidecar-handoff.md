@@ -7,7 +7,7 @@ FS-03F verifies the supported explicit MusicXML sidecar conversion route in scor
 
 The verification confirms that when provided a valid, non-empty public MusicXML timing source alongside its paired PDF:
 1. score2gp convert completes successfully through the gp-write stage with status success and refusal code null.
-2. A valid Guitar Pro 7 package (converted.gp) is generated and written to disk (output_written: true).
+2. The conversion pipeline writes a GP output artifact (converted.gp) to disk (output_written: true). This task does not independently establish Guitar Pro compatibility or musical equivalence.
 3. Non-zero events are produced in both convert_report.json (event_count: 8) and score.ir.json (8 events across 2 bars).
 4. All 6 playable TAB fret candidates from the PDF page text are successfully matched to MusicXML pitch events.
 5. No product source code, tests, schemas, fixtures, or sidecars were modified, and no instrumentation or repair logic was added.
@@ -29,7 +29,10 @@ The verification confirms that when provided a valid, non-empty public MusicXML 
 |---|---|---|
 | PDF Input | tests/fixtures/pdf/generated_tiny_tab.pdf | 7917b8cae7e3da9c7888a28204743e882b6d4fe4a703225e33c90b8d85274fed |
 | MusicXML Input | tests/fixtures/musicxml/generated_tiny_tab.musicxml | c7a2d4c58c1000ebe7ed8dfb1ae37a5a8277d6558971b21a83f26b8c579651b6 |
-| Converted GP Output | work/fs03f/converted.gp | 04b6a4891d6ed8504f71a93bd7a810574f885df4698889988a8d11c792120e36 |
+| Generated GP Output | work/fs03f/converted.gp | Run-specific; see output-hash qualification below. |
+
+### Output-Hash Qualification
+The PDF and MusicXML input hashes above are stable input identities. The GP writer emits run-specific package metadata: independent successful runs at the same product revision produced distinct SHA-256 values (748fd7eb5d4b2d2749b0372a8f3997e75da4f98d0d4543712cc3f975b4384534 and 4d580ea4f188e8ef3e11ed59c76436a765f0bfd8dd31bde3c5ccffa0c521c1d8). Therefore an output hash identifies an individual run artifact only; it is not evidence of reproducibility, compatibility, or musical equivalence.
 
 ---
 
@@ -45,8 +48,15 @@ Inspected structure of tests/fixtures/musicxml/generated_tiny_tab.musicxml prior
 ---
 
 ## Execution Command
+
 Executed worktree-local .venv conversion pipeline without invoking OMR:
 
+    .venv/bin/score2gp convert \
+      --pdf tests/fixtures/pdf/generated_tiny_tab.pdf \
+      --musicxml tests/fixtures/musicxml/generated_tiny_tab.musicxml \
+      --out work/fs03f/converted.gp \
+      --work-dir work/fs03f/convert_work \
+      --json-report work/fs03f/convert_report.json
 
 ---
 

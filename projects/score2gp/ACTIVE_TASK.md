@@ -6,7 +6,7 @@
 
 ## Status
 
-LOCAL_HANDOFF_READY
+PR_OPEN
 
 ## Context
 
