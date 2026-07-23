@@ -1,71 +1,48 @@
 # Active Task
 
-**Task**: FS-03E: Sidecar-to-ScoreIR Event-Loss Trace
+**Task**: FS-03F: Valid Public MusicXML Sidecar Handoff Verification
 **Authorised Role**: Architect, Tier B evidence-only
-**Repository**: `tticom/score2gp` and `tticom/score2gp-agentops`
+**Repository**: tticom/score2gp and tticom/score2gp-agentops
 
 ## Status
 
-LOCAL_HANDOFF_READY
+AGY_LOCAL_PREPARATION_AUTHORISED
 
 ## Context
 
-FS-03D was recorded through governance PR #347, merged as
-`cbc9e983d85750fd69d43bfadadd1642bd2fad8f`. It proved that rootless Audiveris
-can generate structurally valid MXL artifacts and that explicit conversion can
-reach `gp-write` for two compatible public PDFs. It also found the decisive
-limitation: both outputs had `event_count: 0`, `matched_candidate_count: 0`,
-and unused TAB candidates. The route is observed, not functionally supported.
+FS-03E was recorded through governance PR #349, merged as 9004ea5. The canonical rootless Audiveris artifact for the paired public fixtures is structurally valid but contains zero MusicXML notes. The empty ScoreIR is downstream propagation of an empty sidecar, not an observed Score2GP event-loss transformation.
 
-FS-03E identifies the first exact data-loss, filtering, or unsupported
-transformation between the Audiveris sidecar and the empty ScoreIR result. It
-is a research task only: it must not repair, relax, suppress, or reinterpret
-the mismatch.
+FS-03F verifies the supported explicit sidecar route with the repository's existing valid public MusicXML fixture. It establishes only whether the committed conversion path creates non-zero events and consumes TAB candidates when supplied a non-empty, public, fixture-matched timing source. It does not repair Audiveris, call OMR, or claim real-score recognition.
 
 ## Execution Model
 
-Follow the Agy local-preparation boundary in `AGENT_CONTROL.md`:
-
-- prove that WSL `gh auth status` is unauthenticated, then do not run `gh`;
-- create only fresh local `agy/` worktrees from `origin/main`;
-- do not modify any existing worktree, publish, push, create a PR, or merge;
+Follow the Agy local-preparation boundary in AGENT_CONTROL.md:
+- prove WSL gh auth status is unauthenticated, then do not run gh;
+- create only fresh local agy/ worktrees from origin/main;
+- do not modify existing worktrees, publish, push, create a PR, or merge;
 - leave local commits and worktrees intact for Codex review.
 
-## Required Trace
+## Required Verification
 
-Use the exact public fixtures and exact product revision
-`df6e5c8178794f0ea7f98d69e069a1be3593f176`, in this order:
+Use product revision df6e5c8178794f0ea7f98d69e069a1be3593f176 and only:
+- PDF: tests/fixtures/pdf/generated_tiny_tab.pdf
+- MusicXML: tests/fixtures/musicxml/generated_tiny_tab.musicxml
 
-1. `tests/fixtures/pdf/generated_paired_notation_tab_system.pdf`
-2. `tests/fixtures/pdf/generated_paired_notation_tab_system_double_barline.pdf`
+In a new ignored work directory:
+1. Verify both input hashes and inspect MusicXML root, part, measure, note, pitched-note, and rest counts.
+2. Run worktree-local .venv/bin/score2gp convert with explicit --musicxml, --out, --work-dir, and --json-report. Do not invoke omr.
+3. Record conversion status, stage, refusal code, output-written, bar/event/matched/unmatched counts, warnings, and score.ir.json event count.
+4. Do not edit fixtures, MusicXML, outputs, source, tests, or configuration; add no instrumentation or repair.
 
-For each candidate, use new ignored work directories and:
-
-1. Reproduce the committed explicit sidecar handoff and record the source
-   artifact identity, MusicXML root/part/measure/note/rest counts, TabRaw
-   candidate counts, conversion report summary counts, and warning codes.
-2. Inspect the committed source path from MXL parsing through ScoreIR creation.
-   Name exact modules, functions, data types, and count-bearing fields at each
-   boundary; distinguish direct observation from source-derived inference.
-3. Identify the earliest boundary where a non-zero set becomes zero, or state
-   precisely why the committed diagnostics cannot determine that boundary.
-4. Record whether the loss is caused by a documented unsupported input shape,
-   an explicit filter, an association mismatch, or remains unproven. Never
-   attribute it to Audiveris merely because the sidecar is upstream.
-
-Do not alter fixtures, manually edit MusicXML, use another OMR engine, add
-instrumentation, change source/tests/configuration, or attempt a repair.
+Acceptance:
+- success, gp-write, null refusal, output written;
+- event_count > 0 in report and ScoreIR;
+- matched_candidate_count > 0;
+- unmatched_tabraw_candidate_count recorded;
+- exact evidence without musical-equivalence claims.
 
 ## Scope And Handoff
 
-Do not change product source, tests, configuration, schemas, generated assets,
-or private fixtures. Write one sanitized report at
-`projects/score2gp/reports/2026-07-21-fs03e-sidecar-scoreir-event-loss-trace.md`
-and update this task status to `LOCAL_HANDOFF_READY` on the local AgentOps
-branch. Commit locally only.
+Do not change product source, tests, configuration, schemas, generated assets, or private fixtures. Write one sanitized report at projects/score2gp/reports/2026-07-23-fs03f-valid-public-sidecar-handoff.md and update this task to LOCAL_HANDOFF_READY on the local AgentOps branch. Commit locally only.
 
-The report must contain an exact claim ledger, commands, product and AgentOps
-base SHAs, CLI/import paths, asset and sidecar hashes, boundary-count table,
-source-path map, first-loss finding or explicit observability limit, and a
-pre-submit challenge. Finish with the local branch and exact local head for
-Codex review.
+The report must contain exact claim ledger, commands, product and AgentOps base SHAs, CLI/import paths, input/output hashes, MusicXML and ScoreIR counts, conversion report fields, warnings, acceptance table, pre-submit challenge, local branch and exact local head.
