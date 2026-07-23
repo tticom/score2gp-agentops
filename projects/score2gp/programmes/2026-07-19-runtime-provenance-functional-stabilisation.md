@@ -185,6 +185,12 @@ Completed 2026-07-23: governance PR #349 was externally merged as 9004ea5. The c
 
 Verify the explicit sidecar route independently of Audiveris using the existing public generated_tiny_tab.pdf and matching generated_tiny_tab.musicxml fixtures. Run the worktree-local committed CLI; record input hashes and MusicXML, ScoreIR, and report counts; establish whether it produces non-zero events and consumes at least one TAB candidate. Record unmatched candidates and warnings. Do not claim musical equivalence or alter product behaviour or fixtures.
 
+Completed 2026-07-23: governance PR #351 was externally merged as 3be9767. At product SHA df6e5c8178794f0ea7f98d69e069a1be3593f176, the explicit public fixture sidecar route reached gp-write with 8 ScoreIR events and 6 matched playable TAB candidates. This proves the supplied-sidecar route only; it does not prove OMR viability, musical equivalence, or generated-package reproducibility.
+
+### FS-03G: Audiveris Transcription Invocation Evidence Matrix
+
+FS-03F, merged through governance PR #351, established that the committed explicit sidecar route produces non-zero events and consumes matched TAB candidates when supplied a valid public MusicXML fixture. The remaining OMR problem is upstream: Audiveris artifacts observed in FS-03E contained no music events. Test the committed wrapper invocation against the documented batch transcription invocation on public standard-notation and paired notation/TAB fixtures. Record artifact structure, logs, and counts only. No product mutation is authorized. A non-zero difference is wrapper-invocation evidence, not a repair authorization.
+
 ### FS-05: Baseline Decision
 
 The Project Director records whether the baseline is liveable. Layout and
