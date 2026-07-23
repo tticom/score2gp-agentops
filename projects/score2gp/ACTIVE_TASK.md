@@ -6,7 +6,7 @@
 
 ## Status
 
-AGY_LOCAL_PREPARATION_AUTHORISED
+AGY_EXECUTION_AUTHORISED
 
 ## Context
 
@@ -16,11 +16,10 @@ The committed standalone wrapper invokes Audiveris with -batch -export -output. 
 
 ## Execution Model
 
-Follow the Agy local-preparation boundary in AGENT_CONTROL.md:
-- prove WSL gh auth status is unauthenticated, then do not run gh;
-- create only fresh local agy/ worktrees from origin/main;
-- do not modify existing worktrees, publish, push, create a PR, or merge;
-- leave local commits and worktrees intact for Codex review.
+Execute only the versioned prompt selected by `projects/score2gp/prompts/NEXT.md`.
+That prompt is the authoritative execution and publication contract for this task.
+This file supplies scope and evidence constraints only; it must not introduce a
+different branch, handoff, or publication path.
 
 ## Required Verification
 
@@ -46,4 +45,4 @@ Do not run convert, do not use private inputs, and do not modify product source,
 - If both routes remain empty, record that the cause is inside or upstream of Audiveris and remains unproven.
 - If either route fails, record the first failure without guessing.
 
-Write one sanitized report at projects/score2gp/reports/2026-07-23-fs03g-audiveris-transcription-invocation-matrix.md. It must include an exact claim ledger, acceptance matrix, pre-submit challenge, local branch and exact local head. Update this task to LOCAL_HANDOFF_READY and commit locally only.
+Write one sanitized report at projects/score2gp/reports/2026-07-23-fs03g-audiveris-transcription-invocation-matrix.md. It must include an exact claim ledger, acceptance matrix, pre-submit challenge, branch and exact remote head. Update this task to PR_OPEN and publish exactly one Agy PR as required by the versioned prompt.
