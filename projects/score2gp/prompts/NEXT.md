@@ -2,7 +2,7 @@
 
 Agy aliases: next and go.
 
-Current prompt: [0007-cr04a-false-rest-capacity-architecture.md](next/0007-cr04a-false-rest-capacity-architecture.md)
+Current prompt: [0008-cr04a-current-runtime-evidence-replay.md](next/0008-cr04a-current-runtime-evidence-replay.md)
 
 Read and execute that prompt completely. Stop after publishing the bounded
-architecture/evidence handoff; do not begin product implementation or merge.
+current-runtime evidence handoff; do not begin product implementation or merge.

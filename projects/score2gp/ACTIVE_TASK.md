@@ -12,13 +12,11 @@ ACTIVE
 
 ## Context
 
-CR-03D is complete: product PR #383 merged at
-`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
+CR-04A evidence analysis of `Lesson-5.pdf` established that the false rest candidate is a **half rest** (1920 ticks), disproving the `quarter_rest_recogniser.py` hypothesis. Furthermore, `timeline_preview` is a read-only CLI diagnostic that does not gate active conversion (`build_ir` / `notation_bridge`).
 
-CR-04A must identify the generic cause of the Lesson-5 false-rest candidate and
-define a per-voice measure-capacity rule that refuses overfull output safely.
-The cause and correct injection point are not yet proven, so this first pass is
-evidence and architecture only.
+The architecture pass identified an `OBSERVABILITY_GAP`. The next bounded task
+must replay the approved Lesson-5 input on current product `main` with runtime
+provenance before any instrumentation or implementation is authorized.
 
 ## Execution Model
 
@@ -27,13 +25,10 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Do not modify product code. Use committed public evidence first; private
-fixtures may be inspected only under the existing artifact policy. Do not
-claim the Lesson-5 mismatch fixed. Produce a bounded Developer requirement
-packet or an explicit observability-gap report.
+Do not modify product code. Do not claim the Lesson-5 mismatch fixed. Record
+only sanitized facts, hashes, commands, exit status, and event summaries.
 
 ## Handoff
 
-Publish one governance PR containing the evidence report and, when supported,
-the exact Developer prompt. Stop for Codex review. Do not begin implementation
-or merge.
+Execute prompt `0008-cr04a-current-runtime-evidence-replay.md`. Publish the
+bounded evidence handoff and stop for Codex review. Do not begin product implementation or merge.
