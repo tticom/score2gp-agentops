@@ -1,28 +1,24 @@
 # Active Task
 
-**Task**: CR-03D: Address Codex Review Findings on Product PR #383
-**Authorised Role**: Developer
-**Repository**: tticom/score2gp
-**Pull Request**: https://github.com/tticom/score2gp/pull/383
-**PR Branch**: agy/cr03d-local-triplet-association
-**Reviewed Head**: 5828d672c2eb0b66e9edc783da3b0d8c09b8b5fb
-**Review Findings**: https://github.com/tticom/score2gp/pull/383#issuecomment-5070345248
+**Task**: CR-04A: False-Rest Candidate and Per-Voice Capacity Gate
+**Authorised Role**: Architect
+**Repository**: tticom/score2gp-agentops
+**Product Repository**: tticom/score2gp
+**Product Base**: ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f
 
 ## Status
 
-CHANGES_REQUESTED
+ACTIVE
 
 ## Context
 
-Product PR #383 is open at reviewed head
-`5828d672c2eb0b66e9edc783da3b0d8c09b8b5fb`.
+CR-03D is complete: product PR #383 merged at
+`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
 
-Codex reproduced four blocking false-success modes and published them at:
-
-https://github.com/tticom/score2gp/pull/383#issuecomment-5070345248
-
-This is a continuation of the same CR-03D task. Fix the existing branch and PR;
-do not create another task, branch, or PR.
+CR-04A must identify the generic cause of the Lesson-5 false-rest candidate and
+define a per-voice measure-capacity rule that refuses overfull output safely.
+The cause and correct injection point are not yet proven, so this first pass is
+evidence and architecture only.
 
 ## Execution Model
 
@@ -31,12 +27,13 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Modify only the existing PR #383 files needed to resolve the published
-findings. Preserve the original CR-03D scope and fail-closed rules. No private
-artifacts, compatibility-shim changes, unrelated timing work, or new product
-capabilities.
+Do not modify product code. Use committed public evidence first; private
+fixtures may be inspected only under the existing artifact policy. Do not
+claim the Lesson-5 mismatch fixed. Produce a bounded Developer requirement
+packet or an explicit observability-gap report.
 
 ## Handoff
 
-Push follow-up commits to the existing PR branch, publish a response with exact
-verification evidence, and stop for Codex re-review. Do not merge.
+Publish one governance PR containing the evidence report and, when supported,
+the exact Developer prompt. Stop for Codex review. Do not begin implementation
+or merge.

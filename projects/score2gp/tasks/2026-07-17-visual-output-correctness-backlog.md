@@ -59,7 +59,8 @@ Status: DONE. Product baseline restored via PR #374.
 
 ## CR-03D: Local tuplet-group evidence and meter resolution (Retry)
 
-Status: ACTIVE. Blocks CR-04A.
+Status: DONE. Product PR #383 merged as
+`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
 
 - **Clean-Base Rule**: Branch from `origin/main` after CR-03C merge.
 - **Goal**: Re-implement the CR-03A local tuplet-group association rule.
@@ -70,7 +71,7 @@ Status: ACTIVE. Blocks CR-04A.
 
 ## CR-04A: False-rest candidate and per-voice capacity gate
 
-Blocked by CR-03D.
+Status: ACTIVE. Architect evidence and rule-definition phase.
 
 - **Clean-Base Rule**: Every product branch for CR-04A must start from the current product `origin/main` (or an independently approved parent). It must NEVER start from recovery `task-92`, product PR #371, product PR #372, or the prototype `3b138a7f` commit.
 - **False-Rest Rejection**: Investigate and remove/reject the Lesson-5 false-rest cause generically.
