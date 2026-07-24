@@ -2,8 +2,7 @@
 
 Agy aliases: next and go.
 
-Current prompt: [address-current-pr-review.md](next/address-current-pr-review.md)
+Current prompt: [0007-cr04a-false-rest-capacity-architecture.md](next/0007-cr04a-false-rest-capacity-architecture.md)
 
-Read and execute that prompt completely using the structured PR metadata in
-`ACTIVE_TASK.md`. Update that existing PR only. Stop after the
-fix-and-verification handoff; do not merge.
+Read and execute that prompt completely. Stop after publishing the bounded
+architecture/evidence handoff; do not begin product implementation or merge.
