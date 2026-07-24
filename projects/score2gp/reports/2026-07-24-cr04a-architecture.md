@@ -1,9 +1,9 @@
 # CR-04A Architecture Report: False-Rest Candidate and Per-Voice Capacity (Observability Gap)
 
-**Authorised Role**: Architect  
-**Governance Repository**: `score2gp-agentops`  
-**Product Repository**: `score2gp`  
-**Product Base**: `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`  
+**Authorised Role**: Architect
+**Governance Repository**: `score2gp-agentops`
+**Product Repository**: `score2gp`
+**Product Base**: `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`
 **Date**: 2026-07-24
 **Verdict**: `OBSERVABILITY_GAP`
 
@@ -54,7 +54,14 @@ To unblock Developer implementation in a future prompt, the following minimum in
 
 ## 4. Governed Next State
 
-- **Status**: `OBSERVABILITY_GAP`
+Independent review confirmed the historical evidence gap but also found that
+the current `notation_bridge.py` does not accept half-rest candidates. The
+historical ledger references an older recovery path, so product instrumentation
+would be premature before a current-runtime replay.
+
+- **Status**: `CURRENT_RUNTIME_REPLAY_REQUIRED`
 - **Developer Prompt**: None authorized for CR-04B. Product code changes remain strictly prohibited until observability instrumentation is committed and verified.
+- **Next Task**: Run the bounded, provenance-controlled Lesson-5 replay in
+  `0008-cr04a-current-runtime-evidence-replay.md`.
 - **Governance Branch**: `agy/cr04a-false-rest-capacity-architecture`
 - **Governance PR**: [#364](https://github.com/tticom/score2gp-agentops/pull/364)
