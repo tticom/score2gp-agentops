@@ -3,6 +3,10 @@
 **Task**: CR-03D: Address Codex Review Findings on Product PR #383
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
+**Pull Request**: https://github.com/tticom/score2gp/pull/383
+**PR Branch**: agy/cr03d-local-triplet-association
+**Reviewed Head**: 5828d672c2eb0b66e9edc783da3b0d8c09b8b5fb
+**Review Findings**: https://github.com/tticom/score2gp/pull/383#issuecomment-5070345248
 
 ## Status
 
