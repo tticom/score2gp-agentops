@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: FS-07: Independent Review of CLI Facade Migration
-**Authorised Role**: Reviewer
+**Task**: CR-03D: Local Tuplet-Group Evidence and Meter Resolution Retry
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
 
 ## Status
@@ -10,12 +10,14 @@ AGY_EXECUTION_AUTHORISED
 
 ## Context
 
-Product PR #381 completed and merged the behaviour-preserving
-`score2gp.notation_omr` extraction. Product PR #382 migrates the five
-production CLI recognition imports from the legacy compatibility shim to
-`score2gp.notation_omr.pipeline`.
+FS-06/FS-07 are complete. Product `main` is clean at
+`dacb0e53e47a366c557d2bba78851b77145874fb`, with notation recognition now
+owned by `score2gp.notation_omr`.
 
-The exact review head is `bea32ac`.
+CR-03D resumes the independently approved CR-03A architecture from the clean,
+post-refactor base. It implements only deterministic local 3:2 eighth-note
+triplet evidence and fail-closed ambiguity reporting. It must not revive the
+reverted prototype or write new logic into `whole_note_recogniser.py`.
 
 ## Execution Model
 
@@ -24,10 +26,10 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Review product PR #382 at exact head `bea32ac`. Do not implement unrelated
-changes, merge, force-push, delete branches, or remove the compatibility shim.
+Use committed product source and public synthetic tests only. No private
+artifacts, fixture-specific coordinates, global note-count fallbacks, reference
+GP influence, unrelated meter repairs, or compatibility-shim implementation.
 
 ## Handoff
 
-Publish a concise independent review with verification evidence. If clean,
-mark it ready for external human merge. Do not merge it.
+Publish exactly one product PR and stop for independent review. Do not merge it.
