@@ -8,17 +8,13 @@
 
 ## Status
 
-ACTIVE
+OBSERVABILITY_GAP
 
 ## Context
 
-CR-03D is complete: product PR #383 merged at
-`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
+CR-04A evidence analysis of `Lesson-5.pdf` established that the false rest candidate is a **half rest** (1920 ticks), disproving the `quarter_rest_recogniser.py` hypothesis. Furthermore, `timeline_preview` is a read-only CLI diagnostic that does not gate active conversion (`build_ir` / `notation_bridge`).
 
-CR-04A must identify the generic cause of the Lesson-5 false-rest candidate and
-define a per-voice measure-capacity rule that refuses overfull output safely.
-The cause and correct injection point are not yet proven, so this first pass is
-evidence and architecture only.
+This pass is classified as `OBSERVABILITY_GAP`. No product code changes or Developer implementation prompts are authorized until candidate provenance, primitive source, and active conversion refusal points are instrumented.
 
 ## Execution Model
 
@@ -27,13 +23,8 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Do not modify product code. Use committed public evidence first; private
-fixtures may be inspected only under the existing artifact policy. Do not
-claim the Lesson-5 mismatch fixed. Produce a bounded Developer requirement
-packet or an explicit observability-gap report.
+Do not modify product code. Do not claim the Lesson-5 mismatch fixed. Record sanitized facts in governance report.
 
 ## Handoff
 
-Publish one governance PR containing the evidence report and, when supported,
-the exact Developer prompt. Stop for Codex review. Do not begin implementation
-or merge.
+Publish governance PR #364 containing the updated `OBSERVABILITY_GAP` architecture report. Stop for Codex review. Do not begin product implementation or merge.
