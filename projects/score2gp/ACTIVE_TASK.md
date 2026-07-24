@@ -1,7 +1,7 @@
 # Active Task
 
-**Task**: FS-06B: Shared Evidence and Staff Geometry Extraction
-**Authorised Role**: Developer
+**Task**: FS-06C-E: Independent Review of Notation OMR Modularisation
+**Authorised Role**: Reviewer
 **Repository**: tticom/score2gp
 
 ## Status
@@ -10,17 +10,26 @@ AGY_EXECUTION_AUTHORISED
 
 ## Context
 
-FS-06A is complete. FS-06B starts the behaviour-preserving migration with the shared evidence helper and independent staff-geometry functions. It is a refactor only: output, data structures, CLI contracts, and existing imports must remain stable.
+FS-06B merged in product PR #380. Codex completed the remaining
+behaviour-preserving FS-06 sequence in product PR #381:
+
+- FS-06C: clef and pitch extraction
+- FS-06D: notehead and duration extraction
+- FS-06E: timeline and pipeline facade extraction
+
+The exact review head is `df60957a`.
 
 ## Execution Model
 
-Execute only the versioned prompt selected by projects/score2gp/prompts/NEXT.md.
-That prompt is the authoritative execution and publication contract for this task.
+Execute only the versioned prompt selected by
+`projects/score2gp/prompts/NEXT.md`.
 
 ## Boundaries
 
-Use committed product source and public tests only. Modify only the files explicitly allowed by the versioned prompt. Do not change observable behaviour, CLI contracts, generated artefacts, fixtures, schemas, or private inputs.
+Review product PR #381 at exact head `df60957a`. Do not implement unrelated
+changes, merge, force-push, delete branches, or change product behaviour.
 
 ## Handoff
 
-Publish exactly one product PR as required by the versioned prompt. Do not merge it.
+Publish a concise review with findings and verification evidence. If clean,
+mark it ready for external human merge. Do not merge it.
