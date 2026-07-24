@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: FS-06C-E: Independent Review of Notation OMR Modularisation
+**Task**: FS-07: Independent Review of CLI Facade Migration
 **Authorised Role**: Reviewer
 **Repository**: tticom/score2gp
 
@@ -10,14 +10,12 @@ AGY_EXECUTION_AUTHORISED
 
 ## Context
 
-FS-06B merged in product PR #380. Codex completed the remaining
-behaviour-preserving FS-06 sequence in product PR #381:
+Product PR #381 completed and merged the behaviour-preserving
+`score2gp.notation_omr` extraction. Product PR #382 migrates the five
+production CLI recognition imports from the legacy compatibility shim to
+`score2gp.notation_omr.pipeline`.
 
-- FS-06C: clef and pitch extraction
-- FS-06D: notehead and duration extraction
-- FS-06E: timeline and pipeline facade extraction
-
-The exact review head is `df60957a`.
+The exact review head is `bea32ac`.
 
 ## Execution Model
 
@@ -26,10 +24,10 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Review product PR #381 at exact head `df60957a`. Do not implement unrelated
-changes, merge, force-push, delete branches, or change product behaviour.
+Review product PR #382 at exact head `bea32ac`. Do not implement unrelated
+changes, merge, force-push, delete branches, or remove the compatibility shim.
 
 ## Handoff
 
-Publish a concise review with findings and verification evidence. If clean,
+Publish a concise independent review with verification evidence. If clean,
 mark it ready for external human merge. Do not merge it.
