@@ -1,23 +1,28 @@
 # Active Task
 
-**Task**: CR-03D: Local Tuplet-Group Evidence and Meter Resolution Retry
+**Task**: CR-03D: Address Codex Review Findings on Product PR #383
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
+**Pull Request**: https://github.com/tticom/score2gp/pull/383
+**PR Branch**: agy/cr03d-local-triplet-association
+**Reviewed Head**: 5828d672c2eb0b66e9edc783da3b0d8c09b8b5fb
+**Review Findings**: https://github.com/tticom/score2gp/pull/383#issuecomment-5070345248
 
 ## Status
 
-AGY_EXECUTION_AUTHORISED
+CHANGES_REQUESTED
 
 ## Context
 
-FS-06/FS-07 are complete. Product `main` is clean at
-`dacb0e53e47a366c557d2bba78851b77145874fb`, with notation recognition now
-owned by `score2gp.notation_omr`.
+Product PR #383 is open at reviewed head
+`5828d672c2eb0b66e9edc783da3b0d8c09b8b5fb`.
 
-CR-03D resumes the independently approved CR-03A architecture from the clean,
-post-refactor base. It implements only deterministic local 3:2 eighth-note
-triplet evidence and fail-closed ambiguity reporting. It must not revive the
-reverted prototype or write new logic into `whole_note_recogniser.py`.
+Codex reproduced four blocking false-success modes and published them at:
+
+https://github.com/tticom/score2gp/pull/383#issuecomment-5070345248
+
+This is a continuation of the same CR-03D task. Fix the existing branch and PR;
+do not create another task, branch, or PR.
 
 ## Execution Model
 
@@ -26,10 +31,12 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Use committed product source and public synthetic tests only. No private
-artifacts, fixture-specific coordinates, global note-count fallbacks, reference
-GP influence, unrelated meter repairs, or compatibility-shim implementation.
+Modify only the existing PR #383 files needed to resolve the published
+findings. Preserve the original CR-03D scope and fail-closed rules. No private
+artifacts, compatibility-shim changes, unrelated timing work, or new product
+capabilities.
 
 ## Handoff
 
-Publish exactly one product PR and stop for independent review. Do not merge it.
+Push follow-up commits to the existing PR branch, publish a response with exact
+verification evidence, and stop for Codex re-review. Do not merge.

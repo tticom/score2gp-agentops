@@ -2,7 +2,8 @@
 
 Agy aliases: next and go.
 
-Current prompt: [0006-cr03d-local-triplet-association.md](next/0006-cr03d-local-triplet-association.md)
+Current prompt: [address-current-pr-review.md](next/address-current-pr-review.md)
 
-Read and execute that prompt completely. Do not choose another task. Stop at
-the product PR handoff; do not merge.
+Read and execute that prompt completely using the structured PR metadata in
+`ACTIVE_TASK.md`. Update that existing PR only. Stop after the
+fix-and-verification handoff; do not merge.
