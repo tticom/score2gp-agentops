@@ -2,8 +2,7 @@
 
 Agy aliases: next and go.
 
-NO_ACTIVE_PROMPT_SELECTED
+Current prompt: [0009-cr04b-explicit-pdf-only-tempo-override.md](next/0009-cr04b-explicit-pdf-only-tempo-override.md)
 
-Prompt 0008 (CR-04A Current-Runtime Evidence Replay) is completed with verdict `DEFECT_NOT_REPRODUCED`.
-No active product implementation or evidence collection prompt is currently selected.
-Awaiting next prompt assignment from governance / Orchestrator.
+Read and execute that prompt completely. Publish the bounded product PR and
+stop for independent review; do not merge or begin the duration-padding task.
