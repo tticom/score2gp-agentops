@@ -1,42 +1,25 @@
 # Active Task
 
-**Task**: CR-04B: Explicit Tempo Override for PDF-Only TabRaw Conversion
-**Authorised Role**: Developer (Tier B)
-**Repository**: tticom/score2gp
+**Task**: CR-04C: Final-Event Duration Consistency Architecture Decision
+**Authorised Role**: Architect (Tier B)
+**Repository**: tticom/score2gp-agentops
 **Product Repository**: tticom/score2gp
-**Product Base**: ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f
+**Product Base**: f47194e57b551d4b571a04c0b7641fbe9c173f80
 
 ## Status
 
-ACTIVE — PRODUCT IMPLEMENTATION AUTHORISED BY PROMPT 0009
+COMPLETED — ARCHITECTURE RESOLVED (PROMPT 0011 AUTHORIZED FOR DEVELOPER IMPLEMENTATION)
 
 ## Context
 
-Current PDF-only TabRaw conversion defaults to 120 BPM through
-`build_ir_from_tabraw_only(..., tempo_bpm=120.0)`. Real-world Lesson-5
-evidence expects 70 BPM. The next smallest product capability is an explicit,
-validated CLI tempo override that reaches the existing builder parameter while
-preserving the current default when omitted.
+CR-04C Architecture decision resolved the PDF-only TabRaw final-event duration padding inconsistency.
+Option A was selected: final note duration is set to `grid_spacing` (matching `notated_duration`), and any remaining measure capacity $R = 3840 - \text{current\_onset}$ is represented as rest event(s) (`is_rest=True`) with matching `duration_ticks` and valid `notated_duration`.
 
 ## Execution Model
 
 Execute only the versioned prompt selected by
 `projects/score2gp/prompts/NEXT.md`.
 
-## Acceptance
-
-`score2gp convert --pdf-only-tab --tempo-bpm 70 ...` must emit ScoreIR tempo
-70 through a public fixture test. Omitting the option must still emit 120.
-Non-positive values must be refused. Full validation and artifact audit must
-pass.
-
-## Boundaries
-
-Do not implement PDF tempo OCR/extraction, change duration padding, alter
-MusicXML tempo behavior, use private fixtures as test dependencies, or broaden
-conversion semantics beyond explicit PDF-only TabRaw tempo forwarding.
-
 ## Handoff
 
-Execute prompt `0009-cr04b-explicit-pdf-only-tempo-override.md`. Publish one
-product PR and stop for independent Codex review. Do not merge.
+ADR written to `projects/score2gp/research/2026-07-25-cr04c-final-event-duration-architecture-decision.md`. Prompt 0011 created and set as current in `prompts/NEXT.md`. Open governance PR and stop for independent Codex review. Do not merge.
