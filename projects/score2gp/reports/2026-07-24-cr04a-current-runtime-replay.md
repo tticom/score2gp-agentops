@@ -46,7 +46,7 @@ Empirical replay on current product `main` establishes that:
   - `semantic_candidates` contains 0 half rests for System 1 / Measure 1 (`half_rests: []`) and 0 half rests across all 14 systems on Page 1-3.
 
 ### Question 2: Does the current notation bridge accept or reject half-rest outcomes?
-- **Observed Fact**: `build_ir_from_notation_outcomes()` in `score2gp.notation_bridge` filters outcomes against an explicit candidate list:
+- **Observed Fact (`supported`)**: `build_ir_from_notation_outcomes()` in `score2gp.notation_bridge` filters outcomes against an explicit candidate list:
   ```python
   if sym_type not in [
       "whole_note_candidate", "half_note_candidate", "quarter_note_candidate",
@@ -56,6 +56,7 @@ Empirical replay on current product `main` establishes that:
       continue
   ```
   Any `half_rest_candidate` or `half_rest` outcome is skipped (`continue`) and never passes into `ScoreIR`.
+- **Historical Route Classification (`unproven`)**: Whether an older pre-`ff9fb48` recovery path accepted half rests into `ScoreIR` or if 1920 ticks entered via an external OMR sidecar is not backed by source code in current `score2gp` repository state and is classified as `unproven`. Current source code proves only current rejection.
 
 ### Question 3: Does generated ScoreIR, MusicXML, or GPIF contain a half rest in the first affected measure?
 - **Observed Fact**: No. In `work/lesson5_work/score.ir.json`:
@@ -64,25 +65,34 @@ Empirical replay on current product `main` establishes that:
   - Bar 0 events count: 4 events (containing TabRaw note fret extractions, e.g., fret 8 on string 5), with 0 rest events.
 
 ### Question 4: What meter and per-voice durations are emitted?
-- **Observed Fact**:
-  - Time signature emitted for Bar 0 and all 34 bars: `4/4` (`{'numerator': 4, 'denominator': 4}`).
-  - Total rest duration emitted for Bar 0: 0 ticks.
+- **Source Facts**: Expected meter is `4/4` (measure capacity $C_{\text{measure}} = 3840$ ticks).
+- **Emitted Meter**: Time signature emitted for Bar 0 and all 34 bars is `4/4` (`{'numerator': 4, 'denominator': 4}`).
+- **Emitted Per-Voice Duration Totals & Capacity**:
+  - **Voice 1 Duration Total**: 0 notated ticks (TabRaw mode extracts fret numbers from vector text without assigning notated tick durations to noteheads).
+  - **Voice 1 Rest Duration Total**: 0 ticks.
+  - **Voice 2 Duration Total**: 0 ticks.
+  - **Measure Capacity Gate**: $D_{\text{voice}} = 0 \le C_{\text{measure}} = 3840$ ticks. Per-voice duration capacity is not exceeded.
 
 ### Question 5: At what earliest current stage does observed output first differ from the approved source facts?
-- **Observed Fact**:
-  - Historical ledger recorded a 12/8 detected meter with a 1920-tick false half rest in measure 1 under an older code version.
-  - On current `origin/main` (`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`), candidate recognition emits 0 half rests, `notation_bridge` skips half rests, and TabRaw conversion emits 4/4 meter with 34 bars.
+- **Direct Source vs Output Comparison**:
+  - **Approved Source Fact**: `Lesson-5.pdf` Measure 1 contains 8 eighth notes in 4/4 meter.
+  - **Stage 1 (OMR Vector/Raster Candidate Recognition)**: Emits notehead candidates, but 0 rest candidates.
+  - **Stage 2 (TabRaw Rhythm / Notation Alignment)**: `score2gp convert` without a MusicXML sidecar operates in TabRaw mode (`--pdf-only-tab`). It extracts fret numbers (`kind: fret`), but does not bind standard-notation noteheads to rhythmic tick durations.
+  - **Earliest Current Divergence**: **Stage 2 (TabRaw Rhythm / Notation Alignment)**.
+    - *Expected*: 8 eighth notes with 480 ticks each (total 3840 ticks).
+    - *Observed*: 4 fret note events with 0 notated duration ticks in TabRaw mode.
+  - **Divergence Note**: The historical 1920-tick false half rest divergence is **absent** (`DEFECT_NOT_REPRODUCED`).
 
 ---
 
 ## 4. Historical Ledger vs Current Evidence Comparison
 
-| Dimension | Historical Evidence Ledger (2026-07-17) | Current Runtime Observation (`ff9fb48`) |
-| :--- | :--- | :--- |
-| **False Rest Defect** | Half rest (1920 ticks) in measure 1 | None (0 rest events emitted) |
-| **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) |
-| **Notation Bridge Gate** | Accepted historical half rest | Filters out `half_rest_candidate` / `half_rest` |
-| **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total |
+| Dimension | Historical Evidence Ledger (2026-07-17) | Current Runtime Observation (`ff9fb48`) | Source Classification |
+| :--- | :--- | :--- | :--- |
+| **False Rest Defect** | Half rest (1920 ticks) in measure 1 | None (0 rest events emitted) | `supported` |
+| **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) | `supported` |
+| **Notation Bridge Gate** | Claimed accepted in historical ledger | Filters out `half_rest_candidate` / `half_rest` | Current rejection `supported`; Historical acceptance `unproven` |
+| **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total | `supported` |
 
 ---
 
