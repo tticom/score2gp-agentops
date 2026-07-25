@@ -12,18 +12,21 @@ AUTHORIZED FOR IMPLEMENTATION BY PROMPT 0011 (ARCHITECTURE RESOLVED)
 
 ## Architecture Verdict (CR-04C)
 
-- **Selected Option**: Option A (Grid-Sized Notes + Rest Fill for Remaining Capacity).
+- **Selected Option**: Option A (Grid-Sized Notes + Deterministic Rest Fill for Remaining Capacity).
 - **ADR Document**: [`projects/score2gp/research/2026-07-25-cr04c-final-event-duration-architecture-decision.md`](../research/2026-07-25-cr04c-final-event-duration-architecture-decision.md)
-- **Rule**: Every note event receives `duration_ticks = grid_spacing` and `notated_duration = NotatedDuration(value=duration_name, dots=0)`. Any remaining measure capacity $R = 3840 - \text{current\_onset}$ is filled by appending rest event(s) (`is_rest=True`, `notes=[]`) with `duration_ticks = R` and a matching valid `notated_duration`.
+- **Rule**: Every note event receives `duration_ticks = grid_spacing` and `notated_duration = NotatedDuration(value=duration_name, dots=0)`. Any remaining measure capacity $R = 3840 - \text{current\_onset}$ is greedily decomposed into un-dotted rest events (`is_rest=True`, `notes=[]`, `dots=0`, `id=f"bar-{bar_idx}-rest-{seq_idx}"`) in descending order of nominal duration (`whole` 3840, `half` 1920, `quarter` 960, `eighth` 480, `16th` 240, `32nd` 120, `64th` 60). Over-capacity candidate note onsets exceeding 3840 ticks raise `BuildIrInputRiskError(category="pdf_only_tab_measure_overcapacity")`.
 
 ## Public-Testable Generic Rule
 
-For any TabRaw event where `current_onset < 3840` after adding all candidate note subgroups, final note duration is set to `grid_spacing` matching `notated_duration`, and remaining measure capacity $R$ is filled by rest event(s) (`is_rest=True`).
+For any TabRaw bar converted via `build_ir_from_tabraw_only()`:
+1. Candidate note events receive `duration_ticks = grid_spacing` matching `notated_duration`.
+2. Accumulated note onsets exceeding 3840 ticks raise `BuildIrInputRiskError`.
+3. Remainder $R = 3840 - \text{current\_onset}$ is greedily decomposed into un-dotted rest events (`is_rest=True`).
 
 ## Measurable Success & Refusal Criteria
 
-- **Success**: In emitted `score.ir.json`, no event carries `notated_duration.value == 'eighth'` (480 ticks) alongside `duration_ticks == 2400`. Every event satisfies `duration_ticks == nominal_ticks(notated_duration)`. Measure capacity total equals 3840 ticks. `score2gp validate-ir` and `validate_gp` succeed.
-- **Refusal**: Supplying candidates whose total onset exceeds measure capacity ($current\_onset > 3840$) raises `BuildIrInputRiskError`.
+- **Success**: In emitted `score.ir.json`, no event carries `notated_duration.value == 'eighth'` (480 ticks) alongside `duration_ticks == 2400`. Every event satisfies `duration_ticks == nominal_ticks(notated_duration)`. Total measure duration equals 3840 ticks ($C_{\text{measure}}$). `score2gp validate-ir` and `validate_gp` succeed with 0 errors.
+- **Refusal**: Supplying candidates whose total onset span exceeds measure capacity ($current\_onset + grid\_spacing > 3840$) raises `BuildIrInputRiskError(category="pdf_only_tab_measure_overcapacity")`.
 
 ## Scope & Validation
 

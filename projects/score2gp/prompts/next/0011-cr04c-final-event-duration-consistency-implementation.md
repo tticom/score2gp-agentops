@@ -2,7 +2,7 @@
 
 ## Objective
 
-Implement the Architecture-approved resolution (Option A) for PDF-only TabRaw final-event duration consistency in `build_ir_from_tabraw_only()`: set final note `duration_ticks` to `grid_spacing` (matching `notated_duration`), and represent remaining measure capacity $R = 3840 - \text{current\_onset}$ as rest event(s) (`is_rest=True`) with matching `duration_ticks` and valid `notated_duration`.
+Implement the Architecture-approved resolution (Option A with deterministic greedy rest decomposition and over-capacity refusal) for PDF-only TabRaw final-event duration consistency in `build_ir_from_tabraw_only()`.
 
 This is a Tier B Developer task. Product implementation is authorised only within this prompt.
 
@@ -26,19 +26,36 @@ This is a Tier B Developer task. Product implementation is authorised only withi
 
 Update `build_ir_from_tabraw_only()` in `src/score2gp/build_ir.py`:
 
-- Every non-rest note event receives `duration_ticks = grid_spacing` and `notated_duration = NotatedDuration(value=duration_name, dots=0)`.
-- If `current_onset < 3840` after adding all candidate note subgroups, fill the remaining measure capacity $R = 3840 - \text{current\_onset}$ by appending rest event(s) (`is_rest=True`, `notes=[]`) with `duration_ticks = R` and a matching valid `notated_duration` (e.g. 1920 ticks $\to$ `NotatedDuration(value="half", dots=0)`).
-- Enforce the invariant: $\sum_{E \in \text{Bar}} E.\text{duration\_ticks} = C_{\text{measure}} = 3840$ ticks for all PDF-only TabRaw bars.
-- Ensure all emitted note and rest events pass ScoreIR validation (`validate-ir`) and GPIF serialization (`validate_gp`).
+1. **Note Event Durations**: Set every candidate note event's `duration_ticks = grid_spacing` and `notated_duration = NotatedDuration(value=duration_name, dots=0)`.
+2. **Over-Capacity Refusal**: If adding candidate notes causes `current_onset + grid_spacing > 3840` ticks (e.g. 5 quarter-grid candidates in `--editable-draft` mode where $5 \times 960 = 4800 > 3840$), raise `BuildIrInputRiskError(category="pdf_only_tab_measure_overcapacity")`.
+3. **Deterministic Rest Decomposition**: If $R = 3840 - \text{current\_onset} > 0$ after placing candidate notes, greedily decompose $R$ into un-dotted rest events (`is_rest=True`, `notes=[]`, `confidence=1.0`) using standard un-dotted notated durations in descending order:
+   - `whole` (3840 ticks)
+   - `half` (1920 ticks)
+   - `quarter` (960 ticks)
+   - `eighth` (480 ticks)
+   - `16th` (240 ticks)
+   - `32nd` (120 ticks)
+   - `64th` (60 ticks)
+4. **Rest Metadata & Onsets**:
+   - Assign rest IDs sequentially as `f"bar-{output_bar_idx}-rest-{seq_idx}"` starting from `seq_idx=1` for the first rest in that bar.
+   - Rest onsets start at `current_onset` and advance sequentially by each rest's duration.
+   - Set `dots = 0` for all generated rest events.
+5. **Invariants**:
+   - $\sum_{E \in \text{Bar}} E.\text{duration\_ticks} = C_{\text{measure}} = 3840$ ticks for all PDF-only TabRaw bars.
+   - For every event $E$, $E.\text{duration\_ticks} == \text{nominal\_ticks}(E.\text{notated\_duration})$.
+   - All emitted note and rest events pass ScoreIR validation (`validate-ir`) and GPIF serialization (`validate_gp`).
 
 ## Test-First Acceptance
 
 Add public tests that fail before implementation and prove:
 
-1. A 4-candidate TabRaw bar ($N=4$) converted via `build_ir_from_tabraw_only()` produces 4 note events (`duration_ticks=480`, `notated_duration.value="eighth"`) and 1 rest event (`duration_ticks=1920`, `is_rest=True`, `notated_duration.value="half"`).
-2. For all events in emitted `score.ir.json`, `duration_ticks` matches nominal ticks of `notated_duration`.
-3. Total measure duration equals 3840 ticks ($C_{\text{measure}}$).
-4. `score2gp convert --pdf-only-tab ...` and `--editable-draft` succeed and generate valid GP packages that pass `validate_gp()`.
+1. **$N=4$ Single Rest Test**: 4 eighth notes ($N=4$) converted via `build_ir_from_tabraw_only()` produces 4 note events (`duration_ticks=480`, `notated_duration.value="eighth"`) and 1 rest event (`duration_ticks=1920`, `is_rest=True`, `notated_duration.value="half"`, `id="bar-1-rest-1"`).
+2. **$N=3$ Non-Single Duration Remainder Test**: 3 eighth notes ($N=3$, remainder $R=2400$) produces 3 note events and 2 rest events:
+   - Rest 1: `onset=1440, duration=1920, notated={"value": "half", "dots": 0}`, `id="bar-1-rest-1"`.
+   - Rest 2: `onset=3360, duration=480, notated={"value": "eighth", "dots": 0}`, `id="bar-1-rest-2"`.
+3. **$N=1$ Multi-Rest Remainder Test**: 1 eighth note ($N=1$, remainder $R=3360$) produces 1 note event and 3 rest events (`half` 1920 at 480, `quarter` 960 at 2400, `eighth` 480 at 3360).
+4. **Over-Capacity Refusal Test**: 5 quarter-grid candidates in `--editable-draft` mode ($4800 > 3840$) raises `BuildIrInputRiskError(category="pdf_only_tab_measure_overcapacity")`.
+5. **Package Serialization**: Generated GP packages pass `validate_gp()` with 0 errors.
 
 Use tracked public fixtures only. Prefer extending `tests/test_pdf_only_tab.py` and `tests/test_build_ir.py`.
 
