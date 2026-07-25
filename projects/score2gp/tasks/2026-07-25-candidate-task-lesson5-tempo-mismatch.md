@@ -1,20 +1,30 @@
-# Candidate Task: Lesson-5 Tempo Defaulting Mismatch (70 BPM vs 120 BPM)
+# Candidate Task: TabRaw Default Tempo Handling vs Source Tempo
 
 ## Status
 
-CANDIDATE (NON-EXECUTABLE / AWAITING AUTHORIZATION)
+CANDIDATE (NON-EXECUTABLE / AWAITING GOVERNANCE AUTHORIZATION)
 
-## Objective
+## Evidenced Code Injection Point
 
-Investigate and locate the exact pipeline stage where expected tempo `70` BPM (recorded in `2026-07-17-first-divergence-evidence-ledger.json` `source_facts`) is replaced by default `120` BPM (`{'bpm': 120, 'text': None}`) in top-level `ScoreIR` during `Lesson-5.pdf` conversion without a timing sidecar.
+- **File & Function**: `src/score2gp/build_ir.py` in `build_ir_from_tabraw_only()` ([line 1629](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1629)).
+- **Mechanism**: Declares `tempo_bpm: float = 120.0` default parameter and constructs `Tempo(bpm=tempo_bpm)`.
+- **Observed Mismatch**: Historical evidence ledger `source_facts` records `expected_tempo: 70` BPM, whereas TabRaw conversion (`--pdf-only-tab`) defaults to 120.0 BPM.
 
-## Context & Observed Facts
+## Claim Under Test
 
-- **Expected Tempo (`source_facts`)**: `70` BPM.
-- **Emitted Tempo (`score.ir.json`)**: `{'bpm': 120, 'text': None}`.
-- **Discovered During**: CR-04A current-runtime evidence replay on product base `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
+`build_ir_from_tabraw_only()` can accept an explicit source-extracted or CLI-passed tempo parameter (e.g., `70.0`) rather than unconditionally defaulting to 120.0 BPM.
 
-## Scope & Boundaries
+## Public-Testable Generic Rule
 
-- **No Product Code Authorized**: This is a candidate task record only. No developer implementation or product code modification is authorized.
-- **Investigation Boundary**: When authorized, trace tempo resolution through `pdf_vector_extractor`, `notation_omr`, and `build_ir` to identify where tempo defaults to 120 BPM when no explicit tempo text is extracted.
+When an explicit valid tempo parameter `T` (e.g. 70.0 BPM) is supplied to `build_ir_from_tabraw_only()`, `ScoreIR` emits `Tempo(bpm=T)`. When omitted, it defaults to 120.0 BPM.
+
+## Measurable Success & Refusal Criteria
+
+- **Success**: `build_ir_from_tabraw_only(..., tempo_bpm=70.0)` emits `ir.tempo.bpm == 70.0` in `score.ir.json`.
+- **Refusal**: Supplying non-positive tempo values (`bpm <= 0`) raises `BuildIrInputRiskError`.
+
+## Scope & Validation
+
+- **Maximum Scope**: `build_ir_from_tabraw_only()` signature in `src/score2gp/build_ir.py` and CLI parameter forwarding in `src/score2gp/cli.py`.
+- **Validation Command**: `pytest tests/test_build_ir.py`
+- **Stop / Pivot Criteria**: If tempo extraction from vector/raster text requires OMR model changes or unapproved heuristic heuristics, stop and return to governance. Product code implementation remains disauthorized under this candidate record.

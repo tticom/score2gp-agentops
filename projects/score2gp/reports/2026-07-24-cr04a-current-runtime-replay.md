@@ -19,7 +19,7 @@ Empirical replay on current product `main` establishes that:
 1. **Candidate Recognition**: Emits **0** `half_rest_candidate` objects, **0** `half_rest` objects, and **0** 1920-tick rest candidates across all 14 systems in `Lesson-5.pdf`.
 2. **Notation Bridge**: `build_ir_from_notation_outcomes()` in `score2gp.notation_bridge` ignores/filters half-rest candidates, accepting only whole/half/quarter/eighth/sixteenth/32nd/64th note candidates and `quarter_rest_candidate`.
 3. **Generated ScoreIR**: Contains **0** rest events across all 34 bars. Bar 0 emits 4 Voice 1 note events (`[480, 480, 480, 2400]` ticks, total $D_{\text{voice1}} = 3840$ ticks) with time signature `4/4`.
-4. **Decision Gate**: **`DEFECT_NOT_REPRODUCED`**. The false 1920-tick half rest does not exist on current product `main`. Implementing obsolete half-rest suppression is disauthorized. Separate candidate task records have been created for remaining visible mismatches.
+4. **Decision Gate**: **`DEFECT_NOT_REPRODUCED`**. The false 1920-tick half rest does not exist on current product `main`. Implementing obsolete half-rest suppression is disauthorized. Separate non-executable candidate task records have been created for the two currently evidenced product mismatches.
 
 ---
 
@@ -82,21 +82,21 @@ Empirical replay on current product `main` establishes that:
 
 ### Question 5: At what earliest current stage does observed output first differ from the approved source facts?
 - **Committed Source Facts**: `2026-07-17-first-divergence-evidence-ledger.json` records `expected_meter: "4/4"`, `expected_tempo: 70`. Any assertion that Measure 1 requires 8 eighth notes is classified as `unproven` without independent visual score transcription.
-- **Direct Comparison against Source Facts**:
-  - **Meter**: Emitted `4/4` matches `expected_meter: "4/4"`.
-  - **Tempo Mismatch**: Emitted top-level tempo is `{'bpm': 120, 'text': None}`, which contradicts `expected_tempo: 70`.
-  - **Event Duration Padding**: Emitted Bar 0 Voice 1 events feature an anomalous 2400-tick eighth-labeled 4th event to pad 3840 ticks.
-- **Earliest Stage Classification (`unknown`)**: The exact code stage where tempo 70 defaults to 120 BPM and where duration padding occurs is not traced by current diagnostic outputs and is classified as **`unknown`**.
+- **Direct Source vs Output Comparison & Evidenced Injection Points (`supported`)**:
+  1. **Tempo Mismatch (70 vs 120 BPM)**: Emitted top-level tempo is `{'bpm': 120, 'text': None}`, which contradicts `expected_tempo: 70`.
+     - *Evidenced Code Injection Point*: [`src/score2gp/build_ir.py:L1629`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1629) in `build_ir_from_tabraw_only()`, which declares `tempo_bpm: float = 120.0` default parameter and constructs `Tempo(bpm=tempo_bpm)`.
+  2. **Event Duration Padding & Eighth-Label Mismatch**: Emitted Bar 0 Voice 1 Event 3 has duration 2400 ticks while labeled `notated_duration={'value': 'eighth', 'dots': 0}`.
+     - *Evidenced Code Injection Point*: [`src/score2gp/build_ir.py:L1834-L1835`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1834-L1835) in `build_ir_from_tabraw_only()`, which calculates `ev_duration_ticks = max(0, 3840 - current_onset)` for the final non-rest subgroup ($N=4$, $3840 - 1440 = 2400$) while retaining `ev_duration_name = duration_name` (`"eighth"` for $N \le 8$).
 - **Divergence Note**: The historical 1920-tick false half rest divergence is **absent** (`DEFECT_NOT_REPRODUCED`).
 
 ---
 
-## 4. Candidate Task Records Created
+## 4. Non-Executable Candidate Task Records Created
 
-To satisfy prompt 0008's `DEFECT_NOT_REPRODUCED` gate, two non-executable candidate tasks have been recorded for remaining visible mismatches:
+To satisfy prompt 0008's `DEFECT_NOT_REPRODUCED` gate, two non-executable candidate tasks with measurable decision criteria have been recorded for the two evidenced injection points:
 
-1. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md`](../tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md): Investigates top-level tempo defaulting to 120 BPM when source facts expect 70 BPM.
-2. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-duration-padding.md`](../tasks/2026-07-25-candidate-task-lesson5-duration-padding.md): Investigates Event 3 duration padding to 2400 ticks while labeled `notated_duration={'value': 'eighth'}`.
+1. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md`](../tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md): Evaluates forwarding an explicit tempo parameter to `build_ir_from_tabraw_only()` ([line 1629](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1629)) vs defaulting to 120.0 BPM.
+2. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-duration-padding.md`](../tasks/2026-07-25-candidate-task-lesson5-duration-padding.md): Evaluates aligning `notated_duration` with padded `duration_ticks` in `build_ir_from_tabraw_only()` ([lines 1834-1835](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1834-L1835)).
 
 Neither candidate task authorizes product code changes.
 
@@ -104,14 +104,14 @@ Neither candidate task authorizes product code changes.
 
 ## 5. Historical Ledger vs Current Evidence Comparison
 
-| Dimension | Historical Evidence Ledger (2026-07-17) | Current Runtime Observation (`ff9fb48`) | Source Classification |
-| :--- | :--- | :--- | :--- |
-| **False Rest Defect** | Half rest (1920 ticks) in measure 1 | None (0 rest events emitted) | `supported` |
-| **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) | `supported` |
-| **Tempo** | Expected `70` BPM | Emitted `120` BPM (`{'bpm': 120, 'text': None}`) | Mismatch (`supported`) |
-| **Notation Bridge Gate** | Claimed accepted in historical ledger | Filters out `half_rest_candidate` / `half_rest` | Current rejection `supported`; Historical acceptance `unproven` |
-| **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total | `supported` |
-| **Voice 1 Bar 0 Durations** | Claimed `[480, 480, 480, 480, 480, 480, 480, 480, 1920]` | `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$) | `supported` |
+| Dimension | Historical Evidence Ledger (2026-07-17) | Current Runtime Observation (`ff9fb48`) | Source Classification | Evidenced Injection Point |
+| :--- | :--- | :--- | :--- | :--- |
+| **False Rest Defect** | Half rest (1920 ticks) in measure 1 | None (0 rest events emitted) | `supported` | Absent on current `main` |
+| **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) | `supported` | `build_ir.py:L1771` |
+| **Tempo** | Expected `70` BPM | Emitted `120` BPM (`{'bpm': 120, 'text': None}`) | Mismatch (`supported`) | [`build_ir.py:L1629`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1629) |
+| **Notation Bridge Gate** | Claimed accepted in historical ledger | Filters out `half_rest_candidate` / `half_rest` | Current rejection `supported`; Historical acceptance `unproven` | [`notation_bridge.py:L41-47`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/notation_bridge.py#L41-L47) |
+| **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total | `supported` | N/A |
+| **Voice 1 Bar 0 Durations** | Claimed `[480, 480, 480, 480, 480, 480, 480, 480, 1920]` | `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$) | `supported` | [`build_ir.py:L1834-1835`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1834-L1835) |
 
 ---
 
@@ -120,4 +120,4 @@ Neither candidate task authorizes product code changes.
 - **Selected Outcome**: **`DEFECT_NOT_REPRODUCED`**
 - **Justification**: The false 1920-tick half rest is completely absent on current product `main`. Implementing obsolete half-rest suppression is disauthorized under Architect skill rules.
 - **Product Code Authorization**: **NO PRODUCT CODE CHANGES AUTHORISED**.
-- **Next Governed Step**: Publish this evidence report, synchronize governance state (`ACTIVE_TASK.md` and `prompts/NEXT.md`), record candidate tasks, and open a governance PR for Codex review.
+- **Next Governed Step**: Publish this evidence report, synchronize governance state (`ACTIVE_TASK.md` and `prompts/NEXT.md`), record candidate decision tasks, and open a governance PR for Codex review.

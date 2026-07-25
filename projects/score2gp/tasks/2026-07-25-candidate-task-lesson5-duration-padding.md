@@ -1,25 +1,30 @@
-# Candidate Task: Lesson-5 Event Duration Padding Anomaly (2400 Ticks)
+# Candidate Task: TabRaw Final Event Duration Padding and Notated Label Consistency
 
 ## Status
 
-CANDIDATE (NON-EXECUTABLE / AWAITING AUTHORIZATION)
+CANDIDATE (NON-EXECUTABLE / AWAITING GOVERNANCE AUTHORIZATION)
 
-## Objective
+## Evidenced Code Injection Point
 
-Investigate and locate the exact pipeline stage where the 4th Voice 1 event in Bar 0 (`onset_ticks=1440`, notes `['string=4,fret=9', 'string=5,fret=8']`) is assigned `duration_ticks=2400` while carrying internal label `notated_duration={'value': 'eighth', 'dots': 0}` during `Lesson-5.pdf` TabRaw conversion (`--pdf-only-tab`).
+- **File & Function**: `src/score2gp/build_ir.py` in `build_ir_from_tabraw_only()` ([lines 1834-1835](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1834-L1835)).
+- **Mechanism**: For a non-rest final subgroup, `ev_duration_ticks` is assigned `max(0, 3840 - current_onset)`, while `ev_duration_name` remains the grid-derived `"eighth"` for candidate count $N \le 8$.
+- **Observed Mismatch**: With $N=4$ candidates in Bar 0 and `current_onset=1440`, `ev_duration_ticks` is calculated as $3840 - 1440 = 2400$ ticks, while `notated_duration` remains `{'value': 'eighth', 'dots': 0}`.
 
-## Context & Observed Facts
+## Claim Under Test
 
-- **Emitted Voice 1 Bar 0 Events**:
-  - Event 0: `onset=0`, `duration_ticks=480`, `notated_duration={'value': 'eighth'}`
-  - Event 1: `onset=480`, `duration_ticks=480`, `notated_duration={'value': 'eighth'}`
-  - Event 2: `onset=960`, `duration_ticks=480`, `notated_duration={'value': 'eighth'}`
-  - Event 3: `onset=1440`, `duration_ticks=2400`, `notated_duration={'value': 'eighth'}`
-- **Total Voice 1 Duration**: 3840 ticks ($D_{\text{voice1}} = 3840$). Measure capacity $C_{\text{measure}} = 3840$ ticks in 4/4 meter.
-- **Anomaly**: Event 3 is assigned 2400 ticks to fill the measure capacity while remaining labeled as an eighth note (`value: eighth` = 480 ticks).
-- **Discovered During**: CR-04A current-runtime evidence replay on product base `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`.
+Final event duration fill logic in `build_ir_from_tabraw_only()` can align `notated_duration` with `duration_ticks` (or split padded duration into tied/notated duration components) rather than labeling a 2400-tick event as `"eighth"`.
 
-## Scope & Boundaries
+## Public-Testable Generic Rule
 
-- **No Product Code Authorized**: This is a candidate task record only. No developer implementation or product code modification is authorized.
-- **Investigation Boundary**: When authorized, trace TabRaw rhythm alignment and measure duration fill logic in `pdf_staff_tab_timing_aligner.py` and `build_ir.py` to identify why duration padding assigns 2400 ticks to an eighth note.
+For any TabRaw event where `duration_ticks` is padded to fill measure capacity (e.g. 2400 ticks), `notated_duration` must match the actual notated duration value corresponding to `duration_ticks` or be structured into valid notated duration components.
+
+## Measurable Success & Refusal Criteria
+
+- **Success**: In emitted `score.ir.json`, no event carries `notated_duration.value == 'eighth'` (480 ticks) alongside `duration_ticks == 2400`. `score2gp validate-ir` succeeds.
+- **Refusal**: Supplying candidates whose total onset exceeds measure capacity ($current\_onset > 3840$) raises `BuildIrInputRiskError`.
+
+## Scope & Validation
+
+- **Maximum Scope**: Final event duration calculation loop in `build_ir_from_tabraw_only()` (`src/score2gp/build_ir.py` lines 1827-1836).
+- **Validation Command**: `pytest tests/test_build_ir.py`
+- **Stop / Pivot Criteria**: If measure fill rules alter existing passing TabRaw regression tests without explicit maintainer policy, stop and return to governance. Product code implementation remains disauthorized under this candidate record.
