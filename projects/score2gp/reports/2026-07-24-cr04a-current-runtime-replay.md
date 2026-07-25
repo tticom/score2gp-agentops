@@ -19,7 +19,7 @@ Empirical replay on current product `main` establishes that:
 1. **Candidate Recognition**: Emits **0** `half_rest_candidate` objects, **0** `half_rest` objects, and **0** 1920-tick rest candidates across all 14 systems in `Lesson-5.pdf`.
 2. **Notation Bridge**: `build_ir_from_notation_outcomes()` in `score2gp.notation_bridge` ignores/filters half-rest candidates, accepting only whole/half/quarter/eighth/sixteenth/32nd/64th note candidates and `quarter_rest_candidate`.
 3. **Generated ScoreIR**: Contains **0** rest events across all 34 bars. Bar 0 emits 4 Voice 1 note events (`[480, 480, 480, 2400]` ticks, total $D_{\text{voice1}} = 3840$ ticks) with time signature `4/4`.
-4. **Decision Gate**: **`DEFECT_NOT_REPRODUCED`**. The false 1920-tick half rest does not exist on current product `main`. Implementing obsolete half-rest suppression is disauthorized.
+4. **Decision Gate**: **`DEFECT_NOT_REPRODUCED`**. The false 1920-tick half rest does not exist on current product `main`. Implementing obsolete half-rest suppression is disauthorized. Separate candidate task records have been created for remaining visible mismatches.
 
 ---
 
@@ -33,7 +33,7 @@ Empirical replay on current product `main` establishes that:
 - **Private Input SHA-256**: `585ac4669a85e44d29ab571620544ca860a907221b625e28074c0cccf4447654`
 - **MusicXML Sidecar Path**: `absent` (none used)
 - **GitHub CLI Account**: `tticom-automation`
-- **Git Identity Remediation**: Earlier governance commits `359a369d` and `026485d8` were created while local repository git config overrode the global user identity to `tticom-codex`. Local repository configuration was corrected to `user.name "tticom-automation"` (`tticomautomation@gmail.com`) for commit `026485d8` and subsequent commits without force-pushing, preserving non-destructive audit history.
+- **Git Identity Remediation**: Governance commits `359a369d` and `026485d8` were authored while local repository git config overrode the global user identity to `tticom-codex`. Local repository configuration was corrected to `user.name "tticom-automation"` (`tticomautomation@gmail.com`) for commit `b8ef490a` and all subsequent commits without force-pushing, preserving non-destructive audit history. Commits `359a369d` and `026485d8` remain in history as un-amended audit records; the identity gate is verified for remote head `b8ef490a` and subsequent commits.
 - **Diagnostic Commands & Exit Statuses**:
   - `score2gp note-candidate-recognition --pdf <Lesson-5.pdf> --json` -> Exit status `0`
   - `score2gp convert --pdf <Lesson-5.pdf> --pdf-only-tab --work-dir work/lesson5_work -o work/lesson5_out.gp --json-report work/lesson5_report.json` -> Exit status `0`
@@ -81,31 +81,43 @@ Empirical replay on current product `main` establishes that:
   - **Remaining Visible Mismatch**: Event 3 (onset 1440, duration 2400 ticks) is internally labeled `notated_duration={'value': 'eighth', 'dots': 0}` while extending 2400 ticks to pad out the 3840-tick measure.
 
 ### Question 5: At what earliest current stage does observed output first differ from the approved source facts?
-- **Source Facts vs Current Output Comparison**:
-  - **Committed Source Facts**: `2026-07-17-first-divergence-evidence-ledger.json` records `expected_meter: "4/4"`, `expected_tempo: 70`. Any assertion that Measure 1 requires 8 eighth notes is classified as `unproven` without independent visual score transcription.
-  - **Stage 1 (OMR Vector/Raster Candidate Recognition)**: Emits notehead candidates, but 0 rest candidates.
-  - **Stage 2 (TabRaw Rhythm / Notation Alignment)**: `score2gp convert` without a MusicXML sidecar operates in TabRaw mode (`--pdf-only-tab`). It emits 4 Voice 1 events (`[480, 480, 480, 2400]` ticks) filling 3840 ticks in 4/4 meter.
-  - **Earliest Current Divergence**: **Stage 2 (TabRaw Rhythm / Notation Alignment)**.
-    - *Observed*: 4 Voice 1 events emitted, with an anomalous 2400-tick final event labeled `eighth`.
-  - **Divergence Note**: The historical 1920-tick false half rest divergence is **absent** (`DEFECT_NOT_REPRODUCED`).
+- **Committed Source Facts**: `2026-07-17-first-divergence-evidence-ledger.json` records `expected_meter: "4/4"`, `expected_tempo: 70`. Any assertion that Measure 1 requires 8 eighth notes is classified as `unproven` without independent visual score transcription.
+- **Direct Comparison against Source Facts**:
+  - **Meter**: Emitted `4/4` matches `expected_meter: "4/4"`.
+  - **Tempo Mismatch**: Emitted top-level tempo is `{'bpm': 120, 'text': None}`, which contradicts `expected_tempo: 70`.
+  - **Event Duration Padding**: Emitted Bar 0 Voice 1 events feature an anomalous 2400-tick eighth-labeled 4th event to pad 3840 ticks.
+- **Earliest Stage Classification (`unknown`)**: The exact code stage where tempo 70 defaults to 120 BPM and where duration padding occurs is not traced by current diagnostic outputs and is classified as **`unknown`**.
+- **Divergence Note**: The historical 1920-tick false half rest divergence is **absent** (`DEFECT_NOT_REPRODUCED`).
 
 ---
 
-## 4. Historical Ledger vs Current Evidence Comparison
+## 4. Candidate Task Records Created
+
+To satisfy prompt 0008's `DEFECT_NOT_REPRODUCED` gate, two non-executable candidate tasks have been recorded for remaining visible mismatches:
+
+1. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md`](../tasks/2026-07-25-candidate-task-lesson5-tempo-mismatch.md): Investigates top-level tempo defaulting to 120 BPM when source facts expect 70 BPM.
+2. [`projects/score2gp/tasks/2026-07-25-candidate-task-lesson5-duration-padding.md`](../tasks/2026-07-25-candidate-task-lesson5-duration-padding.md): Investigates Event 3 duration padding to 2400 ticks while labeled `notated_duration={'value': 'eighth'}`.
+
+Neither candidate task authorizes product code changes.
+
+---
+
+## 5. Historical Ledger vs Current Evidence Comparison
 
 | Dimension | Historical Evidence Ledger (2026-07-17) | Current Runtime Observation (`ff9fb48`) | Source Classification |
 | :--- | :--- | :--- | :--- |
 | **False Rest Defect** | Half rest (1920 ticks) in measure 1 | None (0 rest events emitted) | `supported` |
 | **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) | `supported` |
+| **Tempo** | Expected `70` BPM | Emitted `120` BPM (`{'bpm': 120, 'text': None}`) | Mismatch (`supported`) |
 | **Notation Bridge Gate** | Claimed accepted in historical ledger | Filters out `half_rest_candidate` / `half_rest` | Current rejection `supported`; Historical acceptance `unproven` |
 | **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total | `supported` |
 | **Voice 1 Bar 0 Durations** | Claimed `[480, 480, 480, 480, 480, 480, 480, 480, 1920]` | `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$) | `supported` |
 
 ---
 
-## 5. Decision Gate & Governed Next State
+## 6. Decision Gate & Governed Next State
 
 - **Selected Outcome**: **`DEFECT_NOT_REPRODUCED`**
 - **Justification**: The false 1920-tick half rest is completely absent on current product `main`. Implementing obsolete half-rest suppression is disauthorized under Architect skill rules.
 - **Product Code Authorization**: **NO PRODUCT CODE CHANGES AUTHORISED**.
-- **Next Governed Step**: Publish this evidence report, synchronize governance state (`ACTIVE_TASK.md` and `prompts/NEXT.md`), and open a governance PR for Codex review.
+- **Next Governed Step**: Publish this evidence report, synchronize governance state (`ACTIVE_TASK.md` and `prompts/NEXT.md`), record candidate tasks, and open a governance PR for Codex review.
