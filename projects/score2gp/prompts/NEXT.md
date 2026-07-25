@@ -2,7 +2,8 @@
 
 Agy aliases: next and go.
 
-Current prompt: [0008-cr04a-current-runtime-evidence-replay.md](next/0008-cr04a-current-runtime-evidence-replay.md)
+NO_ACTIVE_PROMPT_SELECTED
 
-Read and execute that prompt completely. Stop after publishing the bounded
-current-runtime evidence handoff; do not begin product implementation or merge.
+Prompt 0008 (CR-04A Current-Runtime Evidence Replay) is completed with verdict `DEFECT_NOT_REPRODUCED`.
+No active product implementation or evidence collection prompt is currently selected.
+Awaiting next prompt assignment from governance / Orchestrator.

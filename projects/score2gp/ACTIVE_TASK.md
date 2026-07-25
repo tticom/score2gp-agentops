@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: CR-04A: False-Rest Candidate and Per-Voice Capacity Gate
+**Task**: CR-04A: False-Rest Candidate and Per-Voice Capacity Gate (Current-Runtime Replay)
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp-agentops
 **Product Repository**: tticom/score2gp
@@ -8,15 +8,11 @@
 
 ## Status
 
-ACTIVE
+REPLAY_COMPLETED (DEFECT_NOT_REPRODUCED)
 
 ## Context
 
-CR-04A evidence analysis of `Lesson-5.pdf` established that the false rest candidate is a **half rest** (1920 ticks), disproving the `quarter_rest_recogniser.py` hypothesis. Furthermore, `timeline_preview` is a read-only CLI diagnostic that does not gate active conversion (`build_ir` / `notation_bridge`).
-
-The architecture pass identified an `OBSERVABILITY_GAP`. The next bounded task
-must replay the approved Lesson-5 input on current product `main` with runtime
-provenance before any instrumentation or implementation is authorized.
+CR-04A current-runtime evidence replay of `Lesson-5.pdf` on product `main` (`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`) established that the false 1920-tick half rest recorded in historical evidence is absent from current candidate recognition, filtered out by `notation_bridge.py`, and absent from generated `ScoreIR`. Emitted Bar 0 voice 1 durations are `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$), with an anomalous 2400-tick final event labeled `eighth` (`build_ir.py:L1834-1835`), and emitted tempo is 120 BPM (`build_ir.py:L1629`, expected 70 BPM). Obsolete half-rest suppression code is disauthorized. Separate non-executable candidate tasks with decision criteria have been recorded.
 
 ## Execution Model
 
@@ -25,10 +21,9 @@ Execute only the versioned prompt selected by
 
 ## Boundaries
 
-Do not modify product code. Do not claim the Lesson-5 mismatch fixed. Record
+Do not modify product code. Obsolete half-rest suppression is disauthorized. Record
 only sanitized facts, hashes, commands, exit status, and event summaries.
 
 ## Handoff
 
-Execute prompt `0008-cr04a-current-runtime-evidence-replay.md`. Publish the
-bounded evidence handoff and stop for Codex review. Do not begin product implementation or merge.
+Replay report published in `projects/score2gp/reports/2026-07-24-cr04a-current-runtime-replay.md`. Non-executable candidate tasks created in `projects/score2gp/tasks/`. Open governance PR and stop for Codex review.
