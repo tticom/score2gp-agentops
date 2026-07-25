@@ -1,22 +1,23 @@
 # Active Task
 
-**Task**: CR-04B: Explicit Tempo Override for PDF-Only TabRaw Conversion
-**Authorised Role**: Developer (Tier B)
+**Task**: CR-04C: Final-Event Duration Consistency Architecture Decision
+**Authorised Role**: Architect (Tier B)
 **Repository**: tticom/score2gp
 **Product Repository**: tticom/score2gp
-**Product Base**: ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f
+**Product Base**: f47194e57b551d4b571a04c0b7641fbe9c173f80
 
 ## Status
 
-ACTIVE — PRODUCT IMPLEMENTATION AUTHORISED BY PROMPT 0009
+ACTIVE — BOUNDED ARCHITECTURE WORK AUTHORISED BY PROMPT 0010
 
 ## Context
 
-Current PDF-only TabRaw conversion defaults to 120 BPM through
-`build_ir_from_tabraw_only(..., tempo_bpm=120.0)`. Real-world Lesson-5
-evidence expects 70 BPM. The next smallest product capability is an explicit,
-validated CLI tempo override that reaches the existing builder parameter while
-preserving the current default when omitted.
+Real-world Lesson-5 evidence and direct code inspection show that PDF-only
+TabRaw conversion can emit a final event with `duration_ticks == 2400` while
+retaining `notated_duration.value == "eighth"` (480 ticks). The correct
+representation is not yet decided: shorten the event and add rest capacity,
+split/tie the duration, or encode another supported notated duration structure.
+Architecture must resolve this before product implementation.
 
 ## Execution Model
 
@@ -25,18 +26,21 @@ Execute only the versioned prompt selected by
 
 ## Acceptance
 
-`score2gp convert --pdf-only-tab --tempo-bpm 70 ...` must emit ScoreIR tempo
-70 through a public fixture test. Omitting the option must still emit 120.
-Non-positive values must be refused. Full validation and artifact audit must
-pass.
+Produce a source-backed decision for the smallest correct ScoreIR and GP
+representation. Prove the current mismatch with a tracked public fixture or
+minimal synthetic TabRaw input, inspect serialization and validation behavior,
+and specify measurable implementation tests plus stop/pivot criteria.
 
 ## Boundaries
 
-Do not implement PDF tempo OCR/extraction, change duration padding, alter
-MusicXML tempo behavior, use private fixtures as test dependencies, or broaden
-conversion semantics beyond explicit PDF-only TabRaw tempo forwarding.
+Do not edit product code, choose a representation without checking ScoreIR and
+GP serialization contracts, use private fixtures as test dependencies, alter
+tempo handling, or broaden scope beyond the PDF-only TabRaw final-event
+duration mismatch.
 
 ## Handoff
 
-Execute prompt `0009-cr04b-explicit-pdf-only-tempo-override.md`. Publish one
-product PR and stop for independent Codex review. Do not merge.
+Execute prompt `0010-cr04c-final-event-duration-consistency-architecture.md`.
+Publish one governance PR containing the decision and next bounded Developer
+authorization, then stop for independent Codex review. Do not merge or edit
+the product repository.
