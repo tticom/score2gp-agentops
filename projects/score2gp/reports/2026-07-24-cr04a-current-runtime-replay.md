@@ -18,12 +18,12 @@ Historical evidence ledger `2026-07-17-first-divergence-evidence-ledger.json` pr
 Empirical replay on current product `main` establishes that:
 1. **Candidate Recognition**: Emits **0** `half_rest_candidate` objects, **0** `half_rest` objects, and **0** 1920-tick rest candidates across all 14 systems in `Lesson-5.pdf`.
 2. **Notation Bridge**: `build_ir_from_notation_outcomes()` in `score2gp.notation_bridge` ignores/filters half-rest candidates, accepting only whole/half/quarter/eighth/sixteenth/32nd/64th note candidates and `quarter_rest_candidate`.
-3. **Generated ScoreIR**: Contains **0** rest events across all 34 bars. Bar 0 emits 4 note events (TabRaw fret extractions) with time signature `4/4` and 0 rest duration.
+3. **Generated ScoreIR**: Contains **0** rest events across all 34 bars. Bar 0 emits 4 Voice 1 note events (`[480, 480, 480, 2400]` ticks, total $D_{\text{voice1}} = 3840$ ticks) with time signature `4/4`.
 4. **Decision Gate**: **`DEFECT_NOT_REPRODUCED`**. The false 1920-tick half rest does not exist on current product `main`. Implementing obsolete half-rest suppression is disauthorized.
 
 ---
 
-## 2. Runtime Provenance
+## 2. Runtime Provenance & Identity Remediation
 
 - **Product Commit (HEAD)**: `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`
 - **Product Working Tree Status**: Clean (`git status --short` output empty)
@@ -32,6 +32,8 @@ Empirical replay on current product `main` establishes that:
 - **Private Input Path**: `/home/tticom/work/score2gp-workspace/score2gp-private-fixtures/fixtures/private/Lesson-5.pdf`
 - **Private Input SHA-256**: `585ac4669a85e44d29ab571620544ca860a907221b625e28074c0cccf4447654`
 - **MusicXML Sidecar Path**: `absent` (none used)
+- **GitHub CLI Account**: `tticom-automation`
+- **Git Identity Remediation**: Earlier governance commits `359a369d` and `026485d8` were created while local repository git config overrode the global user identity to `tticom-codex`. Local repository configuration was corrected to `user.name "tticom-automation"` (`tticomautomation@gmail.com`) for commit `026485d8` and subsequent commits without force-pushing, preserving non-destructive audit history.
 - **Diagnostic Commands & Exit Statuses**:
   - `score2gp note-candidate-recognition --pdf <Lesson-5.pdf> --json` -> Exit status `0`
   - `score2gp convert --pdf <Lesson-5.pdf> --pdf-only-tab --work-dir work/lesson5_work -o work/lesson5_out.gp --json-report work/lesson5_report.json` -> Exit status `0`
@@ -62,25 +64,29 @@ Empirical replay on current product `main` establishes that:
 - **Observed Fact**: No. In `work/lesson5_work/score.ir.json`:
   - Total bars: 34.
   - Total rests across all bars in `ScoreIR`: 0.
-  - Bar 0 events count: 4 events (containing TabRaw note fret extractions, e.g., fret 8 on string 5), with 0 rest events.
+  - Bar 0 events count: 4 events (containing TabRaw note fret extractions), with 0 rest events.
 
 ### Question 4: What meter and per-voice durations are emitted?
 - **Source Facts**: Expected meter is `4/4` (measure capacity $C_{\text{measure}} = 3840$ ticks).
 - **Emitted Meter**: Time signature emitted for Bar 0 and all 34 bars is `4/4` (`{'numerator': 4, 'denominator': 4}`).
-- **Emitted Per-Voice Duration Totals & Capacity**:
-  - **Voice 1 Duration Total**: 0 notated ticks (TabRaw mode extracts fret numbers from vector text without assigning notated tick durations to noteheads).
-  - **Voice 1 Rest Duration Total**: 0 ticks.
-  - **Voice 2 Duration Total**: 0 ticks.
-  - **Measure Capacity Gate**: $D_{\text{voice}} = 0 \le C_{\text{measure}} = 3840$ ticks. Per-voice duration capacity is not exceeded.
+- **Emitted Per-Voice Ordered Events & Durations**:
+  - **Voice 1 Ordered Events (Bar 0)**:
+    - Event 0: `onset_ticks=0`, `duration_ticks=480`, `voice=1`, `notated_duration={'value': 'eighth', 'dots': 0}`, `notes=['string=6,fret=8']`
+    - Event 1: `onset_ticks=480`, `duration_ticks=480`, `voice=1`, `notated_duration={'value': 'eighth', 'dots': 0}`, `notes=['string=6,fret=10', 'string=5,fret=8']`
+    - Event 2: `onset_ticks=960`, `duration_ticks=480`, `voice=1`, `notated_duration={'value': 'eighth', 'dots': 0}`, `notes=['string=4,fret=7']`
+    - Event 3: `onset_ticks=1440`, `duration_ticks=2400`, `voice=1`, `notated_duration={'value': 'eighth', 'dots': 0}`, `notes=['string=4,fret=9', 'string=5,fret=8']`
+  - **Voice 1 Duration Total**: $480 + 480 + 480 + 2400 = 3840$ ticks ($D_{\text{voice1}} = 3840$ ticks).
+  - **Voice 2 Events**: None emitted (0 voice 2 event objects present in Bar 0).
+  - **Measure Capacity Gate**: $D_{\text{voice1}} = 3840 \le C_{\text{measure}} = 3840$ ticks. Measure capacity is exactly filled, not exceeded.
+  - **Remaining Visible Mismatch**: Event 3 (onset 1440, duration 2400 ticks) is internally labeled `notated_duration={'value': 'eighth', 'dots': 0}` while extending 2400 ticks to pad out the 3840-tick measure.
 
 ### Question 5: At what earliest current stage does observed output first differ from the approved source facts?
-- **Direct Source vs Output Comparison**:
-  - **Approved Source Fact**: `Lesson-5.pdf` Measure 1 contains 8 eighth notes in 4/4 meter.
+- **Source Facts vs Current Output Comparison**:
+  - **Committed Source Facts**: `2026-07-17-first-divergence-evidence-ledger.json` records `expected_meter: "4/4"`, `expected_tempo: 70`. Any assertion that Measure 1 requires 8 eighth notes is classified as `unproven` without independent visual score transcription.
   - **Stage 1 (OMR Vector/Raster Candidate Recognition)**: Emits notehead candidates, but 0 rest candidates.
-  - **Stage 2 (TabRaw Rhythm / Notation Alignment)**: `score2gp convert` without a MusicXML sidecar operates in TabRaw mode (`--pdf-only-tab`). It extracts fret numbers (`kind: fret`), but does not bind standard-notation noteheads to rhythmic tick durations.
+  - **Stage 2 (TabRaw Rhythm / Notation Alignment)**: `score2gp convert` without a MusicXML sidecar operates in TabRaw mode (`--pdf-only-tab`). It emits 4 Voice 1 events (`[480, 480, 480, 2400]` ticks) filling 3840 ticks in 4/4 meter.
   - **Earliest Current Divergence**: **Stage 2 (TabRaw Rhythm / Notation Alignment)**.
-    - *Expected*: 8 eighth notes with 480 ticks each (total 3840 ticks).
-    - *Observed*: 4 fret note events with 0 notated duration ticks in TabRaw mode.
+    - *Observed*: 4 Voice 1 events emitted, with an anomalous 2400-tick final event labeled `eighth`.
   - **Divergence Note**: The historical 1920-tick false half rest divergence is **absent** (`DEFECT_NOT_REPRODUCED`).
 
 ---
@@ -93,6 +99,7 @@ Empirical replay on current product `main` establishes that:
 | **Detected Meter** | 12/8 (inflated measure duration 5760 ticks) | 4/4 (34 bars emitted) | `supported` |
 | **Notation Bridge Gate** | Claimed accepted in historical ledger | Filters out `half_rest_candidate` / `half_rest` | Current rejection `supported`; Historical acceptance `unproven` |
 | **ScoreIR Rest Count** | 1 rest in measure 1 (1920 ticks) | 0 rest events in total | `supported` |
+| **Voice 1 Bar 0 Durations** | Claimed `[480, 480, 480, 480, 480, 480, 480, 480, 1920]` | `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$) | `supported` |
 
 ---
 
