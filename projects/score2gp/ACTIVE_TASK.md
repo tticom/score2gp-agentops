@@ -1,29 +1,42 @@
 # Active Task
 
-**Task**: CR-04A: False-Rest Candidate and Per-Voice Capacity Gate (Current-Runtime Replay)
-**Authorised Role**: Architect
-**Repository**: tticom/score2gp-agentops
+**Task**: CR-04B: Explicit Tempo Override for PDF-Only TabRaw Conversion
+**Authorised Role**: Developer (Tier B)
+**Repository**: tticom/score2gp
 **Product Repository**: tticom/score2gp
 **Product Base**: ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f
 
 ## Status
 
-REPLAY_COMPLETED (DEFECT_NOT_REPRODUCED)
+ACTIVE — PRODUCT IMPLEMENTATION AUTHORISED BY PROMPT 0009
 
 ## Context
 
-CR-04A current-runtime evidence replay of `Lesson-5.pdf` on product `main` (`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`) established that the false 1920-tick half rest recorded in historical evidence is absent from current candidate recognition, filtered out by `notation_bridge.py`, and absent from generated `ScoreIR`. Emitted Bar 0 voice 1 durations are `[480, 480, 480, 2400]` ticks ($D_{\text{voice1}} = 3840$), with an anomalous 2400-tick final event labeled `eighth` (`build_ir.py:L1834-1835`), and emitted tempo is 120 BPM (`build_ir.py:L1629`, expected 70 BPM). Obsolete half-rest suppression code is disauthorized. Separate non-executable candidate tasks with decision criteria have been recorded.
+Current PDF-only TabRaw conversion defaults to 120 BPM through
+`build_ir_from_tabraw_only(..., tempo_bpm=120.0)`. Real-world Lesson-5
+evidence expects 70 BPM. The next smallest product capability is an explicit,
+validated CLI tempo override that reaches the existing builder parameter while
+preserving the current default when omitted.
 
 ## Execution Model
 
 Execute only the versioned prompt selected by
 `projects/score2gp/prompts/NEXT.md`.
 
+## Acceptance
+
+`score2gp convert --pdf-only-tab --tempo-bpm 70 ...` must emit ScoreIR tempo
+70 through a public fixture test. Omitting the option must still emit 120.
+Non-positive values must be refused. Full validation and artifact audit must
+pass.
+
 ## Boundaries
 
-Do not modify product code. Obsolete half-rest suppression is disauthorized. Record
-only sanitized facts, hashes, commands, exit status, and event summaries.
+Do not implement PDF tempo OCR/extraction, change duration padding, alter
+MusicXML tempo behavior, use private fixtures as test dependencies, or broaden
+conversion semantics beyond explicit PDF-only TabRaw tempo forwarding.
 
 ## Handoff
 
-Replay report published in `projects/score2gp/reports/2026-07-24-cr04a-current-runtime-replay.md`. Non-executable candidate tasks created in `projects/score2gp/tasks/`. Open governance PR and stop for Codex review.
+Execute prompt `0009-cr04b-explicit-pdf-only-tempo-override.md`. Publish one
+product PR and stop for independent Codex review. Do not merge.

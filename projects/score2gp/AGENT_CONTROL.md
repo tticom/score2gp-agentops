@@ -111,6 +111,39 @@ Agy must never:
 
 The cadence is one governance step followed by one development step. Agy does the implementation or evidence collection and publishes its PR. Codex reviews, makes any small publication correction, and merges. Agy may approve a Codex-authored governance PR only when its versioned prompt explicitly identifies that PR; it still must not merge it.
 
+## Continuous Forward Motion and Real-World Validation
+
+Completion of an architecture, development, review, or merge cycle must
+immediately trigger organization of the next governed step. Completion is not
+an instruction to become idle.
+
+When the human maintainer reports that a PR is merged, the agent must inspect
+the merged state and, in the same working cycle, select and prepare the next
+bounded task or the smallest governance action needed to authorize it. The
+agent must not wait for the human to ask what comes next.
+
+If no approved task or prompt remains, the agent must assess the actual product
+state instead of stopping merely because a queue is empty. That assessment
+must use real product evidence where safely available: current merged code,
+approved public fixtures, approved private fixtures in place, fresh conversion
+output, maintainer real-world test observations, and direct inspection of the
+resulting musical artifacts. The outcome must be one or more of:
+
+- a verified next task selected from existing evidence;
+- a bounded real-world validation prompt;
+- newly recorded candidate bugs or requirements with evidence and limits; or
+- an exact external prerequisite or maintainer action, while other safe
+  planning continues.
+
+Real-world testing is continuous product evidence, not a final-stage activity.
+Maintainer observations must be incorporated at every stage and must override
+optimistic aggregate diagnostics when they conflict.
+
+This continuation rule does not authorize product implementation by itself,
+permit a second task while a task PR remains open, or weaken identity, WSL,
+privacy, review, branch, or merge gates. It requires the next step to be
+organized and governed; it does not permit ungoverned execution.
+
 ## Unauthorized-Merge Incident Gate
 
 If Agy executes, attempts, or reports any prohibited merge action, bypass flag,
