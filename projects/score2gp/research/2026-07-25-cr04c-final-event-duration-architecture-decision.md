@@ -13,7 +13,7 @@
 
 During current-runtime evidence replay of `Lesson-5.pdf` and direct code inspection on product `main` (`f47194e5`), `build_ir_from_tabraw_only()` in [`src/score2gp/build_ir.py:L1834-L1835`](file:///wsl.localhost/Ubuntu-24.04/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/build_ir.py#L1834-L1835) assigns `ev_duration_ticks = max(0, 3840 - current_onset)` to the final non-rest candidate subgroup in a bar.
 
-An eighth note has a nominal duration of 480 ticks ($1 \times 480$). Assigning padded durations (e.g. 2400 ticks for $N=4$ or 2880 ticks for $N=3$) to an event labeled `"eighth"` creates an internal contradiction in `ScoreIR` between `duration_ticks` and `notated_duration`. In GPIF XML output, this causes Guitar Pro to render a visual eighth note followed by a timeline gap before the next measure.
+An eighth note has a nominal duration of 480 ticks ($1 \times 480$). Assigning padded durations (e.g. 2400 ticks for $N=4$ or 2880 ticks for $N=3$) to an event labeled `"eighth"` creates an internal contradiction in `ScoreIR` between `duration_ticks` and `notated_duration`. The architecture decision is grounded strictly on this independently verified internal `ScoreIR` and `GPIF` contract contradiction. The proprietary Guitar Pro GUI application visual rendering behavior is reclassified as an unverified hypothesis.
 
 ---
 
@@ -43,10 +43,11 @@ Package Inspection Summary: bar_count=1, note_count=N, tempo=120
 
 ### Separation of Fact, Inference, and Unknown
 
-- **Fact (Verified)**: Current `build_ir_from_tabraw_only()` pads the final candidate note's `duration_ticks` to fill measure capacity 3840 without updating `notated_duration`.
-- **Fact (Verified)**: `ScoreIR` models and `gpif.py` writer serialize `is_rest=True` events with `NotatedDuration` values (`whole`, `half`, `quarter`, `eighth`, `16th`, `32nd`, `64th`) without validation errors.
-- **Inference**: Representing unassigned measure capacity as rest events reflects silent tab space without implying un-evidenced note sustain.
-- **Hypothesis**: Replacing padded final notes with grid-sized notes plus rest events improves ScoreIR and GPIF truthfulness for drawn/vector tablature.
+- **Fact (Verified)**: Current `build_ir_from_tabraw_only()` pads the final candidate note's `duration_ticks` to fill measure capacity 3840 without updating `notated_duration`, creating an internal `ScoreIR` timing-label mismatch (`duration_ticks=2400` vs `notated_duration={"value": "eighth", "dots": 0}` = 480 nominal ticks).
+- **Fact (Verified)**: `ScoreIR` models and `gpif.py` writer serialize `is_rest=True` events with standard `NotatedDuration` values (`whole`, `half`, `quarter`, `eighth`, `16th`, `32nd`, `64th`) without validation errors (`validate_gp()` returns 0 errors).
+- **Inference**: Representing unassigned measure capacity as explicit rest events in `ScoreIR` resolves the internal timing-label mismatch and reflects silent measure space without implying un-evidenced note sustain.
+- **Hypothesis**: The internal timing-label contradiction would cause external GUI notation applications to render a visual notation/timeline discrepancy.
+- **Unknown**: Exact visual rendering behavior inside the proprietary Guitar Pro GUI application (unverified in headless terminal environment; decisions are strictly based on verified `ScoreIR` and `GPIF` XML contract compliance).
 - **Unknown**: Whether future non-4/4 time signatures (e.g. 3/4 or 6/8) will require measure capacity parameters beyond 3840 ticks (out of scope for active 4/4 blocker).
 
 ---
