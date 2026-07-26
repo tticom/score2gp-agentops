@@ -2,10 +2,9 @@
 
 ## Status
 
-Human-requested programme recorded after merged product PR #385. Step 1 is the
-next governed loop. Steps 2-5 are ordered wireframes: they record intention but
-are not executable until the preceding product PR is externally merged and the
-prompt is revalidated against the new product `origin/main`.
+COMPLETE. CR-04D1 through CR-04D5 were independently reviewed and externally
+merged through product PRs #386-#390. The final product merge is
+`d70d559152c5aa357a7d2eb38e65b09f288bb08f`.
 
 This is separate from FS-06 notation-OMR modularisation. FS-06 concerns
 `whole_note_recogniser.py`; CR-04D concerns PDF-only TabRaw measure assembly in
