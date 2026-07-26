@@ -1,31 +1,30 @@
 # Active Task
 
-**Task**: CR-04D5: PDF-Only Tab Measure-Assembly Compatibility Closure
+**Task**: POST-CR04D-01: Public PDF-Only Conversion Replay
 **Authorised Role**: Developer (Tier B)
 **Repository**: tticom/score2gp-agentops
 **Product Repository**: tticom/score2gp
-**Product Prerequisite**: merged PR #389 at product merge
-`a8250ea8a1b71f8b64081ee6cf6408dd77398509`
+**Product Prerequisite**: merged PR #390 at product merge
+`d70d559152c5aa357a7d2eb38e65b09f288bb08f`
 
 ## Status
 
-ACTIVE — FINAL CR-04D CLOSURE LOOP AUTHORISED BY PROMPT 0016
+ACTIVE — POST-REFACTOR PUBLIC EVIDENCE REPLAY AUTHORISED BY PROMPT 0017
 
 ## Context
 
-CR-04D1 through CR-04D4 are merged. Revalidation found five obsolete D1/D2
-helper imports and the obsolete `_STRING_TO_BASE_PITCH` constant in
-`build_ir.py`. The extracted production boundary is otherwise intact.
-CR-04D5 is a compatibility-and-documentation closure, not another extraction.
+CR-04D1 through CR-04D5 are independently reviewed and merged. CR-04D is
+complete. The next step is a fresh runtime-provenance replay of the committed
+PDF-only path on the deterministic generated score-like public fixture. This
+is evidence collection, not another refactor or a claim of real-score support.
 
 ## Execution Model
 
 Execute only the versioned prompt selected by
-`projects/score2gp/prompts/NEXT.md`. No later refactor prompt is active.
+`projects/score2gp/prompts/NEXT.md`. No product edit is authorised.
 
 ## Handoff
 
-Execute `0016-cr04d5-measure-assembly-compatibility-closure-wireframe.md`.
-Publish one bounded product PR and stop for independent review. Do not merge
-the PR, begin another refactor, or treat the recorded next candidate as
-authorised work.
+Execute `0017-post-cr04d-public-pdf-only-conversion-replay.md`. Publish one
+AgentOps evidence PR and stop for independent review. Do not modify the
+product repository, merge the PR, or activate its recommended follow-up.
