@@ -9,8 +9,8 @@ Your job is to run the autonomous development loop with minimal human interactio
 Use:
 
 ```text
-/home/tticom/work/score2gp-workspace/score2gp-agentops
-/home/tticom/work/score2gp-workspace/score2gp
+/home/tticom-automation/work/score2gp-workspace/score2gp-agentops
+/home/tticom-automation/work/score2gp-workspace/score2gp
 ```
 
 Do not use old Windows `.old` workspaces.
@@ -34,14 +34,16 @@ projects/score2gp/skills/reviewer/SKILL.md
 Run:
 
 ```bash
-cd /home/tticom/work/score2gp-workspace/score2gp-agentops
+test "$(whoami)" = "tticom-automation"
+test "$HOME" = "/home/tticom-automation"
+cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
 tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
 python3 scripts/score2gp_governance_audit.py
 
-cd /home/tticom/work/score2gp-workspace/score2gp
+cd /home/tticom-automation/work/score2gp-workspace/score2gp
 git status --short --branch
 git fetch --all --prune
 git log --oneline --decorate --max-count=8

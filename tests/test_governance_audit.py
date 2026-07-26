@@ -154,3 +154,43 @@ def test_orchestration_direct_main_removed() -> None:
     orchestration_path = PROJECT_ROOT / "skills/score2gp-task-orchestration.md"
     content = orchestration_path.read_text(encoding="utf-8")
     assert "committed directly to main" not in content
+
+
+def test_active_governance_uses_identity_isolated_workspaces() -> None:
+    operational_files = [
+        "projects/score2gp/AGENT_CONTROL.md",
+        "projects/score2gp/skills/project-director/SKILL.md",
+        ".agents/skills/score2gp-project-director/SKILL.md",
+        "skills/score2gp-project-director.md",
+        "projects/prompts/05-project-director.md",
+        ".agents/agents/project-director/agent.json",
+    ]
+
+    for relative_path in operational_files:
+        content = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
+        assert "/home/tticom/work/score2gp-workspace" not in content
+
+    control = (PROJECT_ROOT / "projects/score2gp/AGENT_CONTROL.md").read_text(
+        encoding="utf-8"
+    )
+    assert "/home/tticom-automation/work/score2gp-workspace" in control
+    assert "/home/tticom-codex/work/score2gp-workspace" in control
+    assert "must never operate from the other identity's home" in control
+
+    automation_skill = (
+        PROJECT_ROOT / ".agents/skills/score2gp-project-director/SKILL.md"
+    ).read_text(encoding="utf-8")
+    assert "git config --global --get user.name" in automation_skill
+    assert "git config --global --get user.email" in automation_skill
+    assert "git config --local --get user." not in automation_skill
+
+
+def test_operational_scripts_default_to_current_linux_home() -> None:
+    for relative_path in [
+        "scripts/status.sh",
+        "scripts/capture-pytest.sh",
+        "scripts/capture-developer-diff.sh",
+    ]:
+        content = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
+        assert "${HOME}/work/score2gp-workspace" in content
+        assert "/home/tticom/work/score2gp-workspace" not in content

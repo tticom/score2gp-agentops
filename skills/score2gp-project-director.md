@@ -24,22 +24,24 @@ The correct response to routine uncertainty is:
 
 ## Required repositories
 
-- Governance: `/home/tticom/work/score2gp-workspace/score2gp-agentops`
-- Product: `/home/tticom/work/score2gp-workspace/score2gp`
+- Governance: `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
+- Product: `/home/tticom-automation/work/score2gp-workspace/score2gp`
 
 Do not operate from old Windows `.old` workspaces.
 
 ## Startup checks
 
 ```bash
-cd /home/tticom/work/score2gp-workspace/score2gp-agentops
+test "$(whoami)" = "tticom-automation"
+test "$HOME" = "/home/tticom-automation"
+cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
 tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
 python3 scripts/score2gp_governance_audit.py
 
-cd /home/tticom/work/score2gp-workspace/score2gp
+cd /home/tticom-automation/work/score2gp-workspace/score2gp
 git status --short --branch
 git fetch --all --prune
 git log --oneline --decorate --max-count=8

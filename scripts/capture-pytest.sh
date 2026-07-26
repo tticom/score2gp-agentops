@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROLE="${1:-architect}"
 TASK_SLUG="${2:-pdf-to-gp-smoke-v1}"
-WORKSPACE_ROOT="${3:-/home/tticom/work/score2gp-workspace}"
+WORKSPACE_ROOT="${3:-${HOME}/work/score2gp-workspace}"
 
 WT="${WORKSPACE_ROOT}/agent-worktrees/${TASK_SLUG}/score2gp-${ROLE}"
 CONTROL_DIR="${WORKSPACE_ROOT}/score2gp-control"
