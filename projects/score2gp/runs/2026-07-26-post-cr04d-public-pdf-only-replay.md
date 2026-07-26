@@ -88,7 +88,10 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   * **Category / Stage / Severity / Details**: `absent/not emitted` in `warnings.json` payload structure.
 * **Artifact Existence & Metrics**:
   * `TabRaw`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/tab/tab_raw.json` (exists)
-  * `ScoreIR`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/score.ir.json` (exists, SHA-256: `f45c392e28f90a4568852bf932aa10bd7c407e883945bd84fb9b16c3d16d7824`, 4 bars, 13 events, 11 notes)
+  * `ScoreIR`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/score.ir.json` (exists, SHA-256: `f45c392e28f90a4568852bf932aa10bd7c407e883945bd84fb9b16c3d16d7824`)
+    * Bar count: `4`
+    * Events total: `13` (9 note-events, 4 remainder rest-events)
+    * Total Notes: `11` (Bar 1: 3 notes + 1 rest, Bar 2: 3 notes + 1 rest, Bar 3: 2 notes + 1 rest, Bar 4: 3 notes + 1 rest)
   * `Guitar Pro`: `work/20260726_post_cr04d_replay/diagnostic/generated_scorelike_tab.gp` (exists, SHA-256: `55c725f9df533b00d9762c7a45db17283bee55deb366cc6b48967318ee67269e`, `is_zip == True`, `xml_well_formed == True`, 4 bars, 11 notes)
 * **Channel Comparison & Package Member Audit**:
   * *Zip Member Byte-Identity*: All 6 inner archive members inside the `.gp` package are **100% byte-identical** between Strict and Diagnostic channels:
