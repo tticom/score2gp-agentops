@@ -19,14 +19,14 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
 
 ---
 
-## Author-Reported vs. Independently Verified Evidence
+## Author-Reported Evidence vs. Author Post-Run Validation
 
 * **Author-Reported Evidence**: CLI invocation command lines, flag parameters, and stdout execution logs.
-* **Independently Verified Evidence**:
+* **Author Post-Run Validation**:
   * `validate-ir` CLI output (`"valid": true`, 0 errors)
   * `inspect_gp()` package inspection (`is_zip: True`, `xml_well_formed: True`, `bar_count: 4`, `note_count: 11`)
   * `ScoreIR.from_json_file()` object model counts (4 bars, 13 events, 11 notes)
-  * Direct file byte SHA-256 hashes
+  * Direct file byte SHA-256 hashes and zip member hash comparisons
 
 ---
 
@@ -47,13 +47,12 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   ```
 * **Exit Code**: `0`
 * **Summary Status**: `"success"`
-* **First Warning**:
-  * **Stage / Category**: `"pdf-tab-extraction"`
+* **First Warning Details**:
   * **Code**: `"tab-extraction-incomplete"`
   * **Message**: `"This phase records born-digital text candidates with heuristic staff/string/bar estimates where page geometry allows it; full optical tab alignment is pending."`
-  * **Severity**: `"warning"`
+  * **Category / Stage / Severity / Details**: `absent/not emitted` in `warnings.json` payload structure.
 * **Artifact Existence & Metrics**:
-  * `TabRaw`: `work/20260726_post_cr04d_replay/strict/intermediate/tab/tabraw.json` (exists)
+  * `TabRaw`: `work/20260726_post_cr04d_replay/strict/intermediate/tab/tab_raw.json` (exists)
   * `ScoreIR`: `work/20260726_post_cr04d_replay/strict/intermediate/score.ir.json` (exists, SHA-256: `b3c23f4974850524258e0de5c82438ce6652c1dc63ce02bb8f821b312029eb59`)
     * Bar count: `4`
     * Events total: `13` (9 note-events, 4 remainder rest-events)
@@ -63,6 +62,7 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
 * **Validation Results**: `validate-ir` returned `"valid": true`, 0 errors.
 * **Strongest False-Success Mode**: Successful GP package creation and clean ScoreIR schema validation might falsely imply musical or rhythmic accuracy, whereas rhythm is actually assigned via equal spatial offset heuristics (480 ticks per onset).
 * **First Mismatch / Remaining Unknown**: Equal spatial offset duration assignment (notes assigned fixed eighth-note onsets without visual beam/flag duration recovery).
+* **Coherence with Unmeasured Round-Trip Result**: Produces valid `ScoreIR` v0.1 and valid `.gp` package structure; however, semantic round-trip re-ingestion (`GP -> IR` or `IR -> GP` round-trip losslessness) remains unmeasured in this replay.
 
 ---
 
@@ -82,16 +82,27 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   ```
 * **Exit Code**: `0`
 * **Summary Status**: `"success"`
-* **First Warning**: Same as Strict (`"tab-extraction-incomplete"`).
+* **First Warning Details**:
+  * **Code**: `"tab-extraction-incomplete"`
+  * **Message**: `"This phase records born-digital text candidates with heuristic staff/string/bar estimates where page geometry allows it; full optical tab alignment is pending."`
+  * **Category / Stage / Severity / Details**: `absent/not emitted` in `warnings.json` payload structure.
 * **Artifact Existence & Metrics**:
+  * `TabRaw`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/tab/tab_raw.json` (exists)
   * `ScoreIR`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/score.ir.json` (exists, SHA-256: `f45c392e28f90a4568852bf932aa10bd7c407e883945bd84fb9b16c3d16d7824`, 4 bars, 13 events, 11 notes)
   * `Guitar Pro`: `work/20260726_post_cr04d_replay/diagnostic/generated_scorelike_tab.gp` (exists, SHA-256: `55c725f9df533b00d9762c7a45db17283bee55deb366cc6b48967318ee67269e`, `is_zip == True`, `xml_well_formed == True`, 4 bars, 11 notes)
-* **Channel Comparison**:
-  * *Domain Structure*: `ScoreIR` bar/event/note counts (4 bars, 13 events, 11 notes) and GP package metrics (`bar_count: 4`, `note_count: 11`) are semantically equivalent across strict and diagnostic channels because the generated score-like PDF has clean six-line tab system geometry that passes strict gating without triggering layout errors.
-  * *Byte Hashes*: File SHA-256 hashes differ (`ScoreIR`: `b3c23f...` vs `f45c39...`; `GP`: `a70a23...` vs `55c725...`) due to run-specific timestamps and provenance output paths recorded inside the generated JSON files and zip metadata.
+* **Channel Comparison & Package Member Audit**:
+  * *Zip Member Byte-Identity*: All 6 inner archive members inside the `.gp` package are **100% byte-identical** between Strict and Diagnostic channels:
+    * `Content/score.gpif`: `660dfdfb11846f0bc6a38ee50af57152056df1747b4176b7b6d73ac44797ed2d` (identical)
+    * `Content/Preferences.json`: `73eb7fb1d4be03347c66e3183dab98958d1b7529d8fb25101ba4e6e1a92a949c` (identical)
+    * `Content/LayoutConfiguration`: `4c153ee66abbf5ef721ede069c3009815e1f28cc43553a0744dca96027f3ead1` (identical)
+    * `Content/BinaryStylesheet`: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` (identical)
+    * `Content/PartConfiguration`: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` (identical)
+    * `VERSION`: `64342505aa59f739d87352bbe5ae4f97f3c4e7348bb6372a7f9ec6859d11f99e` (identical)
+  * *Outer Archive & ScoreIR Hashes*: The outer `.gp` zip hashes (`a70a23...` vs `55c725...`) differ solely due to creation timestamps recorded in zip local file headers during compression. `score.ir.json` SHA-256 hashes (`b3c23f...` vs `f45c39...`) differ because `score.ir.json` embeds execution timestamps (`conversion_info.created_at`) and absolute/relative output provenance paths.
 * **Validation Results**: `validate-ir` returned `"valid": true`, 0 errors.
 * **Strongest False-Success Mode**: Clean execution under diagnostic mode does not validate layout remediation mechanisms, as the public score-like fixture passes strict checks cleanly without exercising remediation routines.
 * **First Mismatch / Remaining Unknown**: Remediation logic remains unexercised by clean public fixtures.
+* **Coherence with Unmeasured Round-Trip Result**: Zip content byte-identity proves identical GPIF generation across strict and diagnostic runs; however, round-trip semantic fidelity remains unmeasured.
 
 ---
 
@@ -103,7 +114,7 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
 
 ## Warnings Audit
 
-Both channels emitted 13 warning items across 9 distinct warning codes:
+Both channels emitted 13 warning items across 9 distinct warning codes (each warning object containing only `code` and `message` fields):
 
 1. `pdf_editable_draft`: Inferred draft tempo applied (120 BPM).
 2. `pdf_grouping_complete`: System/staff/bar boxes inferred for born-digital tab systems.
