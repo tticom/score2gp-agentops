@@ -1,30 +1,29 @@
 # Active Task
 
-**Task**: CR-04C: Final-Event Duration Consistency Implementation
+**Task**: CR-04D1: Extract PDF-Only Tab Measure-Duration Policy
 **Authorised Role**: Developer (Tier B)
 **Repository**: tticom/score2gp-agentops
 **Product Repository**: tticom/score2gp
-**Product Base**: f47194e57b551d4b571a04c0b7641fbe9c173f80
+**Product Prerequisite**: merged PR #385 containing
+`3715dbdb54c8387c77ab770430998c6160bf07d4`
 
 ## Status
 
-ACTIVE — PRODUCT IMPLEMENTATION AUTHORISED BY PROMPT 0011
+ACTIVE — FIRST CR-04D REFACTOR LOOP AUTHORISED BY PROMPT 0012
 
 ## Context
 
-CR-04C architecture resolved the PDF-only TabRaw final-event duration-padding
-inconsistency. Option A was selected: final note duration is set to
-`grid_spacing` (matching `notated_duration`), and remaining measure capacity is
-represented by deterministic, truthfully notated rest events. Prompt 0011
-authorises the bounded product implementation and over-capacity refusal.
+CR-04C is merged. Its duration/capacity/rest policy is protected but embedded
+in `build_ir_from_tabraw_only()`. CR-04D records five one-boundary-per-PR steps.
+Only Step 1 is active.
 
 ## Execution Model
 
 Execute only the versioned prompt selected by
-`projects/score2gp/prompts/NEXT.md`.
+`projects/score2gp/prompts/NEXT.md`. Prompts 0013-0016 are inactive wireframes
+and require predecessor merge plus source revalidation before promotion.
 
 ## Handoff
 
-Execute prompt
-`0011-cr04c-final-event-duration-consistency-implementation.md`. Publish one
-product PR and stop for independent Codex review. Do not merge.
+Execute `0012-cr04d1-extract-pdf-tab-measure-duration-policy.md`. Publish one
+product PR and stop for independent review. Do not merge or begin CR-04D2.
