@@ -1,162 +1,83 @@
 ---
 name: score2gp-project-director
-description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, promote the next safe task, merge clean PRs when authorised, and minimise routine human interaction.
+description: Apply Score2GP-specific authority, evidence, privacy, review, and continuation policy while running the pinned reusable governed-development-loop skills. Use for Score2GP task promotion, implementation/review handoffs, post-merge continuation, and unattended governed cycles.
 ---
 
-# Project Director Skill — Autonomous Continuation Governor
+# Score2GP project profile
 
-## Purpose
+This skill is a thin Score2GP adapter. Generic branch, implementation,
+publication, handoff, and stop mechanics live in the pinned `agy-skills`
+revision; do not restate or fork them here.
 
-The Project Director keeps the `score2gp` autonomous development loop moving without routine human interaction.
+## Load in order
 
-This role does not replace Architect, Developer, or Reviewer. It supervises the handoffs between them, verifies live repository state, chooses the next bounded task when the current task completes, and prevents agents from stopping just because a task was promoted, a role changed, or a routine blocker appeared.
+1. `projects/score2gp/SKILLS_LOCK.md`
+2. `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
+3. `projects/score2gp/AGENT_CONTROL.md`
+4. `projects/score2gp/ACTIVE_TASK.md`
+5. the exact prompt selected by `projects/score2gp/prompts/NEXT.md`, when the
+   active task uses the fast lane
+6. project evidence/review contracts referenced by the profile
+7. pinned `identity-safe-git`, `governed-development-loop`, and
+   `durable-handoff`
 
-The Project Director's default answer to routine "what next?" moments is: inspect the evidence, choose the smallest safe continuation, write it into governance, and continue.
+For reviews, also invoke `code-review` and overlay Score2GP's
+`REVIEW_RULES.md`, `PR_REVIEW_TEMPLATE.md`, and active prompt.
 
-## Repositories
+If the required skills commit is unavailable, not checked out in the assigned
+identity's skills clone, or the installed links resolve elsewhere, stop before
+writes.
 
-Use these repositories unless the active task explicitly says otherwise:
-
-- Governance: `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
-- Product: `/home/tticom-automation/work/score2gp-workspace/score2gp`
-
-Do not use old Windows workspace folders such as `score2gp-workspace.old`.
-
-## Mandatory startup
-
-At the start of every run:
+The reusable identity gate must verify the effective global commit identity,
+not a repository-local override. Its evidence must include the equivalents of:
 
 ```bash
-cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
-git status --short --branch
-git fetch --all --prune
-test "$(gh api user --jq .login)" = "tticom-automation"
-test "$(git config --global --get user.name)" = "tticom-automation"
-test "$(git config --global --get user.email)" = "tticomautomation@gmail.com"
-sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
-tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
-python3 scripts/score2gp_governance_audit.py
-
-cd /home/tticom-automation/work/score2gp-workspace/score2gp
-git status --short --branch
-git fetch --all --prune
-git log --oneline --decorate --max-count=8
+git config --global --get user.name
+git config --global --get user.email
 ```
 
-Verify live state. Do not trust previous agent summaries unless the repositories confirm them.
-For Agy, an identity-check failure is a hard no-write stop: do not use the
-maintainer account as a fallback, and do not create a PR or merge anything.
+A local `user.name` or `user.email` override is a no-write stop.
 
-## Core operating loop
+## Score2GP decisions retained here
 
-1. Read `projects/score2gp/AGENT_CONTROL.md`.
-2. Read `projects/score2gp/ACTIVE_TASK.md`.
-3. Execute the active task using its authorised role.
-4. If the task is Architect/governance work, complete the document/review/promotion in `score2gp-agentops`.
-5. If the task is Developer/product work, complete the product PR, then perform the required governance review and promotion.
-6. After every merge, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
-7. Stop only when a real stop condition is met and no credible pivot or continuation exists.
+Apply the project-specific rules in AgentOps:
 
-## Role transitions are not stop points
+- only `ACTIVE_TASK.md` or its explicitly selected versioned prompt grants
+  execution authority;
+- PDF/MusicXML/ScoreIR/GP claims require the evidence channels and hierarchy
+  in `REVIEW_RULES.md`;
+- private inputs remain local and ignored;
+- runtime provenance is required for conversion claims;
+- Agy may publish its authorised branch/PR but may not self-approve or merge;
+- Codex independently reviews and may publish its review under the current
+  maintainer policy;
+- candidate follow-ups are not active tasks.
 
-Do not stop because the next task changes:
+## Continuation
 
-- role, such as Developer -> Reviewer -> Architect;
-- repository, such as `score2gp` -> `score2gp-agentops`;
-- task type, such as implementation -> review -> research;
-- branch family, such as `feature/*` -> `governance/*`.
+After a verified merge, synchronize the product and governance mains and
+reread `ACTIVE_TASK.md`.
 
-After a PR merges and `ACTIVE_TASK.md` names another approved task, immediately continue.
+If a separately authorised task exists, run it through
+`governed-development-loop`. If none exists, inspect Score2GP evidence and
+prepare one bounded governance proposal. Do not begin product implementation
+until that proposal is merged and active.
 
-## Completion audit
+Rank Score2GP proposals by:
 
-Before ending after a successful task, perform a continuation audit:
+1. the active real-world conversion blocker;
+2. observability or reproducibility of existing diagnostics;
+3. already-approved schema/design implementation;
+4. deterministic public fixtures or approved corpus evidence;
+5. no-leakage, compatibility, schema, or CLI hardening;
+6. bounded research with a decision gate.
 
-1. Inspect `ACTIVE_TASK.md`, `APPROVED_TASK_QUEUE.md`, recent reports, recent reviews, and current blockers.
-2. If an approved next task exists and prerequisites are satisfied, execute it.
-3. If no approved next task exists, identify the smallest credible continuation that remains inside the current product direction.
-4. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping.
-5. Create a governance PR to record the continuation and make it active.
-6. Set `NO_ACTIVE_TASK_APPROVED` only when the audit proves no credible safe continuation exists.
+Playable output integration and recognition-policy changes require explicit
+architecture authority.
 
-Review reports must include this continuation audit.
+## Durable close-out
 
-## Blocker pivot audit
-
-When a task hits a blocker, do not default to stopping.
-
-Perform a bounded pivot audit:
-
-1. Identify the blocker precisely.
-2. Decide whether a credible unblocker exists within current project direction.
-3. Convert the unblocker into the smallest research, fixture, test, reporting, or feature task.
-4. If safe, create a governance PR that records the blocker and promotes the pivot task.
-5. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference.
-
-Examples:
-
-- missing fixtures -> generate the smallest deterministic fixture set;
-- insufficient evidence -> run a bounded corpus audit;
-- unsafe classifier scope -> add fail-closed tests or schema/reporting guards;
-- stale branch/PR state -> perform branch hygiene;
-- missing visual detector -> implement pure structured-input engine and document visual detection as deferred.
-
-## Choosing "what is best"
-
-When several continuations are possible, rank them in this order:
-
-1. Work that unblocks the current active benchmark or active blocker.
-2. Work that makes existing diagnostics observable, stable, or testable.
-3. Work that converts an already approved schema/design into diagnostic-only product functionality.
-4. Work that creates deterministic public fixtures or approved corpus evidence.
-5. Work that hardens no-leakage, backwards compatibility, schema snapshots, or CLI reporting.
-6. Research that defines the smallest next implementation slice.
-7. Broad playable output integration only after explicit architecture and review approval.
-
-Prefer one PR-sized task. Avoid broad platform rewrites, speculative recognition, or final ScoreIR/GP integration unless explicitly authorised.
-
-## Boundaries
-
-The Project Director may:
-
-- inspect both repos;
-- create governance docs, reviews, and active-task updates;
-- promote approved or evidence-backed tasks;
-- write Antigravity prompts;
-- merge clean governance/product PRs when the user's run policy has pre-approved it;
-- use public fixtures and approved private/local fixture repositories for interrogation.
-
-The Project Director must not:
-
-- invent product direction that is not supported by backlog/review evidence;
-- hide blockers;
-- bypass required validation;
-- commit unrelated local files;
-- revert user changes;
-- widen task scope because the next step is interesting;
-- promote playable ScoreIR/GP output from diagnostics without explicit review approval.
-
-## Required final/run report
-
-Every run report must include:
-
-- tasks completed;
-- PRs opened/merged/closed;
-- current `ACTIVE_TASK.md` task;
-- whether continuation occurred or why it did not;
-- blockers and pivots;
-- validation results;
-- suggested process adjustment, if the run stopped unexpectedly.
-
-## Stop conditions
-
-Stop only if:
-
-- repositories cannot be inspected;
-- active task is contradictory and no safe interpretation exists;
-- validation fails and cannot be isolated;
-- branch or PR state requires a human product decision;
-- every credible pivot would require new product direction or unsafe/speculative work;
-- credentials/network failure prevents required GitHub operations after retrying and recording local state.
-
-If stopping, leave the repo in a recoverable state and report the exact next command or prompt.
+Use `durable-handoff` to write AgentOps run records. Record exact product,
+governance, and skills revisions, verified evidence, unresolved risks, next
+authority, and stop condition. Never put durable agent state in the product
+repository.

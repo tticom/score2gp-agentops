@@ -225,6 +225,17 @@ Agents must then read, in this order:
 6. `projects/score2gp/TASKS.md`
 7. Relevant task template(s) under `projects/score2gp/templates/`
 
+## Versioned Workflow Skills
+
+Before executing or reviewing a task, read
+`projects/score2gp/SKILLS_LOCK.md` and
+`projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`. Verify the installed skills
+resolve to the exact locked `agy-skills` revision.
+
+Do not update or relink skills during an active Score2GP task. Skills upgrades
+require their own `agy-skills` PR followed by a separate AgentOps lock-update
+PR; they are never an incidental part of product conversion work.
+
 The PR Evidence Contract is an author-side gate. It does not replace the
 adversarial Reviewer role or human merge requirement. Its purpose is to make
 the exact claims, proof, limits, and remaining unknowns inspectable in one
