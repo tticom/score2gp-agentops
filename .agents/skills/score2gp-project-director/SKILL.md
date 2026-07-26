@@ -17,8 +17,8 @@ The Project Director's default answer to routine "what next?" moments is: inspec
 
 Use these repositories unless the active task explicitly says otherwise:
 
-- Governance: `/home/tticom/work/score2gp-workspace/score2gp-agentops`
-- Product: `/home/tticom/work/score2gp-workspace/score2gp`
+- Governance: `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
+- Product: `/home/tticom-automation/work/score2gp-workspace/score2gp`
 
 Do not use old Windows workspace folders such as `score2gp-workspace.old`.
 
@@ -27,17 +27,17 @@ Do not use old Windows workspace folders such as `score2gp-workspace.old`.
 At the start of every run:
 
 ```bash
-cd /home/tticom/work/score2gp-workspace/score2gp-agentops
+cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 test "$(gh api user --jq .login)" = "tticom-automation"
-test "$(git config --local --get user.name)" = "tticom-automation"
-test "$(git config --local --get user.email)" = "tticomautomation@gmail.com"
+test "$(git config --global --get user.name)" = "tticom-automation"
+test "$(git config --global --get user.email)" = "tticomautomation@gmail.com"
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
 tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
 python3 scripts/score2gp_governance_audit.py
 
-cd /home/tticom/work/score2gp-workspace/score2gp
+cd /home/tticom-automation/work/score2gp-workspace/score2gp
 git status --short --branch
 git fetch --all --prune
 git log --oneline --decorate --max-count=8

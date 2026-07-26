@@ -14,9 +14,38 @@ If `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`, the agent must stop after pr
 
 ## Mandatory Startup Protocol
 
-Agents must start from the governance repository:
+Agents must start from the governance repository owned by their assigned Linux
+identity:
 
-`/home/tticom/work/score2gp-workspace/score2gp-agentops`
+- Agy / `tticom-automation`:
+  `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
+- Codex / `tticom-codex`:
+  `/home/tticom-codex/work/score2gp-workspace/score2gp-agentops`
+
+## Identity-Isolated Workspace Gate
+
+`tticom-automation` and `tticom-codex` must use separate Linux users, home
+directories, GitHub CLI credential stores, Git identities, and repository
+clones. An agent must never operate from the other identity's home or
+workspace and must never copy GitHub credentials between homes.
+
+Before any Git, GitHub, filesystem, or task write, prove:
+
+```bash
+test "$(whoami)" = "<assigned-linux-user>"
+test "$HOME" = "/home/<assigned-linux-user>"
+test "$(gh api user --jq .login)" = "<assigned-github-user>"
+test "$(git config --global --get user.name)" = "<assigned-git-user>"
+test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
+case "$(git rev-parse --show-toplevel)" in
+  "$HOME"/work/score2gp-workspace/*) ;;
+  *) exit 1 ;;
+esac
+```
+
+A mismatch is a hard no-write stop. Do not switch accounts inside another
+user's workspace, use another user's clone, or fall back to maintainer
+credentials.
 
 Before any work, run and report:
 
@@ -40,10 +69,10 @@ workspace:
 test "$(uname -s)" = "Linux"
 test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
 case "$(git rev-parse --show-toplevel)" in
-  /home/tticom/work/score2gp-workspace/score2gp-agentops|/home/tticom/work/score2gp-workspace/score2gp-agentops-*) ;;
+  /home/tticom-automation/work/score2gp-workspace/score2gp-agentops|/home/tticom-automation/work/score2gp-workspace/score2gp-agentops-*) ;;
   *) exit 1 ;;
 esac
-test -x /home/tticom/work/score2gp-workspace/score2gp/.venv/bin/python
+test -x /home/tticom-automation/work/score2gp-workspace/score2gp/.venv/bin/python
 ```
 
 When product work begins, it must similarly prove:
@@ -51,7 +80,7 @@ When product work begins, it must similarly prove:
 ```bash
 test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
 case "$(git rev-parse --show-toplevel)" in
-  /home/tticom/work/score2gp-workspace/score2gp|/home/tticom/work/score2gp-workspace/score2gp-*) ;;
+  /home/tticom-automation/work/score2gp-workspace/score2gp|/home/tticom-automation/work/score2gp-workspace/score2gp-*) ;;
   *) exit 1 ;;
 esac
 ```
@@ -285,7 +314,10 @@ If the Developer cannot identify the requirement, approved approach, acceptance 
 
 If product work is involved, agents must also inspect the product repository:
 
-`/home/tticom/work/score2gp-workspace/score2gp`
+- Agy: `/home/tticom-automation/work/score2gp-workspace/score2gp`
+- Codex: `/home/tticom-codex/work/score2gp-workspace/score2gp`
+
+The selected path must match the identity-isolated workspace gate above.
 
 and read:
 
