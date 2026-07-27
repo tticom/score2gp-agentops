@@ -6,6 +6,10 @@ Replace the static task pointer with permanent role-specific dispatchers so
 the maintainer can use `go` for Agy and `got` for Codex throughout the full
 author, review, fix, re-review, and merge cycle.
 
+## Publication
+
+Review governance PR `https://github.com/tticom/score2gp-agentops/pull/383`.
+
 ## Scope
 
 Governance documentation and tests only. Preserve identity separation,

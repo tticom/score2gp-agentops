@@ -6,6 +6,7 @@
 **Authorised Role**: Project Director / Governance Developer (Tier 2)
 **Repository**: tticom/score2gp-agentops
 **PR Branch**: `codex/go-got-dispatcher`
+**Pull Request**: `https://github.com/tticom/score2gp-agentops/pull/383`
 **Original Prompt**: `projects/score2gp/prompts/next/go-got-dispatcher.md`
 
 ## Context
