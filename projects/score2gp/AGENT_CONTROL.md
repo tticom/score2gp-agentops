@@ -126,7 +126,16 @@ mismatch for human workspace correction.
 
 This section supersedes every conflicting local-preparation or GitHub restriction below. It applies only to the authenticated GitHub account tticom-automation.
 
-The user command next or go means: read projects/score2gp/prompts/NEXT.md and execute the one versioned prompt named there. Do not ask for confirmation between normal task steps.
+The user command `next` or `go` means: read
+`projects/score2gp/prompts/NEXT.md`, then execute the permanent Agy dispatcher
+it names. The dispatcher combines stable task metadata with exact live GitHub
+state before selecting implementation, PR monitoring, review fixes, a review
+wait, or a post-merge stop. It must never blindly replay the original prompt.
+
+The user command `got` is reserved for Codex. It executes the permanent Codex
+dispatcher named by `NEXT.md`, verifies an exact Agy handback against live
+GitHub state, and routes to first review, re-review, wait, readiness reporting,
+or post-merge governance. A chat summary alone is never a handback.
 
 Agy may:
 - use authenticated WSL gh as tticom-automation after proving the account and local Git identity;
