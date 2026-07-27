@@ -1,42 +1,43 @@
 # Active Task
 
-**Task**: GOV-GO-GOT-01: State-Aware Agent Handoff Dispatch
+**Task**: PDFTAB-DUR-01: Public Duration-Evidence Adequacy Audit
 **Status**: APPROVED
-**Assigned Identity**: tticom-codex
-**Authorised Role**: Project Director / Governance Developer (Tier 2)
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Developer / Evidence Author
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `codex/go-got-dispatcher`
-**Pull Request**: `https://github.com/tticom/score2gp-agentops/pull/383`
-**Original Prompt**: `projects/score2gp/prompts/next/go-got-dispatcher.md`
+**PR Branch**: `agy/pdftab-duration-evidence-audit`
+**Pull Request**: `none`
+**Original Prompt**: `projects/score2gp/prompts/next/0018-pdf-tab-duration-evidence-adequacy-audit.md`
 
 ## Context
 
-PR #382 merged at `3dcf5eef2761683125c3cbf2899a81dde58129ba`.
-The previous static `NEXT.md` pointer remained aimed at completed Prompt 0017,
-so `go` could repeat merged work. Review handback also depended on the
-maintainer copying prose between Agy and Codex.
+AgentOps PR #383 merged the permanent `go` and `got` dispatchers at
+`b3918e19d9130b52bcfacfe53133f5794efbad82`. The post-CR-04D replay identifies
+equal spatial eighth-note timing as the first current PDF-only tab limitation.
+Existing public tests contain flag/beam diagnostics, but current evidence does
+not establish that a multi-bar PDF-tab fixture supplies a usable duration
+oracle or that beam geometry reaches the PDF-only TabRaw assembly path.
 
 ## Goal
 
-Make `go` and `got` permanent role-specific dispatch commands that derive the
-current phase from stable task identity and the exact live GitHub PR.
+Determine whether current public fixtures and committed diagnostics are
+sufficient to authorize a bounded PDF-only tab duration/beam implementation.
+Produce evidence and a decision; do not change product code.
 
 ## Allowed Files
 
-- `projects/score2gp/ACTIVE_TASK.md`
-- `projects/score2gp/AGENT_CONTROL.md`
-- `projects/score2gp/prompts/NEXT.md`
-- `projects/score2gp/prompts/next/go-dispatch.md`
-- `projects/score2gp/prompts/next/got-dispatch.md`
-- `tests/test_governance_audit.py`
+- `projects/score2gp/runs/2026-07-27-pdf-tab-duration-evidence-adequacy-audit.md`
+
+The product repository and all other AgentOps paths are read-only.
 
 ## Non-goals
 
-No product edits, automatic merges, branch deletion, credential switching,
-or automatic promotion of an unauthorised follow-up candidate.
+No product edits, new fixtures, implementation prompt, private inputs,
+automatic merge, branch deletion, or promotion of the audit result.
 
 ## Acceptance
 
-`go` cannot repeat a merged task, `got` cannot review an unpinned handback,
-review fixes stay on the same PR, and governance tests enforce the permanent
-dispatcher pointers and stop states.
+The report pins repository and skills revisions, inspects the specified public
+fixtures and current duration/beam dataflow, records source and visual
+evidence, tests the strongest false-success mode, and returns exactly one of:
+`IMPLEMENTATION_READY`, `PUBLIC_FIXTURE_GAP`, `ARCHITECTURE_GAP`, or `BLOCKED`.
