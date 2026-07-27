@@ -9,7 +9,7 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
 ## Pinned Environment & Repository State
 
 * **Product Repository SHA**: `d70d559152c5aa357a7d2eb38e65b09f288bb08f`
-* **AgentOps Repository SHA**: `96592ba2385d10f0b0ad2ef841dbcbaf0da2731d`
+* **AgentOps Repository SHA**: `6074bbc0f4d102f437f42b0e40cfc075e3825b02`
 * **Skills Lock SHA**: `0d6d84879eff0d352b444fdeceb3bb7a098e0c47`
 * **CLI Executable Path**: `/home/tticom-automation/work/score2gp-workspace/score2gp/.venv/bin/score2gp`
 * **Resolved Python Module Location**: `/home/tticom-automation/work/score2gp-workspace/score2gp/src/score2gp/__init__.py`
