@@ -11,8 +11,8 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
 * **Product Repository SHA**: `d70d559152c5aa357a7d2eb38e65b09f288bb08f`
 * **AgentOps Repository SHA**: `6074bbc0f4d102f437f42b0e40cfc075e3825b02`
 * **Skills Lock SHA**: `0d6d84879eff0d352b444fdeceb3bb7a098e0c47`
-* **CLI Executable Path**: `/home/tticom-automation/work/score2gp-workspace/score2gp/.venv/bin/score2gp`
-* **Resolved Python Module Location**: `/home/tticom-automation/work/score2gp-workspace/score2gp/src/score2gp/__init__.py`
+* **CLI Executable Path**: `score2gp/.venv/bin/score2gp`
+* **Resolved Python Module Location**: `score2gp/src/score2gp/__init__.py`
 * **Input Fixture**: `tests/fixtures/pdf/generated_scorelike_tab.pdf`
 * **Input SHA-256**: `b3106b083de608db600f63822c0a31f614fd96523ac27ffb5b2c80cd41d8d564`
 * **Pre-Replay Preflight Gate**: `.venv/bin/python scripts/agent_verify.py` — **Overall status: PASS**
@@ -38,9 +38,9 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   ```bash
   .venv/bin/python -m score2gp.cli convert \
     --pdf tests/fixtures/pdf/generated_scorelike_tab.pdf \
-    --out work/20260726_post_cr04d_replay/strict/generated_scorelike_tab.gp \
-    --work-dir work/20260726_post_cr04d_replay/strict/intermediate \
-    --json-report work/20260726_post_cr04d_replay/strict/summary.json \
+    --out work/20260727_replay/strict/generated_scorelike_tab.gp \
+    --work-dir work/20260727_replay/strict/intermediate \
+    --json-report work/20260727_replay/strict/summary.json \
     --pdf-only-tab \
     --editable-draft \
     --strict
@@ -52,12 +52,12 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   * **Message**: `"This phase records born-digital text candidates with heuristic staff/string/bar estimates where page geometry allows it; full optical tab alignment is pending."`
   * **Category / Stage / Severity / Details**: `absent/not emitted` in `warnings.json` payload structure.
 * **Artifact Existence & Metrics**:
-  * `TabRaw`: `work/20260726_post_cr04d_replay/strict/intermediate/tab/tab_raw.json` (exists)
-  * `ScoreIR`: `work/20260726_post_cr04d_replay/strict/intermediate/score.ir.json` (exists, SHA-256: `b3c23f4974850524258e0de5c82438ce6652c1dc63ce02bb8f821b312029eb59`)
+  * `TabRaw`: `work/20260727_replay/strict/intermediate/tab/tab_raw.json` (exists, SHA-256: `dad4ab00855553bb3f64991e5a1b1d5069f4403fd0d2f95f285fa63d5512f43a`)
+  * `ScoreIR`: `work/20260727_replay/strict/intermediate/score.ir.json` (exists, SHA-256: `e7c352e6cd91267de1e022af90a8ab50b3f078bcaaca806c5c99b3fed913b905`)
     * Bar count: `4`
     * Events total: `13` (9 note-events, 4 remainder rest-events)
     * Total Notes: `11` (Bar 1: 3 notes + 1 rest, Bar 2: 3 notes + 1 rest, Bar 3: 2 notes + 1 rest, Bar 4: 3 notes + 1 rest)
-  * `Guitar Pro`: `work/20260726_post_cr04d_replay/strict/generated_scorelike_tab.gp` (exists, SHA-256: `a70a233573fc079bcaeaa45cea363ab177d4c971dc08ff1e584ecf3ab78ade21`)
+  * `Guitar Pro`: `work/20260727_replay/strict/generated_scorelike_tab.gp` (exists, SHA-256: `50915f45dd0d6acab6916ab8ecf5b36b546441f9c252c746ad9028db534374f1`)
     * `is_zip == True`, `xml_well_formed == True`, `bar_count == 4`, `note_count == 11`
 * **Validation Results**: `validate-ir` returned `"valid": true`, 0 errors.
 * **Strongest False-Success Mode**: Successful GP package creation and clean ScoreIR schema validation might falsely imply musical or rhythmic accuracy, whereas rhythm is actually assigned via equal spatial offset heuristics (480 ticks per onset).
@@ -72,9 +72,9 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   ```bash
   .venv/bin/python -m score2gp.cli convert \
     --pdf tests/fixtures/pdf/generated_scorelike_tab.pdf \
-    --out work/20260726_post_cr04d_replay/diagnostic/generated_scorelike_tab.gp \
-    --work-dir work/20260726_post_cr04d_replay/diagnostic/intermediate \
-    --json-report work/20260726_post_cr04d_replay/diagnostic/summary.json \
+    --out work/20260727_replay/diagnostic/generated_scorelike_tab.gp \
+    --work-dir work/20260727_replay/diagnostic/intermediate \
+    --json-report work/20260727_replay/diagnostic/summary.json \
     --pdf-only-tab \
     --editable-draft \
     --no-strict \
@@ -87,12 +87,12 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
   * **Message**: `"This phase records born-digital text candidates with heuristic staff/string/bar estimates where page geometry allows it; full optical tab alignment is pending."`
   * **Category / Stage / Severity / Details**: `absent/not emitted` in `warnings.json` payload structure.
 * **Artifact Existence & Metrics**:
-  * `TabRaw`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/tab/tab_raw.json` (exists)
-  * `ScoreIR`: `work/20260726_post_cr04d_replay/diagnostic/intermediate/score.ir.json` (exists, SHA-256: `f45c392e28f90a4568852bf932aa10bd7c407e883945bd84fb9b16c3d16d7824`)
+  * `TabRaw`: `work/20260727_replay/diagnostic/intermediate/tab/tab_raw.json` (exists, SHA-256: `dad4ab00855553bb3f64991e5a1b1d5069f4403fd0d2f95f285fa63d5512f43a`)
+  * `ScoreIR`: `work/20260727_replay/diagnostic/intermediate/score.ir.json` (exists, SHA-256: `2385a6f92df10e397f3f942d7b5818b2a1137e54b5fe38584f3797ed41cb2813`)
     * Bar count: `4`
     * Events total: `13` (9 note-events, 4 remainder rest-events)
     * Total Notes: `11` (Bar 1: 3 notes + 1 rest, Bar 2: 3 notes + 1 rest, Bar 3: 2 notes + 1 rest, Bar 4: 3 notes + 1 rest)
-  * `Guitar Pro`: `work/20260726_post_cr04d_replay/diagnostic/generated_scorelike_tab.gp` (exists, SHA-256: `55c725f9df533b00d9762c7a45db17283bee55deb366cc6b48967318ee67269e`, `is_zip == True`, `xml_well_formed == True`, 4 bars, 11 notes)
+  * `Guitar Pro`: `work/20260727_replay/diagnostic/generated_scorelike_tab.gp` (exists, SHA-256: `55292bec01ea0de113cf7068c199221a1164dd6bd3ed5c45093dd6db19c84a84`, `is_zip == True`, `xml_well_formed == True`, 4 bars, 11 notes)
 * **Channel Comparison & Package Member Audit**:
   * *Zip Member Byte-Identity*: All 6 inner archive members inside the `.gp` package are **100% byte-identical** between Strict and Diagnostic channels:
     * `Content/score.gpif`: `660dfdfb11846f0bc6a38ee50af57152056df1747b4176b7b6d73ac44797ed2d` (identical)
@@ -101,7 +101,7 @@ Following the merge of refactoring sequence CR-04D (D1 through D5), a fresh runt
     * `Content/BinaryStylesheet`: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` (identical)
     * `Content/PartConfiguration`: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` (identical)
     * `VERSION`: `64342505aa59f739d87352bbe5ae4f97f3c4e7348bb6372a7f9ec6859d11f99e` (identical)
-  * *Outer Archive & ScoreIR Hashes*: The outer `.gp` zip hashes (`a70a23...` vs `55c725...`) differ solely due to creation timestamps recorded in zip local file headers during compression. `score.ir.json` SHA-256 hashes (`b3c23f...` vs `f45c39...`) differ because `score.ir.json` embeds execution timestamps (`conversion_info.created_at`) and absolute/relative output provenance paths.
+  * *Outer Archive & ScoreIR Hashes*: The outer `.gp` zip hashes (`50915f...` vs `55292b...`) differ solely due to creation timestamps recorded in zip local file headers during compression. `score.ir.json` SHA-256 hashes (`e7c352...` vs `2385a6...`) differ because `score.ir.json` embeds execution timestamps (`conversion_info.created_at`) and output provenance paths.
 * **Validation Results**: `validate-ir` returned `"valid": true`, 0 errors.
 * **Strongest False-Success Mode**: Clean execution under diagnostic mode does not validate layout remediation mechanisms, as the public score-like fixture passes strict checks cleanly without exercising remediation routines.
 * **First Mismatch / Remaining Unknown**: Remediation logic remains unexercised by clean public fixtures.
@@ -141,6 +141,6 @@ Both channels emitted 13 warning items across 9 distinct warning codes (each war
 
 ## Recommended Follow-up Candidate (Unauthorised)
 
-* **Candidate**: Smallest evidence task addressing observed PDF-tab limitations: PDF-only tab duration/beam extraction or technique text alignment evidence on multi-bar PDF tab fixtures.
-* **Justification**: Directly addresses the primary limitations observed in this replay (equal spatial duration assignment and unaligned technique text).
+* **Candidate**: PDF-only tab visual duration beam extraction evidence on multi-bar PDF tab fixtures.
+* **Justification**: Directly addresses the primary limitation observed in this replay (equal spatial duration assignment).
 * **Status**: Unauthorised candidate only. `ACTIVE_TASK.md` and `NEXT.md` remain unchanged.
