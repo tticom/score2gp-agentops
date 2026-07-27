@@ -194,3 +194,32 @@ def test_operational_scripts_default_to_current_linux_home() -> None:
         content = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
         assert "${HOME}/work/score2gp-workspace" in content
         assert "/home/tticom/work/score2gp-workspace" not in content
+
+
+def test_next_uses_permanent_role_dispatchers() -> None:
+    content = (PROJECT_ROOT / "projects/score2gp/prompts/NEXT.md").read_text(
+        encoding="utf-8"
+    )
+    assert "next/go-dispatch.md" in content
+    assert "next/got-dispatch.md" in content
+    assert "0017-post-cr04d-public-pdf-only-conversion-replay.md" not in content
+
+
+def test_go_dispatch_cannot_repeat_merged_work() -> None:
+    content = (
+        PROJECT_ROOT / "projects/score2gp/prompts/next/go-dispatch.md"
+    ).read_text(encoding="utf-8")
+    assert "head is exactly" in content
+    assert "Do not rerun" in content
+    assert "READY_FOR_HUMAN_MERGE" in content
+    assert "AWAITING_CODEX_REVIEW" in content
+
+
+def test_got_dispatch_requires_pinned_handback() -> None:
+    content = (
+        PROJECT_ROOT / "projects/score2gp/prompts/next/got-dispatch.md"
+    ).read_text(encoding="utf-8")
+    assert "handback comment pins the current head" in content
+    assert "AWAITING_AGY_HANDBACK" in content
+    assert "AWAITING_AGY_FIXES" in content
+    assert "Never merge" in content

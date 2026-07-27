@@ -1,30 +1,41 @@
 # Active Task
 
-**Task**: POST-CR04D-01: Public PDF-Only Conversion Replay
-**Authorised Role**: Developer (Tier B)
+**Task**: GOV-GO-GOT-01: State-Aware Agent Handoff Dispatch
+**Status**: APPROVED
+**Assigned Identity**: tticom-codex
+**Authorised Role**: Project Director / Governance Developer (Tier 2)
 **Repository**: tticom/score2gp-agentops
-**Product Repository**: tticom/score2gp
-**Product Prerequisite**: merged PR #390 at product merge
-`d70d559152c5aa357a7d2eb38e65b09f288bb08f`
-
-## Status
-
-ACTIVE — POST-REFACTOR PUBLIC EVIDENCE REPLAY AUTHORISED BY PROMPT 0017
+**PR Branch**: `codex/go-got-dispatcher`
+**Original Prompt**: `projects/score2gp/prompts/next/go-got-dispatcher.md`
 
 ## Context
 
-CR-04D1 through CR-04D5 are independently reviewed and merged. CR-04D is
-complete. The next step is a fresh runtime-provenance replay of the committed
-PDF-only path on the deterministic generated score-like public fixture. This
-is evidence collection, not another refactor or a claim of real-score support.
+PR #382 merged at `3dcf5eef2761683125c3cbf2899a81dde58129ba`.
+The previous static `NEXT.md` pointer remained aimed at completed Prompt 0017,
+so `go` could repeat merged work. Review handback also depended on the
+maintainer copying prose between Agy and Codex.
 
-## Execution Model
+## Goal
 
-Execute only the versioned prompt selected by
-`projects/score2gp/prompts/NEXT.md`. No product edit is authorised.
+Make `go` and `got` permanent role-specific dispatch commands that derive the
+current phase from stable task identity and the exact live GitHub PR.
 
-## Handoff
+## Allowed Files
 
-Execute `0017-post-cr04d-public-pdf-only-conversion-replay.md`. Publish one
-AgentOps evidence PR and stop for independent review. Do not modify the
-product repository, merge the PR, or activate its recommended follow-up.
+- `projects/score2gp/ACTIVE_TASK.md`
+- `projects/score2gp/AGENT_CONTROL.md`
+- `projects/score2gp/prompts/NEXT.md`
+- `projects/score2gp/prompts/next/go-dispatch.md`
+- `projects/score2gp/prompts/next/got-dispatch.md`
+- `tests/test_governance_audit.py`
+
+## Non-goals
+
+No product edits, automatic merges, branch deletion, credential switching,
+or automatic promotion of an unauthorised follow-up candidate.
+
+## Acceptance
+
+`go` cannot repeat a merged task, `got` cannot review an unpinned handback,
+review fixes stay on the same PR, and governance tests enforce the permanent
+dispatcher pointers and stop states.

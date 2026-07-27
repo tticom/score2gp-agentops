@@ -1,9 +1,12 @@
-# Next Prompt
+# Command Dispatch
 
-Agy aliases: next and go.
+Commands are role-specific:
 
-Current prompt: [0017-post-cr04d-public-pdf-only-conversion-replay.md](next/0017-post-cr04d-public-pdf-only-conversion-replay.md)
+- Agy aliases `next` and `go`: execute
+  [go-dispatch.md](next/go-dispatch.md).
+- Codex alias `got`: execute
+  [got-dispatch.md](next/got-dispatch.md).
 
-Read and execute it completely. Publish one bounded AgentOps evidence PR and
-stop for independent review. No product edit or follow-on implementation is
-authorised.
+Both dispatchers combine stable `ACTIVE_TASK.md` metadata with the exact live
+GitHub PR state. This file must never point directly at an implementation
+prompt, because that can replay merged work.
