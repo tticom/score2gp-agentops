@@ -146,7 +146,7 @@ def query_github_pr_state(declared_repo: str, pr_branch: str) -> dict[str, Any] 
             fail_closed(f"Failed to parse GitHub PR JSON response: {e}", state="GITHUB_STATE_UNAVAILABLE")
 
     stderr = res_pr.stderr.strip().lower()
-    if "no pull requests match" in stderr or "no open pull requests" in stderr or "could not resolve to a pull request" in stderr or "not found" in stderr:
+    if "no pull requests match" in stderr or "no open pull requests" in stderr or "could not resolve to a pull request" in stderr:
         return None
 
     fail_closed(f"GitHub PR lookup failed with exit code {res_pr.returncode}: {res_pr.stderr.strip()}", state="GITHUB_STATE_UNAVAILABLE")
@@ -370,7 +370,12 @@ def run_go_bootstrap(
                 capture_output=True,
                 text=True,
             )
-            if res_ancestor.returncode != 0:
+            if res_ancestor.returncode == 0:
+                fail_closed(
+                    f"Selected local branch head ({selected_sha}) is ahead of live PR head SHA ({pr_head_sha}). Unpushed local commits present.",
+                    state="LOCAL_BRANCH_AHEAD_OF_PR",
+                )
+            else:
                 fail_closed(
                     f"Selected branch head ({selected_sha}) does not match live PR head SHA ({pr_head_sha}) and is not descended from it.",
                     state="MISMATCHED_PR_HEAD",
@@ -384,7 +389,12 @@ def run_go_bootstrap(
                 capture_output=True,
                 text=True,
             )
-            if res_ancestor.returncode != 0:
+            if res_ancestor.returncode == 0:
+                fail_closed(
+                    f"Selected local branch head ({selected_sha}) is ahead of remote branch SHA ({remote_branch_sha}). Unpushed local commits present.",
+                    state="LOCAL_BRANCH_AHEAD_OF_REMOTE_BRANCH",
+                )
+            else:
                 fail_closed(
                     f"Selected branch head ({selected_sha}) does not match remote branch SHA ({remote_branch_sha}) and is not descended from it.",
                     state="MISMATCHED_REMOTE_BRANCH_HEAD",

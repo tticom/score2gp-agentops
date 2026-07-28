@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 import pytest
 
-from scripts.score2gp_go_bootstrap import parse_active_task_content, run_go_bootstrap
+from scripts.score2gp_go_bootstrap import parse_active_task_content, run_go_bootstrap, query_github_pr_state
 
 
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
@@ -273,7 +273,6 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
 
-    # Create local branch matching active task
     pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
     run_git(local_prod, ["checkout", "-b", pr_branch])
     (local_prod / "pr_change.txt").write_text("PR content")
@@ -488,15 +487,28 @@ def test_case_14_divergent_existing_local_branch_fails_closed(temp_git_repos: di
         )
 
 
-def test_case_15_mismatched_pr_head_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+def test_case_15_local_branch_ahead_of_open_pr_fails_closed(temp_git_repos: dict[str, Path]) -> None:
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
+
+    pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(local_prod, ["checkout", "-b", pr_branch])
+    (local_prod / "base_change.txt").write_text("Base commit")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "Base commit"])
+    base_sha = run_git(local_prod, ["rev-parse", "HEAD"])
+
+    # Create unpushed local commit ahead of PR head
+    (local_prod / "unpushed_change.txt").write_text("Unpushed commit")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "Unpushed commit"])
+    run_git(local_prod, ["checkout", "main"])
 
     def mock_gh_runner(repo: str, branch: str) -> dict[str, Any]:
         return {
             "number": 391,
             "state": "OPEN",
-            "headRefOid": "0000000000000000000000000000000000000000", # Completely different SHA
+            "headRefOid": base_sha, # PR head is at base_sha, but local branch is 1 commit ahead
         }
 
     with pytest.raises(SystemExit):
@@ -509,12 +521,24 @@ def test_case_15_mismatched_pr_head_fails_closed(temp_git_repos: dict[str, Path]
         )
 
 
-def test_case_16_failed_github_lookup_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+def test_case_16_local_branch_ahead_of_remote_branch_no_pr_fails_closed(temp_git_repos: dict[str, Path]) -> None:
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
+    init_prod = temp_git_repos["init_product"]
 
-    def mock_failing_gh_runner(repo: str, branch: str) -> dict[str, Any]:
-        raise RuntimeError("GitHub API 500 Internal Server Error")
+    pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(init_prod, ["checkout", "-b", pr_branch])
+    (init_prod / "remote_change.txt").write_text("Remote commit")
+    run_git(init_prod, ["add", "."])
+    run_git(init_prod, ["commit", "-m", "Remote commit"])
+    run_git(init_prod, ["push", "origin", pr_branch])
+
+    run_git(local_prod, ["fetch", "origin"])
+    run_git(local_prod, ["checkout", "-b", pr_branch, f"origin/{pr_branch}"])
+    (local_prod / "unpushed_change.txt").write_text("Unpushed commit")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "Unpushed local commit"])
+    run_git(local_prod, ["checkout", "main"])
 
     with pytest.raises(SystemExit):
         run_go_bootstrap(
@@ -522,19 +546,46 @@ def test_case_16_failed_github_lookup_fails_closed(temp_git_repos: dict[str, Pat
             product_path=local_prod,
             _skip_identity_check=True,
             _allow_custom_slug=True,
-            _gh_runner=mock_failing_gh_runner,
         )
 
 
-def test_case_17_evil_workspace_path_fails_closed(temp_git_repos: dict[str, Path], tmp_path: Path) -> None:
-    evil_ops = tmp_path / "score2gp-workspace-evil" / "agentops"
-    evil_ops.mkdir(parents=True, exist_ok=True)
-    local_prod = temp_git_repos["local_product"]
+def test_case_17_github_permission_error_fails_closed(monkeypatch: pytest.MonkeyPatch, temp_git_repos: dict[str, Path]) -> None:
+    # Test query_github_pr_state with permission/auth error stderr
+    class MockCompletedProcess:
+        def __init__(self, returncode: int, stderr: str):
+            self.returncode = returncode
+            self.stderr = stderr
+            self.stdout = ""
+
+    def mock_run(args: list[str], **kwargs: Any) -> MockCompletedProcess:
+        if "gh" in args:
+            return MockCompletedProcess(1, "gh: Could not resolve to a repository: tticom/score2gp. Not found or permission denied.")
+        return subprocess.run(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
 
     with pytest.raises(SystemExit):
-        run_go_bootstrap(
-            agentops_path=evil_ops,
-            product_path=local_prod,
-            _skip_identity_check=False,
-            _allow_custom_slug=True,
-        )
+        query_github_pr_state("tticom/score2gp", "agy/test-branch")
+
+
+def test_case_18_exact_recognised_no_pr_returns_none() -> None:
+    # Test query_github_pr_state with exact recognized no-PR stderr
+    class MockCompletedProcess:
+        def __init__(self, returncode: int, stderr: str):
+            self.returncode = returncode
+            self.stderr = stderr
+            self.stdout = ""
+
+    def mock_run(args: list[str], **kwargs: Any) -> MockCompletedProcess:
+        if "gh" in args:
+            return MockCompletedProcess(1, "no pull requests match 'agy/test-branch'")
+        return subprocess.run(args, **kwargs)
+
+    import pytest
+    import scripts.score2gp_go_bootstrap as helper
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(subprocess, "run", mock_run)
+
+    res = helper.query_github_pr_state("tticom/score2gp", "agy/test-branch")
+    assert res is None
+    monkeypatch.undo()

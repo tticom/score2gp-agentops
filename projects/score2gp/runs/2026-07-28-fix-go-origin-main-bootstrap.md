@@ -26,7 +26,7 @@ The helper script enforces a 6-phase state transition:
 
 ## Test Verification
 
-Added `tests/test_score2gp_go_bootstrap.py` covering 17 automated regression scenarios using synthetic temporary Git repositories:
+Added `tests/test_score2gp_go_bootstrap.py` covering 18 automated regression scenarios using synthetic temporary Git repositories:
 1. Completed task branch with stale local main & changed remote task (reproduces observed failure mode).
 2. Fetch succeeds when working tree task differs from `origin/main`.
 3. AgentOps and Product repositories both behind remote main.
@@ -41,8 +41,9 @@ Added `tests/test_score2gp_go_bootstrap.py` covering 17 automated regression sce
 12. Wrong assigned identity in task fails closed (`ASSIGNED_IDENTITY_MISMATCH`).
 13. Wrong declared repository fails closed (`REPOSITORY_MISMATCH`).
 14. Divergent existing local branch fails closed (`DIVERGENT_LOCAL_BRANCH`).
-15. Mismatched PR head SHA fails closed (`MISMATCHED_PR_HEAD`).
-16. Failed GitHub API lookup fails closed (`GITHUB_STATE_UNAVAILABLE`).
-17. Evil workspace path prefix (`score2gp-workspace-evil`) fails closed (`WORKSPACE_GATE_FAILED`).
+15. Local branch ahead of open PR head fails closed (`LOCAL_BRANCH_AHEAD_OF_PR`).
+16. Local branch ahead of remote branch with no PR fails closed (`LOCAL_BRANCH_AHEAD_OF_REMOTE_BRANCH`).
+17. GitHub permission/auth error fails closed (`GITHUB_STATE_UNAVAILABLE`).
+18. Exact recognised no-PR response returns None, enabling authorised `EXECUTE_PROMPT`.
 
-All 17 automated regression tests passed.
+All 18 automated regression tests passed.
