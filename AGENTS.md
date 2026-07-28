@@ -13,3 +13,11 @@ or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 formal review ID, commit ID, and body. Fail closed if the helper fails.
 
 Read `AGENT-RULES.md` for the remaining repository rules.
+
+For an exact user message `got`, first execute:
+
+```bash
+python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
+```
+
+Treat its JSON as authoritative and never resume a cached managed task.
