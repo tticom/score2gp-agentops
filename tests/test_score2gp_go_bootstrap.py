@@ -273,11 +273,20 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
 
+    # Create local branch matching active task
+    pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(local_prod, ["checkout", "-b", pr_branch])
+    (local_prod / "pr_change.txt").write_text("PR content")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "PR commit"])
+    pr_head_sha = run_git(local_prod, ["rev-parse", "HEAD"])
+    run_git(local_prod, ["checkout", "main"])
+
     def mock_gh_runner(repo: str, branch: str) -> dict[str, Any]:
         return {
             "number": 391,
             "state": "OPEN",
-            "headRefOid": "5a277d98f6e7757364035c14ab2e43ec54024d33",
+            "headRefOid": pr_head_sha,
         }
 
     res = run_go_bootstrap(
@@ -289,6 +298,7 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
     )
     assert res["state"] == "PR_OPEN"
     assert res["pr_number"] == 391
+    assert res["output_sha"] == pr_head_sha
 
 
 def test_case_8_merged_old_task_plus_merged_new_governance_promotion(temp_git_repos: dict[str, Path]) -> None:
@@ -383,7 +393,6 @@ def test_case_11_wrong_user_identity_fails_closed(temp_git_repos: dict[str, Path
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
 
-    # In current environment (whoami is tticom-codex), running without _skip_identity_check MUST fail closed
     with pytest.raises(SystemExit):
         run_go_bootstrap(
             agentops_path=local_ops,
@@ -458,19 +467,16 @@ def test_case_14_divergent_existing_local_branch_fails_closed(temp_git_repos: di
     local_prod = temp_git_repos["local_product"]
     init_prod = temp_git_repos["init_product"]
 
-    # 1. Create a commit on remote origin/main
     (init_prod / "remote_file.txt").write_text("remote main commit")
     run_git(init_prod, ["add", "."])
     run_git(init_prod, ["commit", "-m", "Remote main commit"])
     run_git(init_prod, ["push", "origin", "main"])
 
-    # 2. Create local branch agy/generate-public-pdf-tab-duration-fixture on local_prod from old main with divergent commit
     run_git(local_prod, ["checkout", "-b", "agy/generate-public-pdf-tab-duration-fixture"])
     (local_prod / "divergent_file.txt").write_text("divergent branch content")
     run_git(local_prod, ["add", "."])
     run_git(local_prod, ["commit", "-m", "Divergent branch commit"])
 
-    # 3. Switch back to main locally
     run_git(local_prod, ["checkout", "main"])
 
     with pytest.raises(SystemExit):
@@ -478,5 +484,57 @@ def test_case_14_divergent_existing_local_branch_fails_closed(temp_git_repos: di
             agentops_path=local_ops,
             product_path=local_prod,
             _skip_identity_check=True,
+            _allow_custom_slug=True,
+        )
+
+
+def test_case_15_mismatched_pr_head_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+
+    def mock_gh_runner(repo: str, branch: str) -> dict[str, Any]:
+        return {
+            "number": 391,
+            "state": "OPEN",
+            "headRefOid": "0000000000000000000000000000000000000000", # Completely different SHA
+        }
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
+            _gh_runner=mock_gh_runner,
+        )
+
+
+def test_case_16_failed_github_lookup_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+
+    def mock_failing_gh_runner(repo: str, branch: str) -> dict[str, Any]:
+        raise RuntimeError("GitHub API 500 Internal Server Error")
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
+            _gh_runner=mock_failing_gh_runner,
+        )
+
+
+def test_case_17_evil_workspace_path_fails_closed(temp_git_repos: dict[str, Path], tmp_path: Path) -> None:
+    evil_ops = tmp_path / "score2gp-workspace-evil" / "agentops"
+    evil_ops.mkdir(parents=True, exist_ok=True)
+    local_prod = temp_git_repos["local_product"]
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=evil_ops,
+            product_path=local_prod,
+            _skip_identity_check=False,
             _allow_custom_slug=True,
         )

@@ -115,13 +115,42 @@ def verify_identity_and_workspace(agentops_path: Path, product_path: Path) -> No
     if git_email != "tticomautomation@gmail.com":
         fail_closed(f"Git global user.email must be 'tticomautomation@gmail.com', got '{git_email}'", state="IDENTITY_GATE_FAILED")
 
+    canonical_root = Path("/home/tticom-automation/work/score2gp-workspace").resolve()
     for name, path in [("agentops", agentops_path), ("product", product_path)]:
-        real_path = str(path.resolve())
-        if not real_path.startswith("/home/tticom-automation/work/score2gp-workspace"):
+        real_path = path.resolve()
+        try:
+            real_path.relative_to(canonical_root)
+        except ValueError:
             fail_closed(
-                f"Workspace path for {name} ({real_path}) is outside canonical workspace prefix '/home/tticom-automation/work/score2gp-workspace'",
+                f"Workspace path for {name} ({real_path}) is not within canonical workspace root '{canonical_root}'",
                 state="WORKSPACE_GATE_FAILED",
             )
+
+
+def query_github_pr_state(declared_repo: str, pr_branch: str) -> dict[str, Any] | None:
+    """Query GitHub API for exact PR state, failing closed on API/auth/network errors."""
+    try:
+        res_pr = subprocess.run(
+            ["gh", "pr", "view", pr_branch, "--repo", declared_repo, "--json", "number,state,headRefOid"],
+            capture_output=True, text=True
+        )
+    except Exception as e:
+        fail_closed(f"GitHub CLI execution failed for {declared_repo} {pr_branch}: {e}", state="GITHUB_STATE_UNAVAILABLE")
+
+    if res_pr.returncode == 0:
+        if not res_pr.stdout.strip():
+            fail_closed(f"GitHub CLI returned empty output for PR query on {declared_repo} {pr_branch}", state="GITHUB_STATE_UNAVAILABLE")
+        try:
+            return json.loads(res_pr.stdout)
+        except Exception as e:
+            fail_closed(f"Failed to parse GitHub PR JSON response: {e}", state="GITHUB_STATE_UNAVAILABLE")
+
+    stderr = res_pr.stderr.strip().lower()
+    if "no pull requests match" in stderr or "no open pull requests" in stderr or "could not resolve to a pull request" in stderr or "not found" in stderr:
+        return None
+
+    fail_closed(f"GitHub PR lookup failed with exit code {res_pr.returncode}: {res_pr.stderr.strip()}", state="GITHUB_STATE_UNAVAILABLE")
+    return None
 
 
 def run_go_bootstrap(
@@ -134,10 +163,8 @@ def run_go_bootstrap(
     agentops_path = Path(agentops_path).resolve()
     product_path = Path(product_path).resolve()
 
-    test_mode = _skip_identity_check or os.environ.get("SCORE2GP_TEST_MODE") == "1"
-
     # Phase 1: Identity & Cleanliness
-    if not test_mode:
+    if not _skip_identity_check:
         verify_identity_and_workspace(agentops_path, product_path)
 
     for name, path in [("agentops", agentops_path), ("product", product_path)]:
@@ -262,27 +289,23 @@ def run_go_bootstrap(
     pr_head_sha = None
     pr_number = None
 
-    if _gh_runner:
-        pr_info = _gh_runner(declared_repo, pr_branch)
-        if pr_info:
-            pr_state = pr_info.get("state")
-            pr_head_sha = pr_info.get("headRefOid")
-            pr_number = pr_info.get("number")
-    elif declared_repo and not _allow_custom_slug:
+    if _gh_runner is not None:
         try:
-            res_pr = subprocess.run(
-                ["gh", "pr", "view", pr_branch, "--repo", declared_repo, "--json", "number,state,headRefOid"],
-                capture_output=True, text=True
-            )
-            if res_pr.returncode == 0 and res_pr.stdout.strip():
-                pr_info = json.loads(res_pr.stdout)
-                pr_number = pr_info.get("number")
+            pr_info = _gh_runner(declared_repo, pr_branch)
+            if pr_info:
                 pr_state = pr_info.get("state")
                 pr_head_sha = pr_info.get("headRefOid")
-        except Exception:
-            pass
+                pr_number = pr_info.get("number")
+        except Exception as e:
+            fail_closed(f"GitHub runner failed: {e}", state="GITHUB_STATE_UNAVAILABLE")
+    elif declared_repo and not _allow_custom_slug:
+        pr_info = query_github_pr_state(declared_repo, pr_branch)
+        if pr_info:
+            pr_number = pr_info.get("number")
+            pr_state = pr_info.get("state")
+            pr_head_sha = pr_info.get("headRefOid")
 
-    # Phase 6: Select Authorised Task Branch with strict verification
+    # Phase 6: Select Authorised Task Branch with strict reconciliation
     local_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/heads/{pr_branch}"], check=False) != ""
     remote_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/remotes/origin/{pr_branch}"], check=False) != ""
 
@@ -305,25 +328,67 @@ def run_go_bootstrap(
                     state="DIVERGENT_LOCAL_BRANCH",
                 )
 
+        try:
+            run_git(target_repo_path, ["switch", pr_branch])
+        except Exception:
+            run_git(target_repo_path, ["checkout", pr_branch])
+
         if remote_branch_exists:
             try:
-                run_git(target_repo_path, ["switch", pr_branch])
-                run_git(target_repo_path, ["merge", "--ff-only", f"origin/{pr_branch}"], check=False)
-            except Exception:
-                pass
-        else:
-            try:
-                run_git(target_repo_path, ["switch", pr_branch])
-            except Exception:
-                run_git(target_repo_path, ["checkout", pr_branch])
+                run_git(target_repo_path, ["merge", "--ff-only", f"origin/{pr_branch}"])
+            except Exception as e:
+                local_sha = run_git(target_repo_path, ["rev-parse", pr_branch])
+                remote_sha = run_git(target_repo_path, ["rev-parse", f"origin/{pr_branch}"])
+                if pr_head_sha and local_sha == pr_head_sha:
+                    pass
+                else:
+                    fail_closed(
+                        f"Local branch '{pr_branch}' ({local_sha}) cannot fast-forward to origin/{pr_branch} ({remote_sha}): {e}",
+                        state="CANNOT_FAST_FORWARD_TASK_BRANCH",
+                    )
     elif remote_branch_exists:
         try:
             run_git(target_repo_path, ["switch", "-c", pr_branch, f"origin/{pr_branch}"])
         except Exception:
             run_git(target_repo_path, ["checkout", "-b", pr_branch, f"origin/{pr_branch}"])
 
+    # Final reconciliation of selected branch and SHA
     selected_branch = run_git(target_repo_path, ["branch", "--show-current"])
     selected_sha = run_git(target_repo_path, ["rev-parse", "HEAD"])
+
+    if selected_branch != pr_branch:
+        fail_closed(
+            f"Selected branch '{selected_branch}' does not match authorised task branch '{pr_branch}'",
+            state="BRANCH_SELECTION_FAILED",
+        )
+
+    if pr_head_sha:
+        if selected_sha != pr_head_sha:
+            res_ancestor = subprocess.run(
+                ["git", "merge-base", "--is-ancestor", pr_head_sha, selected_sha],
+                cwd=str(target_repo_path),
+                capture_output=True,
+                text=True,
+            )
+            if res_ancestor.returncode != 0:
+                fail_closed(
+                    f"Selected branch head ({selected_sha}) does not match live PR head SHA ({pr_head_sha}) and is not descended from it.",
+                    state="MISMATCHED_PR_HEAD",
+                )
+    elif remote_branch_exists:
+        remote_branch_sha = run_git(target_repo_path, ["rev-parse", f"origin/{pr_branch}"])
+        if selected_sha != remote_branch_sha:
+            res_ancestor = subprocess.run(
+                ["git", "merge-base", "--is-ancestor", remote_branch_sha, selected_sha],
+                cwd=str(target_repo_path),
+                capture_output=True,
+                text=True,
+            )
+            if res_ancestor.returncode != 0:
+                fail_closed(
+                    f"Selected branch head ({selected_sha}) does not match remote branch SHA ({remote_branch_sha}) and is not descended from it.",
+                    state="MISMATCHED_REMOTE_BRANCH_HEAD",
+                )
 
     # Phase 7: Machine-Actionable Dispatch Decision
     if pr_state == "MERGED":
