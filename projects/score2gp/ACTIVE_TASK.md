@@ -1,43 +1,44 @@
 # Active Task
 
-**Task**: PDFTAB-DUR-01: Public Duration-Evidence Adequacy Audit
+**Task**: PDFTAB-DUR-02: Public PDF-Tab Duration Synthetic Fixture Creation
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer / Evidence Author
-**Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/pdftab-duration-evidence-audit`
+**Authorised Role**: Developer / Fixture Author
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/generate-public-pdf-tab-duration-fixture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0018-pdf-tab-duration-evidence-adequacy-audit.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0019-generate-public-pdf-tab-duration-fixture.md`
 
 ## Context
 
-AgentOps PR #383 merged the permanent `go` and `got` dispatchers at
-`b3918e19d9130b52bcfacfe53133f5794efbad82`. The post-CR-04D replay identifies
-equal spatial eighth-note timing as the first current PDF-only tab limitation.
-Existing public tests contain flag/beam diagnostics, but current evidence does
-not establish that a multi-bar PDF-tab fixture supplies a usable duration
-oracle or that beam geometry reaches the PDF-only TabRaw assembly path.
+AgentOps PR #386 merged the PDF-tab duration evidence adequacy audit at
+`700214c3224478adfe2c5c4a6105875da4fcb279`, returning `PUBLIC_FIXTURE_GAP`.
+Existing public PDF-tab test staves lack visual stem/beam/flag duration marks,
+so no public fixture provides a duration oracle for PDF-only tab assembly.
 
 ## Goal
 
-Determine whether current public fixtures and committed diagnostics are
-sufficient to authorize a bounded PDF-only tab duration/beam implementation.
-Produce evidence and a decision; do not change product code.
+Create a synthetic PDF-tab duration fixture generator and generated PDF fixture
+(`generated_pdf_tab_duration.pdf`) containing multi-bar tablature with drawn stems,
+beams, and flags (quarter, eighth, sixteenth notes) and an expected-duration oracle.
+Do not modify product code in `src/score2gp/`.
 
 ## Allowed Files
 
-- `projects/score2gp/runs/2026-07-27-pdf-tab-duration-evidence-adequacy-audit.md`
+- `tests/fixtures/pdf/make_generated_pdf_tab_duration_pdf.py` (in `score2gp`)
+- `tests/fixtures/pdf/generated_pdf_tab_duration.pdf` (in `score2gp`)
+- `tests/test_pdf_tab_duration_fixture.py` (in `score2gp`)
+- `projects/score2gp/runs/2026-07-28-generate-public-pdf-tab-duration-fixture.md` (in `score2gp-agentops`)
 
-The product repository and all other AgentOps paths are read-only.
+Product source code (`src/score2gp/`) remains strictly read-only.
 
 ## Non-goals
 
-No product edits, new fixtures, implementation prompt, private inputs,
-automatic merge, branch deletion, or promotion of the audit result.
+No product code edits, private inputs, reference GP leakage, automatic merge,
+branch deletion, or unauthorized promotion of follow-up implementation.
 
 ## Acceptance
 
-The report pins repository and skills revisions, inspects the specified public
-fixtures and current duration/beam dataflow, records source and visual
-evidence, tests the strongest false-success mode, and returns exactly one of:
-`IMPLEMENTATION_READY`, `PUBLIC_FIXTURE_GAP`, `ARCHITECTURE_GAP`, or `BLOCKED`.
+The synthetic generator and generated PDF are committed, diagnostic tests verify
+that duration candidates are extracted from the fixture staves, pytest and
+`agent_verify.py` pass, and a durable run record is published.
