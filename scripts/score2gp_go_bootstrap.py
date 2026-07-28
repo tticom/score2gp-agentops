@@ -16,6 +16,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.score2gp_control_plane import (
+        materialize_and_activate_skills,
+        read_skills_pin,
+        sync_main,
+    )
+except ModuleNotFoundError:  # Direct execution: python scripts/score2gp_go_bootstrap.py
+    from score2gp_control_plane import (
+        materialize_and_activate_skills,
+        read_skills_pin,
+        sync_main,
+    )
+
 
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
     try:
@@ -438,13 +451,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Score2GP Agy `go` Dispatch Bootstrap Helper.")
     parser.add_argument("--product", type=str, default="../score2gp", help="Path to score2gp product repository")
     parser.add_argument("--agentops", type=str, default=".", help="Path to score2gp-agentops governance repository")
+    parser.add_argument("--skills-repo", type=str, default="../../agy-skills", help="Path to identity-owned agy-skills repository")
     parser.add_argument("--json", action="store_true", help="Output status in JSON format")
     args = parser.parse_args()
 
-    result = run_go_bootstrap(
-        agentops_path=args.agentops,
-        product_path=args.product,
+    agentops_path = Path(args.agentops).resolve()
+    product_path = Path(args.product).resolve()
+    sync_main(agentops_path, "agentops")
+    sync_main(product_path, "product")
+    skills_sha = materialize_and_activate_skills(
+        Path(args.skills_repo).resolve(), read_skills_pin(agentops_path)
     )
+
+    result = run_go_bootstrap(
+        agentops_path=agentops_path,
+        product_path=product_path,
+    )
+    result["skills_sha"] = skills_sha
 
     if args.json:
         print(json.dumps(result, indent=2))
@@ -452,6 +475,7 @@ def main() -> None:
         print(f"State: {result['state']}")
         print(f"Task: {result['active_task']['task']} ({result['active_task']['status']})")
         print(f"AgentOps SHA: {result['agentops_sha']}")
+        print(f"Skills SHA: {result['skills_sha']}")
         print(f"Output Repo: {result['output_repo']}")
         print(f"Output Branch: {result['selected_branch']} ({result['output_sha']})")
 

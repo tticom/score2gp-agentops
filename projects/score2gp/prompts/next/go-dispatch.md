@@ -11,6 +11,12 @@ Every `go` invocation MUST execute the executable dispatcher bootstrap helper:
 python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops .
 ```
 
+Before task dispatch, it must also run the shared control-plane gate against
+the skills source repository. This gate fetches and fast-forwards only clean
+canonical `main` branches, materializes the exact immutable skills pin, and
+atomically activates the required skill links. It must never silently update
+to `agy-skills/main`.
+
 The helper enforces the required state transitions:
 1. **Identity & Cleanliness**: Proves `tticom-automation` identity and verifies both repositories are clean before switching. Fails closed on dirty or unexpected state.
 2. **Fetch Authoritative State**: Fetches `origin/main` in `score2gp-agentops` and reads `ACTIVE_TASK.md` from `origin/main` (`git show origin/main:projects/score2gp/ACTIVE_TASK.md`), ignoring stale working-tree task files.
@@ -18,6 +24,8 @@ The helper enforces the required state transitions:
 4. **Synchronize Authorised Output Repository**: Reads `Repository` from the newly fetched task, switches to `main` in the declared repository, and fast-forwards to `origin/main`.
 5. **Select Authorised Task Branch**: Reads `PR Branch` and creates or selects the exact authorised task branch from `origin/main`.
 6. **Dispatch**: Emits machine-actionable state.
+
+Report `AgentOps SHA`, `Product Main SHA`, and `Skills SHA` on every run.
 
 ## Dispatch
 

@@ -4,8 +4,10 @@
 
 - Repository: `https://github.com/tticom/agy-skills`
 - Required source commit:
-  `0d6d84879eff0d352b444fdeceb3bb7a098e0c47`
+  `002ea720202a5c2af2f858ca847ef1649d23d1f4`
 - Introduction PR: `https://github.com/tticom/agy-skills/pull/2`
+- Review hardening PRs:
+  `https://github.com/tticom/agy-skills/pull/4` and its exact-head follow-up
 
 Required skills:
 
@@ -24,7 +26,7 @@ For each agent identity:
 
 1. use that identity's own `agy-skills` clone;
 2. fetch the repository;
-3. check out the required source commit in a detached, read-only worktree or
+3. check out the required source commit in a detached, read-only worktree o
    a local tag that resolves exactly to it;
 4. point installed skill links at that pinned checkout;
 5. verify every required `SKILL.md` resolves below that checkout;
