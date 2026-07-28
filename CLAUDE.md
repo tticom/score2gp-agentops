@@ -19,4 +19,14 @@ previous handback summary, or reconstruct the state in prose.
 Repeated commands with unchanged JSON are idempotent. Do not create another
 task, review, or handback.
 
+For an exact user message `got`, the first task action must be:
+
+```bash
+python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
+```
+
+Its JSON is authoritative. Never resume or replay a prior managed task.
+`MERGED_AWAITING_GOVERNANCE_PROMOTION` means verify merged main and prepare
+the next governance promotion; historical reviews must not override `MERGED`.
+
 Read `AGENT-RULES.md` and the selected role skill for all other work.
