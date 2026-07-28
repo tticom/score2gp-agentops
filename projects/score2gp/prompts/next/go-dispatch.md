@@ -3,13 +3,21 @@
 Turn `go` into the next authorised author-side action without copied chat
 prose or a static pointer to a completed prompt.
 
-## Gate
+## Gate & Bootstrap Protocol
 
-Prove `tticom-automation` identity and canonical WSL workspace. Read
-`AGENT_CONTROL.md`, `ACTIVE_TASK.md`, and the Developer skill. Require stable
-`Task`, `Status`, `Assigned Identity`, `Repository`, `PR Branch`, and
-`Original Prompt` fields. Stop when the assigned identity differs. Fetch
-without destructive worktree operations.
+Every `go` invocation MUST execute the executable dispatcher bootstrap helper:
+
+```bash
+python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops .
+```
+
+The helper enforces the required state transitions:
+1. **Identity & Cleanliness**: Proves `tticom-automation` identity and verifies both repositories are clean before switching. Fails closed on dirty or unexpected state.
+2. **Fetch Authoritative State**: Fetches `origin/main` in `score2gp-agentops` and reads `ACTIVE_TASK.md` from `origin/main` (`git show origin/main:projects/score2gp/ACTIVE_TASK.md`), ignoring stale working-tree task files.
+3. **Synchronize AgentOps Canonical Branch**: Fast-forwards local AgentOps `main` (`git switch main && git merge --ff-only origin/main`) and verifies synchronized metadata matches `origin/main`.
+4. **Synchronize Authorised Output Repository**: Reads `Repository` from the newly fetched task, switches to `main` in the declared repository, and fast-forwards to `origin/main`.
+5. **Select Authorised Task Branch**: Reads `PR Branch` and creates or selects the exact authorised task branch from `origin/main`.
+6. **Dispatch**: Emits machine-actionable state.
 
 ## Dispatch
 

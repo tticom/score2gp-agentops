@@ -128,9 +128,11 @@ This section supersedes every conflicting local-preparation or GitHub restrictio
 
 The user command `next` or `go` means: read
 `projects/score2gp/prompts/NEXT.md`, then execute the permanent Agy dispatcher
-it names. The dispatcher combines stable task metadata with exact live GitHub
-state before selecting implementation, PR monitoring, review fixes, a review
-wait, or a post-merge stop. It must never blindly replay the original prompt.
+it names. The dispatcher runs `python3 scripts/score2gp_go_bootstrap.py` to
+fetch `origin/main`, synchronize canonical `main` branches, and select the authorised
+task branch before checking GitHub PR state and selecting implementation, PR
+monitoring, review fixes, a review wait, or a post-merge stop. It must never blindly
+replay the original prompt or read task authority from a stale working-tree branch.
 
 The user command `got` is reserved for Codex. It executes the permanent Codex
 dispatcher named by `NEXT.md`, verifies an exact Agy handback against live
