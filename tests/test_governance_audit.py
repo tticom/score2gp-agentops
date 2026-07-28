@@ -213,6 +213,7 @@ def test_go_dispatch_cannot_repeat_merged_work() -> None:
     assert "Do not rerun" in content
     assert "READY_FOR_HUMAN_MERGE" in content
     assert "AWAITING_CODEX_REVIEW" in content
+    assert "score2gp_go_bootstrap.py" in content
 
 
 def test_got_dispatch_requires_pinned_handback() -> None:
