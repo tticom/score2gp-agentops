@@ -87,23 +87,58 @@ def fail_closed(reason: str, state: str = "FAIL_CLOSED") -> None:
     sys.exit(1)
 
 
+def verify_identity_and_workspace(agentops_path: Path, product_path: Path) -> None:
+    """Enforce strict Linux user, home, GitHub CLI, Git identity and WSL workspace gates for tticom-automation."""
+    try:
+        whoami = subprocess.run(["whoami"], capture_output=True, text=True, check=True).stdout.strip()
+    except Exception as e:
+        fail_closed(f"Failed to check whoami: {e}", state="IDENTITY_GATE_FAILED")
+    if whoami != "tticom-automation":
+        fail_closed(f"Linux user must be 'tticom-automation', got '{whoami}'", state="IDENTITY_GATE_FAILED")
+
+    home = os.environ.get("HOME", "")
+    if home != "/home/tticom-automation":
+        fail_closed(f"HOME must be '/home/tticom-automation', got '{home}'", state="IDENTITY_GATE_FAILED")
+
+    try:
+        gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True, check=True).stdout.strip()
+    except Exception as e:
+        fail_closed(f"Failed to verify gh CLI user: {e}", state="IDENTITY_GATE_FAILED")
+    if gh_user != "tticom-automation":
+        fail_closed(f"GitHub CLI account must be 'tticom-automation', got '{gh_user}'", state="IDENTITY_GATE_FAILED")
+
+    git_user = run_git(agentops_path, ["config", "--global", "--get", "user.name"], check=False)
+    if git_user != "tticom-automation":
+        fail_closed(f"Git global user.name must be 'tticom-automation', got '{git_user}'", state="IDENTITY_GATE_FAILED")
+
+    git_email = run_git(agentops_path, ["config", "--global", "--get", "user.email"], check=False)
+    if git_email != "tticomautomation@gmail.com":
+        fail_closed(f"Git global user.email must be 'tticomautomation@gmail.com', got '{git_email}'", state="IDENTITY_GATE_FAILED")
+
+    for name, path in [("agentops", agentops_path), ("product", product_path)]:
+        real_path = str(path.resolve())
+        if not real_path.startswith("/home/tticom-automation/work/score2gp-workspace"):
+            fail_closed(
+                f"Workspace path for {name} ({real_path}) is outside canonical workspace prefix '/home/tticom-automation/work/score2gp-workspace'",
+                state="WORKSPACE_GATE_FAILED",
+            )
+
+
 def run_go_bootstrap(
     agentops_path: str | Path,
     product_path: str | Path,
-    skip_identity_check: bool = False,
-    allow_custom_slug: bool = False,
+    _skip_identity_check: bool = False,
+    _allow_custom_slug: bool = False,
+    _gh_runner: Any = None,
 ) -> dict[str, Any]:
     agentops_path = Path(agentops_path).resolve()
     product_path = Path(product_path).resolve()
 
+    test_mode = _skip_identity_check or os.environ.get("SCORE2GP_TEST_MODE") == "1"
+
     # Phase 1: Identity & Cleanliness
-    if not skip_identity_check:
-        try:
-            whoami = subprocess.run(["whoami"], capture_output=True, text=True, check=True).stdout.strip()
-            if whoami != "tticom-automation":
-                pass
-        except Exception:
-            pass
+    if not test_mode:
+        verify_identity_and_workspace(agentops_path, product_path)
 
     for name, path in [("agentops", agentops_path), ("product", product_path)]:
         if not path.exists() or not path.is_dir():
@@ -143,6 +178,13 @@ def run_go_bootstrap(
     declared_repo = task_data["repository"]
     pr_branch = task_data["pr branch"]
     original_prompt = task_data["original prompt"]
+
+    # Enforce Assigned Identity == tticom-automation
+    if assigned_identity.lower() != "tticom-automation":
+        fail_closed(
+            f"Active task '{task_name}' is assigned to identity '{assigned_identity}', not 'tticom-automation'. Agy must not execute tasks assigned to other identities.",
+            state="ASSIGNED_IDENTITY_MISMATCH",
+        )
 
     # Phase 3: Synchronize AgentOps canonical branch
     try:
@@ -186,7 +228,7 @@ def run_go_bootstrap(
         target_repo_path = product_path
         target_repo_name = "product"
     else:
-        if allow_custom_slug:
+        if _allow_custom_slug:
             target_repo_path = product_path
             target_repo_name = "product"
         else:
@@ -215,7 +257,32 @@ def run_go_bootstrap(
     if target_head != target_origin_main:
         fail_closed(f"{target_repo_name} repo HEAD ({target_head}) does not match origin/main ({target_origin_main}).")
 
-    # Phase 5: Select Authorised Task Branch
+    # Phase 5: Query Live GitHub PR State First
+    pr_state = None
+    pr_head_sha = None
+    pr_number = None
+
+    if _gh_runner:
+        pr_info = _gh_runner(declared_repo, pr_branch)
+        if pr_info:
+            pr_state = pr_info.get("state")
+            pr_head_sha = pr_info.get("headRefOid")
+            pr_number = pr_info.get("number")
+    elif declared_repo and not _allow_custom_slug:
+        try:
+            res_pr = subprocess.run(
+                ["gh", "pr", "view", pr_branch, "--repo", declared_repo, "--json", "number,state,headRefOid"],
+                capture_output=True, text=True
+            )
+            if res_pr.returncode == 0 and res_pr.stdout.strip():
+                pr_info = json.loads(res_pr.stdout)
+                pr_number = pr_info.get("number")
+                pr_state = pr_info.get("state")
+                pr_head_sha = pr_info.get("headRefOid")
+        except Exception:
+            pass
+
+    # Phase 6: Select Authorised Task Branch with strict verification
     local_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/heads/{pr_branch}"], check=False) != ""
     remote_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/remotes/origin/{pr_branch}"], check=False) != ""
 
@@ -225,10 +292,30 @@ def run_go_bootstrap(
         except Exception:
             run_git(target_repo_path, ["checkout", "-b", pr_branch, "origin/main"])
     elif local_branch_exists:
-        try:
-            run_git(target_repo_path, ["switch", pr_branch])
-        except Exception:
-            run_git(target_repo_path, ["checkout", pr_branch])
+        merge_base = run_git(target_repo_path, ["merge-base", pr_branch, "origin/main"], check=False)
+        origin_main_sha = run_git(target_repo_path, ["rev-parse", "origin/main"])
+
+        if merge_base != origin_main_sha:
+            local_sha = run_git(target_repo_path, ["rev-parse", pr_branch])
+            if pr_head_sha and local_sha == pr_head_sha:
+                pass
+            else:
+                fail_closed(
+                    f"Existing local branch '{pr_branch}' is not descended from origin/main and has unexplained divergence.",
+                    state="DIVERGENT_LOCAL_BRANCH",
+                )
+
+        if remote_branch_exists:
+            try:
+                run_git(target_repo_path, ["switch", pr_branch])
+                run_git(target_repo_path, ["merge", "--ff-only", f"origin/{pr_branch}"], check=False)
+            except Exception:
+                pass
+        else:
+            try:
+                run_git(target_repo_path, ["switch", pr_branch])
+            except Exception:
+                run_git(target_repo_path, ["checkout", pr_branch])
     elif remote_branch_exists:
         try:
             run_git(target_repo_path, ["switch", "-c", pr_branch, f"origin/{pr_branch}"])
@@ -238,20 +325,7 @@ def run_go_bootstrap(
     selected_branch = run_git(target_repo_path, ["branch", "--show-current"])
     selected_sha = run_git(target_repo_path, ["rev-parse", "HEAD"])
 
-    # Phase 6: Dispatch Decision State
-    pr_state = None
-    if declared_repo and not allow_custom_slug:
-        try:
-            res_pr = subprocess.run(
-                ["gh", "pr", "view", pr_branch, "--repo", declared_repo, "--json", "state"],
-                capture_output=True, text=True
-            )
-            if res_pr.returncode == 0 and res_pr.stdout.strip():
-                pr_info = json.loads(res_pr.stdout)
-                pr_state = pr_info.get("state")
-        except Exception:
-            pass
-
+    # Phase 7: Machine-Actionable Dispatch Decision
     if pr_state == "MERGED":
         state = "MERGED_AWAITING_GOVERNANCE_PROMOTION"
     elif pr_state == "CLOSED":
@@ -279,6 +353,7 @@ def run_go_bootstrap(
         "output_repo": declared_repo,
         "output_sha": selected_sha,
         "selected_branch": selected_branch,
+        "pr_number": pr_number,
     }
 
     return result
@@ -289,15 +364,11 @@ def main() -> None:
     parser.add_argument("--product", type=str, default="../score2gp", help="Path to score2gp product repository")
     parser.add_argument("--agentops", type=str, default=".", help="Path to score2gp-agentops governance repository")
     parser.add_argument("--json", action="store_true", help="Output status in JSON format")
-    parser.add_argument("--skip-identity-check", action="store_true", help="Skip user identity verification for test suites")
-    parser.add_argument("--allow-custom-slug", action="store_true", help="Allow custom repository slugs for test suites")
     args = parser.parse_args()
 
     result = run_go_bootstrap(
         agentops_path=args.agentops,
         product_path=args.product,
-        skip_identity_check=args.skip_identity_check,
-        allow_custom_slug=args.allow_custom_slug,
     )
 
     if args.json:

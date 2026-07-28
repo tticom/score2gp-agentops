@@ -91,11 +91,9 @@ def test_case_1_completed_task_branch_stale_main_remote_task_changed(temp_git_re
     local_prod = temp_git_repos["local_product"]
     init_ops = temp_git_repos["init_agentops"]
 
-    # 1. Checkout completed task branch locally in AgentOps and Product
     run_git(local_ops, ["checkout", "-b", "agy/generate-public-pdf-tab-duration-fixture"])
     run_git(local_prod, ["checkout", "-b", "agy/generate-public-pdf-tab-duration-fixture"])
 
-    # 2. Update remote origin/main with newly promoted task (PDFTAB-DUR-03)
     task_v2 = """# Active Task
 
 **Task**: PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture
@@ -112,19 +110,16 @@ def test_case_1_completed_task_branch_stale_main_remote_task_changed(temp_git_re
     run_git(init_ops, ["commit", "-m", "Promote task 2"])
     run_git(init_ops, ["push", "origin", "main"])
 
-    # 3. Demonstrate original failure mode: working-tree ACTIVE_TASK.md has old task PDFTAB-DUR-02
     stale_task = parse_active_task_content((local_ops / "projects/score2gp/ACTIVE_TASK.md").read_text())
     assert stale_task["task"] == "PDFTAB-DUR-02: Public PDF-Tab Duration Synthetic Fixture Creation"
 
-    # 4. Run repaired go_bootstrap helper
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
-    # 5. Verify helper fast-forwards local main, reads remote task, creates new branch agy/pdftab-duration-extraction-architecture from origin/main
     assert res["ok"] is True
     assert res["active_task"]["task"] == "PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture"
     assert res["selected_branch"] == "agy/pdftab-duration-extraction-architecture"
@@ -136,10 +131,8 @@ def test_case_2_fetch_succeeds_but_old_working_tree_task_differs(temp_git_repos:
     local_prod = temp_git_repos["local_product"]
     init_ops = temp_git_repos["init_agentops"]
 
-    # Local is on old task branch
     run_git(local_ops, ["checkout", "-b", "agy/old-task-branch"])
 
-    # Remote changes to new task
     task_v2 = """# Active Task
 
 **Task**: PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture
@@ -159,8 +152,8 @@ def test_case_2_fetch_succeeds_but_old_working_tree_task_differs(temp_git_repos:
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
     assert res["active_task"]["task"] == "PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture"
@@ -173,13 +166,11 @@ def test_case_3_agentops_and_product_both_behind(temp_git_repos: dict[str, Path]
     init_ops = temp_git_repos["init_agentops"]
     init_prod = temp_git_repos["init_product"]
 
-    # Push commit to init_ops
     (init_ops / "README.md").write_text("Ops update")
     run_git(init_ops, ["add", "."])
     run_git(init_ops, ["commit", "-m", "ops commit"])
     run_git(init_ops, ["push", "origin", "main"])
 
-    # Push commit to init_prod
     (init_prod / "PRODUCT.md").write_text("Prod update")
     run_git(init_prod, ["add", "."])
     run_git(init_prod, ["commit", "-m", "prod commit"])
@@ -188,8 +179,8 @@ def test_case_3_agentops_and_product_both_behind(temp_git_repos: dict[str, Path]
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
     ops_sha = run_git(local_ops, ["rev-parse", "main"])
@@ -209,8 +200,8 @@ def test_case_4_dirty_worktree_hard_stop(temp_git_repos: dict[str, Path]) -> Non
         run_go_bootstrap(
             agentops_path=local_ops,
             product_path=local_prod,
-            skip_identity_check=True,
-            allow_custom_slug=True,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
         )
 
 
@@ -219,15 +210,12 @@ def test_case_5_local_main_cannot_fast_forward_hard_stop(temp_git_repos: dict[st
     local_prod = temp_git_repos["local_product"]
     init_ops = temp_git_repos["init_agentops"]
 
-    # Ensure local_ops is on main
     run_git(local_ops, ["checkout", "main"])
 
-    # Create diverged commit on local_ops main
     (local_ops / "local_change.txt").write_text("divergent")
     run_git(local_ops, ["add", "."])
     run_git(local_ops, ["commit", "-m", "divergent local commit"])
 
-    # Create commit on remote main
     (init_ops / "remote_change.txt").write_text("remote")
     run_git(init_ops, ["add", "."])
     run_git(init_ops, ["commit", "-m", "remote commit"])
@@ -237,8 +225,8 @@ def test_case_5_local_main_cannot_fast_forward_hard_stop(temp_git_repos: dict[st
         run_go_bootstrap(
             agentops_path=local_ops,
             product_path=local_prod,
-            skip_identity_check=True,
-            allow_custom_slug=True,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
         )
 
 
@@ -248,7 +236,6 @@ def test_case_6_authorised_branch_exists_remotely(temp_git_repos: dict[str, Path
     init_ops = temp_git_repos["init_agentops"]
     init_prod = temp_git_repos["init_product"]
 
-    # Update remote ACTIVE_TASK to point to branch
     task_v2 = """# Active Task
 
 **Task**: PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture
@@ -265,7 +252,6 @@ def test_case_6_authorised_branch_exists_remotely(temp_git_repos: dict[str, Path
     run_git(init_ops, ["commit", "-m", "Promote task 2"])
     run_git(init_ops, ["push", "origin", "main"])
 
-    # Push branch remotely on product
     run_git(init_prod, ["checkout", "-b", "agy/pdftab-duration-extraction-architecture"])
     (init_prod / "remote_branch.txt").write_text("remote branch content")
     run_git(init_prod, ["add", "."])
@@ -275,25 +261,34 @@ def test_case_6_authorised_branch_exists_remotely(temp_git_repos: dict[str, Path
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
     assert res["selected_branch"] == "agy/pdftab-duration-extraction-architecture"
     assert (local_prod / "remote_branch.txt").exists()
 
 
-def test_case_7_exact_pr_already_exists(temp_git_repos: dict[str, Path]) -> None:
+def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) -> None:
     local_ops = temp_git_repos["local_agentops"]
     local_prod = temp_git_repos["local_product"]
+
+    def mock_gh_runner(repo: str, branch: str) -> dict[str, Any]:
+        return {
+            "number": 391,
+            "state": "OPEN",
+            "headRefOid": "5a277d98f6e7757364035c14ab2e43ec54024d33",
+        }
 
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=mock_gh_runner,
     )
-    assert res["state"] in ("EXECUTE_PROMPT", "PR_OPEN", "MERGED_AWAITING_GOVERNANCE_PROMOTION")
+    assert res["state"] == "PR_OPEN"
+    assert res["pr_number"] == 391
 
 
 def test_case_8_merged_old_task_plus_merged_new_governance_promotion(temp_git_repos: dict[str, Path]) -> None:
@@ -320,8 +315,8 @@ def test_case_8_merged_old_task_plus_merged_new_governance_promotion(temp_git_re
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
     assert res["active_task"]["task"] == "PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture"
@@ -352,8 +347,8 @@ def test_case_9_repository_field_selects_agentops(temp_git_repos: dict[str, Path
     res = run_go_bootstrap(
         agentops_path=local_ops,
         product_path=local_prod,
-        skip_identity_check=True,
-        allow_custom_slug=True,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
     )
 
     assert res["output_repo"] == "tticom/score2gp-agentops"
@@ -379,6 +374,109 @@ def test_case_10_missing_or_malformed_required_fields_fail_closed(temp_git_repos
         run_go_bootstrap(
             agentops_path=local_ops,
             product_path=local_prod,
-            skip_identity_check=True,
-            allow_custom_slug=True,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
+        )
+
+
+def test_case_11_wrong_user_identity_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+
+    # In current environment (whoami is tticom-codex), running without _skip_identity_check MUST fail closed
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=False,
+            _allow_custom_slug=True,
+        )
+
+
+def test_case_12_wrong_assigned_identity_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_ops = temp_git_repos["init_agentops"]
+
+    task_codex = """# Active Task
+
+**Task**: CODEX-TASK-01: Review Task
+**Status**: APPROVED
+**Assigned Identity**: tticom-codex
+**Authorised Role**: Reviewer
+**Repository**: tticom/score2gp
+**PR Branch**: `codex/review-01`
+**Pull Request**: `none`
+**Original Prompt**: `projects/score2gp/prompts/next/0001-review.md`
+"""
+    (init_ops / "projects/score2gp/ACTIVE_TASK.md").write_text(task_codex)
+    run_git(init_ops, ["add", "."])
+    run_git(init_ops, ["commit", "-m", "Codex assigned task"])
+    run_git(init_ops, ["push", "origin", "main"])
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
+        )
+
+
+def test_case_13_wrong_repository_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_ops = temp_git_repos["init_agentops"]
+
+    task_unknown_repo = """# Active Task
+
+**Task**: UNKNOWN-REPO-01: Unknown Repo Task
+**Status**: APPROVED
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Developer
+**Repository**: tticom/unknown-repository
+**PR Branch**: `agy/unknown-01`
+**Pull Request**: `none`
+**Original Prompt**: `projects/score2gp/prompts/next/0001-unknown.md`
+"""
+    (init_ops / "projects/score2gp/ACTIVE_TASK.md").write_text(task_unknown_repo)
+    run_git(init_ops, ["add", "."])
+    run_git(init_ops, ["commit", "-m", "Unknown repo task"])
+    run_git(init_ops, ["push", "origin", "main"])
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=False,
+        )
+
+
+def test_case_14_divergent_existing_local_branch_fails_closed(temp_git_repos: dict[str, Path]) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_prod = temp_git_repos["init_product"]
+
+    # 1. Create a commit on remote origin/main
+    (init_prod / "remote_file.txt").write_text("remote main commit")
+    run_git(init_prod, ["add", "."])
+    run_git(init_prod, ["commit", "-m", "Remote main commit"])
+    run_git(init_prod, ["push", "origin", "main"])
+
+    # 2. Create local branch agy/generate-public-pdf-tab-duration-fixture on local_prod from old main with divergent commit
+    run_git(local_prod, ["checkout", "-b", "agy/generate-public-pdf-tab-duration-fixture"])
+    (local_prod / "divergent_file.txt").write_text("divergent branch content")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "Divergent branch commit"])
+
+    # 3. Switch back to main locally
+    run_git(local_prod, ["checkout", "main"])
+
+    with pytest.raises(SystemExit):
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
         )

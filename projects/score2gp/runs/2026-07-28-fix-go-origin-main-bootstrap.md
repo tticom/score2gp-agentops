@@ -1,7 +1,7 @@
 # Operational Incident & Repair Record: Agy `go` Origin/Main Bootstrap Repair
 
 **Task**: Dispatcher State-Transition Operational Repair
-**Status**: COMPLETED
+**Status**: AWAITING_EXTERNAL_REVIEW
 **Author**: tticom-codex
 **Repository**: tticom/score2gp-agentops
 **Branch**: `codex/fix-go-origin-main-bootstrap`
@@ -17,25 +17,29 @@ However, Agy's local working trees remained checked out on the completed task br
 Created `scripts/score2gp_go_bootstrap.py` and updated `projects/score2gp/prompts/next/go-dispatch.md` and `projects/score2gp/AGENT_CONTROL.md`.
 
 The helper script enforces a 6-phase state transition:
-1. **Identity & Cleanliness**: Verifies identity and requires clean working trees in both AgentOps and Product repositories before making any branch mutations.
-2. **Fetch Authoritative State**: Fetches `origin/main` in AgentOps and reads `ACTIVE_TASK.md` directly from `origin/main` (`git show origin/main:projects/score2gp/ACTIVE_TASK.md`).
+1. **Identity & Cleanliness**: Enforces strict `tticom-automation` user, home, gh CLI, git identity, and workspace path gates, requiring clean working trees in both AgentOps and Product repositories before making any branch mutations.
+2. **Fetch Authoritative State**: Fetches `origin/main` in AgentOps, parses required task fields, and enforces `Assigned Identity == tticom-automation`. Reads `ACTIVE_TASK.md` directly from `origin/main` (`git show origin/main:projects/score2gp/ACTIVE_TASK.md`).
 3. **Synchronize AgentOps Canonical Branch**: Switches to `main` and fast-forwards to `origin/main` (`git merge --ff-only origin/main`). Verifies working-tree `ACTIVE_TASK.md` matches `origin/main`.
 4. **Synchronize Authorised Output Repository**: Reads `Repository` from `ACTIVE_TASK.md` metadata, switches to `main` in that repository, and fast-forwards to `origin/main`.
-5. **Select Authorised Task Branch**: Switches to or creates the branch declared by `PR Branch` from `origin/main`.
+5. **Select Authorised Task Branch**: Queries live GitHub PR state and selects/creates the branch declared by `PR Branch` from `origin/main`, verifying local branches for unexplained divergence.
 6. **Dispatch**: Emits machine-actionable state JSON.
 
 ## Test Verification
 
-Added `tests/test_score2gp_go_bootstrap.py` covering 10 automated regression scenarios using synthetic temporary Git repositories:
+Added `tests/test_score2gp_go_bootstrap.py` covering 14 automated regression scenarios using synthetic temporary Git repositories:
 1. Completed task branch with stale local main & changed remote task (reproduces observed failure mode).
 2. Fetch succeeds when working tree task differs from `origin/main`.
 3. AgentOps and Product repositories both behind remote main.
 4. Dirty working tree hard stop.
 5. Local main cannot fast-forward hard stop.
 6. Authorised branch already exists remotely.
-7. Exact PR already exists.
+7. Exact PR already exists (mocked GitHub response).
 8. Merged old task plus merged new governance promotion.
 9. Repository field selecting `score2gp-agentops`.
 10. Missing or malformed required task fields fail closed.
+11. Wrong Linux user identity fails closed (`IDENTITY_GATE_FAILED`).
+12. Wrong assigned identity in task fails closed (`ASSIGNED_IDENTITY_MISMATCH`).
+13. Wrong declared repository fails closed (`REPOSITORY_MISMATCH`).
+14. Divergent existing local branch fails closed (`DIVERGENT_LOCAL_BRANCH`).
 
-All 10 automated regression tests passed.
+All 14 automated regression tests passed.
