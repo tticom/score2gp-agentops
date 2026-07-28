@@ -21,6 +21,12 @@ On `ADDRESS_CURRENT_PR_REVIEW`, execute
 the returned review ID, commit ID, and body. A status-only response is a
 dispatcher failure. Stop on helper failure or missing review data.
 
+Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize work.
+`MERGED_AWAITING_GOVERNANCE_PROMOTION` is a terminal automation state: report
+it and stop without rerunning tests, re-verifying the merge, summarizing the
+completed task, creating a promotion, or taking any product action. All other
+non-action and unknown states are terminal and fail closed.
+
 ## Load in order
 
 1. `projects/score2gp/SKILLS_LOCK.md`
