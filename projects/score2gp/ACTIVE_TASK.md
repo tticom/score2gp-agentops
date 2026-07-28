@@ -1,43 +1,34 @@
 # Active Task
 
-**Task**: PDFTAB-DUR-03: PDF-Tab Duration Candidate Extraction Architecture
+**Task**: PDFTAB-DUR-04: PDF-Tab Duration Types & Spatial Associator Primitive
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect / Researcher
+**Authorised Role**: Developer / Primitive Author
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/pdftab-duration-extraction-architecture`
+**PR Branch**: `agy/pdftab-duration-associator-primitive`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0020-pdf-tab-duration-candidate-extraction-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0021-pdf-tab-duration-associator-primitive.md`
 
 ## Context
 
-Product PR #391 merged at `1a013cef0f242f1a75428c1ddfa77c251a2b22f0` and AgentOps
-PR #388 merged at `af37834cfca753017a557b6926e8ffd28bff997c`, closing the
-`PUBLIC_FIXTURE_GAP` by committing synthetic PDF fixture
-`generated_pdf_tab_duration.pdf` and generator script.
+Architecture PR #392 merged at `44ab38ca0ad8e0460469360f7ab3e9db29f98aa8`, publishing the durable specification at `docs/design/pdf-tab-duration-candidate-extraction.md`. This task implements Slice 1 (Duration Types & Spatial Associator Primitive) as defined in Section 7 of the architecture document.
 
 ## Goal
 
-Design the architectural dataflow and spatial association rules for extracting
-vertical stem, beam, and flag duration candidates from `NotationStaffDiagnostics`
-and integrating them into PDF-only tab bar assembly
-(`pdf_tab_bar_assembler.py` / `pdf_tab_measure_timing.py`). Define fallback
-boundaries for unstemmed staves and break the work into testable developer
-implementation slices. Authorise the durable architecture specification document
-in the product repository at `docs/design/pdf-tab-duration-candidate-extraction.md`.
-Do not modify product source code in `src/score2gp/`.
+Create `src/score2gp/pdf_tab_duration_types.py` and `src/score2gp/pdf_tab_duration_associator.py` in `tticom/score2gp`.
+Implement data structure `TabDurationEvidence` and spatial association functions matching `docs/design/pdf-tab-duration-candidate-extraction.md` (stem attachment tolerance $\Delta x \le \max(6.0\text{ pt}, 0.6 \times \text{staff\_space})$, beam horizontal overlap $\epsilon = 4.0\text{ pt}$, flag contact radius $\le 8.0\text{ pt}$, duration resolution mapping to quarter/eighth/16th/32nd notes, and unstemmed fallback emission).
+Add comprehensive unit tests in `tests/test_pdf_tab_duration_associator.py` verifying stem, beam, and flag primitive matching against `generated_pdf_tab_duration.pdf` diagnostic primitives.
 
 ## Allowed Files
 
-- `docs/design/pdf-tab-duration-candidate-extraction.md` (in `score2gp`)
-
-Product source code (`src/score2gp/`) remains strictly read-only during this phase.
+- `src/score2gp/pdf_tab_duration_types.py` (in `score2gp`)
+- `src/score2gp/pdf_tab_duration_associator.py` (in `score2gp`)
+- `tests/test_pdf_tab_duration_associator.py` (in `score2gp`)
 
 ## Non-goals
 
-No product source code edits, private inputs, reference GP leakage, automatic merge,
-branch deletion, or premature implementation work.
+No edits to existing assemblers (`pdf_tab_bar_assembler.py`), TabRaw models (`tabraw.py`), private inputs, reference GP leakage, automatic merge, branch deletion, or premature assembly pipeline wiring.
 
 ## Acceptance
 
-Durable architecture specification is published in `score2gp` at `docs/design/pdf-tab-duration-candidate-extraction.md` containing pinned provenance, evidence, disconfirmation record, interface definitions, spatial-association rules, fallback boundary, and implementation slicing plan. Product PR is opened, and tests pass.
+`pdf_tab_duration_types.py` and `pdf_tab_duration_associator.py` are implemented in `score2gp`. Unit tests in `tests/test_pdf_tab_duration_associator.py` pass 100%, `agent_verify.py` passes all unit tests and checks cleanly, product PR is opened, and handback comment is published.
