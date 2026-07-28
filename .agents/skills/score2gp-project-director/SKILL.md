@@ -9,6 +9,18 @@ This skill is a thin Score2GP adapter. Generic branch, implementation,
 publication, handoff, and stop mechanics live in the pinned `agy-skills`
 revision; do not restate or fork them here.
 
+## Executable dispatch gate
+
+For the literal command `go` or `next`, execute
+`python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops . --json`
+as the first task action. Do not manually query GitHub or reconstruct status
+from comments. The returned state and formal `current_review` are authoritative.
+
+On `ADDRESS_CURRENT_PR_REVIEW`, execute
+`projects/score2gp/prompts/next/address-current-pr-review.md` immediately with
+the returned review ID, commit ID, and body. A status-only response is a
+dispatcher failure. Stop on helper failure or missing review data.
+
 ## Load in order
 
 1. `projects/score2gp/SKILLS_LOCK.md`
