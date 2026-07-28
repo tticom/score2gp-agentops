@@ -38,6 +38,10 @@ skills are prohibited.
 Query the configured repository for the PR whose head is exactly `PR Branch`.
 Never choose by recency.
 
+Use the same `scripts/score2gp_pr_review_state.py` resolver as `go`. A verdict
+is durable only after a formal review exists on GitHub for the exact head;
+local task state, chat, and issue comments do not count.
+
 - No PR: continue only when the task is assigned to Codex; otherwise report
   `AWAITING_AGY_PUBLICATION`.
 - No author handback comment pins the current head: report
@@ -57,3 +61,7 @@ head SHAs. After review, publish the
 verdict on the exact head and one machine-actionable state:
 `AWAITING_AGY_FIXES`, `READY_FOR_HUMAN_MERGE`,
 `AWAITING_AGY_HANDBACK`, or `BLOCKED`.
+Re-query formal reviews after publication and prove the expected review ID,
+reviewer, commit ID, state, and timestamp exist before reporting the state.
+Repeated `got` with unchanged remote inputs creates no new task or duplicate
+review.

@@ -4,10 +4,12 @@
 
 - Repository: `https://github.com/tticom/agy-skills`
 - Required source commit:
-  `002ea720202a5c2af2f858ca847ef1649d23d1f4`
+  `d24d69a3d23aae733245eabd6b9fcf76c0b16803`
 - Introduction PR: `https://github.com/tticom/agy-skills/pull/2`
 - Review hardening PRs:
-  `https://github.com/tticom/agy-skills/pull/4` and its exact-head follow-up
+  `https://github.com/tticom/agy-skills/pull/4`,
+  `https://github.com/tticom/agy-skills/pull/5`, and
+  `https://github.com/tticom/agy-skills/pull/6`
 
 Required skills:
 
