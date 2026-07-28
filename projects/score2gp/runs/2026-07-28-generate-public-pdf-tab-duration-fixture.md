@@ -16,9 +16,9 @@
 
 ## Created Fixture File Hashes (SHA-256)
 
-- `tests/fixtures/pdf/make_generated_pdf_tab_duration_pdf.py`: `f244d9e6ecad5cda0a8641f308d88f3e981b43d99dc688f389c0dd90270748f6`
-- `tests/fixtures/pdf/generated_pdf_tab_duration.pdf`: `e72646c50cd58aa32c533d390f880db5b17526a770d5f92092c6eecc94602ede`
-- `tests/test_pdf_tab_duration_fixture.py`: `316a13da8d6f8f8d95119d6c41a1cffa244184ff2d0c4d86a58c14fb098b8062`
+- `tests/fixtures/pdf/make_generated_pdf_tab_duration_pdf.py`: `60a1d532ec79783490bd9005329c8593c8bdfb39973d864acf2facec8fa8b1f7`
+- `tests/fixtures/pdf/generated_pdf_tab_duration.pdf`: `e18d4aaedb51eed6135c75ee7aa280f604ac19753d49e98f14bfa152633e57fd`
+- `tests/test_pdf_tab_duration_fixture.py`: `5e8e104c689781b233ef497c70a5545222044ba14dc50fdaeaadd9399f6bc202`
 
 ## Rhythmic Notation Structure & Expected Oracle
 
