@@ -8,7 +8,18 @@
 
 ## Summary
 
-Following the merge of architecture PR #392 (`44ab38ca0ad8e0460469360f7ab3e9db29f98aa8`), this governance PR promotes Task PDFTAB-DUR-04, implementing Slice 1 of the durable architecture specification `docs/design/pdf-tab-duration-candidate-extraction.md`.
+Following the merge of architecture PR #392 (`44ab38ca0ad8e0460469360f7ab3e9db29f98aa8`), this governance PR promotes Task PDFTAB-DUR-04, authorizing Agy (`tticom-automation`) to implement Slice 1 of the durable architecture specification `docs/design/pdf-tab-duration-candidate-extraction.md`.
+
+## Refined Slice 1 Requirements & Provisional Tolerance Hypothesis
+
+The prompt explicitly frames proposed tolerance constants ($\Delta x_{\text{stem\_tol}}$, $\epsilon$, $r$) as provisional hypotheses and requires Slice 1 implementation tests to cover:
+- Measured coordinates and margins from public fixture `generated_pdf_tab_duration.pdf`;
+- Positive and negative association cases;
+- Just-inside and just-outside boundary tests;
+- Barline and staff-line stroke rejection;
+- Neighbouring-event and ambiguous-candidate tests;
+- At least one scaled synthetic geometry test case;
+- Fail-closed behavior when association is ambiguous.
 
 ## Target Scope
 
