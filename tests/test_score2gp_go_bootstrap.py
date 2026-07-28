@@ -295,7 +295,7 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
         _allow_custom_slug=True,
         _gh_runner=mock_gh_runner,
     )
-    assert res["state"] == "PR_OPEN"
+    assert res["state"] == "AWAITING_CODEX_REVIEW"
     assert res["pr_number"] == 391
     assert res["output_sha"] == pr_head_sha
 
@@ -589,3 +589,51 @@ def test_case_18_exact_recognised_no_pr_returns_none() -> None:
     res = helper.query_github_pr_state("tticom/score2gp", "agy/test-branch")
     assert res is None
     monkeypatch.undo()
+
+
+def test_case_19_latest_current_head_changes_requested_governs(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(local_prod, ["checkout", "-b", branch])
+    (local_prod / "reviewed.txt").write_text("reviewed")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "reviewed"])
+    head = run_git(local_prod, ["rev-parse", "HEAD"])
+    run_git(local_prod, ["checkout", "main"])
+
+    def runner(repo: str, selected_branch: str) -> dict[str, Any]:
+        assert selected_branch == branch
+        return {
+            "number": 393,
+            "state": "OPEN",
+            "headRefOid": head,
+            "reviews": [
+                {
+                    "id": 10,
+                    "state": "APPROVED",
+                    "commit_id": head,
+                    "submitted_at": "2026-07-28T18:40:00Z",
+                    "user": {"login": "tticom-codex"},
+                },
+                {
+                    "id": 11,
+                    "state": "CHANGES_REQUESTED",
+                    "commit_id": head,
+                    "submitted_at": "2026-07-28T18:45:00Z",
+                    "user": {"login": "tticom-codex"},
+                },
+            ],
+        }
+
+    result = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=runner,
+    )
+    assert result["state"] == "ADDRESS_CURRENT_PR_REVIEW"
+    assert result["current_review"]["id"] == 11

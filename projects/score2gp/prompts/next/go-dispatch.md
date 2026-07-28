@@ -32,6 +32,12 @@ Report `AgentOps SHA`, `Product Main SHA`, and `Skills SHA` on every run.
 Query the configured repository for PRs whose head is exactly `PR Branch`.
 Never select by recency.
 
+Use `scripts/score2gp_pr_review_state.py` to query formal pull-request reviews.
+Issue comments are author handbacks, not verdicts. On the exact live head, the
+latest non-dismissed `tticom-codex` formal review by server timestamp then
+review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
+`APPROVED` on the same head.
+
 - No PR: if status is `APPROVED` or `IN_PROGRESS`, execute `Original Prompt`;
   otherwise stop. A remote branch without one exact PR is unexplained state.
 - Open PR with current-head `CHANGES_REQUESTED`: execute
@@ -51,3 +57,5 @@ Never select by recency.
 
 After author mutations, publish one PR comment with exact head, finding
 dispositions, validation, remaining risks, and `AWAITING_CODEX_REVIEW`.
+Repeated `go` with unchanged remote inputs returns the same state without
+creating a new task or duplicate handback.

@@ -82,6 +82,11 @@ Every dispatch reports the exact AgentOps main SHA, product main SHA, and
 skills SHA. Reviewer dispatch additionally reports equal live and local PR
 head SHAs.
 
+Both identities use `scripts/score2gp_pr_review_state.py` as the sole formal
+verdict resolver. It queries reviews separately from author handback comments,
+filters to the exact live head and `tticom-codex`, and selects the latest by
+server timestamp then review ID.
+
 Generic skill output never weakens the Score2GP overlay. When rules conflict,
 use the stricter identity, privacy, evidence, disconfirmation, or stop rule.
 

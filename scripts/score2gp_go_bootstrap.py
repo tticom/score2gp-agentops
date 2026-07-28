@@ -29,6 +29,11 @@ except ModuleNotFoundError:  # Direct execution: python scripts/score2gp_go_boot
         sync_main,
     )
 
+try:
+    from scripts.score2gp_pr_review_state import query_reviews, resolve_current_head_review
+except ModuleNotFoundError:
+    from score2gp_pr_review_state import query_reviews, resolve_current_head_review
+
 
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
     try:
@@ -301,6 +306,7 @@ def run_go_bootstrap(
     pr_state = None
     pr_head_sha = None
     pr_number = None
+    current_review = None
 
     if _gh_runner is not None:
         try:
@@ -309,6 +315,9 @@ def run_go_bootstrap(
                 pr_state = pr_info.get("state")
                 pr_head_sha = pr_info.get("headRefOid")
                 pr_number = pr_info.get("number")
+                current_review = resolve_current_head_review(
+                    pr_info.get("reviews", []), pr_head_sha, "tticom-codex"
+                ) if pr_head_sha else None
         except Exception as e:
             fail_closed(f"GitHub runner failed: {e}", state="GITHUB_STATE_UNAVAILABLE")
     elif declared_repo and not _allow_custom_slug:
@@ -317,6 +326,12 @@ def run_go_bootstrap(
             pr_number = pr_info.get("number")
             pr_state = pr_info.get("state")
             pr_head_sha = pr_info.get("headRefOid")
+            if pr_number and pr_head_sha:
+                current_review = resolve_current_head_review(
+                    query_reviews(declared_repo, int(pr_number)),
+                    pr_head_sha,
+                    "tticom-codex",
+                )
 
     # Phase 6: Select Authorised Task Branch with strict reconciliation
     local_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/heads/{pr_branch}"], check=False) != ""
@@ -419,7 +434,13 @@ def run_go_bootstrap(
     elif pr_state == "CLOSED":
         state = "BLOCKED"
     elif pr_state == "OPEN":
-        state = "PR_OPEN"
+        verdict = str((current_review or {}).get("state", "")).upper()
+        if verdict == "CHANGES_REQUESTED":
+            state = "ADDRESS_CURRENT_PR_REVIEW"
+        elif verdict == "APPROVED":
+            state = "READY_FOR_HUMAN_MERGE"
+        else:
+            state = "AWAITING_CODEX_REVIEW"
     else:
         if task_status in ("APPROVED", "IN_PROGRESS"):
             state = "EXECUTE_PROMPT"
@@ -442,6 +463,7 @@ def run_go_bootstrap(
         "output_sha": selected_sha,
         "selected_branch": selected_branch,
         "pr_number": pr_number,
+        "current_review": current_review,
     }
 
     return result
