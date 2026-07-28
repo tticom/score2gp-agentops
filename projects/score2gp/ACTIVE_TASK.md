@@ -1,42 +1,33 @@
 # Active Task
 
-**Task**: PDFTAB-DUR-04: PDF-Tab Duration Types & Spatial Associator Primitive
+**Task**: PDFTAB-DUR-05: TabRaw Duration Evidence Pipeline Integration
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer / Primitive Author
+**Authorised Role**: Developer / Pipeline Integrator
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/pdftab-duration-associator-primitive`
+**PR Branch**: `agy/pdftab-duration-tabraw-integration`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0021-pdf-tab-duration-associator-primitive.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0022-pdf-tab-duration-tabraw-integration.md`
 
 ## Context
 
-Architecture PR #392 merged at `44ab38ca0ad8e0460469360f7ab3e9db29f98aa8`, publishing the durable specification at `docs/design/pdf-tab-duration-candidate-extraction.md`. This task implements Slice 1 (Duration Types & Spatial Associator Primitive) as defined in Section 7 of the architecture document, treating proposed tolerance constants as provisional hypotheses to be empirically validated against test bounds.
+Following the merge of PR #393 (`545d0bea36513969d0e53fc56e93cbc6c3e35518`), Slice 1 (Duration Types & Spatial Associator Primitive) is fully merged in `score2gp`. This task implements Slice 2 (TabRaw Pipeline Integration) as defined in Section 7 of `docs/design/pdf-tab-duration-candidate-extraction.md`.
 
 ## Goal
 
-Create `src/score2gp/pdf_tab_duration_types.py` and `src/score2gp/pdf_tab_duration_associator.py` in `tticom/score2gp`.
-Implement data structure `TabDurationEvidence` and spatial association functions matching `docs/design/pdf-tab-duration-candidate-extraction.md`.
-Acknowledge that proposed tolerance constants ($\Delta x_{\text{stem\_tol}} \le \max(6.0\text{ pt}, 0.6 \times \text{staff\_space})$, $\epsilon = 4.0\text{ pt}$, $r \le 8.0\text{ pt}$) are provisional hypotheses until validated.
-Implement comprehensive unit tests in `tests/test_pdf_tab_duration_associator.py` covering:
-- Measured coordinates and margins from public fixture `generated_pdf_tab_duration.pdf`;
-- Positive and negative association cases;
-- Just-inside and just-outside boundary tests for all tolerances;
-- Barline and staff-line stroke rejection;
-- Neighbouring-event and ambiguous-candidate tests;
-- At least one scaled synthetic geometry test case;
-- Fail-closed behavior when candidate association is ambiguous.
+Extend `TabCandidate` and `TabRaw` in `src/score2gp/tabraw.py` to store, validate, serialize, and expose optional `TabDurationEvidence` within `TabCandidate.raw["duration_evidence"]`.
+Implement helper constructors and property accessors for `duration_evidence` on `TabCandidate`.
+Implement comprehensive unit tests in `tests/test_tabraw_duration_metadata.py` verifying schema validation, JSON round-trip serialization, dict normalization, and fail-closed handling of malformed evidence payloads.
 
 ## Allowed Files
 
-- `src/score2gp/pdf_tab_duration_types.py` (in `score2gp`)
-- `src/score2gp/pdf_tab_duration_associator.py` (in `score2gp`)
-- `tests/test_pdf_tab_duration_associator.py` (in `score2gp`)
+- `src/score2gp/tabraw.py` (in `score2gp`)
+- `tests/test_tabraw_duration_metadata.py` (in `score2gp`)
 
 ## Non-goals
 
-No edits to existing assemblers (`pdf_tab_bar_assembler.py`), TabRaw models (`tabraw.py`), private inputs, reference GP leakage, automatic merge, branch deletion, or premature assembly pipeline wiring.
+No edits to existing assemblers (`pdf_tab_bar_assembler.py`), premature pipeline wiring, private inputs, reference GP leakage, automatic merge, or branch deletion.
 
 ## Acceptance
 
-`pdf_tab_duration_types.py` and `pdf_tab_duration_associator.py` are implemented in `score2gp`. Unit tests in `tests/test_pdf_tab_duration_associator.py` pass 100%, covering boundary, rejection, ambiguity, and scaled geometry tests. `agent_verify.py` passes all unit tests and checks cleanly, product PR is opened, and handback comment is published.
+`tabraw.py` is updated in `score2gp` to cleanly handle `TabDurationEvidence` in `TabCandidate.raw`. Unit tests in `tests/test_tabraw_duration_metadata.py` pass 100%, covering construction, serialization/deserialization, helper properties, and error boundary handling. `agent_verify.py` passes cleanly, product PR is opened, and handback comment is published.
