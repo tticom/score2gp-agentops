@@ -20,9 +20,9 @@ Promoting task `PDFTAB-DUR-03` architecture phase (`0020-pdf-tab-duration-candid
 Prompt 0020 (`projects/score2gp/prompts/next/0020-pdf-tab-duration-candidate-extraction-architecture.md`) authorises:
 - designing spatial stem/beam association rules for PDF-only tablature;
 - defining dataflow interfaces from `NotationStaffDiagnostics` into `assemble_pdf_tab_bar`;
-- writing architectural specification and run records in `score2gp-agentops`.
+- writing the durable architecture specification in `score2gp` at `docs/design/pdf-tab-duration-candidate-extraction.md`.
 
-Product source code in `src/score2gp/` remains read-only during this phase. No private inputs, reference GP leakage, automatic merge, or product implementation changes are authorised.
+Product source code in `src/score2gp/` remains read-only during this phase. No private inputs, reference GP leakage, automatic merge, or product implementation changes are authorised. The architecture task produces one product PR in `tticom/score2gp`.
 
 ## Skills
 
