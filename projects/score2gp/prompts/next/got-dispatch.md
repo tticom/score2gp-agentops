@@ -9,7 +9,29 @@ Prove `tticom-codex` identity and canonical WSL workspace. Read
 `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the Reviewer skill, `REVIEW_RULES.md`,
 `PR_REVIEW_TEMPLATE.md`, and `PR_EVIDENCE_CONTRACT.md`. Require stable `Task`,
 `Status`, `Assigned Identity`, `Repository`, `PR Branch`, and
-`Original Prompt` fields. Fetch without destructive worktree operations.
+`Original Prompt` fields.
+
+Run `scripts/score2gp_control_plane.py` before dispatch. It must:
+
+- fetch AgentOps and product remotes;
+- switch clean canonical clones to `main` and fast-forward with `--ff-only`;
+- reread authority only after AgentOps local `main == origin/main`;
+- fetch `agy-skills` without switching it to latest main and verify the
+  immutable checkout exactly equals the full commit in `SKILLS_LOCK.md`,
+  materializing and atomically activating that exact pin when the merged lock
+  changes;
+- when a live PR exists, fetch its full `headRefOid` and materialize that exact
+  commit detached or in a dedicated review worktree.
+
+Before diffing, require local review `HEAD == live headRefOid`. Diff the base
+object ID against that exact object ID, not against an unrelated local
+`HEAD`. Re-query GitHub immediately before publishing and require:
+
+`initial live head == reviewed local HEAD == final live head`.
+
+Any mismatch discards the verdict and restarts review at the new head.
+Arbitrary task-branch pulls, merges, resets, and silent adoption of newer
+skills are prohibited.
 
 ## Dispatch
 
@@ -30,7 +52,8 @@ Never choose by recency.
   Never promote a report candidate directly into product implementation.
 - Closed unmerged PR: report `BLOCKED`.
 
-Every approval includes the disconfirmation record. After review, publish the
+Every approval includes the disconfirmation record and the three equal full
+head SHAs. After review, publish the
 verdict on the exact head and one machine-actionable state:
 `AWAITING_AGY_FIXES`, `READY_FOR_HUMAN_MERGE`,
 `AWAITING_AGY_HANDBACK`, or `BLOCKED`.

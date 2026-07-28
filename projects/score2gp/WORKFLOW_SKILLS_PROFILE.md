@@ -53,7 +53,7 @@ other identity's workspace.
 ### Review
 
 1. `identity-safe-git`
-2. `code-review` for separate Standards and Spec axes
+2. `code-review` for separate Standards, Spec, and Evidence/Falsification axes
 3. Score2GP hard-review overlay:
    - `projects/score2gp/REVIEW_RULES.md`
    - `projects/score2gp/PR_REVIEW_TEMPLATE.md`
@@ -62,6 +62,25 @@ other identity's workspace.
 4. unresolved comment/thread disposition
 5. publish the review when reviewer authority permits
 6. `durable-handoff` when a durable review record is required
+
+For a live PR, Codex must review a detached or dedicated worktree whose local
+`HEAD` exactly equals GitHub's full `headRefOid`. Initial live head, reviewed
+local head, and final re-queried live head must all be identical before a
+verdict is published.
+
+## Control-plane synchronization
+
+Both `go` and `got` automatically fetch and fast-forward only clean canonical
+`main` branches with `--ff-only`. They never pull or merge an arbitrary task
+branch. Both verify the immutable `SKILLS_LOCK.md` commit from a pinned
+checkout; neither silently adopts `agy-skills/main`. When a newly merged lock
+names a new commit, the gate fetches that exact object, creates its immutable
+pin worktree, and atomically repoints only the four required skill symlinks.
+It never changes the mutable `agy-skills` source branch.
+
+Every dispatch reports the exact AgentOps main SHA, product main SHA, and
+skills SHA. Reviewer dispatch additionally reports equal live and local PR
+head SHAs.
 
 Generic skill output never weakens the Score2GP overlay. When rules conflict,
 use the stricter identity, privacy, evidence, disconfirmation, or stop rule.
