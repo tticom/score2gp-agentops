@@ -27,6 +27,15 @@ it and stop without rerunning tests, re-verifying the merge, summarizing the
 completed task, creating a promotion, or taking any product action. All other
 non-action and unknown states are terminal and fail closed.
 
+For literal `got`, execute
+`python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .`
+first. Its state machine is distinct from `go`: `REVIEW_CURRENT_HEAD`
+authorizes and requires materializing the exact live PR head, invoking pinned
+`code-review` with the Score2GP hard-review overlay, and publishing the formal
+verdict. A status-only response on `REVIEW_CURRENT_HEAD` is a dispatcher
+failure. `READY_FOR_HUMAN_MERGE` and `AWAITING_AGY_FIXES` are report-and-stop
+states.
+
 ## Load in order
 
 1. `projects/score2gp/SKILLS_LOCK.md`

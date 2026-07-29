@@ -30,6 +30,11 @@ python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
 ```
 
 Its JSON is authoritative. Never resume or replay a prior managed task.
+- `REVIEW_CURRENT_HEAD`: materialize the exact returned PR head, invoke the
+  pinned `code-review` skill with Score2GP's hard-review overlay, and publish
+  the formal exact-head verdict. A status-only response is a dispatcher failure.
+- `READY_FOR_HUMAN_MERGE`: report and stop.
+- `AWAITING_AGY_FIXES`: report the current exact-head findings and stop.
 `MERGED_AWAITING_GOVERNANCE_PROMOTION` means verify merged main and prepare
 the next governance promotion; historical reviews must not override `MERGED`.
 
