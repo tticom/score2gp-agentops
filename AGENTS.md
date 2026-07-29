@@ -25,3 +25,7 @@ python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
 ```
 
 Treat its JSON as authoritative and never resume a cached managed task.
+For `got`, `REVIEW_CURRENT_HEAD` authorizes and requires an exact-head formal
+review using the pinned `code-review` skill and Score2GP hard-review overlay;
+a status-only response is a dispatcher failure. This `got` state is separate
+from the action-authorizing states defined above for `go`.
