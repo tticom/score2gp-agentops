@@ -146,29 +146,39 @@ def verify_identity_and_workspace(agentops_path: Path, product_path: Path) -> No
 
 
 def query_github_pr_state(declared_repo: str, pr_branch: str) -> dict[str, Any] | None:
-    """Query GitHub API for exact PR state, failing closed on API/auth/network errors."""
+    """Query GitHub for an exact branch PR.
+
+    ``gh pr list`` deliberately represents "no matching PR" as a successful
+    empty JSON list. This keeps that normal pre-implementation state distinct
+    from authentication, API, and network failures.
+    """
     try:
         res_pr = subprocess.run(
-            ["gh", "pr", "view", pr_branch, "--repo", declared_repo, "--json", "number,state,headRefOid"],
+            [
+                "gh", "pr", "list",
+                "--repo", declared_repo,
+                "--head", pr_branch,
+                "--state", "all",
+                "--limit", "1",
+                "--json", "number,state,headRefOid",
+            ],
             capture_output=True, text=True
         )
     except Exception as e:
         fail_closed(f"GitHub CLI execution failed for {declared_repo} {pr_branch}: {e}", state="GITHUB_STATE_UNAVAILABLE")
 
-    if res_pr.returncode == 0:
-        if not res_pr.stdout.strip():
-            fail_closed(f"GitHub CLI returned empty output for PR query on {declared_repo} {pr_branch}", state="GITHUB_STATE_UNAVAILABLE")
-        try:
-            return json.loads(res_pr.stdout)
-        except Exception as e:
-            fail_closed(f"Failed to parse GitHub PR JSON response: {e}", state="GITHUB_STATE_UNAVAILABLE")
+    if res_pr.returncode:
+        fail_closed(f"GitHub PR lookup failed with exit code {res_pr.returncode}: {res_pr.stderr.strip()}", state="GITHUB_STATE_UNAVAILABLE")
 
-    stderr = res_pr.stderr.strip().lower()
-    if "no pull requests match" in stderr or "no open pull requests" in stderr or "could not resolve to a pull request" in stderr:
-        return None
-
-    fail_closed(f"GitHub PR lookup failed with exit code {res_pr.returncode}: {res_pr.stderr.strip()}", state="GITHUB_STATE_UNAVAILABLE")
-    return None
+    if not res_pr.stdout.strip():
+        fail_closed(f"GitHub CLI returned empty output for PR query on {declared_repo} {pr_branch}", state="GITHUB_STATE_UNAVAILABLE")
+    try:
+        matches = json.loads(res_pr.stdout)
+    except Exception as e:
+        fail_closed(f"Failed to parse GitHub PR JSON response: {e}", state="GITHUB_STATE_UNAVAILABLE")
+    if not isinstance(matches, list):
+        fail_closed("GitHub PR query returned non-list JSON", state="GITHUB_STATE_UNAVAILABLE")
+    return matches[0] if matches else None
 
 
 def run_go_bootstrap(

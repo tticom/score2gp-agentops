@@ -568,17 +568,19 @@ def test_case_17_github_permission_error_fails_closed(monkeypatch: pytest.Monkey
         query_github_pr_state("tticom/score2gp", "agy/test-branch")
 
 
-def test_case_18_exact_recognised_no_pr_returns_none() -> None:
-    # Test query_github_pr_state with exact recognized no-PR stderr
+def test_case_18_empty_pr_list_returns_none() -> None:
+    # A missing PR is normal lifecycle state, not a GitHub failure.
     class MockCompletedProcess:
-        def __init__(self, returncode: int, stderr: str):
+        def __init__(self, returncode: int, stderr: str, stdout: str):
             self.returncode = returncode
             self.stderr = stderr
-            self.stdout = ""
+            self.stdout = stdout
 
     def mock_run(args: list[str], **kwargs: Any) -> MockCompletedProcess:
         if "gh" in args:
-            return MockCompletedProcess(1, "no pull requests match 'agy/test-branch'")
+            assert "list" in args
+            assert "--head" in args
+            return MockCompletedProcess(0, "", "[]")
         return subprocess.run(args, **kwargs)
 
     import pytest
@@ -588,6 +590,22 @@ def test_case_18_exact_recognised_no_pr_returns_none() -> None:
 
     res = helper.query_github_pr_state("tticom/score2gp", "agy/test-branch")
     assert res is None
+    monkeypatch.undo()
+
+
+def test_case_18b_no_pr_cli_wording_is_never_interpreted() -> None:
+    """Regression: the 2026-07-29 failure used wording not recognized by `pr view`."""
+    class MockCompletedProcess:
+        returncode = 1
+        stderr = 'no pull requests found for branch "agy/test-branch"'
+        stdout = ""
+
+    import scripts.score2gp_go_bootstrap as helper
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
+
+    with pytest.raises(SystemExit):
+        helper.query_github_pr_state("tticom/score2gp", "agy/test-branch")
     monkeypatch.undo()
 
 

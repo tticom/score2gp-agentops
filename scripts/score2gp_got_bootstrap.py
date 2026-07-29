@@ -32,10 +32,11 @@ class GotError(RuntimeError):
     pass
 
 
-def query_pr(repo: str, branch: str) -> dict[str, Any]:
+def query_pr(repo: str, branch: str) -> dict[str, Any] | None:
     result = subprocess.run(
         [
-            "gh", "pr", "view", branch, "--repo", repo,
+            "gh", "pr", "list", "--repo", repo,
+            "--head", branch, "--state", "all", "--limit", "1",
             "--json", "number,state,headRefOid,mergedAt",
         ],
         capture_output=True,
@@ -44,12 +45,17 @@ def query_pr(repo: str, branch: str) -> dict[str, Any]:
     if result.returncode:
         raise GotError(result.stderr.strip() or "PR query failed")
     try:
-        return json.loads(result.stdout)
+        matches = json.loads(result.stdout)
     except json.JSONDecodeError as error:
         raise GotError("invalid PR JSON") from error
+    if not isinstance(matches, list):
+        raise GotError("PR query returned non-list JSON")
+    return matches[0] if matches else None
 
 
-def resolve_got_state(pr: dict[str, Any], reviews: list[dict[str, Any]]) -> dict[str, Any]:
+def resolve_got_state(pr: dict[str, Any] | None, reviews: list[dict[str, Any]]) -> dict[str, Any]:
+    if pr is None:
+        return {"state": "AWAITING_AGY_IMPLEMENTATION", "current_review": None}
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
     if state == "MERGED":
@@ -92,7 +98,11 @@ def main() -> None:
     repo = task["repository"]
     branch = task["pr branch"]
     pr = query_pr(repo, branch)
-    reviews = query_reviews(repo, int(pr["number"])) if pr["state"].upper() == "OPEN" else []
+    reviews = (
+        query_reviews(repo, int(pr["number"]))
+        if pr is not None and pr["state"].upper() == "OPEN"
+        else []
+    )
     resolved = resolve_got_state(pr, reviews)
     print(json.dumps({
         "ok": True,
