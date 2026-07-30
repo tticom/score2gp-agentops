@@ -465,6 +465,12 @@ def run_go_bootstrap(
         "pr_number": pr_number,
         "current_review": current_review,
     }
+    if state == "MERGED_AWAITING_GOVERNANCE_PROMOTION":
+        result["next_action"] = {
+            "command": "got",
+            "expected_state": "PROMOTE_MERGED_TASK",
+            "owner": "governance",
+        }
 
     return result
 
@@ -500,6 +506,9 @@ def main() -> None:
         print(f"Skills SHA: {result['skills_sha']}")
         print(f"Output Repo: {result['output_repo']}")
         print(f"Output Branch: {result['selected_branch']} ({result['output_sha']})")
+        if result.get("next_action"):
+            print(f"Next Action: {result['next_action']['command']} "
+                  f"({result['next_action']['expected_state']})")
 
 
 if __name__ == "__main__":

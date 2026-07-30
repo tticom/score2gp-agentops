@@ -53,7 +53,7 @@ def resolve_got_state(pr: dict[str, Any], reviews: list[dict[str, Any]]) -> dict
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
     if state == "MERGED":
-        dispatch = "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+        dispatch = "PROMOTE_MERGED_TASK"
         current_review = None
     elif state == "CLOSED":
         dispatch = "BLOCKED"

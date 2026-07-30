@@ -18,6 +18,7 @@ def test_agent_clients_load_executable_go_entrypoint() -> None:
         assert COMMAND in text
         assert "ADDRESS_CURRENT_PR_REVIEW" in text
         assert "MERGED_AWAITING_GOVERNANCE_PROMOTION" in text
+        assert "next_action" in text
         assert "rerun" in text.lower()
 
 
@@ -27,6 +28,7 @@ def test_agent_clients_load_executable_got_entrypoint() -> None:
         assert GOT_COMMAND in text
         assert "never resume" in text.lower()
         assert "REVIEW_CURRENT_HEAD" in text
+        assert "PROMOTE_MERGED_TASK" in text
         assert "status-only response is a dispatcher failure" in text.lower()
 
 
@@ -41,4 +43,5 @@ def test_agy_project_skill_forbids_manual_state_reconstruction() -> None:
     assert "Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize work" in text
     assert GOT_COMMAND in text
     assert "`REVIEW_CURRENT_HEAD`" in text
+    assert "`PROMOTE_MERGED_TASK`" in text
     assert "state machine is distinct from `go`" in text

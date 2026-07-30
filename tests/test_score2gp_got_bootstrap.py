@@ -6,7 +6,7 @@ def test_merged_pr_overrides_historical_review_state() -> None:
         {"state": "MERGED", "headRefOid": "e" * 40, "number": 393},
         [{"state": "CHANGES_REQUESTED", "commit_id": "c" * 40}],
     )
-    assert result["state"] == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+    assert result["state"] == "PROMOTE_MERGED_TASK"
     assert result["current_review"] is None
 
 
