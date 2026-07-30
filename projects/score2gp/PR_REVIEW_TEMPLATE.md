@@ -46,6 +46,19 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 - **Whether any untested failure mode blocks approval**: [Yes/No, with rationale]
 - **Final blocker/readiness consequence**: [Does this PR pass the disconfirmation gate?]
 
+### Executed Adversarial Evidence — mandatory for approval
+
+- **Changed abstraction boundary**: [Changed production boundary and its input grain]
+- **Strongest false-success mode**: [Failure that author tests and green CI could miss]
+- **Reviewer-created counterexample**: [Concrete novel input absent from PR tests]
+- **Exact command or probe**: [Executable command, script, or direct source/artifact comparison]
+- **Observed output**: [Actual output, exception, or invariant violation]
+- **Metamorphic relation checked**: [Order, partition, duplication, disagreement, or boundary relation]
+- **Residual risk**: [What remains untested and why it does or does not block approval]
+
+For revised heads, include both the rerun of the original counterexample and a
+new second-order counterexample targeting the repair.
+
 ---
 
 ## 4. Coherent Verification Channels

@@ -49,6 +49,10 @@ local task state, chat, and issue comments do not count.
   `AWAITING_AGY_HANDBACK`; never review a chat summary.
 - New head with complete finding dispositions, or no current-head Codex
   review: run the pinned two-axis review and Score2GP hard-review overlay.
+  Before approval, execute a reviewer-created counterexample absent from the
+  PR tests. Timing, grouping, aggregation, fallback, capacity, and fail-closed
+  changes require disagreement plus order/partition/boundary challenges.
+  On revised heads, rerun the original probe and add a second-order probe.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
   `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
@@ -78,5 +82,7 @@ returning one machine-actionable state:
 `AWAITING_AGY_FIXES`, `READY_FOR_HUMAN_MERGE`,
 `AWAITING_AGY_HANDBACK`, or `BLOCKED`.
 Do not return a chat-only verdict. A publisher failure is a hard stop.
+The publisher rejects approvals whose review body lacks populated executable
+adversarial-evidence fields; green CI and author tests are not substitutes.
 Repeated `got` with unchanged remote inputs creates no new task or duplicate
 review.

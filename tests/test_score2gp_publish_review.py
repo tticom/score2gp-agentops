@@ -7,6 +7,7 @@ from scripts.score2gp_publish_review import (
     ReviewPublishError,
     normalize_verdict,
     publish_review,
+    validate_approval_evidence,
 )
 
 
@@ -28,6 +29,53 @@ def test_normalize_needs_changes_to_formal_review_state() -> None:
 def test_rejects_unknown_verdict() -> None:
     with pytest.raises(ReviewPublishError, match="unsupported verdict"):
         normalize_verdict("needs work maybe")
+
+
+def approval_body() -> str:
+    return """
+- **Changed abstraction boundary**: Chord subgroup duration reconciliation across candidate evidence.
+- **Strongest false-success mode**: Conflicting member durations silently become order dependent.
+- **Reviewer-created counterexample**: One quarter and one eighth candidate in a two-string chord.
+- **Exact command or probe**: python -c 'assemble_pdf_tab_bar([quarter, eighth])'
+- **Observed output**: PdfTabBarAssemblerError with pdf_only_tab_ambiguous_duration.
+- **Metamorphic relation checked**: Reversing candidate order preserves the same rejection.
+- **Residual risk**: Real scanned morphology noise remains outside this bounded synthetic probe.
+""".strip()
+
+
+def test_approval_requires_substantive_adversarial_evidence() -> None:
+    with pytest.raises(ReviewPublishError, match="Changed abstraction boundary"):
+        validate_approval_evidence("CI passed and the patch looks good.")
+
+    incomplete = approval_body().replace(
+        "One quarter and one eighth candidate in a two-string chord.", "not run"
+    )
+    with pytest.raises(ReviewPublishError, match="Reviewer-created counterexample"):
+        validate_approval_evidence(incomplete)
+
+
+def test_complete_adversarial_evidence_is_accepted() -> None:
+    validate_approval_evidence(approval_body())
+
+
+def test_approved_publication_is_blocked_before_github_without_evidence() -> None:
+    called = False
+
+    def runner(command, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("GitHub must not be called")
+
+    with pytest.raises(ReviewPublishError, match="adversarial evidence"):
+        publish_review(
+            repo="tticom/score2gp",
+            pr_number=395,
+            expected_head="a" * 40,
+            verdict="APPROVED",
+            body="All existing tests pass.",
+            runner=runner,
+        )
+    assert called is False
 
 
 def test_publishes_and_verifies_exact_head_changes_request() -> None:

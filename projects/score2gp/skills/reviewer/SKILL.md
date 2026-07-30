@@ -129,6 +129,34 @@ Reject or return the implementation if:
 - Developer failed to report deviations or limitations;
 - the PR passes tests but does not prove the wanted behaviour.
 
+#### Adversarial execution gate
+
+Green CI, `agent_verify.py`, artifact hygiene, and author-authored tests establish
+a baseline only. They never earn approval by themselves.
+
+Before approving an implementation:
+
+1. Map each changed production abstraction: inputs, collections or groupings,
+   outputs, exceptions, and order-dependent branches.
+2. Construct and execute at least one reviewer-created counterexample that is
+   absent from the PR tests. Tier A or timing/grouping/fail-closed changes
+   require at least two independent probes.
+3. For code that aggregates candidates, events, bars, or evidence, challenge
+   disagreement between members, input permutation, mixed explicit/fallback
+   state, duplicates, empty/singleton groups, and boundary ±1 where applicable.
+4. Prefer a direct production-path probe over adding a test that merely calls
+   the same helper with the author’s fixtures.
+5. Record the exact command or probe, concrete input, observed output, and the
+   invariant tested. “Inspected code”, “tests pass”, and rerunning an existing
+   test are not adversarial probes.
+
+On a revised head, rerun the original counterexample and create a second-order probe
+against the fix. Do not narrow re-review to the reported finding or
+repository hygiene.
+
+An approval without executed reviewer-created evidence is
+`cannot verify implementation`, never `approve implementation`.
+
 ### Mode 3 — PR readiness review
 
 Purpose:
@@ -220,3 +248,13 @@ The Reviewer report must include:
 
 It must also include a `Disconfirmation Record` with the strongest false-success
 mode tested, the independent evidence used, the result, and any residual risk.
+
+Every approval must include these exact populated fields:
+
+- **Changed abstraction boundary**:
+- **Strongest false-success mode**:
+- **Reviewer-created counterexample**:
+- **Exact command or probe**:
+- **Observed output**:
+- **Metamorphic relation checked**:
+- **Residual risk**:

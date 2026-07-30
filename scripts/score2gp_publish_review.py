@@ -20,6 +20,41 @@ class ReviewPublishError(RuntimeError):
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
 
+APPROVAL_EVIDENCE_FIELDS = (
+    "Changed abstraction boundary",
+    "Strongest false-success mode",
+    "Reviewer-created counterexample",
+    "Exact command or probe",
+    "Observed output",
+    "Metamorphic relation checked",
+    "Residual risk",
+)
+
+
+def validate_approval_evidence(body: str) -> None:
+    """Reject ceremonial approvals without concrete adversarial evidence."""
+    lines = body.splitlines()
+    for field in APPROVAL_EVIDENCE_FIELDS:
+        prefixes = (f"- **{field}**:", f"**{field}**:")
+        value = next(
+            (
+                line.split(":", 1)[1].strip()
+                for line in lines
+                if line.strip().startswith(prefixes)
+            ),
+            "",
+        )
+        if len(value) < 8 or value.lower() in {
+            "none",
+            "n/a",
+            "not run",
+            "not applicable",
+            "tests pass",
+        }:
+            raise ReviewPublishError(
+                f"approval missing substantive adversarial evidence field: {field}"
+            )
+
 
 def normalize_verdict(verdict: str) -> tuple[str, str, str]:
     normalized = verdict.strip().upper().replace("-", "_").replace(" ", "_")
@@ -59,6 +94,8 @@ def publish_review(
     runner: Runner = subprocess.run,
 ) -> dict[str, Any]:
     expected_state, event, dispatch_state = normalize_verdict(verdict)
+    if expected_state == "APPROVED":
+        validate_approval_evidence(body)
     pr = _run_json(
         [
             "gh",
