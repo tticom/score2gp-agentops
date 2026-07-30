@@ -119,3 +119,19 @@ Every approval or no-finding review must include a short disconfirmation record:
 
 If the Reviewer cannot run or inspect the relevant evidence, the verdict must
 be `cannot verify`, not approval.
+
+### Executed counterexample requirement
+
+Approval requires a reviewer-created counterexample with executable evidence
+that is not copied from the author’s tests or handback. For any change involving collections,
+subgroups, reconciliation, timing, capacity, fallback, or fail-closed logic,
+the reviewer must challenge member disagreement and at least one metamorphic
+relation such as input-order invariance, partition invariance, duplication
+invariance, or boundary monotonicity.
+
+On follow-up heads, the reviewer must rerun the original failing probe and add
+a new probe aimed at the repair. Reviewing only the requested change and
+`git diff --check` is insufficient.
+
+The guarded formal-review publisher rejects approval bodies without the exact
+adversarial evidence fields required by the Reviewer skill.

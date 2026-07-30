@@ -224,3 +224,35 @@ def test_got_dispatch_requires_pinned_handback() -> None:
     assert "AWAITING_AGY_HANDBACK" in content
     assert "AWAITING_AGY_FIXES" in content
     assert "Never merge" in content
+
+
+def test_governance_approval_requires_executed_adversarial_evidence() -> None:
+    reviewer = (
+        PROJECT_ROOT / "projects/score2gp/skills/reviewer/SKILL.md"
+    ).read_text(encoding="utf-8")
+    rules = (PROJECT_ROOT / "projects/score2gp/REVIEW_RULES.md").read_text(
+        encoding="utf-8"
+    )
+    template = (
+        PROJECT_ROOT / "projects/score2gp/PR_REVIEW_TEMPLATE.md"
+    ).read_text(encoding="utf-8")
+    dispatch = (
+        PROJECT_ROOT / "projects/score2gp/prompts/next/got-dispatch.md"
+    ).read_text(encoding="utf-8")
+
+    for text in (reviewer, rules, template, dispatch):
+        assert "reviewer-created counterexample" in text.lower()
+    assert "input permutation" in reviewer
+    assert "second-order probe" in reviewer
+    assert "green CI and author tests are not substitutes" in dispatch
+    for field in [
+        "Changed abstraction boundary",
+        "Strongest false-success mode",
+        "Reviewer-created counterexample",
+        "Exact command or probe",
+        "Observed output",
+        "Metamorphic relation checked",
+        "Residual risk",
+    ]:
+        assert field in reviewer
+        assert field in template
