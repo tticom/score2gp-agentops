@@ -116,6 +116,7 @@ def publish_review(
         try:
             validate_approval_packet(
                 evidence_packet,
+                expected_head=expected_head,
                 strikes=reviewer_strikes,
                 high_risk=high_risk,
             )

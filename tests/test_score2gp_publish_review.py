@@ -50,14 +50,20 @@ def approval_body() -> str:
 
 
 def approval_packet(probe_count: int = 2) -> dict:
+    head = "a" * 40
     return {
         "verdict": "APPROVE",
+        "review_head": head,
+        "baseline_failure_expectation": "Assume duration evidence is dropped before GPIF emission.",
         "claims": [{
             "claim": "duration evidence reaches ScoreIR",
             "status": "verified",
             "production_path": "PDF -> TabRaw -> ScoreIR",
             "evidence_path": "reviewer probes",
             "false_success_mutation": "inject duration below PDF extraction",
+            "failure_oracle": "Final GPIF rhythm differs from the fixture oracle.",
+            "disproof_attempt": "Disabled duration propagation and inspected final GPIF.",
+            "probe_names": ["probe-0"],
         }],
         "probes": [
             {
@@ -65,10 +71,14 @@ def approval_packet(probe_count: int = 2) -> dict:
                 "reviewer_created": True,
                 "author_test_only": False,
                 "production_path": True,
+                "head_sha": head,
+                "probe_type": "mutation" if index == 0 else "artifact",
                 "command": f"python probe_{index}.py",
                 "input": f"fixture-{index}",
                 "false_success_mutation": f"mutation-{index}",
                 "observed_output": f"distinct-output-{index}",
+                "exit_code": 0,
+                "output_sha256": f"{index + 1:064x}",
                 "invariant": f"invariant-{index}",
                 "result": "killed",
             }
@@ -96,15 +106,41 @@ def test_complete_adversarial_evidence_is_accepted() -> None:
 
 def test_approval_packet_quota_increases_with_reviewer_strikes() -> None:
     assert validate_approval_packet(
-        approval_packet(2), strikes=0, high_risk=False
+        approval_packet(2), expected_head="a" * 40, strikes=0, high_risk=False
     ) == (2, 4)
     with pytest.raises(ReviewEvidenceError, match="at least 3"):
         validate_approval_packet(
-            approval_packet(2), strikes=1, high_risk=False
+            approval_packet(2), expected_head="a" * 40, strikes=1, high_risk=False
         )
     assert validate_approval_packet(
-        approval_packet(3), strikes=1, high_risk=False
+        approval_packet(3), expected_head="a" * 40, strikes=1, high_risk=False
     ) == (3, 6)
+
+
+def test_approval_packet_is_bound_to_head_and_claims_to_probes() -> None:
+    packet = approval_packet(2)
+    packet["review_head"] = "b" * 40
+    with pytest.raises(ReviewEvidenceError, match="review_head"):
+        validate_approval_packet(
+            packet, expected_head="a" * 40, strikes=0, high_risk=False
+        )
+
+    packet = approval_packet(2)
+    packet["claims"][0]["probe_names"] = ["invented-probe"]
+    with pytest.raises(ReviewEvidenceError, match="unknown probes"):
+        validate_approval_packet(
+            packet, expected_head="a" * 40, strikes=0, high_risk=False
+        )
+
+
+def test_approval_requires_mutation_and_final_artifact_probes() -> None:
+    packet = approval_packet(2)
+    for probe in packet["probes"]:
+        probe["probe_type"] = "boundary"
+    with pytest.raises(ReviewEvidenceError, match="mutation and final-artifact"):
+        validate_approval_packet(
+            packet, expected_head="a" * 40, strikes=0, high_risk=False
+        )
 
 
 def test_scorecard_returns_reviewer_strike_count() -> None:

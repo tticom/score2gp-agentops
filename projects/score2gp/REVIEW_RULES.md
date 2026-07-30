@@ -135,3 +135,9 @@ a new probe aimed at the repair. Reviewing only the requested change and
 
 The guarded formal-review publisher rejects approval bodies without the exact
 adversarial evidence fields required by the Reviewer skill.
+
+The default working verdict is `needs changes`. The burden of proof belongs to
+the approval case, claim by claim. Approval evidence must be pinned to the exact
+head, link every claim to named probes, include both a deliberate mutation and
+a final-artifact oracle, and record output hashes and exit codes. Helper-only
+proof plus an unrelated successful CLI run is explicitly insufficient.

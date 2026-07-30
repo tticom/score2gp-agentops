@@ -136,6 +136,10 @@ a baseline only. They never earn approval by themselves.
 
 Before approving an implementation:
 
+0. Begin from the working verdict `needs changes`. Treat every developer claim,
+   test name, handback statement, and green check as an allegation to falsify,
+   not evidence to confirm. Approval is the exceptional result after failed
+   disproof attempts; uncertainty resolves to `cannot verify` or `needs changes`.
 1. Map each changed production abstraction: inputs, collections or groupings,
    outputs, exceptions, and order-dependent branches.
 2. Construct and execute at least one reviewer-created counterexample that is
@@ -149,6 +153,20 @@ Before approving an implementation:
 5. Record the exact command or probe, concrete input, observed output, and the
    invariant tested. “Inspected code”, “tests pass”, and rerunning an existing
    test are not adversarial probes.
+6. Trace every material claim through the real production call graph to the
+   final user-visible artifact. A helper-level test and a separate successful
+   CLI run are not end-to-end evidence unless the reviewer proves the helper's
+   result reaches that artifact.
+7. Deliberately disable, corrupt, invert, or bypass the claimed behaviour and
+   show that the reviewer oracle fails. If the test remains green, the review
+   must request changes.
+8. Bind each claim to named probe evidence executed at the exact head. Preserve
+   the output digest and exit code. A prose claim with no named probe is invalid.
+
+Do not write `residual risk: none`, `100% coverage`, `comprehensive`, or
+`flawless`. Those are advocacy terms, not review evidence. State what remains
+untested. Any mismatch between claimed and observed test counts, paths, heads,
+or outputs is itself a blocking integrity defect.
 
 On a revised head, rerun the original counterexample and create a second-order probe
 against the fix. Do not narrow re-review to the reported finding or

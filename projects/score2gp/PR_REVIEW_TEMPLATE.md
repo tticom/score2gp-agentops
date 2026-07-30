@@ -48,6 +48,9 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 
 ### Executed Adversarial Evidence — mandatory for approval
 
+- **Pinned review head**: [Full 40-character SHA used by every probe]
+- **Baseline failure expectation**: [Why the PR is presumed wrong before testing]
+- **Claim-to-probe map**: [Every material claim -> named independent probes]
 - **Changed abstraction boundary**: [Changed production boundary and its input grain]
 - **Strongest false-success mode**: [Failure that author tests and green CI could miss]
 - **Reviewer-created counterexample**: [Concrete novel input absent from PR tests]
@@ -55,6 +58,9 @@ For every key claim made by the author or in the PR, you must provide a ledger e
 - **Observed output**: [Actual output, exception, or invariant violation]
 - **Metamorphic relation checked**: [Order, partition, duplication, disagreement, or boundary relation]
 - **Residual risk**: [What remains untested and why it does or does not block approval]
+- **Mutation proof**: [Behaviour deliberately disabled/corrupted and oracle observed failing]
+- **Final-artifact proof**: [User-visible output inspected for the claimed semantics]
+- **Probe output digests and exit codes**: [SHA-256 and exit code for each named probe]
 
 For revised heads, include both the rerun of the original counterexample and a
 new second-order counterexample targeting the repair.
