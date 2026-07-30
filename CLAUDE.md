@@ -16,6 +16,7 @@ previous handback summary, or reconstruct the state in prose.
 - `AWAITING_CODEX_REVIEW` or `READY_FOR_HUMAN_MERGE`: report and stop.
 - `MERGED_AWAITING_GOVERNANCE_PROMOTION`: report and stop. Do not rerun,
   re-verify, summarize, or otherwise continue the completed product task.
+  Report the returned `next_action` directing governance to run `got`.
 - `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` are the only states that
   authorize task actions. Every other state is terminal: report it and stop.
 - Any helper failure or missing field: fail closed and report the exact error.
@@ -35,7 +36,8 @@ Its JSON is authoritative. Never resume or replay a prior managed task.
   the formal exact-head verdict. A status-only response is a dispatcher failure.
 - `READY_FOR_HUMAN_MERGE`: report and stop.
 - `AWAITING_AGY_FIXES`: report the current exact-head findings and stop.
-`MERGED_AWAITING_GOVERNANCE_PROMOTION` means verify merged main and prepare
-the next governance promotion; historical reviews must not override `MERGED`.
+- `PROMOTE_MERGED_TASK`: verify merged main and prepare the next governance
+  promotion. A status-only response is a dispatcher failure; historical
+  reviews must not override `MERGED`.
 
 Read `AGENT-RULES.md` and the selected role skill for all other work.
