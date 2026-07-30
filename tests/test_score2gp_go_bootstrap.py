@@ -295,7 +295,7 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
         _allow_custom_slug=True,
         _gh_runner=mock_gh_runner,
     )
-    assert res["state"] == "AWAITING_CODEX_REVIEW"
+    assert res["state"] == "AWAITING_GOVERNANCE_REVIEW"
     assert res["pr_number"] == 391
     assert res["output_sha"] == pr_head_sha
 

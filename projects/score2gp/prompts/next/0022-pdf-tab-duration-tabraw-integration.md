@@ -35,4 +35,4 @@ Execute Slice 2 of the PDF-Tab Duration Candidate Extraction Architecture define
    Run `.venv/bin/python scripts/agent_verify.py` and ensure all unit tests pass cleanly.
 
 5. **Publication**:
-   Open PR on `tticom/score2gp` and publish exact-head handback comment with `AWAITING_CODEX_REVIEW`.
+   Open PR on `tticom/score2gp` and publish exact-head handback comment with `AWAITING_GOVERNANCE_REVIEW`.
