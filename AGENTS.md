@@ -1,13 +1,16 @@
 # Score2GP executable command entrypoints
 
-For an exact user message `go` or `next`, execute this before any manual
-inspection:
+For any request to continue, advance, run the next command, `go`, `got`, or
+`next`, execute this identity-aware router before any manual inspection:
 
 ```bash
-python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops . --json
+python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
-Treat its JSON as authoritative. Never replace it with direct GitHub queries
+The Linux worker identity, not the command word, selects the role:
+`tticom-automation` runs author `go`; `tticom-gov` (or the legacy
+`tticom-codex` worker) runs governance `got`. Never bypass the router by
+calling the other role's helper. Treat its JSON as authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
 formal review ID, commit ID, and body. Fail closed if the helper fails.
@@ -20,13 +23,8 @@ terminal.
 
 Read `AGENT-RULES.md` for the remaining repository rules.
 
-For an exact user message `got`, first execute:
-
-```bash
-python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
-```
-
-Treat its JSON as authoritative and never resume a cached managed task.
+For governance, treat the routed JSON as authoritative and never resume a
+cached managed task.
 For `got`, `REVIEW_CURRENT_HEAD` authorizes and requires an exact-head formal
 review using the pinned `code-review` skill and Score2GP hard-review overlay;
 a status-only response is a dispatcher failure. This `got` state is separate

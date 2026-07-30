@@ -28,10 +28,10 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 
 ### Codex reviewer/governor
 
-- OS user/home: `tticom-codex` / `/home/tticom-codex`
+- OS user/home: `tticom-gov` / `/home/tticom-gov`
 - GitHub and Git name: `tticom-codex`
 - Git email: `tticom-codex@users.noreply.github.com`
-- Workspace prefix: `/home/tticom-codex/work/score2gp-workspace`
+- Workspace prefix: `/home/tticom-gov/work/score2gp-workspace`
 - Uses separate clones and credential store
 - May publish independent reviews and bounded governance PRs
 - Merge remains a maintainer action unless the user explicitly authorises the

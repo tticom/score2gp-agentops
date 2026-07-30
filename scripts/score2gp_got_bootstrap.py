@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -30,6 +32,51 @@ except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bo
 
 class GotError(RuntimeError):
     pass
+
+
+def validate_governance_identity(
+    *,
+    linux_user: str,
+    home: str,
+    gh_user: str,
+    git_user: str,
+    agentops: Path,
+    product: Path,
+) -> None:
+    if linux_user != "tticom-gov":
+        raise GotError(f"Linux user must be 'tticom-gov', got '{linux_user}'")
+    if home != "/home/tticom-gov":
+        raise GotError(f"HOME must be '/home/tticom-gov', got '{home}'")
+    if gh_user != "tticom-codex":
+        raise GotError(f"GitHub CLI account must be 'tticom-codex', got '{gh_user}'")
+    if git_user != "tticom-codex":
+        raise GotError(f"Git global user.name must be 'tticom-codex', got '{git_user}'")
+
+    workspace = Path("/home/tticom-gov/work/score2gp-workspace")
+    for label, path in (("AgentOps", agentops), ("product", product)):
+        try:
+            path.relative_to(workspace)
+        except ValueError as error:
+            raise GotError(
+                f"{label} path must be within '{workspace}', got '{path}'"
+            ) from error
+
+
+def enforce_governance_identity(agentops: Path, product: Path) -> None:
+    def output(command: list[str]) -> str:
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode:
+            raise GotError(result.stderr.strip() or f"command failed: {command}")
+        return result.stdout.strip()
+
+    validate_governance_identity(
+        linux_user=getpass.getuser(),
+        home=os.environ.get("HOME", ""),
+        gh_user=output(["gh", "api", "user", "--jq", ".login"]),
+        git_user=output(["git", "config", "--global", "--get", "user.name"]),
+        agentops=agentops,
+        product=product,
+    )
 
 
 def query_pr(repo: str, branch: str) -> dict[str, Any]:
@@ -81,6 +128,7 @@ def main() -> None:
 
     agentops = args.agentops.resolve()
     product = args.product.resolve()
+    enforce_governance_identity(agentops, product)
     agentops_sha = sync_main(agentops, "agentops")
     product_sha = sync_main(product, "product")
     skills_sha = materialize_and_activate_skills(

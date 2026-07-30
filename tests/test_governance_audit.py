@@ -174,7 +174,7 @@ def test_active_governance_uses_identity_isolated_workspaces() -> None:
         encoding="utf-8"
     )
     assert "/home/tticom-automation/work/score2gp-workspace" in control
-    assert "/home/tticom-codex/work/score2gp-workspace" in control
+    assert "/home/tticom-gov/work/score2gp-workspace" in control
     assert "must never operate from the other identity's home" in control
 
     automation_skill = (

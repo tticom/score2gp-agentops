@@ -1,12 +1,16 @@
 # Score2GP executable command entrypoints
 
-For an exact user message `go` or `next`, the first task action must be:
+For any request to continue, advance, run the next command, `go`, `got`, or
+`next`, the first task action must be:
 
 ```bash
-python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops . --json
+python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
-Run it from the `score2gp-agentops` repository root. Its JSON `state` and
+Run it from the `score2gp-agentops` repository root. The Linux worker identity
+selects the role: `tticom-automation` routes to author `go`; `tticom-gov` (or
+legacy worker `tticom-codex`) routes to governance `got`. Never invoke the
+other role's helper based only on the user's command word. Its JSON `state` and
 `current_review` are authoritative. Do not query GitHub manually, reuse a
 previous handback summary, or reconstruct the state in prose.
 
@@ -24,13 +28,8 @@ previous handback summary, or reconstruct the state in prose.
 Repeated commands with unchanged JSON are idempotent. Do not create another
 task, review, or handback.
 
-For an exact user message `got`, the first task action must be:
-
-```bash
-python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .
-```
-
-Its JSON is authoritative. Never resume or replay a prior managed task.
+For governance, the routed JSON is authoritative. Never resume or replay a
+prior managed task.
 - `REVIEW_CURRENT_HEAD`: materialize the exact returned PR head, invoke the
   pinned `code-review` skill with Score2GP's hard-review overlay, and publish
   the formal exact-head verdict. A status-only response is a dispatcher failure.
