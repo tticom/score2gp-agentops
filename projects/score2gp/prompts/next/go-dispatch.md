@@ -44,9 +44,9 @@ review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
   `address-current-pr-review.md` using the live review head and findings.
 - Open PR with a newer author head: require a handback comment pinning that
   head and dispositioning every finding, then report
-  `AWAITING_CODEX_REVIEW`.
+  `AWAITING_GOVERNANCE_REVIEW`.
 - Open PR without a current-head review: verify the evidence contract and
-  pinned handback, then report `AWAITING_CODEX_REVIEW`.
+  pinned handback, then report `AWAITING_GOVERNANCE_REVIEW`.
 - Open PR with current-head `APPROVED`: report `READY_FOR_HUMAN_MERGE` and
   stop. Never merge.
 - Conflicting checks, comments, reviews, or threads: report the exact conflict.
@@ -56,6 +56,6 @@ review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
 - Closed unmerged PR: report `BLOCKED`.
 
 After author mutations, publish one PR comment with exact head, finding
-dispositions, validation, remaining risks, and `AWAITING_CODEX_REVIEW`.
+dispositions, validation, remaining risks, and `AWAITING_GOVERNANCE_REVIEW`.
 Repeated `go` with unchanged remote inputs returns the same state without
 creating a new task or duplicate handback.

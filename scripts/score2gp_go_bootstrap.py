@@ -440,7 +440,7 @@ def run_go_bootstrap(
         elif verdict == "APPROVED":
             state = "READY_FOR_HUMAN_MERGE"
         else:
-            state = "AWAITING_CODEX_REVIEW"
+            state = "AWAITING_GOVERNANCE_REVIEW"
     else:
         if task_status in ("APPROVED", "IN_PROGRESS"):
             state = "EXECUTE_PROMPT"

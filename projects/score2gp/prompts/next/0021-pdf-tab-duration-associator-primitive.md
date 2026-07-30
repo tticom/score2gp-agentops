@@ -56,4 +56,4 @@ The spatial association tolerances specified in `docs/design/pdf-tab-duration-ca
    Run `.venv/bin/python scripts/agent_verify.py` and ensure all unit tests pass cleanly.
 
 5. **Publication**:
-   Open PR on `tticom/score2gp` and publish exact-head handback comment with `AWAITING_CODEX_REVIEW`.
+   Open PR on `tticom/score2gp` and publish exact-head handback comment with `AWAITING_GOVERNANCE_REVIEW`.

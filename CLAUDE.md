@@ -13,7 +13,7 @@ previous handback summary, or reconstruct the state in prose.
 - `ADDRESS_CURRENT_PR_REVIEW`: immediately execute
   `projects/score2gp/prompts/next/address-current-pr-review.md` using
   `current_review.id`, `current_review.commit_id`, and `current_review.body`.
-- `AWAITING_CODEX_REVIEW` or `READY_FOR_HUMAN_MERGE`: report and stop.
+- `AWAITING_GOVERNANCE_REVIEW` or `READY_FOR_HUMAN_MERGE`: report and stop.
 - `MERGED_AWAITING_GOVERNANCE_PROMOTION`: report and stop. Do not rerun,
   re-verify, summarize, or otherwise continue the completed product task.
 - `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` are the only states that
