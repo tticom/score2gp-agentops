@@ -52,7 +52,8 @@ review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
 - Conflicting checks, comments, reviews, or threads: report the exact conflict.
 - Merged PR: verify the merge on remote main. Do not rerun `Original Prompt`,
   delete the branch, or start a candidate follow-up. Report
-  `MERGED_AWAITING_GOVERNANCE_PROMOTION` for Codex `got`.
+  `MERGED_AWAITING_GOVERNANCE_PROMOTION` and direct the maintainer to Codex
+  `got`, whose actionable state is `PROMOTE_MERGED_TASK`.
 - Closed unmerged PR: report `BLOCKED`.
 
 After author mutations, publish one PR comment with exact head, finding
