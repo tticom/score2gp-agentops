@@ -55,7 +55,7 @@ def publish_review(
     expected_head: str,
     verdict: str,
     body: str,
-    reviewer: str = "tticom-codex",
+    reviewer: str = "tticomgov-code",
     runner: Runner = subprocess.run,
 ) -> dict[str, Any]:
     expected_state, event, dispatch_state = normalize_verdict(verdict)

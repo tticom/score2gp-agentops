@@ -34,7 +34,7 @@ Never select by recency.
 
 Use `scripts/score2gp_pr_review_state.py` to query formal pull-request reviews.
 Issue comments are author handbacks, not verdicts. On the exact live head, the
-latest non-dismissed `tticom-codex` formal review by server timestamp then
+latest non-dismissed `tticomgov-code` formal review by server timestamp then
 review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
 `APPROVED` on the same head.
 

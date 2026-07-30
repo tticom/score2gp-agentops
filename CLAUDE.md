@@ -8,8 +8,9 @@ python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
 Run it from the `score2gp-agentops` repository root. The Linux worker identity
-selects the role: `tticom-automation` routes to author `go`; `tticom-gov` (or
-legacy worker `tticom-codex`) routes to governance `got`. Never invoke the
+selects the role: `tticom-automation` routes to author `go`; `tticom-gov`
+routes to governance `got` using Git/GitHub service identity
+`tticomgov-code`. Never invoke the
 other role's helper based only on the user's command word. Its JSON `state` and
 `current_review` are authoritative. Do not query GitHub manually, reuse a
 previous handback summary, or reconstruct the state in prose.

@@ -18,9 +18,9 @@ def test_open_pr_uses_latest_exact_head_review() -> None:
     head = "a" * 40
     reviews = [
         {"id": 1, "state": "APPROVED", "commit_id": head,
-         "submitted_at": "2026-07-28T18:00:00Z", "user": {"login": "tticom-codex"}},
+         "submitted_at": "2026-07-28T18:00:00Z", "user": {"login": "tticomgov-code"}},
         {"id": 2, "state": "CHANGES_REQUESTED", "commit_id": head,
-         "submitted_at": "2026-07-28T19:00:00Z", "user": {"login": "tticom-codex"}},
+         "submitted_at": "2026-07-28T19:00:00Z", "user": {"login": "tticomgov-code"}},
     ]
     result = resolve_got_state(
         {"state": "OPEN", "headRefOid": head, "number": 393}, reviews
@@ -33,8 +33,8 @@ def test_governance_worker_uses_codex_publishing_identity() -> None:
     validate_governance_identity(
         linux_user="tticom-gov",
         home="/home/tticom-gov",
-        gh_user="tticom-codex",
-        git_user="tticom-codex",
+        gh_user="tticomgov-code",
+        git_user="tticomgov-code",
         agentops=Path("/home/tticom-gov/work/score2gp-workspace/score2gp-agentops"),
         product=Path("/home/tticom-gov/work/score2gp-workspace/score2gp"),
     )
@@ -52,8 +52,8 @@ def test_governance_identity_rejects_personal_account(field: str, value: str) ->
     values = {
         "linux_user": "tticom-gov",
         "home": "/home/tticom-gov",
-        "gh_user": "tticom-codex",
-        "git_user": "tticom-codex",
+        "gh_user": "tticomgov-code",
+        "git_user": "tticomgov-code",
         "agentops": Path("/home/tticom-gov/work/score2gp-workspace/score2gp-agentops"),
         "product": Path("/home/tticom-gov/work/score2gp-workspace/score2gp"),
     }

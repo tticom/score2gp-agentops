@@ -616,14 +616,14 @@ def test_case_19_latest_current_head_changes_requested_governs(
                     "state": "APPROVED",
                     "commit_id": head,
                     "submitted_at": "2026-07-28T18:40:00Z",
-                    "user": {"login": "tticom-codex"},
+                    "user": {"login": "tticomgov-code"},
                 },
                 {
                     "id": 11,
                     "state": "CHANGES_REQUESTED",
                     "commit_id": head,
                     "submitted_at": "2026-07-28T18:45:00Z",
-                    "user": {"login": "tticom-codex"},
+                    "user": {"login": "tticomgov-code"},
                 },
             ],
         }

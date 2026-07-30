@@ -45,7 +45,7 @@ def test_publishes_and_verifies_exact_head_changes_request() -> None:
                         "state": "CHANGES_REQUESTED",
                         "commit_id": head,
                         "submitted_at": "2026-07-30T09:00:00Z",
-                        "user": {"login": "tticom-codex"},
+                        "user": {"login": "tticomgov-code"},
                     }
                 ]
             ),
