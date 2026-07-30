@@ -73,7 +73,9 @@ python3 scripts/score2gp_publish_review.py \
   --pr <PR number> \
   --head <reviewed full head SHA> \
   --verdict "<needs changes|APPROVED>" \
-  --body-file <formal review markdown>
+  --body-file <formal review markdown> \
+  --evidence-file <review-evidence.json> \
+  [--high-risk]
 ```
 
 The publisher normalizes `needs changes` to GitHub `CHANGES_REQUESTED`, pins
@@ -84,5 +86,8 @@ returning one machine-actionable state:
 Do not return a chat-only verdict. A publisher failure is a hard stop.
 The publisher rejects approvals whose review body lacks populated executable
 adversarial-evidence fields; green CI and author tests are not substitutes.
+For approval, it also reads `projects/score2gp/REVIEWER_SCORECARD.json` and
+requires a machine-validated evidence packet. Active reviewer strikes increase
+the probe quota. Omit `--evidence-file` for a changes-requested verdict.
 Repeated `got` with unchanged remote inputs creates no new task or duplicate
 review.

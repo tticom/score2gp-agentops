@@ -37,6 +37,31 @@ def test_open_pr_uses_latest_exact_head_review() -> None:
     assert result["current_review"]["id"] == 2
 
 
+def test_open_pr_accepts_newer_codex_change_request() -> None:
+    head = "a" * 40
+    result = resolve_got_state(
+        {"state": "OPEN", "headRefOid": head, "number": 396},
+        [
+            {"id": 1, "state": "APPROVED", "commit_id": head,
+             "submitted_at": "2026-07-30T15:59:00Z", "user": {"login": "tticomgov-code"}},
+            {"id": 2, "state": "CHANGES_REQUESTED", "commit_id": head,
+             "submitted_at": "2026-07-30T16:48:00Z", "user": {"login": "tticom-codex"}},
+        ],
+    )
+    assert result["state"] == "AWAITING_AGY_FIXES"
+    assert result["current_review"]["id"] == 2
+
+
+def test_open_pr_accepts_owner_verdict() -> None:
+    head = "b" * 40
+    result = resolve_got_state(
+        {"state": "OPEN", "headRefOid": head, "number": 396},
+        [{"id": 3, "state": "APPROVED", "commit_id": head,
+          "submitted_at": "2026-07-30T17:00:00Z", "user": {"login": "tticom"}}],
+    )
+    assert result["state"] == "READY_FOR_HUMAN_MERGE"
+
+
 def test_governance_worker_uses_codex_publishing_identity() -> None:
     validate_governance_identity(
         linux_user="tticom-gov",

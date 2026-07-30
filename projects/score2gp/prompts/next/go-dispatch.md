@@ -34,9 +34,10 @@ Never select by recency.
 
 Use `scripts/score2gp_pr_review_state.py` to query formal pull-request reviews.
 Issue comments are author handbacks, not verdicts. On the exact live head, the
-latest non-dismissed `tticomgov-code` formal review by server timestamp then
-review ID governs. A later `CHANGES_REQUESTED` supersedes an earlier
-`APPROVED` on the same head.
+latest non-dismissed formal review by `tticomgov-code`, `tticom-codex`, or
+repository owner `tticom`, ordered by server timestamp then review ID, governs.
+A later trusted `CHANGES_REQUESTED` supersedes an earlier trusted `APPROVED` on
+the same head. Reviews from all other accounts are ignored.
 
 - No PR: if status is `APPROVED` or `IN_PROGRESS`, execute `Original Prompt`;
   otherwise stop. A remote branch without one exact PR is unexplained state.
