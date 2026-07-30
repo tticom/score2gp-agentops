@@ -18,6 +18,29 @@ class DispatchError(RuntimeError):
     pass
 
 
+def synchronize_agentops_main(
+    agentops: Path,
+    runner: object = subprocess.run,
+) -> None:
+    def run_git(*args: str) -> str:
+        result = runner(
+            ["git", *args],
+            cwd=agentops,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode:
+            detail = result.stderr.strip() or result.stdout.strip()
+            raise DispatchError(f"git {' '.join(args)} failed: {detail}")
+        return result.stdout.strip()
+
+    if run_git("status", "--porcelain"):
+        raise DispatchError(f"AgentOps checkout is dirty: {agentops}")
+    run_git("fetch", "origin")
+    run_git("switch", "main")
+    run_git("merge", "--ff-only", "origin/main")
+
+
 def select_bootstrap(linux_user: str) -> str:
     if linux_user == "tticom-automation":
         return "score2gp_go_bootstrap.py"
@@ -37,17 +60,21 @@ def main() -> None:
     args = parser.parse_args()
 
     linux_user = getpass.getuser()
-    helper = Path(__file__).with_name(select_bootstrap(linux_user))
+    agentops = Path(args.agentops).resolve()
+    product = Path(args.product).resolve()
+    skills_repo = Path(args.skills_repo).resolve()
+    synchronize_agentops_main(agentops)
+    helper = agentops / "scripts" / select_bootstrap(linux_user)
     command = [
         sys.executable,
         os.fspath(helper),
-        "--product", args.product,
-        "--agentops", args.agentops,
-        "--skills-repo", args.skills_repo,
+        "--product", os.fspath(product),
+        "--agentops", os.fspath(agentops),
+        "--skills-repo", os.fspath(skills_repo),
     ]
     if helper.name == "score2gp_go_bootstrap.py" and args.json:
         command.append("--json")
-    completed = subprocess.run(command)
+    completed = subprocess.run(command, cwd=agentops)
     raise SystemExit(completed.returncode)
 
 

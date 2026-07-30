@@ -17,7 +17,7 @@ try:
         read_skills_pin,
         sync_main,
     )
-    from scripts.score2gp_go_bootstrap import parse_active_task_content
+    from scripts.score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
     from scripts.score2gp_pr_review_state import query_reviews, resolve_current_head_review
 except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bootstrap.py
     from score2gp_control_plane import (
@@ -26,7 +26,7 @@ except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bo
         read_skills_pin,
         sync_main,
     )
-    from score2gp_go_bootstrap import parse_active_task_content
+    from score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
     from score2gp_pr_review_state import query_reviews, resolve_current_head_review
 
 
@@ -79,24 +79,15 @@ def enforce_governance_identity(agentops: Path, product: Path) -> None:
     )
 
 
-def query_pr(repo: str, branch: str) -> dict[str, Any]:
-    result = subprocess.run(
-        [
-            "gh", "pr", "view", branch, "--repo", repo,
-            "--json", "number,state,headRefOid,mergedAt",
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode:
-        raise GotError(result.stderr.strip() or "PR query failed")
-    try:
-        return json.loads(result.stdout)
-    except json.JSONDecodeError as error:
-        raise GotError("invalid PR JSON") from error
+def query_pr(repo: str, branch: str) -> dict[str, Any] | None:
+    return query_github_pr_state(repo, branch)
 
 
-def resolve_got_state(pr: dict[str, Any], reviews: list[dict[str, Any]]) -> dict[str, Any]:
+def resolve_got_state(
+    pr: dict[str, Any] | None, reviews: list[dict[str, Any]]
+) -> dict[str, Any]:
+    if pr is None:
+        return {"state": "AWAITING_AGY_PUBLICATION", "current_review": None}
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
     if state == "MERGED":
@@ -140,7 +131,11 @@ def main() -> None:
     repo = task["repository"]
     branch = task["pr branch"]
     pr = query_pr(repo, branch)
-    reviews = query_reviews(repo, int(pr["number"])) if pr["state"].upper() == "OPEN" else []
+    reviews = (
+        query_reviews(repo, int(pr["number"]))
+        if pr is not None and pr["state"].upper() == "OPEN"
+        else []
+    )
     resolved = resolve_got_state(pr, reviews)
     print(json.dumps({
         "ok": True,
