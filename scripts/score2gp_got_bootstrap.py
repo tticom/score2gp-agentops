@@ -18,7 +18,11 @@ try:
         sync_main,
     )
     from scripts.score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
-    from scripts.score2gp_pr_review_state import query_reviews, resolve_current_head_review
+    from scripts.score2gp_pr_review_state import (
+        TRUSTED_REVIEWERS,
+        query_reviews,
+        resolve_current_head_review,
+    )
 except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bootstrap.py
     from score2gp_control_plane import (
         GateError,
@@ -27,7 +31,11 @@ except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bo
         sync_main,
     )
     from score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
-    from score2gp_pr_review_state import query_reviews, resolve_current_head_review
+    from score2gp_pr_review_state import (
+        TRUSTED_REVIEWERS,
+        query_reviews,
+        resolve_current_head_review,
+    )
 
 
 class GotError(RuntimeError):
@@ -97,7 +105,7 @@ def resolve_got_state(
         dispatch = "BLOCKED"
         current_review = None
     elif state == "OPEN":
-        current_review = resolve_current_head_review(reviews, head, "tticomgov-code")
+        current_review = resolve_current_head_review(reviews, head, TRUSTED_REVIEWERS)
         verdict = str((current_review or {}).get("state", "")).upper()
         if verdict == "CHANGES_REQUESTED":
             dispatch = "AWAITING_AGY_FIXES"

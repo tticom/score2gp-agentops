@@ -1,4 +1,4 @@
-from scripts.score2gp_pr_review_state import resolve_current_head_review
+from scripts.score2gp_pr_review_state import TRUSTED_REVIEWERS, resolve_current_head_review
 
 HEAD = "a" * 40
 
@@ -42,3 +42,38 @@ def test_ignores_prior_head_dismissed_and_other_reviewer() -> None:
         "tticomgov-code",
     )
     assert selected is None
+
+
+def test_latest_exact_head_verdict_across_all_trusted_reviewers_governs() -> None:
+    selected = resolve_current_head_review(
+        [
+            review(1, "APPROVED", user="tticomgov-code"),
+            review(2, "CHANGES_REQUESTED", user="tticom-codex"),
+            review(3, "APPROVED", user="tticom"),
+        ],
+        HEAD,
+        TRUSTED_REVIEWERS,
+    )
+    assert selected and selected["id"] == 3
+
+
+def test_codex_change_request_supersedes_older_governance_approval() -> None:
+    selected = resolve_current_head_review(
+        [
+            review(1, "APPROVED", user="tticomgov-code"),
+            review(2, "CHANGES_REQUESTED", user="tticom-codex"),
+        ],
+        HEAD,
+    )
+    assert selected and selected["state"] == "CHANGES_REQUESTED"
+
+
+def test_untrusted_reviewer_cannot_supersede_owner() -> None:
+    selected = resolve_current_head_review(
+        [
+            review(1, "APPROVED", user="tticom"),
+            review(2, "CHANGES_REQUESTED", user="someone-else"),
+        ],
+        HEAD,
+    )
+    assert selected and selected["id"] == 1

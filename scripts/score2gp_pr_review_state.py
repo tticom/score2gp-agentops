@@ -7,20 +7,25 @@ import json
 import subprocess
 from typing import Any, Iterable
 
+TRUSTED_REVIEWERS = frozenset({"tticomgov-code", "tticom-codex", "tticom"})
+
 
 class ReviewStateError(RuntimeError):
     pass
 
 
 def resolve_current_head_review(
-    reviews: Iterable[dict[str, Any]], live_head: str, reviewer: str
+    reviews: Iterable[dict[str, Any]],
+    live_head: str,
+    reviewers: str | Iterable[str] = TRUSTED_REVIEWERS,
 ) -> dict[str, Any] | None:
+    trusted = {reviewers} if isinstance(reviewers, str) else set(reviewers)
     eligible = []
     for review in reviews:
         author = (review.get("user") or review.get("author") or {}).get("login")
         state = str(review.get("state", "")).upper()
         if (
-            author == reviewer
+            author in trusted
             and review.get("commit_id") == live_head
             and state in {"APPROVED", "CHANGES_REQUESTED"}
         ):
@@ -55,10 +60,17 @@ def main() -> None:
     parser.add_argument("--repo", required=True)
     parser.add_argument("--pr", required=True, type=int)
     parser.add_argument("--head", required=True)
-    parser.add_argument("--reviewer", required=True)
+    parser.add_argument(
+        "--reviewer",
+        action="append",
+        dest="reviewers",
+        help="Trusted reviewer login; repeatable. Defaults to project trusted reviewers.",
+    )
     args = parser.parse_args()
     review = resolve_current_head_review(
-        query_reviews(args.repo, args.pr), args.head, args.reviewer
+        query_reviews(args.repo, args.pr),
+        args.head,
+        args.reviewers or TRUSTED_REVIEWERS,
     )
     print(json.dumps(review, indent=2) if review else "null")
 

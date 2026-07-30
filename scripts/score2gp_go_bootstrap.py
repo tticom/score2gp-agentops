@@ -30,9 +30,17 @@ except ModuleNotFoundError:  # Direct execution: python scripts/score2gp_go_boot
     )
 
 try:
-    from scripts.score2gp_pr_review_state import query_reviews, resolve_current_head_review
+    from scripts.score2gp_pr_review_state import (
+        TRUSTED_REVIEWERS,
+        query_reviews,
+        resolve_current_head_review,
+    )
 except ModuleNotFoundError:
-    from score2gp_pr_review_state import query_reviews, resolve_current_head_review
+    from score2gp_pr_review_state import (
+        TRUSTED_REVIEWERS,
+        query_reviews,
+        resolve_current_head_review,
+    )
 
 
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
@@ -333,7 +341,7 @@ def run_go_bootstrap(
                 pr_head_sha = pr_info.get("headRefOid")
                 pr_number = pr_info.get("number")
                 current_review = resolve_current_head_review(
-                    pr_info.get("reviews", []), pr_head_sha, "tticomgov-code"
+                    pr_info.get("reviews", []), pr_head_sha, TRUSTED_REVIEWERS
                 ) if pr_head_sha else None
         except Exception as e:
             fail_closed(f"GitHub runner failed: {e}", state="GITHUB_STATE_UNAVAILABLE")
@@ -347,7 +355,7 @@ def run_go_bootstrap(
                 current_review = resolve_current_head_review(
                     query_reviews(declared_repo, int(pr_number)),
                     pr_head_sha,
-                    "tticomgov-code",
+                    TRUSTED_REVIEWERS,
                 )
 
     # Phase 6: Select Authorised Task Branch with strict reconciliation

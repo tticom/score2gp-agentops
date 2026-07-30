@@ -84,8 +84,10 @@ head SHAs.
 
 Both identities use `scripts/score2gp_pr_review_state.py` as the sole formal
 verdict resolver. It queries reviews separately from author handback comments,
-filters to the exact live head and `tticomgov-code`, and selects the latest by
-server timestamp then review ID.
+filters to the exact live head and the trusted reviewer set (`tticomgov-code`,
+`tticom-codex`, and repository owner `tticom`), and selects the latest across
+that set by server timestamp then review ID. Reviews from other accounts never
+govern dispatch.
 
 Generic skill output never weakens the Score2GP overlay. When rules conflict,
 use the stricter identity, privacy, evidence, disconfirmation, or stop rule.

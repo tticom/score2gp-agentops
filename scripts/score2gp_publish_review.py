@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Any, Callable, Sequence
 
 try:
-    from scripts.score2gp_pr_review_state import resolve_current_head_review
+    from scripts.score2gp_pr_review_state import TRUSTED_REVIEWERS, resolve_current_head_review
 except ModuleNotFoundError:  # Direct execution
-    from score2gp_pr_review_state import resolve_current_head_review
+    from score2gp_pr_review_state import TRUSTED_REVIEWERS, resolve_current_head_review
 
 
 class ReviewPublishError(RuntimeError):
@@ -169,7 +169,7 @@ def publish_review(
     )
     if not isinstance(reviews, list):
         raise ReviewPublishError("review verification did not return a list")
-    current = resolve_current_head_review(reviews, expected_head, reviewer)
+    current = resolve_current_head_review(reviews, expected_head, TRUSTED_REVIEWERS)
     if not current:
         raise ReviewPublishError("published review is not authoritative for the exact head")
     if int(current.get("id") or 0) != review_id:
