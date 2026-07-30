@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "strike_decay_after_clean_reviews": 5,
+    "maximum_probe_quota_penalty": 2,
+    "fabricated_evidence_strike_cost": 2
+  },
+  "reviewers": {
+    "tticomgov-code": {
+      "active_strikes": 1,
+      "clean_reviews_until_next_decay": 5,
+      "incidents": [
+        {
+          "date": "2026-07-30",
+          "pull_request": "tticom/score2gp#396",
+          "reason": "Approval was independently overturned: claimed end-to-end, privacy, metamorphic, and zero-risk evidence was not supported by executed probes."
+        }
+      ]
+    },
+    "tticom-codex": {
+      "active_strikes": 0,
+      "clean_reviews_until_next_decay": 0,
+      "incidents": []
+    },
+    "tticom": {
+      "active_strikes": 0,
+      "clean_reviews_until_next_decay": 0,
+      "incidents": []
+    }
+  }
+}

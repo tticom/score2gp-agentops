@@ -9,6 +9,12 @@ from scripts.score2gp_publish_review import (
     publish_review,
     validate_approval_evidence,
 )
+from scripts.score2gp_review_evidence_gate import (
+    ATTESTATION,
+    ReviewEvidenceError,
+    active_strikes,
+    validate_approval_packet,
+)
 
 
 def result(payload, returncode=0, stderr=""):
@@ -43,6 +49,36 @@ def approval_body() -> str:
 """.strip()
 
 
+def approval_packet(probe_count: int = 2) -> dict:
+    return {
+        "verdict": "APPROVE",
+        "claims": [{
+            "claim": "duration evidence reaches ScoreIR",
+            "status": "verified",
+            "production_path": "PDF -> TabRaw -> ScoreIR",
+            "evidence_path": "reviewer probes",
+            "false_success_mutation": "inject duration below PDF extraction",
+        }],
+        "probes": [
+            {
+                "name": f"probe-{index}",
+                "reviewer_created": True,
+                "author_test_only": False,
+                "production_path": True,
+                "command": f"python probe_{index}.py",
+                "input": f"fixture-{index}",
+                "false_success_mutation": f"mutation-{index}",
+                "observed_output": f"distinct-output-{index}",
+                "invariant": f"invariant-{index}",
+                "result": "killed",
+            }
+            for index in range(probe_count)
+        ],
+        "residual_risks": ["Proprietary GUI rendering remains untested."],
+        "integrity_attestation": ATTESTATION,
+    }
+
+
 def test_approval_requires_substantive_adversarial_evidence() -> None:
     with pytest.raises(ReviewPublishError, match="Changed abstraction boundary"):
         validate_approval_evidence("CI passed and the patch looks good.")
@@ -56,6 +92,24 @@ def test_approval_requires_substantive_adversarial_evidence() -> None:
 
 def test_complete_adversarial_evidence_is_accepted() -> None:
     validate_approval_evidence(approval_body())
+
+
+def test_approval_packet_quota_increases_with_reviewer_strikes() -> None:
+    assert validate_approval_packet(
+        approval_packet(2), strikes=0, high_risk=False
+    ) == (2, 4)
+    with pytest.raises(ReviewEvidenceError, match="at least 3"):
+        validate_approval_packet(
+            approval_packet(2), strikes=1, high_risk=False
+        )
+    assert validate_approval_packet(
+        approval_packet(3), strikes=1, high_risk=False
+    ) == (3, 6)
+
+
+def test_scorecard_returns_reviewer_strike_count() -> None:
+    scorecard = {"reviewers": {"tticomgov-code": {"active_strikes": 1}}}
+    assert active_strikes(scorecard, "tticomgov-code") == 1
 
 
 def test_approved_publication_is_blocked_before_github_without_evidence() -> None:
@@ -73,6 +127,26 @@ def test_approved_publication_is_blocked_before_github_without_evidence() -> Non
             expected_head="a" * 40,
             verdict="APPROVED",
             body="All existing tests pass.",
+            runner=runner,
+        )
+    assert called is False
+
+
+def test_approved_publication_rejects_body_only_evidence_before_github() -> None:
+    called = False
+
+    def runner(command, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("GitHub must not be called")
+
+    with pytest.raises(ReviewPublishError, match="machine-validated evidence"):
+        publish_review(
+            repo="tticom/score2gp",
+            pr_number=396,
+            expected_head="a" * 40,
+            verdict="APPROVED",
+            body=approval_body(),
             runner=runner,
         )
     assert called is False

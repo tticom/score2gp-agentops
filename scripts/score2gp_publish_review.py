@@ -10,8 +10,20 @@ from typing import Any, Callable, Sequence
 
 try:
     from scripts.score2gp_pr_review_state import TRUSTED_REVIEWERS, resolve_current_head_review
+    from scripts.score2gp_review_evidence_gate import (
+        ReviewEvidenceError,
+        active_strikes,
+        read_json,
+        validate_approval_packet,
+    )
 except ModuleNotFoundError:  # Direct execution
     from score2gp_pr_review_state import TRUSTED_REVIEWERS, resolve_current_head_review
+    from score2gp_review_evidence_gate import (
+        ReviewEvidenceError,
+        active_strikes,
+        read_json,
+        validate_approval_packet,
+    )
 
 
 class ReviewPublishError(RuntimeError):
@@ -91,11 +103,24 @@ def publish_review(
     verdict: str,
     body: str,
     reviewer: str = "tticomgov-code",
+    evidence_packet: dict[str, Any] | None = None,
+    reviewer_strikes: int = 0,
+    high_risk: bool = False,
     runner: Runner = subprocess.run,
 ) -> dict[str, Any]:
     expected_state, event, dispatch_state = normalize_verdict(verdict)
     if expected_state == "APPROVED":
         validate_approval_evidence(body)
+        if evidence_packet is None:
+            raise ReviewPublishError("approval requires a machine-validated evidence packet")
+        try:
+            validate_approval_packet(
+                evidence_packet,
+                strikes=reviewer_strikes,
+                high_risk=high_risk,
+            )
+        except ReviewEvidenceError as error:
+            raise ReviewPublishError(f"approval evidence gate failed: {error}") from error
     pr = _run_json(
         [
             "gh",
@@ -197,10 +222,20 @@ def main() -> None:
     parser.add_argument("--head", required=True)
     parser.add_argument("--verdict", required=True)
     parser.add_argument("--body-file", required=True, type=Path)
+    parser.add_argument("--evidence-file", type=Path)
+    parser.add_argument(
+        "--scorecard",
+        type=Path,
+        default=Path("projects/score2gp/REVIEWER_SCORECARD.json"),
+    )
+    parser.add_argument("--high-risk", action="store_true")
     args = parser.parse_args()
     body = args.body_file.read_text(encoding="utf-8").strip()
     if not body:
         raise ReviewPublishError("review body is empty")
+    evidence_packet = read_json(args.evidence_file) if args.evidence_file else None
+    scorecard = read_json(args.scorecard)
+    reviewer = "tticomgov-code"
     print(
         json.dumps(
             publish_review(
@@ -209,6 +244,10 @@ def main() -> None:
                 expected_head=args.head,
                 verdict=args.verdict,
                 body=body,
+                reviewer=reviewer,
+                evidence_packet=evidence_packet,
+                reviewer_strikes=active_strikes(scorecard, reviewer),
+                high_risk=args.high_risk,
             ),
             indent=2,
         )
