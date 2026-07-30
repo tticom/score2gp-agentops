@@ -7,7 +7,7 @@
 - Product repository: `tticom/score2gp`
 - Product branch: `agy/pdftab-duration-tabraw-integration`
 - Product PR: #394
-- Operative prompt: `projects/score2gp/runs/2026-07-30-governance-state-rename-prompts/002-fix-and-rename.md`
+- Operative prompt: `projects/score2gp/runs/2026-07-30-governance-state-rename-prompts/003-review-response-automation.md`
 
 ## Commands and results
 
@@ -16,7 +16,10 @@
 - `python -m pytest tests/test_tabraw_duration_metadata.py`: PASS, 8 passed.
 - `python scripts/artifact_audit.py`: PASS.
 - `git diff --check origin/main...HEAD` after commit: PASS.
-- Governance tests: PASS, 42 passed.
+- `python -m pytest tests/test_score2gp_publish_review.py`: PASS, 6 passed.
+- Full governance tests: PASS, 48 passed.
+- Live review audit: the current product head had no formal Codex review;
+  the pasted `needs changes` verdict existed only in chat and was therefore non-actionable.
 
 ## Input and output availability
 
@@ -28,10 +31,10 @@
 ## Required evidence fields
 
 - Strict conversion status: not applicable; no conversion was run.
-- Remediation/diagnostic status: PR hygiene defect reproduced and corrected.
+- Remediation/diagnostic status: PR hygiene defect and chat-only review publication gap reproduced and corrected.
 - Generated file existence: not applicable.
 - Semantic round-trip status: not applicable.
-- Exact blocker category: repository hygiene (`git diff --check`) followed by governance terminology mismatch.
+- Exact blocker category: formal review publication gap followed by repository hygiene and governance terminology mismatch.
 - Private-safe metrics: 8 focused tests passed; zero private inputs used.
 - Public tests run: focused product tests plus governance test suite.
 - Private-safety audit: PASS.

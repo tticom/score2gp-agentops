@@ -58,10 +58,22 @@ local task state, chat, and issue comments do not count.
 
 Every approval includes the disconfirmation record and the three equal full
 head SHAs. After review, publish the
-verdict on the exact head and one machine-actionable state:
+verdict on the exact head with the guarded publisher:
+
+```bash
+python3 scripts/score2gp_publish_review.py \
+  --repo <Repository> \
+  --pr <PR number> \
+  --head <reviewed full head SHA> \
+  --verdict "<needs changes|APPROVED>" \
+  --body-file <formal review markdown>
+```
+
+The publisher normalizes `needs changes` to GitHub `CHANGES_REQUESTED`, pins
+the review to the exact head, and re-queries the formal review before
+returning one machine-actionable state:
 `AWAITING_AGY_FIXES`, `READY_FOR_HUMAN_MERGE`,
 `AWAITING_AGY_HANDBACK`, or `BLOCKED`.
-Re-query formal reviews after publication and prove the expected review ID,
-reviewer, commit ID, state, and timestamp exist before reporting the state.
+Do not return a chat-only verdict. A publisher failure is a hard stop.
 Repeated `got` with unchanged remote inputs creates no new task or duplicate
 review.
