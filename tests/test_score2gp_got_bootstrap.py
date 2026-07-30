@@ -14,6 +14,14 @@ def test_merged_pr_overrides_historical_review_state() -> None:
     assert result["current_review"] is None
 
 
+def test_no_pr_waits_for_author_publication() -> None:
+    result = resolve_got_state(None, [])
+    assert result == {
+        "state": "AWAITING_AGY_PUBLICATION",
+        "current_review": None,
+    }
+
+
 def test_open_pr_uses_latest_exact_head_review() -> None:
     head = "a" * 40
     reviews = [
