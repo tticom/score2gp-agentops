@@ -316,7 +316,7 @@ def run_go_bootstrap(
                 pr_head_sha = pr_info.get("headRefOid")
                 pr_number = pr_info.get("number")
                 current_review = resolve_current_head_review(
-                    pr_info.get("reviews", []), pr_head_sha, "tticom-codex"
+                    pr_info.get("reviews", []), pr_head_sha, "tticomgov-code"
                 ) if pr_head_sha else None
         except Exception as e:
             fail_closed(f"GitHub runner failed: {e}", state="GITHUB_STATE_UNAVAILABLE")
@@ -330,7 +330,7 @@ def run_go_bootstrap(
                 current_review = resolve_current_head_review(
                     query_reviews(declared_repo, int(pr_number)),
                     pr_head_sha,
-                    "tticom-codex",
+                    "tticomgov-code",
                 )
 
     # Phase 6: Select Authorised Task Branch with strict reconciliation

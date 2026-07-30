@@ -29,8 +29,8 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 ### Codex reviewer/governor
 
 - OS user/home: `tticom-gov` / `/home/tticom-gov`
-- GitHub and Git name: `tticom-codex`
-- Git email: `tticom-codex@users.noreply.github.com`
+- GitHub and Git name: `tticomgov-code`
+- Git email: `tticomgov@gmail.com`
 - Workspace prefix: `/home/tticom-gov/work/score2gp-workspace`
 - Uses separate clones and credential store
 - May publish independent reviews and bounded governance PRs
@@ -84,7 +84,7 @@ head SHAs.
 
 Both identities use `scripts/score2gp_pr_review_state.py` as the sole formal
 verdict resolver. It queries reviews separately from author handback comments,
-filters to the exact live head and `tticom-codex`, and selects the latest by
+filters to the exact live head and `tticomgov-code`, and selects the latest by
 server timestamp then review ID.
 
 Generic skill output never weakens the Score2GP overlay. When rules conflict,

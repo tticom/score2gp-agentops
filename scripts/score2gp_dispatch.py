@@ -21,7 +21,7 @@ class DispatchError(RuntimeError):
 def select_bootstrap(linux_user: str) -> str:
     if linux_user == "tticom-automation":
         return "score2gp_go_bootstrap.py"
-    if linux_user in {"tticom-gov", "tticom-codex"}:
+    if linux_user == "tticom-gov":
         return "score2gp_got_bootstrap.py"
     raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
 

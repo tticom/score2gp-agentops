@@ -19,7 +19,7 @@ identity:
 
 - Agy / `tticom-automation`:
   `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
-- Governance worker / `tticom-gov` using Git/GitHub identity `tticom-codex`:
+- Governance worker / `tticom-gov` using Git/GitHub identity `tticomgov-code`:
   `/home/tticom-gov/work/score2gp-workspace/score2gp-agentops`
 
 ## Identity-Isolated Workspace Gate

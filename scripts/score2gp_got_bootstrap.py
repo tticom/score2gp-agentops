@@ -47,10 +47,10 @@ def validate_governance_identity(
         raise GotError(f"Linux user must be 'tticom-gov', got '{linux_user}'")
     if home != "/home/tticom-gov":
         raise GotError(f"HOME must be '/home/tticom-gov', got '{home}'")
-    if gh_user != "tticom-codex":
-        raise GotError(f"GitHub CLI account must be 'tticom-codex', got '{gh_user}'")
-    if git_user != "tticom-codex":
-        raise GotError(f"Git global user.name must be 'tticom-codex', got '{git_user}'")
+    if gh_user != "tticomgov-code":
+        raise GotError(f"GitHub CLI account must be 'tticomgov-code', got '{gh_user}'")
+    if git_user != "tticomgov-code":
+        raise GotError(f"Git global user.name must be 'tticomgov-code', got '{git_user}'")
 
     workspace = Path("/home/tticom-gov/work/score2gp-workspace")
     for label, path in (("AgentOps", agentops), ("product", product)):
@@ -106,7 +106,7 @@ def resolve_got_state(pr: dict[str, Any], reviews: list[dict[str, Any]]) -> dict
         dispatch = "BLOCKED"
         current_review = None
     elif state == "OPEN":
-        current_review = resolve_current_head_review(reviews, head, "tticom-codex")
+        current_review = resolve_current_head_review(reviews, head, "tticomgov-code")
         verdict = str((current_review or {}).get("state", "")).upper()
         if verdict == "CHANGES_REQUESTED":
             dispatch = "AWAITING_AGY_FIXES"
