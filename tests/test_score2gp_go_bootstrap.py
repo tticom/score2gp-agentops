@@ -569,16 +569,16 @@ def test_case_17_github_permission_error_fails_closed(monkeypatch: pytest.Monkey
 
 
 def test_case_18_exact_recognised_no_pr_returns_none() -> None:
-    # Test query_github_pr_state with exact recognized no-PR stderr
+    # gh pr list represents the expected no-PR state as an empty JSON list.
     class MockCompletedProcess:
-        def __init__(self, returncode: int, stderr: str):
+        def __init__(self, returncode: int, stderr: str, stdout: str = ""):
             self.returncode = returncode
             self.stderr = stderr
-            self.stdout = ""
+            self.stdout = stdout
 
     def mock_run(args: list[str], **kwargs: Any) -> MockCompletedProcess:
         if "gh" in args:
-            return MockCompletedProcess(1, "no pull requests match 'agy/test-branch'")
+            return MockCompletedProcess(0, "", "[]")
         return subprocess.run(args, **kwargs)
 
     import pytest
@@ -589,6 +589,39 @@ def test_case_18_exact_recognised_no_pr_returns_none() -> None:
     res = helper.query_github_pr_state("tticom/score2gp", "agy/test-branch")
     assert res is None
     monkeypatch.undo()
+
+
+def test_no_pr_lookup_uses_exact_head_and_all_states(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: list[str] = []
+
+    class MockCompletedProcess:
+        returncode = 0
+        stderr = ""
+        stdout = "[]"
+
+    def mock_run(args: list[str], **kwargs: Any) -> MockCompletedProcess:
+        captured.extend(args)
+        return MockCompletedProcess()
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+    assert query_github_pr_state("tticom/score2gp", "agy/new-task") is None
+    assert captured[:3] == ["gh", "pr", "list"]
+    assert captured[captured.index("--head") + 1] == "agy/new-task"
+    assert captured[captured.index("--state") + 1] == "all"
+
+
+def test_ambiguous_exact_branch_prs_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    class MockCompletedProcess:
+        returncode = 0
+        stderr = ""
+        stdout = (
+            '[{"number":1,"state":"CLOSED","headRefOid":"a"},'
+            '{"number":2,"state":"OPEN","headRefOid":"b"}]'
+        )
+
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
+    with pytest.raises(SystemExit):
+        query_github_pr_state("tticom/score2gp", "agy/reused-task")
 
 
 def test_case_19_latest_current_head_changes_requested_governs(
