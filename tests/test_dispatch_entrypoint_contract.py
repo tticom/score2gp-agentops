@@ -3,19 +3,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 COMMAND = (
-    "python3 scripts/score2gp_go_bootstrap.py "
+    "python3 scripts/score2gp_dispatch.py "
     "--product ../score2gp --agentops . --json"
 )
-GOT_COMMAND = (
-    "python3 scripts/score2gp_got_bootstrap.py "
-    "--product ../score2gp --agentops ."
-)
+GOT_COMMAND = COMMAND
 
 
 def test_agent_clients_load_executable_go_entrypoint() -> None:
     for name in ("CLAUDE.md", "AGENTS.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
         assert COMMAND in text
+        assert "tticom-gov" in text
         assert "ADDRESS_CURRENT_PR_REVIEW" in text
         assert "MERGED_AWAITING_GOVERNANCE_PROMOTION" in text
         assert "next_action" in text
@@ -26,6 +24,7 @@ def test_agent_clients_load_executable_got_entrypoint() -> None:
     for name in ("CLAUDE.md", "AGENTS.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
         assert GOT_COMMAND in text
+        assert "Linux worker identity" in text
         assert "never resume" in text.lower()
         assert "REVIEW_CURRENT_HEAD" in text
         assert "PROMOTE_MERGED_TASK" in text

@@ -5,7 +5,8 @@ durable PR handback and exact live GitHub state.
 
 ## Gate
 
-Prove `tticom-codex` identity and canonical WSL workspace. Read
+Prove Linux worker `tticom-gov`, GitHub/Git identity `tticom-codex`, and the
+canonical `/home/tticom-gov/work/score2gp-workspace` WSL workspace. Read
 `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the Reviewer skill, `REVIEW_RULES.md`,
 `PR_REVIEW_TEMPLATE.md`, and `PR_EVIDENCE_CONTRACT.md`. Require stable `Task`,
 `Status`, `Assigned Identity`, `Repository`, `PR Branch`, and

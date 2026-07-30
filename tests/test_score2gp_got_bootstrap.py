@@ -1,4 +1,8 @@
-from scripts.score2gp_got_bootstrap import resolve_got_state
+from pathlib import Path
+
+import pytest
+
+from scripts.score2gp_got_bootstrap import GotError, resolve_got_state, validate_governance_identity
 
 
 def test_merged_pr_overrides_historical_review_state() -> None:
@@ -23,3 +27,36 @@ def test_open_pr_uses_latest_exact_head_review() -> None:
     )
     assert result["state"] == "AWAITING_AGY_FIXES"
     assert result["current_review"]["id"] == 2
+
+
+def test_governance_worker_uses_codex_publishing_identity() -> None:
+    validate_governance_identity(
+        linux_user="tticom-gov",
+        home="/home/tticom-gov",
+        gh_user="tticom-codex",
+        git_user="tticom-codex",
+        agentops=Path("/home/tticom-gov/work/score2gp-workspace/score2gp-agentops"),
+        product=Path("/home/tticom-gov/work/score2gp-workspace/score2gp"),
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("linux_user", "tticom"),
+        ("gh_user", "tticom"),
+        ("git_user", "tticom"),
+    ],
+)
+def test_governance_identity_rejects_personal_account(field: str, value: str) -> None:
+    values = {
+        "linux_user": "tticom-gov",
+        "home": "/home/tticom-gov",
+        "gh_user": "tticom-codex",
+        "git_user": "tticom-codex",
+        "agentops": Path("/home/tticom-gov/work/score2gp-workspace/score2gp-agentops"),
+        "product": Path("/home/tticom-gov/work/score2gp-workspace/score2gp"),
+    }
+    values[field] = value
+    with pytest.raises(GotError):
+        validate_governance_identity(**values)

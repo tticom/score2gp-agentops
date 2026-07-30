@@ -19,12 +19,12 @@ identity:
 
 - Agy / `tticom-automation`:
   `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
-- Codex / `tticom-codex`:
-  `/home/tticom-codex/work/score2gp-workspace/score2gp-agentops`
+- Governance worker / `tticom-gov` using Git/GitHub identity `tticom-codex`:
+  `/home/tticom-gov/work/score2gp-workspace/score2gp-agentops`
 
 ## Identity-Isolated Workspace Gate
 
-`tticom-automation` and `tticom-codex` must use separate Linux users, home
+`tticom-automation` and `tticom-gov` must use separate Linux users, home
 directories, GitHub CLI credential stores, Git identities, and repository
 clones. An agent must never operate from the other identity's home or
 workspace and must never copy GitHub credentials between homes.
@@ -337,7 +337,7 @@ If the Developer cannot identify the requirement, approved approach, acceptance 
 If product work is involved, agents must also inspect the product repository:
 
 - Agy: `/home/tticom-automation/work/score2gp-workspace/score2gp`
-- Codex: `/home/tticom-codex/work/score2gp-workspace/score2gp`
+- Governance: `/home/tticom-gov/work/score2gp-workspace/score2gp`
 
 The selected path must match the identity-isolated workspace gate above.
 

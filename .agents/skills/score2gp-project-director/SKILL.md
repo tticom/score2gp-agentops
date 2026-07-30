@@ -11,10 +11,12 @@ revision; do not restate or fork them here.
 
 ## Executable dispatch gate
 
-For the literal command `go` or `next`, execute
-`python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops . --json`
-as the first task action. Do not manually query GitHub or reconstruct status
-from comments. The returned state and formal `current_review` are authoritative.
+For any continuation request, execute
+`python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json`
+as the first task action. The router selects author or governance behavior
+from the isolated Linux worker identity, never from ambiguous command prose.
+Do not manually query GitHub or reconstruct status from comments. The returned
+state and formal `current_review` are authoritative.
 
 On `ADDRESS_CURRENT_PR_REVIEW`, execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` immediately with
@@ -27,9 +29,8 @@ it and stop without rerunning tests, re-verifying the merge, summarizing the
 completed task, creating a promotion, or taking any product action. All other
 non-action and unknown states are terminal and fail closed.
 
-For literal `got`, execute
-`python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .`
-first. Its state machine is distinct from `go`: `REVIEW_CURRENT_HEAD`
+For a governance worker, the router selects `got`; this state machine is distinct from `go`.
+`REVIEW_CURRENT_HEAD`
 authorizes and requires materializing the exact live PR head, invoking pinned
 `code-review` with the Score2GP hard-review overlay, and publishing the formal
 verdict. A status-only response on `REVIEW_CURRENT_HEAD` is a dispatcher
