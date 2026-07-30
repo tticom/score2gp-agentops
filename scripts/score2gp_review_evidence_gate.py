@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -33,10 +34,15 @@ def active_strikes(scorecard: dict[str, Any], reviewer: str) -> int:
 
 
 def validate_approval_packet(
-    packet: dict[str, Any], *, strikes: int, high_risk: bool
+    packet: dict[str, Any], *, expected_head: str, strikes: int, high_risk: bool
 ) -> tuple[int, int]:
     if packet.get("verdict") != "APPROVE":
         raise ReviewEvidenceError("packet verdict must be APPROVE")
+    if not re.fullmatch(r"[0-9a-f]{40}", expected_head):
+        raise ReviewEvidenceError("expected_head must be a full commit SHA")
+    if packet.get("review_head") != expected_head:
+        raise ReviewEvidenceError("review_head does not match the pinned PR head")
+    _text(packet.get("baseline_failure_expectation"), "baseline_failure_expectation")
     claims = packet.get("claims")
     if not isinstance(claims, list) or not claims:
         raise ReviewEvidenceError("claims must be a non-empty list")
@@ -48,8 +54,17 @@ def validate_approval_packet(
             "production_path",
             "evidence_path",
             "false_success_mutation",
+            "failure_oracle",
+            "disproof_attempt",
         ):
             _text(claim.get(field), f"claims[{index}].{field}")
+        probe_names = claim.get("probe_names")
+        if not isinstance(probe_names, list) or not probe_names:
+            raise ReviewEvidenceError(
+                f"claims[{index}].probe_names must identify executed probes"
+            )
+        for probe_name in probe_names:
+            _text(probe_name, f"claims[{index}].probe_names")
         if claim.get("status") != "verified":
             raise ReviewEvidenceError(f"claims[{index}].status must be verified")
 
@@ -63,6 +78,8 @@ def validate_approval_packet(
         )
     commands: set[str] = set()
     mutations: set[str] = set()
+    probe_names: set[str] = set()
+    probe_types: set[str] = set()
     production_count = 0
     for index, probe in enumerate(probes):
         if not isinstance(probe, dict):
@@ -73,6 +90,20 @@ def validate_approval_packet(
             raise ReviewEvidenceError(f"probes[{index}] is author-test-only")
         if probe.get("result") not in {"killed", "exposed"}:
             raise ReviewEvidenceError(f"probes[{index}] did not kill or expose a mutation")
+        if probe.get("head_sha") != expected_head:
+            raise ReviewEvidenceError(f"probes[{index}].head_sha is not the pinned head")
+        if probe.get("exit_code") not in range(0, 256):
+            raise ReviewEvidenceError(f"probes[{index}].exit_code must be recorded")
+        probe_type = probe.get("probe_type")
+        if probe_type not in {"mutation", "boundary", "artifact"}:
+            raise ReviewEvidenceError(
+                f"probes[{index}].probe_type must be mutation, boundary, or artifact"
+            )
+        digest = _text(probe.get("output_sha256"), f"probes[{index}].output_sha256")
+        if not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ReviewEvidenceError(
+                f"probes[{index}].output_sha256 must be a lowercase SHA-256"
+            )
         for field in (
             "name",
             "command",
@@ -84,11 +115,29 @@ def validate_approval_packet(
             _text(probe.get(field), f"probes[{index}].{field}")
         command = probe["command"].strip()
         mutation = probe["false_success_mutation"].strip()
+        name = probe["name"].strip()
         if command in commands or mutation in mutations:
             raise ReviewEvidenceError("probe commands and mutations must be unique")
+        if name in probe_names:
+            raise ReviewEvidenceError("probe names must be unique")
         commands.add(command)
         mutations.add(mutation)
+        probe_names.add(name)
+        probe_types.add(probe_type)
         production_count += probe.get("production_path") is True
+
+    for index, claim in enumerate(claims):
+        missing = set(claim["probe_names"]) - probe_names
+        if missing:
+            raise ReviewEvidenceError(
+                f"claims[{index}] references unknown probes: {sorted(missing)}"
+            )
+
+    required_types = {"mutation", "artifact"}
+    if not required_types.issubset(probe_types):
+        raise ReviewEvidenceError(
+            "approval requires both mutation and final-artifact probes"
+        )
 
     required_production = 2 if high_risk else 1
     if production_count < required_production:
