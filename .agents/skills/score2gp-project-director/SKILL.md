@@ -35,7 +35,7 @@ authorizes and requires materializing the exact live PR head, invoking pinned
 `code-review` with the Score2GP hard-review overlay, and publishing the formal
 verdict. A status-only response on `REVIEW_CURRENT_HEAD` is a dispatcher
 failure. `READY_FOR_HUMAN_MERGE` and `AWAITING_AGY_FIXES` are report-and-stop
-states. `PROMOTE_MERGED_TASK` authorizes and requires the post-merge
+states. `PROMOTE_MERGED_TASK` and `PROMOTE_RESOLVED_TASK` authorize and require the post-merge
 continuation described below; a status-only response is a dispatcher failure.
 
 ## Load in order

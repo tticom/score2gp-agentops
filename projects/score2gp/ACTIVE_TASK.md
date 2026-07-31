@@ -1,26 +1,40 @@
 # Active Task
 
-**Task**: CR-04C: Final-Event Duration Consistency Architecture
-**Status**: RESOLVED
+**Task**: AGENTOPS-PROMOTE-RESOLVED: Distinguish RESOLVED Tasks in Dispatcher State
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect / Governance Integrator
+**Authorised Role**: Governance Developer / Tooling Specialist
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `gov/close-cr04c-already-resolved`
-**Pull Request**: #421
-**Original Prompt**: `projects/score2gp/prompts/next/0010-cr04c-final-event-duration-consistency-architecture.md`
+**PR Branch**: `agy/agentops-promote-resolved-task`
+**Pull Request**: `none`
+**Original Prompt**: `projects/score2gp/prompts/next/0025-agentops-promote-resolved-task.md`
 
 ## Context
 
-Following re-analysis against product main (`f3cf042c96defdaf09c3353f16f9dbcb38e542d3`), `build_ir_from_tabraw_only()` delegates bar construction to `assemble_pdf_tab_bar()`, which already assigns event durations (preserving explicit visual `TabDurationEvidence`), enforces measure capacity, and decomposes remaining bar capacity into rest events.
+When a merged active task has `Status: RESOLVED` (e.g. verified as resolved on product main without product code changes), `score2gp_dispatch.py` / `score2gp_got_bootstrap.py` currently emits `PROMOTE_MERGED_TASK`, which falsely implies an ordinary code PR merge.
 
-## Resolution Summary
+## Goal
 
-- **Product Main Commit**: `f3cf042c96defdaf09c3353f16f9dbcb38e542d3`
-- **Resolving PRs**: PR #395 and PR #396
-- **Verification**: Passing N=1, N=3, N=4, and mixed-duration test suites (`tests/test_pdf_tab_duration_regression_audit.py`, `tests/test_pdf_only_tab.py`)
-- **Stale PR**: PR #420 closed/superseded as non-merged
-- **Product Task**: No product implementation branch or PR required (obsolete Prompt 0011 superseded)
+- Emit `PROMOTE_RESOLVED_TASK` when the merged active task has `Status: RESOLVED`.
+- Retain `PROMOTE_MERGED_TASK` for ordinary completed tasks.
+- Update `AGENTS.md` and related governance docs/skills to recognize `PROMOTE_RESOLVED_TASK`.
+- Add regression tests covering both `PROMOTE_RESOLVED_TASK` and `PROMOTE_MERGED_TASK` dispatch paths.
 
-## Next State
+## Allowed Files
 
-Awaiting maintainer authorization for the next task in the Visual Output Correctness Recovery Series (CR-05: Repair Structural Layout and Titles).
+- `scripts/score2gp_got_bootstrap.py`
+- `scripts/score2gp_go_bootstrap.py`
+- `AGENTS.md`
+- `.agents/skills/score2gp-project-director/SKILL.md`
+- `CLAUDE.md`
+- `projects/score2gp/prompts/next/go-dispatch.md`
+- `projects/score2gp/prompts/next/got-dispatch.md`
+- `tests/test_score2gp_got_bootstrap.py`
+- `tests/test_dispatch_entrypoint_contract.py`
+- `projects/score2gp/ACTIVE_TASK.md`
+
+## Acceptance
+
+1. When active task status is `RESOLVED` and PR is `MERGED`, `score2gp_dispatch.py` emits state `PROMOTE_RESOLVED_TASK`.
+2. When active task status is `APPROVED` or other ordinary status and PR is `MERGED`, `score2gp_dispatch.py` emits `PROMOTE_MERGED_TASK`.
+3. Governance tests pass cleanly. `AGENTS.md` documents `PROMOTE_RESOLVED_TASK`.

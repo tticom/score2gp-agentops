@@ -671,3 +671,92 @@ def test_case_19_latest_current_head_changes_requested_governs(
     )
     assert result["state"] == "ADDRESS_CURRENT_PR_REVIEW"
     assert result["current_review"]["id"] == 11
+
+
+def test_merged_pr_with_resolved_task_emits_promote_resolved_expected_state(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_ops = temp_git_repos["init_agentops"]
+
+    pr_branch = "gov/close-cr04c-already-resolved"
+    run_git(local_ops, ["checkout", "-b", pr_branch])
+    (local_ops / "closed_task.txt").write_text("closed task")
+    run_git(local_ops, ["add", "."])
+    run_git(local_ops, ["commit", "-m", "closed task"])
+    head = run_git(local_ops, ["rev-parse", "HEAD"])
+    run_git(local_ops, ["checkout", "main"])
+
+    task_resolved = f"""# Active Task
+
+**Task**: CR-04C: Final-Event Duration Consistency Architecture
+**Status**: RESOLVED
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Architect / Governance Integrator
+**Repository**: tticom/score2gp-agentops
+**PR Branch**: `{pr_branch}`
+**Pull Request**: #421
+**Original Prompt**: `projects/score2gp/prompts/next/0010-cr04c-final-event-duration-consistency-architecture.md`
+"""
+    (init_ops / "projects/score2gp/ACTIVE_TASK.md").write_text(task_resolved)
+    run_git(init_ops, ["add", "."])
+    run_git(init_ops, ["commit", "-m", "Resolved active task"])
+    run_git(init_ops, ["push", "origin", "main"])
+
+    def runner(repo: str, selected_branch: str) -> dict[str, Any]:
+        return {
+            "number": 421,
+            "state": "MERGED",
+            "headRefOid": head,
+        }
+
+    result = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=runner,
+    )
+    assert result["state"] == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+    assert result["next_action"] == {
+        "command": "got",
+        "expected_state": "PROMOTE_RESOLVED_TASK",
+        "owner": "governance",
+    }
+
+
+def test_merged_pr_with_approved_task_emits_promote_merged_expected_state(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+
+    pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(local_prod, ["checkout", "-b", pr_branch])
+    (local_prod / "merged_task.txt").write_text("merged task")
+    run_git(local_prod, ["add", "."])
+    run_git(local_prod, ["commit", "-m", "merged task"])
+    head = run_git(local_prod, ["rev-parse", "HEAD"])
+    run_git(local_prod, ["checkout", "main"])
+
+    def runner(repo: str, selected_branch: str) -> dict[str, Any]:
+        return {
+            "number": 396,
+            "state": "MERGED",
+            "headRefOid": head,
+        }
+
+    result = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=runner,
+    )
+    assert result["state"] == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+    assert result["next_action"] == {
+        "command": "got",
+        "expected_state": "PROMOTE_MERGED_TASK",
+        "owner": "governance",
+    }

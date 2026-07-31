@@ -92,14 +92,19 @@ def query_pr(repo: str, branch: str) -> dict[str, Any] | None:
 
 
 def resolve_got_state(
-    pr: dict[str, Any] | None, reviews: list[dict[str, Any]]
+    pr: dict[str, Any] | None,
+    reviews: list[dict[str, Any]],
+    active_task_status: str | None = None,
 ) -> dict[str, Any]:
     if pr is None:
         return {"state": "AWAITING_AGY_PUBLICATION", "current_review": None}
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
     if state == "MERGED":
-        dispatch = "PROMOTE_MERGED_TASK"
+        if active_task_status and active_task_status.upper() == "RESOLVED":
+            dispatch = "PROMOTE_RESOLVED_TASK"
+        else:
+            dispatch = "PROMOTE_MERGED_TASK"
         current_review = None
     elif state == "CLOSED":
         dispatch = "BLOCKED"
@@ -144,7 +149,8 @@ def main() -> None:
         if pr is not None and pr["state"].upper() == "OPEN"
         else []
     )
-    resolved = resolve_got_state(pr, reviews)
+    task_status = task.get("status")
+    resolved = resolve_got_state(pr, reviews, active_task_status=task_status)
     print(json.dumps({
         "ok": True,
         **resolved,

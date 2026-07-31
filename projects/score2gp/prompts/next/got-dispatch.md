@@ -61,7 +61,7 @@ local task state, chat, and issue comments do not count.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
   `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
-- Merged PR: emit actionable state `PROMOTE_MERGED_TASK`, verify the merge on
+- Merged PR: emit actionable state `PROMOTE_MERGED_TASK` (or `PROMOTE_RESOLVED_TASK` when active task status is RESOLVED), verify the merge on
   remote main, synchronize the Codex clone, reread `ACTIVE_TASK.md`, and
   prepare the smallest governance promotion. A status-only response is a
   dispatcher failure. Never promote a report candidate directly into product

@@ -36,7 +36,7 @@ prior managed task.
   the formal exact-head verdict. A status-only response is a dispatcher failure.
 - `READY_FOR_HUMAN_MERGE`: report and stop.
 - `AWAITING_AGY_FIXES`: report the current exact-head findings and stop.
-- `PROMOTE_MERGED_TASK`: verify merged main and prepare the next governance
+- `PROMOTE_MERGED_TASK` / `PROMOTE_RESOLVED_TASK`: verify merged main and prepare the next governance
   promotion. A status-only response is a dispatcher failure; historical
   reviews must not override `MERGED`.
 
