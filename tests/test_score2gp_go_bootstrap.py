@@ -610,7 +610,7 @@ def test_no_pr_lookup_uses_exact_head_and_all_states(monkeypatch: pytest.MonkeyP
     assert captured[captured.index("--state") + 1] == "all"
 
 
-def test_ambiguous_exact_branch_prs_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_reused_branch_selects_unique_open_pr(monkeypatch: pytest.MonkeyPatch) -> None:
     class MockCompletedProcess:
         returncode = 0
         stderr = ""
@@ -620,8 +620,9 @@ def test_ambiguous_exact_branch_prs_fail_closed(monkeypatch: pytest.MonkeyPatch)
         )
 
     monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
-    with pytest.raises(SystemExit):
-        query_github_pr_state("tticom/score2gp", "agy/reused-task")
+    result = query_github_pr_state("tticom/score2gp", "agy/reused-task")
+
+    assert result == {"number": 2, "state": "OPEN", "headRefOid": "b"}
 
 
 def test_case_19_latest_current_head_changes_requested_governs(
