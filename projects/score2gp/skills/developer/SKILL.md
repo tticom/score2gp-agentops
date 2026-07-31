@@ -63,6 +63,26 @@ Unit tests are allowed, but unit tests alone are not sufficient when the require
 
 For product tasks, the Developer must include at least one behaviour/acceptance-style test or diagnostic validation that demonstrates the requirement is met, unless the task is explicitly documentation-only or a narrowly scoped internal refactor. If this is not possible, the Developer must explain why and provide the next-best validation.
 
+## Pre-handback defect sweep
+
+Before claiming completion, the Developer must reread the original requirement,
+all current-head review findings, and the actual assertions line by line.
+
+For each acceptance claim:
+
+1. State the exact required or forbidden observable value and the final output
+   channel where it must appear or be absent.
+2. Locate the assertion that checks that same value in that same output.
+3. Try the strongest nearby false-success case, especially a related symptom
+   passing while the requested property remains false.
+4. Narrow or withdraw any claim whose literal scope exceeds its assertion.
+
+Running a requested input through a path is not proof of the requested output
+property. For example, a sensitive input plus checks for exception text or
+memory-address strings does not prove that the sensitive path was removed from
+publishable artifacts. The Developer must add the missing direct assertion or
+report the criterion as unmet before handback.
+
 ## Architect conformance
 
 When an Architect-approved approach exists, the Developer must implement that approach.

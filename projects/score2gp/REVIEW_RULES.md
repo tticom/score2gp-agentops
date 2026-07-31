@@ -136,6 +136,25 @@ a new probe aimed at the repair. Reviewing only the requested change and
 The guarded formal-review publisher rejects approval bodies without the exact
 adversarial evidence fields required by the Reviewer skill.
 
+### Claim-to-oracle closure
+
+Running a code path is not proof of every property associated with that path.
+Each claim marked `verified` must name an observable value and final artifact
+boundary, cite the exact assertion or reviewer probe that checks it, and include
+a negative control showing that the oracle detects a deliberate violation.
+
+The oracle must match the claim literally. Privacy/path sanitization requires
+asserting that the sensitive path or identifying token is absent from every
+claimed publishable output. Duration propagation requires exact values in the
+final ScoreIR/GPIF output, not merely that a package exists. Fail-closed
+behavior requires an input that triggers rejection and an assertion on the
+specific rejection category.
+
+Successful execution, file existence, parseability, generic exception checks,
+and checks for `object at 0x` are adjacent signals. They cannot prove path
+sanitization or semantic correctness. A claim/oracle scope mismatch blocks
+approval.
+
 The default working verdict is `needs changes`. The burden of proof belongs to
 the approval case, claim by claim. Approval evidence must be pinned to the exact
 head, link every claim to named probes, include both a deliberate mutation and

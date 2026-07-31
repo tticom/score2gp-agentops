@@ -53,6 +53,11 @@ local task state, chat, and issue comments do not count.
   PR tests. Timing, grouping, aggregation, fallback, capacity, and fail-closed
   changes require disagreement plus order/partition/boundary challenges.
   On revised heads, rerun the original probe and add a second-order probe.
+  Apply claim-to-oracle closure: every `verified` claim must cite the exact
+  final-artifact assertion for the same required or forbidden value and a
+  negative control killed by that oracle. Exercising a related path or checking
+  adjacent symptoms is not verification. A claim/oracle scope mismatch requires
+  changes.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
   `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
