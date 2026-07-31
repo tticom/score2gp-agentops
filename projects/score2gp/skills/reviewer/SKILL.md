@@ -168,6 +168,31 @@ Do not write `residual risk: none`, `100% coverage`, `comprehensive`, or
 untested. Any mismatch between claimed and observed test counts, paths, heads,
 or outputs is itself a blocking integrity defect.
 
+#### Claim-to-oracle closure gate
+
+Approval is prohibited when evidence exercises a related path but does not
+directly test the property named in the claim. For every claim classified
+`verified`, the Reviewer must:
+
+1. Rewrite the claim as an observable required or forbidden value at a named
+   final artifact boundary.
+2. Cite the exact assertion, comparison, or reviewer probe that observes that
+   value at that boundary. Successful exit, file existence, parseability,
+   exception-text checks, and memory-address checks are adjacent signals; they
+   do not prove path sanitization or semantic correctness.
+3. Run a negative control that deliberately violates the claimed property and
+   demonstrate that the same oracle detects the violation.
+4. Compare the literal scope of the claim with the literal scope of the oracle.
+   Every noun, output channel, forbidden value, and required value in the claim
+   must be observed. Otherwise classify it `partially verified` or `not
+   verified` and do not approve.
+
+For example, exercising a sensitive input and checking only for `object at 0x`
+does not verify that its path was sanitized. The decisive assertion must check
+that the sensitive path or identifying token is absent from every publishable
+output named by the claim. A prose description of what a test supposedly
+verifies is not evidence.
+
 On a revised head, rerun the original counterexample and create a second-order probe
 against the fix. Do not narrow re-review to the reported finding or
 repository hygiene.

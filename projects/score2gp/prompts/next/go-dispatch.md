@@ -59,5 +59,10 @@ the same head. Reviews from all other accounts are ignored.
 
 After author mutations, publish one PR comment with exact head, finding
 dispositions, validation, remaining risks, and `AWAITING_GOVERNANCE_REVIEW`.
+Before that handback, run the Developer pre-handback defect sweep: reread every
+requirement and current-head finding, map each claimed property to the exact
+final-output assertion for the same value and channel, and challenge one nearby
+false-success case. Do not claim a finding fixed when only a related path or
+adjacent symptom was tested.
 Repeated `go` with unchanged remote inputs returns the same state without
 creating a new task or duplicate handback.

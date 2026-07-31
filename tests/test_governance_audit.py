@@ -256,3 +256,22 @@ def test_governance_approval_requires_executed_adversarial_evidence() -> None:
     ]:
         assert field in reviewer
         assert field in template
+    for text in (reviewer, rules, dispatch):
+        assert "claim-to-oracle" in text.lower()
+    assert "sensitive path" in rules.lower()
+
+
+def test_developer_handback_requires_claim_assertion_defect_sweep() -> None:
+    developer = (
+        PROJECT_ROOT / "projects/score2gp/skills/developer/SKILL.md"
+    ).read_text(encoding="utf-8")
+    dispatch = (
+        PROJECT_ROOT / "projects/score2gp/prompts/next/go-dispatch.md"
+    ).read_text(encoding="utf-8")
+
+    assert "Pre-handback defect sweep" in developer
+    assert "actual assertions line by line" in developer
+    assert "same value in that same output" in developer
+    assert "pre-handback defect sweep" in dispatch
+    assert "challenge one nearby" in dispatch
+    assert "false-success case" in dispatch
