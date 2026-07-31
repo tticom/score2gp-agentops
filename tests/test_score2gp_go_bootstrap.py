@@ -760,3 +760,47 @@ def test_merged_pr_with_approved_task_emits_promote_merged_expected_state(
         "expected_state": "PROMOTE_MERGED_TASK",
         "owner": "governance",
     }
+
+
+def test_merged_pr_uses_synchronized_main_when_merge_commit_is_ahead_of_pr_head(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_prod = temp_git_repos["init_product"]
+
+    pr_branch = "agy/generate-public-pdf-tab-duration-fixture"
+    run_git(init_prod, ["checkout", "-b", pr_branch])
+    (init_prod / "merged_task.txt").write_text("merged task")
+    run_git(init_prod, ["add", "."])
+    run_git(init_prod, ["commit", "-m", "merged task"])
+    pr_head = run_git(init_prod, ["rev-parse", "HEAD"])
+    run_git(init_prod, ["checkout", "main"])
+    run_git(init_prod, ["merge", "--no-ff", pr_branch, "-m", "Merge task PR"])
+    merge_commit = run_git(init_prod, ["rev-parse", "HEAD"])
+    run_git(init_prod, ["push", "origin", "main"])
+
+    def runner(repo: str, selected_branch: str) -> dict[str, Any]:
+        return {
+            "number": 422,
+            "state": "MERGED",
+            "headRefOid": pr_head,
+        }
+
+    result = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=runner,
+    )
+
+    assert result["state"] == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+    assert result["selected_branch"] == "main"
+    assert result["output_sha"] == merge_commit
+    assert run_git(local_prod, ["branch", "--show-current"]) == "main"
+    assert run_git(
+        local_prod,
+        ["show-ref", "--verify", f"refs/heads/{pr_branch}"],
+        check=False,
+    ) == ""
