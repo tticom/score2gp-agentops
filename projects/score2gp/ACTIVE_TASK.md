@@ -1,34 +1,32 @@
 # Active Task
 
-**Task**: CR-04C: Final-Event Duration Consistency Architecture
+**Task**: CR-04C: Final-Event Duration Consistency Implementation
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect / Diagnostic Engineer
-**Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/cr04c-final-event-duration-consistency-architecture-v2`
+**Authorised Role**: Developer / Pipeline Integrator
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/cr04c-final-event-duration-consistency-implementation`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0010-cr04c-final-event-duration-consistency-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0011-cr04c-final-event-duration-consistency-implementation.md`
 
 ## Context
 
-Following product merge commit `f47194e57b551d4b571a04c0b7641fbe9c173f80` (CR-04B `--tempo-bpm` explicit CLI override) and PR #396 (`ea720c353af0926bede1980d55479db77c22aa58`), this task executes prompt `0010-cr04c-final-event-duration-consistency-architecture.md`.
+Following the completion of the CR-04C architecture pass (`projects/score2gp/research/2026-07-25-cr04c-final-event-duration-architecture-decision.md`), Option A (grid-sized notes + greedy rest decomposition + over-capacity refusal) was selected and approved. This task implements the Developer solution in `build_ir_from_tabraw_only()`.
 
 ## Goal
 
-Resolve the smallest correct representation for PDF-only TabRaw final events whose padded `duration_ticks` disagree with their `notated_duration`, and turn that decision into a bounded, public-testable Developer authorization.
+Implement Option A in `src/score2gp/build_ir.py`: set every candidate note event's duration to `grid_spacing` (480 ticks), greedily decompose remaining measure capacity $R = 3840 - \text{current\_onset}$ into un-dotted rest events, and raise `BuildIrInputRiskError(category="pdf_only_tab_measure_overcapacity")` if measure capacity is exceeded.
 
 ## Allowed Files
 
-- `projects/score2gp/research/` (in `score2gp-agentops`)
-- `projects/score2gp/reports/` (in `score2gp-agentops`)
-- `projects/score2gp/prompts/next/` (in `score2gp-agentops`)
-- `projects/score2gp/ACTIVE_TASK.md` (in `score2gp-agentops`)
-- `projects/score2gp/prompts/NEXT.md` (in `score2gp-agentops`)
+- `src/score2gp/build_ir.py` (in `score2gp`)
+- `tests/test_pdf_only_tab.py` (in `score2gp`)
+- `tests/test_build_ir.py` (in `score2gp`)
 
 ## Non-goals
 
-No edits to product code in `score2gp` during this Architect phase.
+No edits to MusicXML sidecar timing alignment, tempo handling, GP schema, or unrelated conversion code.
 
 ## Acceptance
 
-Comprehensive architecture and decision record written selecting exactly one smallest implementation path for final-event duration consistency.
+Test-first implementation complete in `src/score2gp/build_ir.py`. Tests for $N=4$ single rest, $N=3$ multi-rest remainder, $N=1$ multi-rest remainder, and over-capacity refusal pass. Full pytest suite and `agent_verify.py` pass with overall status `PASS`.
