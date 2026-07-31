@@ -1,32 +1,33 @@
 # Active Task
 
-**Task**: PDFTAB-DUR-07: Regression Audit & System Hardening
+**Task**: CR-04A: False-Rest and Per-Voice Capacity Architecture
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer / Pipeline Integrator
-**Repository**: tticom/score2gp
-**PR Branch**: `agy/pdftab-duration-regression-audit`
+**Authorised Role**: Architect / Diagnostic Engineer
+**Repository**: tticom/score2gp-agentops
+**PR Branch**: `agy/cr04a-false-rest-capacity-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0024-pdf-tab-duration-regression-audit.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0007-cr04a-false-rest-capacity-architecture.md`
 
 ## Context
 
-Following the merge of PR #395 (`326fc4baa6d339f7eb73d72d4f6caf0379dcf9df`), Slice 3 (Assembler Integration & Oracle Verification) is fully merged in `score2gp`. This task implements Slice 4 (Regression Audit & System Hardening) as defined in Section 7 of `docs/design/pdf-tab-duration-candidate-extraction.md`.
+Following the merge of PR #396 (`ea720c353af0926bede1980d55479db77c22aa58`, product main commit `f3cf042c96defdaf09c3353f16f9dbcb38e542d3`), task PDFTAB-DUR-07 (Slice 4 Regression Audit & System Hardening) is complete. The next item in the maintainer-approved Visual Output Correctness Recovery Series is CR-04A (False-rest candidate and per-voice capacity gate).
 
 ## Goal
 
-Perform comprehensive regression audit across the full corpus harness, verifying unstemmed tab staves, standard notation, and IR validation.
-Add regression test suite in `tests/test_pdf_tab_duration_regression_audit.py` to ensure end-to-end conversion consistency and zero leakage.
-Verify that `export-schema`, `artifact_audit.py`, `validate-ir`, and `agent_verify.py` pass cleanly with zero warnings or uncommitted diffs.
+Locate the first committed-evidence divergence that creates the Lesson-5 false-rest candidate, and define a deterministic per-voice measure-capacity gate. Produce a Developer-ready rule and public regression plan.
 
 ## Allowed Files
 
-- `tests/test_pdf_tab_duration_regression_audit.py` (in `score2gp`)
+- `projects/score2gp/reports/2026-07-24-cr04a-architecture.md` (in `score2gp-agentops`)
+- `projects/score2gp/prompts/next/` (in `score2gp-agentops`)
+- `projects/score2gp/ACTIVE_TASK.md` (in `score2gp-agentops`)
+- `projects/score2gp/prompts/NEXT.md` (in `score2gp-agentops`)
 
 ## Non-goals
 
-No edits to unrelated parsers, private inputs, reference GP leakage, automatic merge, or branch deletion.
+No edits to product code in `score2gp` during this Architect phase.
 
 ## Acceptance
 
-Regression audit tests in `tests/test_pdf_tab_duration_regression_audit.py` pass 100%. All public fixture conversions, schema exports, IR validations, and artifact audits pass cleanly. `agent_verify.py` passes with overall status `PASS`, product PR is opened, and handback comment is published.
+Comprehensive architecture report written with exact capacity calculation rules, false-rest rejection criteria, and public test contracts.
