@@ -364,6 +364,42 @@ def run_go_bootstrap(
                     TRUSTED_REVIEWERS,
                 )
 
+    # A merged PR is historical evidence, not a branch-reconciliation target.
+    # The task branch may have been deleted, or a local copy may legitimately
+    # point at the merge commit on main. Stay on the synchronized canonical
+    # branch and hand governance the authoritative merged state immediately.
+    if pr_state == "MERGED":
+        selected_branch = run_git(target_repo_path, ["branch", "--show-current"])
+        selected_sha = run_git(target_repo_path, ["rev-parse", "HEAD"])
+        expected_state = (
+            "PROMOTE_RESOLVED_TASK"
+            if task_status.upper() == "RESOLVED"
+            else "PROMOTE_MERGED_TASK"
+        )
+        return {
+            "ok": True,
+            "state": "MERGED_AWAITING_GOVERNANCE_PROMOTION",
+            "active_task": {
+                "task": task_name,
+                "status": task_status,
+                "assigned_identity": assigned_identity,
+                "repository": declared_repo,
+                "pr_branch": pr_branch,
+                "original_prompt": original_prompt,
+            },
+            "agentops_sha": agentops_head,
+            "output_repo": declared_repo,
+            "output_sha": selected_sha,
+            "selected_branch": selected_branch,
+            "pr_number": pr_number,
+            "current_review": None,
+            "next_action": {
+                "command": "got",
+                "expected_state": expected_state,
+                "owner": "governance",
+            },
+        }
+
     # Phase 6: Select Authorised Task Branch with strict reconciliation
     local_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/heads/{pr_branch}"], check=False) != ""
     remote_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/remotes/origin/{pr_branch}"], check=False) != ""
