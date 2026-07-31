@@ -5,7 +5,7 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect / Diagnostic Engineer
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/cr04c-final-event-duration-consistency-architecture`
+**PR Branch**: `agy/cr04c-final-event-duration-consistency-architecture-v2`
 **Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/next/0010-cr04c-final-event-duration-consistency-architecture.md`
 
