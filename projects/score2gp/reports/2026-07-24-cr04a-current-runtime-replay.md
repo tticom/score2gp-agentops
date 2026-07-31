@@ -1,17 +1,17 @@
 # CR-04A Current-Runtime Lesson-5 Evidence Replay Report
 
-**Authorised Role**: Architect (Evidence Collection)  
-**Governance Repository**: `score2gp-agentops`  
-**Product Repository**: `score2gp`  
-**Product Base Commit**: `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f` (contains `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`)  
-**Date**: 2026-07-25  
-**Verdict**: `DEFECT_NOT_REPRODUCED`  
+**Authorised Role**: Architect (Evidence Collection)
+**Governance Repository**: `score2gp-agentops`
+**Product Repository**: `score2gp`
+**Product Base Commit**: `ea720c353af0926bede1980d55479db77c22aa58` (contains `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`)
+**Date**: 2026-07-31
+**Verdict**: `DEFECT_NOT_REPRODUCED`
 
 ---
 
 ## 1. Executive Summary
 
-This report records the bounded current-runtime evidence replay for **CR-04A** (`Lesson-5.pdf`) on product `origin/main` (`ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`).
+This report records the bounded current-runtime evidence replay for **CR-04A** (`Lesson-5.pdf`) on product `origin/main` (`ea720c353af0926bede1980d55479db77c22aa58`).
 
 Historical evidence ledger `2026-07-17-first-divergence-evidence-ledger.json` previously recorded a false **half rest** (1920 ticks) inflating measure duration to 5760 ticks and causing a 12/8 meter misclassification.
 
@@ -25,7 +25,7 @@ Empirical replay on current product `main` establishes that:
 
 ## 2. Runtime Provenance & Identity Remediation
 
-- **Product Commit (HEAD)**: `ff9fb4832ef1d4b14ab4b6e369a3c1ceaef9434f`
+- **Product Commit (HEAD)**: `ea720c353af0926bede1980d55479db77c22aa58`
 - **Product Working Tree Status**: Clean (`git status --short` output empty)
 - **Executable Location**: `/home/tticom/work/score2gp-workspace/score2gp/.venv/bin/score2gp`
 - **Resolved Module Path**: `/home/tticom/work/score2gp-workspace/score2gp/src/score2gp/__init__.py`
