@@ -86,6 +86,52 @@ def test_current_metadata_merged_branch_fails_audit(monkeypatch) -> None:
 
     assert raised.value.code == 1
 
+
+def test_newly_promoted_approved_task_without_pr_passes_audit(monkeypatch) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "projects/score2gp/skills/reviewer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(
+                read_data="""# Active Task
+**Status**: APPROVED
+**PR Branch**: `agy/cr05-structural-layout-and-titles-architecture`
+**Repository**: tticom/score2gp-agentops
+"""
+            )()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    class MockCompletedProcess:
+        returncode = 0
+        stdout = "[]"
+        stderr = ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+
 def test_case_insensitive_banned_extensions(monkeypatch) -> None:
     # Mock git ls-files output to include uppercase extensions
     mock_files = [

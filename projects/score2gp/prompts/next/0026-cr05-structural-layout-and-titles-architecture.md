@@ -8,9 +8,9 @@ This is a Tier B Architect task. Product implementation is not authorised.
 
 ## Start
 
-1. Work only in the canonical Ubuntu WSL repositories below `/home/tticom/work/score2gp-workspace`.
+1. Work only in the canonical Ubuntu WSL repositories below `/home/tticom-automation/work/score2gp-workspace`.
 2. Prove GitHub CLI and local Git identity are `tticom-automation`.
-3. Read `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, this prompt, the Architect skill, product `AGENTS.md`, and `tasks/2026-07-17-visual-output-correctness-backlog.md`.
+3. Read `projects/score2gp/AGENT_CONTROL.md`, `ACTIVE_TASK.md`, this prompt, `projects/score2gp/skills/architect/SKILL.md`, product `AGENTS.md`, and `tasks/2026-07-17-visual-output-correctness-backlog.md`.
 4. Require clean governance and product worktrees.
 5. Fetch both repositories and require product `origin/main` to contain commit `f3cf042c96defdaf09c3353f16f9dbcb38e542d3`.
 6. Run `python scripts/agent_verify.py` in the product repository before analysis.
