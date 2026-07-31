@@ -5,7 +5,7 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Governance Developer / Tooling Specialist
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/agentops-promote-resolved-task`
+**PR Branch**: `agy/agentops-promote-resolved-task-v2`
 **Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/next/0025-agentops-promote-resolved-task.md`
 
