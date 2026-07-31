@@ -18,7 +18,7 @@ Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize task actions.
 For `MERGED_AWAITING_GOVERNANCE_PROMOTION`, report the state and stop without
 rerunning, re-verifying, or summarizing the completed task. Also report the
 returned `next_action`: governance must run `got`, which dispatches
-`PROMOTE_MERGED_TASK`. Treat every other unrecognized or non-action state as
+`PROMOTE_MERGED_TASK` or `PROMOTE_RESOLVED_TASK`. Treat every other unrecognized or non-action state as
 terminal.
 
 Read `AGENT-RULES.md` for the remaining repository rules.
@@ -33,3 +33,4 @@ from the action-authorizing states defined above for `go`.
 main, synchronizing product and governance mains, rereading `ACTIVE_TASK.md`,
 and preparing the smallest bounded governance promotion. A status-only
 response in this state is a dispatcher failure.
+`PROMOTE_RESOLVED_TASK` authorizes and requires verifying the governance resolution on remote main, synchronizing product and governance mains, rereading `ACTIVE_TASK.md`, and preparing the smallest bounded governance promotion for resolved tasks without product code changes. A status-only response in this state is a dispatcher failure.

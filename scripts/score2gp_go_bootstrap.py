@@ -497,9 +497,14 @@ def run_go_bootstrap(
         "current_review": current_review,
     }
     if state == "MERGED_AWAITING_GOVERNANCE_PROMOTION":
+        expected_state = (
+            "PROMOTE_RESOLVED_TASK"
+            if task_status.upper() == "RESOLVED"
+            else "PROMOTE_MERGED_TASK"
+        )
         result["next_action"] = {
             "command": "got",
-            "expected_state": "PROMOTE_MERGED_TASK",
+            "expected_state": expected_state,
             "owner": "governance",
         }
 

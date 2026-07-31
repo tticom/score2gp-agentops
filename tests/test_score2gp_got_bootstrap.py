@@ -14,6 +14,26 @@ def test_merged_pr_overrides_historical_review_state() -> None:
     assert result["current_review"] is None
 
 
+def test_merged_pr_emits_promote_resolved_task_when_status_resolved() -> None:
+    result = resolve_got_state(
+        {"state": "MERGED", "headRefOid": "e" * 40, "number": 421},
+        [],
+        active_task_status="RESOLVED",
+    )
+    assert result["state"] == "PROMOTE_RESOLVED_TASK"
+    assert result["current_review"] is None
+
+
+def test_merged_pr_emits_promote_merged_task_when_status_not_resolved() -> None:
+    result = resolve_got_state(
+        {"state": "MERGED", "headRefOid": "e" * 40, "number": 396},
+        [],
+        active_task_status="APPROVED",
+    )
+    assert result["state"] == "PROMOTE_MERGED_TASK"
+    assert result["current_review"] is None
+
+
 def test_no_pr_waits_for_author_publication() -> None:
     result = resolve_got_state(None, [])
     assert result == {

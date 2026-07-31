@@ -28,6 +28,7 @@ def test_agent_clients_load_executable_got_entrypoint() -> None:
         assert "never resume" in text.lower()
         assert "REVIEW_CURRENT_HEAD" in text
         assert "PROMOTE_MERGED_TASK" in text
+        assert "PROMOTE_RESOLVED_TASK" in text
         assert "status-only response is a dispatcher failure" in text.lower()
 
 
@@ -43,4 +44,5 @@ def test_agy_project_skill_forbids_manual_state_reconstruction() -> None:
     assert GOT_COMMAND in text
     assert "`REVIEW_CURRENT_HEAD`" in text
     assert "`PROMOTE_MERGED_TASK`" in text
+    assert "`PROMOTE_RESOLVED_TASK`" in text
     assert "state machine is distinct from `go`" in text
