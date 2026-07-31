@@ -188,12 +188,18 @@ def query_github_pr_state(declared_repo: str, pr_branch: str) -> dict[str, Any] 
         fail_closed("GitHub PR list response was not a list", state="GITHUB_STATE_UNAVAILABLE")
     if not matches:
         return None
-    if len(matches) != 1:
+
+    open_prs = [m for m in matches if m.get("state") == "OPEN"]
+    if len(open_prs) == 1:
+        return open_prs[0]
+    elif len(open_prs) > 1:
         fail_closed(
-            f"Expected at most one PR for exact branch {pr_branch}, found {len(matches)}",
+            f"Expected at most one OPEN PR for exact branch {pr_branch}, found {len(open_prs)}",
             state="GITHUB_STATE_UNAVAILABLE",
         )
-    return matches[0]
+
+    sorted_matches = sorted(matches, key=lambda m: m.get("number", 0), reverse=True)
+    return sorted_matches[0]
 
 
 def run_go_bootstrap(
