@@ -12,6 +12,62 @@ def run_cmd(args):
     except Exception:
         return ""
 
+
+def parse_active_task_state(content: str) -> tuple[str, str, str]:
+    """Return normalized status, repository, and branch from the task contract.
+
+    ACTIVE_TASK.md uses bold metadata fields.  Keep legacy section parsing for
+    older task records, but do not silently skip the current ``**PR Branch**``
+    spelling: doing so can allow an already-merged task to be promoted again.
+    """
+    status_match = re.search(r"^\*\*Status\*\*:\s*(.+?)\s*$", content, re.MULTILINE)
+    branch_match = re.search(
+        r"^\*\*PR Branch\*\*:\s*`([^`]+)`\s*$", content, re.MULTILINE
+    )
+    repository_match = re.search(
+        r"^\*\*Repository\*\*:\s*(\S+)\s*$", content, re.MULTILINE
+    )
+    status = status_match.group(1).strip().upper() if status_match else ""
+    branch_name = branch_match.group(1).strip() if branch_match else ""
+    repository = (
+        repository_match.group(1).strip()
+        if repository_match
+        else "tticom/score2gp"
+    )
+
+    lines = content.splitlines()
+    if not status:
+        for idx, line in enumerate(lines):
+            if "## Status" in line:
+                for next_line in lines[idx + 1:idx + 5]:
+                    value = next_line.strip()
+                    if value and not value.startswith("#"):
+                        status = value.upper()
+                        break
+                if status:
+                    break
+
+    if not branch_name:
+        for idx, line in enumerate(lines):
+            if "Branch Suggestion" in line or "**Branch**" in line:
+                match = re.search(r"`([^`]+)`", line)
+                if match:
+                    branch_name = match.group(1).strip()
+                    break
+                for next_line in lines[idx + 1:idx + 3]:
+                    value = next_line.strip()
+                    if not value:
+                        continue
+                    nested_match = re.search(r"`([^`]+)`", value)
+                    branch_name = (
+                        nested_match.group(1).strip() if nested_match else value
+                    )
+                    break
+                if branch_name:
+                    break
+
+    return status, repository, branch_name
+
 def main():
     print("Running Score2GP Governance Audit...")
     violations = []
@@ -60,44 +116,19 @@ def main():
         with open(active_task_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        # Robust status parsing
-        status = ""
-        lines = content.splitlines()
-        for idx, line in enumerate(lines):
-            if "## Status" in line or "**Status**" in line:
-                for next_line in lines[idx+1:idx+5]:
-                    nl = next_line.strip()
-                    if nl and not nl.startswith("#"):
-                        status = nl.upper()
-                        break
-                if status:
-                    break
+        status, repository, branch_name = parse_active_task_state(content)
 
-        # Robust branch parsing
-        branch_name = ""
-        for idx, line in enumerate(lines):
-            if "Branch Suggestion" in line or "Branch:" in line or "**Branch**" in line:
-                m = re.search(r"`([^`]+)`", line)
-                if m:
-                    branch_name = m.group(1)
-                    break
-                for next_line in lines[idx+1:idx+3]:
-                    nl = next_line.strip()
-                    if nl:
-                        m2 = re.search(r"`([^`]+)`", nl)
-                        if m2:
-                            branch_name = m2.group(1)
-                        else:
-                            branch_name = nl
-                        break
-                if branch_name:
-                    break
+        if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and not branch_name:
+            violations.append(
+                "ACTIVE_TASK.md has an executable status but no parseable PR Branch; "
+                "refusing to skip merged-task replay verification."
+            )
 
         if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and branch_name:
             # Query gh to see if this branch has a merged PR on product repo
             try:
                 res = subprocess.run(
-                    ["gh", "pr", "view", branch_name, "--repo", "tticom/score2gp", "--json", "state"],
+                    ["gh", "pr", "view", branch_name, "--repo", repository, "--json", "state"],
                     capture_output=True, text=True
                 )
                 if res.returncode != 0 or not res.stdout.strip():

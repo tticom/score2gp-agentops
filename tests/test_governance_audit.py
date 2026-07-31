@@ -11,6 +11,81 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 import score2gp_governance_audit
 
+
+def test_current_active_task_metadata_parses_pr_branch() -> None:
+    status, repository, branch = score2gp_governance_audit.parse_active_task_state(
+        """# Active Task
+
+**Task**: CR-04B: Explicit Tempo Override
+**Status**: APPROVED
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/cr04b-explicit-pdf-only-tempo-override`
+"""
+    )
+
+    assert status == "APPROVED"
+    assert repository == "tticom/score2gp"
+    assert branch == "agy/cr04b-explicit-pdf-only-tempo-override"
+
+
+def test_architecture_task_uses_declared_agentops_repository() -> None:
+    status, repository, branch = score2gp_governance_audit.parse_active_task_state(
+        """# Active Task
+**Status**: APPROVED
+**Repository**: tticom/score2gp-agentops
+**PR Branch**: `agy/cr04c-final-event-duration-consistency-architecture`
+"""
+    )
+
+    assert status == "APPROVED"
+    assert repository == "tticom/score2gp-agentops"
+    assert branch == "agy/cr04c-final-event-duration-consistency-architecture"
+
+
+def test_current_metadata_merged_branch_fails_audit(monkeypatch) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "projects/score2gp/skills/reviewer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(
+                read_data="""# Active Task
+**Status**: APPROVED
+**PR Branch**: `agy/already-merged`
+"""
+            )()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    class MockCompletedProcess:
+        returncode = 0
+        stdout = json.dumps({"state": "MERGED"})
+        stderr = ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 1
+
 def test_case_insensitive_banned_extensions(monkeypatch) -> None:
     # Mock git ls-files output to include uppercase extensions
     mock_files = [
