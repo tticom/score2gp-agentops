@@ -10,7 +10,7 @@ Determine a generic, testable architecture for independently classifying:
 
 A double or final barline must not imply a system break merely because of its barline type.
 
-This is an Architect/research task. Product implementation is not authorized.
+This is an Architect/research task in `tticom/score2gp`. Product source code implementation is not authorized.
 
 ## Start
 
@@ -20,7 +20,7 @@ This is an Architect/research task. Product implementation is not authorized.
 4. Require clean governance and product worktrees.
 5. Fetch both repositories and record present maintainer authorization to accept current product `origin/main`, including commit `f3cf042c96defdaf09c3353f16f9dbcb38e542d3`, as the baseline for CR-05 research without historical reconstruction.
 6. Run `python scripts/agent_verify.py` in the product repository before analysis.
-7. Create governance branch `agy/cr05-structural-layout-and-titles-architecture`.
+7. Create product branch `agy/cr05-structural-layout-and-titles-architecture` in `tticom/score2gp`.
 
 ## Required Investigation
 
@@ -104,10 +104,9 @@ Do not bundle barline classification, layout reconstruction, and title ownership
 
 ## Durable Deliverables
 
-Write:
+Write in product repository `tticom/score2gp`:
 
-- `projects/score2gp/reports/2026-08-01-cr05-architecture.md`
-- one candidate versioned prompt under `projects/score2gp/prompts/next/` only when the selected outcome justifies it
+- `docs/design/cr05-structural-layout-and-titles-architecture.md`
 
 The report must include:
 
@@ -117,10 +116,10 @@ The report must include:
 - hypotheses and unknowns;
 - evidence ledger;
 - disconfirmation record;
-- selected outcome;
-- smallest next task;
+- selected outcome (`CONTINUE`, `RESEARCH_NEXT`, or `STOP`);
+- recommended follow-up candidate, if applicable;
 - what was not verified.
 
-Stop after publishing one AgentOps architecture PR for independent Codex review.
+Stop after publishing one product architecture PR in `tticom/score2gp` for independent Codex review.
 
-Do not modify product files, `projects/score2gp/ACTIVE_TASK.md`, or `projects/score2gp/prompts/NEXT.md`.
+Do not modify product source code in `score2gp`. Do not create or modify AgentOps candidate prompts, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/NEXT.md`, or governance run records in `score2gp-agentops`.
