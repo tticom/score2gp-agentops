@@ -125,19 +125,23 @@ def main():
             )
 
         if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and branch_name:
-            # Query gh to see if this branch has a merged PR on product repo
+            # Query gh to see if a PR exists for this branch and whether it is already merged
             try:
                 res = subprocess.run(
-                    ["gh", "pr", "view", branch_name, "--repo", repository, "--json", "state"],
+                    ["gh", "pr", "list", "--repo", repository, "--head", branch_name, "--state", "all", "--json", "number,state"],
                     capture_output=True, text=True
                 )
-                if res.returncode != 0 or not res.stdout.strip():
-                    violations.append(f"Unable to verify active task branch against GitHub: {branch_name}")
-                else:
+                if res.returncode != 0:
+                    violations.append(f"Unable to verify active task branch against GitHub: {branch_name} ({res.stderr.strip()})")
+                elif res.stdout.strip():
                     try:
-                        pr_info = json.loads(res.stdout)
-                        if pr_info.get("state") == "MERGED":
-                            violations.append(f"ACTIVE_TASK.md status is stale ({status}) for branch '{branch_name}' which is already MERGED on product repo.")
+                        matches = json.loads(res.stdout)
+                        for pr_info in matches:
+                            if pr_info.get("state") == "MERGED":
+                                violations.append(
+                                    f"ACTIVE_TASK.md status is stale ({status}) for branch '{branch_name}' which is already MERGED on {repository}."
+                                )
+                                break
                     except Exception as json_err:
                         violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (JSON parse error: {json_err})")
             except Exception as e:

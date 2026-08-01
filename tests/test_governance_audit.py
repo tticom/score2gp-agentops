@@ -42,7 +42,35 @@ def test_architecture_task_uses_declared_agentops_repository() -> None:
     assert branch == "agy/cr04c-final-event-duration-consistency-architecture"
 
 
-def test_current_metadata_merged_branch_fails_audit(monkeypatch) -> None:
+class RecordedSubprocessRunner:
+    def __init__(self, stdout="[]", returncode=0, stderr=""):
+        self.stdout = stdout
+        self.returncode = returncode
+        self.stderr = stderr
+        self.calls = []
+
+    def __call__(self, args, **kwargs):
+        if args and args[0] == "gh":
+            self.calls.append(list(args))
+            return subprocess.CompletedProcess(
+                args=args,
+                returncode=self.returncode,
+                stdout=self.stdout,
+                stderr=self.stderr,
+            )
+        return subprocess.run(args, **kwargs)
+
+    def assert_called_with_gh_pr_list(self, repo: str, head: str) -> None:
+        assert len(self.calls) == 1, f"Expected 1 gh call, got {len(self.calls)}"
+        cmd = self.calls[0]
+        assert cmd[0:3] == ["gh", "pr", "list"], f"Command does not start with gh pr list: {cmd}"
+        assert "--repo" in cmd and cmd[cmd.index("--repo") + 1] == repo
+        assert "--head" in cmd and cmd[cmd.index("--head") + 1] == head
+        assert "--state" in cmd and cmd[cmd.index("--state") + 1] == "all"
+        assert "--json" in cmd and cmd[cmd.index("--json") + 1] == "number,state"
+
+
+def test_current_metadata_merged_branch_fails_audit(monkeypatch, capsys) -> None:
     mock_files = [
         "projects/score2gp/skills/architect/SKILL.md",
         "projects/score2gp/skills/developer/SKILL.md",
@@ -66,6 +94,7 @@ def test_current_metadata_merged_branch_fails_audit(monkeypatch) -> None:
                 read_data="""# Active Task
 **Status**: APPROVED
 **PR Branch**: `agy/already-merged`
+**Repository**: tticom/score2gp
 """
             )()
         if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
@@ -74,17 +103,67 @@ def test_current_metadata_merged_branch_fails_audit(monkeypatch) -> None:
 
     monkeypatch.setattr("builtins.open", mock_open)
 
-    class MockCompletedProcess:
-        returncode = 0
-        stdout = json.dumps({"state": "MERGED"})
-        stderr = ""
-
-    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: MockCompletedProcess())
+    runner = RecordedSubprocessRunner(
+        stdout=json.dumps([{"number": 123, "state": "MERGED"}])
+    )
+    monkeypatch.setattr(subprocess, "run", runner)
 
     with pytest.raises(SystemExit) as raised:
         score2gp_governance_audit.main()
 
     assert raised.value.code == 1
+    runner.assert_called_with_gh_pr_list(repo="tticom/score2gp", head="agy/already-merged")
+    captured = capsys.readouterr()
+    assert "agy/already-merged" in captured.out
+    assert "MERGED" in captured.out
+    assert "tticom/score2gp" in captured.out
+    assert "ACTIVE_TASK.md status is stale" in captured.out
+
+
+def test_newly_promoted_approved_task_without_pr_passes_audit(monkeypatch) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "projects/score2gp/skills/reviewer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(
+                read_data="""# Active Task
+**Status**: APPROVED
+**PR Branch**: `agy/cr05-structural-layout-and-titles-architecture`
+**Repository**: tticom/score2gp
+"""
+            )()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    runner = RecordedSubprocessRunner(stdout="[]")
+    monkeypatch.setattr(subprocess, "run", runner)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    runner.assert_called_with_gh_pr_list(
+        repo="tticom/score2gp",
+        head="agy/cr05-structural-layout-and-titles-architecture",
+    )
 
 def test_case_insensitive_banned_extensions(monkeypatch) -> None:
     # Mock git ls-files output to include uppercase extensions
@@ -120,7 +199,7 @@ def test_case_insensitive_banned_extensions(monkeypatch) -> None:
         score2gp_governance_audit.main()
     assert raised.value.code == 1
 
-def test_failed_github_lookup_fails_audit(monkeypatch) -> None:
+def test_failed_github_lookup_fails_audit(monkeypatch, capsys) -> None:
     # Mock files to be clean
     mock_files = [
         "projects/score2gp/skills/architect/SKILL.md",
@@ -157,24 +236,102 @@ APPROVED
     original_open = open
     monkeypatch.setattr("builtins.open", mock_open)
 
-    # Mock subprocess.run to simulate gh command failure (returncode != 0)
-    class MockCompletedProcess:
-        def __init__(self, returncode, stdout, stderr):
-            self.returncode = returncode
-            self.stdout = stdout
-            self.stderr = stderr
-
-    def mock_run(args, **kwargs):
-        if "gh" in args:
-            return MockCompletedProcess(1, "", "Failed command")
-        return subprocess.run(args, **kwargs)
-
-    monkeypatch.setattr(subprocess, "run", mock_run)
+    runner = RecordedSubprocessRunner(returncode=1, stderr="Failed command")
+    monkeypatch.setattr(subprocess, "run", runner)
 
     # Expect system exit with code 1 due to failed github lookup
     with pytest.raises(SystemExit) as raised:
         score2gp_governance_audit.main()
     assert raised.value.code == 1
+    runner.assert_called_with_gh_pr_list(repo="tticom/score2gp", head="feature/test-branch")
+    captured = capsys.readouterr()
+    assert "Unable to verify active task branch against GitHub" in captured.out
+
+def test_malformed_github_json_fails_audit(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md"
+    ]
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files))
+
+    def mock_exists(path):
+        return True
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    original_open = open
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            data = """# Active Task
+**Status**: APPROVED
+**PR Branch**: `agy/malformed-json-test`
+**Repository**: tticom/score2gp
+"""
+            return m_open(read_data=data)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    runner = RecordedSubprocessRunner(stdout="invalid json{")
+    monkeypatch.setattr(subprocess, "run", runner)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    assert raised.value.code == 1
+    runner.assert_called_with_gh_pr_list(repo="tticom/score2gp", head="agy/malformed-json-test")
+    captured = capsys.readouterr()
+    assert "Unable to verify active task branch against GitHub" in captured.out
+    assert "JSON parse error" in captured.out
+
+def test_open_matching_pr_passes_audit(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md"
+    ]
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files))
+
+    def mock_exists(path):
+        return True
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    original_open = open
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            data = """# Active Task
+**Status**: APPROVED
+**PR Branch**: `gov/promote-cr05-structural-layout-and-titles-architecture`
+**Repository**: tticom/score2gp-agentops
+"""
+            return m_open(read_data=data)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    runner = RecordedSubprocessRunner(stdout=json.dumps([{"number": 425, "state": "OPEN"}]))
+    monkeypatch.setattr(subprocess, "run", runner)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    assert raised.value.code == 0
+    runner.assert_called_with_gh_pr_list(repo="tticom/score2gp-agentops", head="gov/promote-cr05-structural-layout-and-titles-architecture")
+    captured = capsys.readouterr()
+    assert "GOVERNANCE AUDIT PASS" in captured.out
+
+
+def test_audit_fails_if_gh_command_args_mutated() -> None:
+    runner = RecordedSubprocessRunner()
+    runner(["gh", "pr", "list", "--head", "my-branch"])
+    with pytest.raises(AssertionError):
+        runner.assert_called_with_gh_pr_list(repo="tticom/score2gp", head="my-branch")
 
 def test_non_active_task_no_github_lookup(monkeypatch) -> None:
     # Mock files to be clean
