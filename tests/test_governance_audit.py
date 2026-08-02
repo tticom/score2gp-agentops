@@ -507,3 +507,41 @@ def test_developer_handback_requires_claim_assertion_defect_sweep() -> None:
     assert "pre-handback defect sweep" in dispatch
     assert "challenge one nearby" in dispatch
     assert "false-success case" in dispatch
+
+
+def test_audit_fails_if_run_record_combines_reviewer_identities(tmp_path, monkeypatch) -> None:
+    bad_run_record = tmp_path / "projects/score2gp/runs/bad_run.md"
+    bad_run_record.parent.mkdir(parents=True, exist_ok=True)
+    bad_run_record.write_text("Reviewed by tticom-codex / tticomgov-code", encoding="utf-8")
+
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "")
+
+    def mock_exists(path):
+        if "ACTIVE_TASK.md" in str(path):
+            return False
+        return True
+
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    def mock_walk(top):
+        if "runs" in str(top):
+            yield (str(bad_run_record.parent), [], ["bad_run.md"])
+
+    monkeypatch.setattr(os, "walk", mock_walk)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        if "bad_run.md" in str(path):
+            return original_open(bad_run_record, *args, **kwargs)
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            from unittest.mock import mock_open as m_open
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    assert raised.value.code == 1
+

@@ -147,6 +147,23 @@ def main():
             except Exception as e:
                 violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (subprocess error: {e})")
 
+    # 5. Check run record provenance integrity
+    runs_dir = "projects/score2gp/runs"
+    if os.path.exists(runs_dir):
+        for root, _, files in os.walk(runs_dir):
+            for f in files:
+                if not f.endswith(".md"):
+                    continue
+                path = os.path.join(root, f)
+                with open(path, "r", encoding="utf-8") as file_obj:
+                    text = file_obj.read()
+                if re.search(r"tticom-codex\s*/\s*tticomgov-code", text, re.IGNORECASE) or \
+                   re.search(r"tticomgov-code\s*/\s*tticom-codex", text, re.IGNORECASE):
+                    violations.append(
+                        f"Run record {path} combines distinct reviewer identities ('tticom-codex / tticomgov-code'); "
+                        "independent reviewer identity must be isolated and distinct from governance publisher."
+                    )
+
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")
         for v in violations:

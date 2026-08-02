@@ -2,7 +2,8 @@
 
 **Task**: CR-05A: PDF-Tab Barline Style Classification Seam
 **Date**: 2026-08-02
-**Governance Identity**: `tticomgov-code`
+**Governance Publisher**: `tticomgov-code`
+**Independent Reviewer**: `tticom-codex`
 **Product Repository**: `tticom/score2gp`
 **Product Main SHA**: `8d69b62d9a7717b0c49b5a94e139e68a65073290`
 **Product PR**: [#398](https://github.com/tticom/score2gp/pull/398) (`agy/cr05a-pdf-tab-barline-style-classification`)
@@ -13,16 +14,20 @@
 
 ## Summary
 
-Developer slice `CR-05A` on the PDF-tab conversion seam has been completed, independently reviewed by `tticom-codex` / `tticomgov-code`, approved, and merged into `tticom/score2gp` `main` as commit `8d69b62d9a7717b0c49b5a94e139e68a65073290`.
+Developer slice `CR-05A` on the PDF-tab conversion seam has been completed by `tticom-automation`, independently reviewed and approved solely by `tticom-codex` (Review ID `4838989933`), and merged into `tticom/score2gp` `main` as commit `8d69b62d9a7717b0c49b5a94e139e68a65073290`. Governance promotion is published by `tticomgov-code`.
 
 ## Key Verification Evidence
 
 - **Targeted Suite**: 16 passed in `tests/test_cr05_barline_style_classification.py` and `tests/test_pdf.py::test_double_barline_ambiguity_resolution`.
 - **Full Suite**: 1061 passed, 1 skipped in 49.80s (`agent_verify.py` status: PASS).
-- **Reviewer Probes**:
-  - `probe_tests_pass` (SHA256: `74286a323fe97559eba27107ab9b0c8d12a8f6ab70d2b6c87c81b7b1224552e4`)
-  - `probe_rect_width_exact_boundaries` (SHA256: `85414c9e8484ee1b3cca7296db44822e2bda876a9b6d5cf649a85b64421ca40d`)
-  - `probe_pymupdf_two_barline_strokes_reverse_duplicate` (SHA256: `cebcb402f2965ce6d0bf7904f218ffda921d4dfec855bf38347b036aeb1d1d6b`)
+- **Independent Reviewer Evidence (Review 4838989933 by `tticom-codex`)**:
+  - Exact live head `0529189e148e68c0adc0fb789d7d334a7322b5a5` verified against `main`.
+  - Replayed complete counterexample suite across remediation history: sub-point filled rectangle canonical right edge (`100.8`), horizontal merge provenance (`mixed`), multi-rect item per-item identity fail-closed, diamond 4-line identity non-barline, PyMuPDF same-x forward/reverse duplicate collapse, genuine strokes at `100.0` and `100.4` classified as `double`, two-stroke PyMuPDF shape with reverse duplicate classified as `double`.
+  - `git diff --check` clean, 4-file authorized scope preserved.
+- **Historical Dismissed Review Probe Receipts (by `tticomgov-code` on earlier heads)**:
+  - Head `5a84056` (dismissed): `probe_tests_pass` (`97074391bac7...`), `probe_rect_width_exact_boundaries` (`9bad532a97d1...`), `probe_coincident_different_primitives_mixed` (`85414c9e8484...`)
+  - Head `950016a` (dismissed): `probe_tests_pass` (`9f78edbf89c3...`), `probe_rect_width_exact_boundaries` (`0abb691ca448...`), `probe_two_filled_rects_distinct_identities` (`0abb691ca448...`)
+  - Head `bebde97` (dismissed): `probe_tests_pass` (`74286a323fe9...`), `probe_rect_width_exact_boundaries` (`85414c9e8484...`), `probe_pymupdf_two_barline_strokes_reverse_duplicate` (`cebcb402f296...`)
 
 ## Promotion Action
 
