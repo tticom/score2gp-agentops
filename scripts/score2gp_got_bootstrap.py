@@ -106,7 +106,9 @@ def resolve_got_state(
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
     if state == "MERGED":
-        if active_task_status and active_task_status.upper() == "RESOLVED":
+        if active_task_status and active_task_status.upper() == "MERGED":
+            dispatch = "NO_ACTIVE_TASK"
+        elif active_task_status and active_task_status.upper() == "RESOLVED":
             dispatch = "PROMOTE_RESOLVED_TASK"
         else:
             dispatch = "PROMOTE_MERGED_TASK"

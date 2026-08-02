@@ -55,6 +55,9 @@ the same head. Reviews from all other accounts are ignored.
   delete the branch, or start a candidate follow-up. Report
   `MERGED_AWAITING_GOVERNANCE_PROMOTION` and direct the maintainer to Codex
   `got`, whose actionable state is `PROMOTE_MERGED_TASK`.
+- Merged PR with `ACTIVE_TASK.md` already at `Status: MERGED`: report
+  `NO_ACTIVE_TASK` and stop. Governance promotion is complete; repeated `go`
+  must not request another promotion or replay the completed prompt.
 - Closed unmerged PR: report `BLOCKED`.
 
 After author mutations, publish one PR comment with exact head, finding

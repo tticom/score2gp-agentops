@@ -14,6 +14,15 @@ def test_merged_pr_overrides_historical_review_state() -> None:
     assert result["current_review"] is None
 
 
+def test_promoted_merged_task_is_terminal_for_got() -> None:
+    result = resolve_got_state(
+        {"state": "MERGED", "headRefOid": "e" * 40, "number": 398},
+        [{"state": "CHANGES_REQUESTED", "commit_id": "c" * 40}],
+        active_task_status="MERGED",
+    )
+    assert result == {"state": "NO_ACTIVE_TASK", "current_review": None}
+
+
 def test_merged_pr_emits_promote_resolved_task_when_status_resolved() -> None:
     result = resolve_got_state(
         {"state": "MERGED", "headRefOid": "e" * 40, "number": 421},
