@@ -43,6 +43,13 @@ except ModuleNotFoundError:
     )
 
 
+def resolve_merged_task_state(task_status: str) -> str:
+    """Distinguish an unpromoted product merge from completed governance."""
+    if task_status.upper() == "MERGED":
+        return "NO_ACTIVE_TASK"
+    return "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+
+
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
     try:
         res = subprocess.run(
@@ -371,14 +378,15 @@ def run_go_bootstrap(
     if pr_state == "MERGED":
         selected_branch = run_git(target_repo_path, ["branch", "--show-current"])
         selected_sha = run_git(target_repo_path, ["rev-parse", "HEAD"])
+        dispatch_state = resolve_merged_task_state(task_status)
         expected_state = (
             "PROMOTE_RESOLVED_TASK"
             if task_status.upper() == "RESOLVED"
             else "PROMOTE_MERGED_TASK"
         )
-        return {
+        result = {
             "ok": True,
-            "state": "MERGED_AWAITING_GOVERNANCE_PROMOTION",
+            "state": dispatch_state,
             "active_task": {
                 "task": task_name,
                 "status": task_status,
@@ -393,12 +401,14 @@ def run_go_bootstrap(
             "selected_branch": selected_branch,
             "pr_number": pr_number,
             "current_review": None,
-            "next_action": {
+        }
+        if dispatch_state == "MERGED_AWAITING_GOVERNANCE_PROMOTION":
+            result["next_action"] = {
                 "command": "got",
                 "expected_state": expected_state,
                 "owner": "governance",
-            },
-        }
+            }
+        return result
 
     # Phase 6: Select Authorised Task Branch with strict reconciliation
     local_branch_exists = run_git(target_repo_path, ["rev-parse", "--verify", f"refs/heads/{pr_branch}"], check=False) != ""
@@ -497,7 +507,7 @@ def run_go_bootstrap(
 
     # Phase 7: Machine-Actionable Dispatch Decision
     if pr_state == "MERGED":
-        state = "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+        state = resolve_merged_task_state(task_status)
     elif pr_state == "CLOSED":
         state = "BLOCKED"
     elif pr_state == "OPEN":

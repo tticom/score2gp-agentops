@@ -82,6 +82,10 @@ local task state, chat, and issue comments do not count.
   prepare the smallest governance promotion. A status-only response is a
   dispatcher failure. Never promote a report candidate directly into product
   implementation.
+- Merged PR with `ACTIVE_TASK.md` already at `Status: MERGED`: report
+  `NO_ACTIVE_TASK` and stop. The completion promotion is already durable;
+  never create a duplicate promotion. A new task requires a separate explicit
+  governance promotion.
 - Closed unmerged PR: report `BLOCKED`.
 
 Every approval includes the disconfirmation record and the three equal full

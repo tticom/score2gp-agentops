@@ -4,7 +4,21 @@ import subprocess
 from pathlib import Path
 import pytest
 
-from scripts.score2gp_go_bootstrap import parse_active_task_content, run_go_bootstrap, query_github_pr_state
+from scripts.score2gp_go_bootstrap import (
+    parse_active_task_content,
+    query_github_pr_state,
+    resolve_merged_task_state,
+    run_go_bootstrap,
+)
+
+
+def test_promoted_merged_task_is_terminal() -> None:
+    assert resolve_merged_task_state("MERGED") == "NO_ACTIVE_TASK"
+
+
+@pytest.mark.parametrize("status", ["APPROVED", "IN_PROGRESS", "RESOLVED"])
+def test_unpromoted_merged_task_still_requires_governance(status: str) -> None:
+    assert resolve_merged_task_state(status) == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
 
 
 def run_git(cwd: str | Path, args: list[str], check: bool = True) -> str:
