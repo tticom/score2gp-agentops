@@ -32,16 +32,17 @@ No other product files in `src/` or `tests/` may be edited in this task. Do not 
 
 2. **`src/score2gp/pdf.py`**:
    - Update `filter_tab_barline_candidates()` to populate optional `barline_style: Literal["regular", "double", "final", "ambiguous", "unclassified_stroke"] | None` and `cluster_size: int | None` in candidate details dictionaries.
-   - **Fail-Closed Mixed Provenance Rule**: Any candidate with `primitive_kind == "mixed"` must fail closed to `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_mixed_primitive_provenance"`, whether evaluating as a single segment or within a cluster.
-   - **Rectangle-Width Classification Rules**:
-     - Narrow filled rectangles ($W_{rect} \le 4.0$ pt, e.g. $4.0 - \epsilon$): Candidates sharing the same non-null `primitive_id` (originating from two edges of a single narrow rectangle primitive) produce `barline_style = "regular"`, `cluster_size = 1`. Representative $x = \text{round}(rect.x1, 3)$ is added to `valid_barlines`.
-     - Ambiguous rectangle width ($4.0 < W_{rect} \le 12.0$ pt, e.g. $4.0 + \epsilon$ and $12.0 - \epsilon$): Set `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_ambiguous_rect_width"`.
-     - Wide decorative rectangle fills ($W_{rect} > 12.0$ pt, e.g. $12.0 + \epsilon$): Set `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_decorative_fill_or_wide_rect"`.
-   - **Line & Independent Stroke Rules**:
-     - For 1-stroke non-mixed candidates: set `barline_style = "regular"`, `cluster_size = 1`.
-     - For 2-stroke clusters ($|x_1 - x_2| \le 12.0$ pt) from different `primitive_id` values or independent line primitives: set `barline_style = "double"`, `cluster_size = 2`.
-     - If `primitive_id` is `None` (legacy caller), default to `barline_style = "double"`, `cluster_size = 2` for 2-stroke clusters.
-   - For initially rejected strokes: set `barline_style = "unclassified_stroke"`, `cluster_size = None`.
+   - **Recedence & Precedence Execution Order**:
+     1. **Mixed Provenance Check**: Any candidate with `primitive_kind == "mixed"` must fail closed immediately to `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_mixed_primitive_provenance"`, taking precedence over cluster-size style assignment or generic stroke rejection rules.
+     2. **Rectangle-Width Classification**: Evaluated before generic height/gap rejection style assignment:
+        - Narrow filled rectangles ($W_{rect} \le 4.0$ pt, e.g. $4.0 - \epsilon$ and exactly $4.0$): Candidates sharing the same non-null `primitive_id` (originating from two edges of a single narrow rectangle primitive) produce `barline_style = "regular"`, `cluster_size = 1`. Representative $x = \text{round}(rect.x1, 3)$ is added to `valid_barlines`.
+        - Ambiguous rectangle width ($4.0 < W_{rect} \le 12.0$ pt, e.g. $4.0 + \epsilon$, $12.0 - \epsilon$, and exactly $12.0$): Set `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_ambiguous_rect_width"`.
+        - Wide decorative rectangle fills ($W_{rect} > 12.0$ pt, e.g. $12.0 + \epsilon$): Set `barline_style = "ambiguous"`, `final_decision = "rejected"`, `rejection_reason = "pdf_barline_decorative_fill_or_wide_rect"`.
+     3. **Line & Independent Stroke Rules**:
+        - For 1-stroke non-mixed candidates: set `barline_style = "regular"`, `cluster_size = 1`.
+        - For 2-stroke clusters ($|x_1 - x_2| \le 12.0$ pt) from different `primitive_id` values or independent line primitives: set `barline_style = "double"`, `cluster_size = 2`.
+        - If `primitive_id` is `None` (legacy caller), default to `barline_style = "double"`, `cluster_size = 2` for 2-stroke clusters.
+     4. **Generic Rejected-Stroke Rule**: For strokes rejected solely due to generic height or gap constraints (without a special mixed-provenance or rectangle-width rejection already assigned): set `barline_style = "unclassified_stroke"`, `cluster_size = None`. Any pre-assigned special provenance/width rejection style (`"ambiguous"`) and rejection reason MUST survive final candidate detail construction without being overwritten.
    - For 3+ stroke edge clusters: retain edge representative in `valid_barlines` for backward compatibility, but set `barline_style = "ambiguous"`, `cluster_size = len(cluster)` on detail dicts.
    - Pass candidate detail dictionaries through `_TabSystem` to `report.py` diagnostics.
 
@@ -52,8 +53,9 @@ No other product files in `src/` or `tests/` may be edited in this task. Do not 
    - Add public regression test suite covering:
      - `test_cr05a_same_drawing_multiple_lines_double_barline`
      - `test_cr05a_filled_rect_canonicalization_pipeline`
-     - `test_cr05a_rectangle_width_threshold_rejections` (testing $W_{rect} \le 4.0$ pt canonicalization, $4.0 < W_{rect} \le 12.0$ pt ambiguity, and $W_{rect} > 12.0$ pt decorative rejection with $4.0/12.0 \pm \epsilon$ controls)
+     - `test_cr05a_rectangle_width_threshold_rejections` (testing exact inclusive boundaries at $4.0 - \epsilon$, exactly $4.0$, $4.0 + \epsilon$, $12.0 - \epsilon$, exactly $12.0$, and $12.0 + \epsilon$, asserting exact style, decision, and rejection reason for each)
      - `test_cr05a_mixed_primitive_merge_fail_closed` (testing single merged `mixed` candidates fail closed to `ambiguous`)
+     - `test_cr05a_rejection_precedence_survival` (testing that special mixed/width rejection reasons survive final candidate detail construction without being overwritten by generic `unclassified_stroke`)
      - `test_cr05a_null_primitive_id_fail_closed`
      - `test_cr05a_edge_triple_cluster_style_ambiguous`
      - `test_cr05a_report_html_rendering_barline_style` (testing HTML report rendering for populated and legacy candidate details)

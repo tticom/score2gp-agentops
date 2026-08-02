@@ -34,4 +34,4 @@ Classify PDF-tab barline candidate details into explicit, typed barline styles (
 
 ## Acceptance
 
-Pass validation suite (`pytest tests/test_pdf.py::test_double_barline_ambiguity_resolution`, `pytest tests/test_cr05_barline_style_classification.py`, and `python scripts/agent_verify.py`). Publish one Developer pull request on branch `agy/cr05a-pdf-tab-barline-style-classification` in `tticom/score2gp` for independent Codex review.
+Pass validation suite (`pytest tests/test_pdf.py::test_double_barline_ambiguity_resolution`, `pytest tests/test_cr05_barline_style_classification.py`, and `python scripts/agent_verify.py`). Assert exact inclusive threshold behavior ($4.0 - \epsilon$, $4.0$, $4.0 + \epsilon$, $12.0 - \epsilon$, $12.0$, $12.0 + \epsilon$) and prove special rejection reason survival over generic stroke rejection. Publish one Developer pull request on branch `agy/cr05a-pdf-tab-barline-style-classification` in `tticom/score2gp` for independent Codex review.
