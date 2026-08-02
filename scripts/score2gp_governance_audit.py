@@ -147,6 +147,59 @@ def main():
             except Exception as e:
                 violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (subprocess error: {e})")
 
+    # 5. Check run record provenance integrity
+    runs_dir = "projects/score2gp/runs"
+    if os.path.exists(runs_dir):
+        for root, _, files in os.walk(runs_dir):
+            for f in files:
+                if not f.endswith(".md"):
+                    continue
+                path = os.path.join(root, f)
+                with open(path, "r", encoding="utf-8") as file_obj:
+                    text = file_obj.read()
+
+                # Check for slash-combined reviewer identities
+                if re.search(r"tticom-codex\s*/\s*tticomgov-code", text, re.IGNORECASE) or \
+                   re.search(r"tticomgov-code\s*/\s*tticom-codex", text, re.IGNORECASE):
+                    violations.append(
+                        f"Run record {path} combines distinct reviewer identities ('tticom-codex / tticomgov-code'); "
+                        "independent reviewer identity must be isolated and distinct from governance publisher."
+                    )
+
+                # Check that Independent Reviewer and Governance Publisher are distinct
+                reviewer_match = re.search(r"^\*\*Independent Reviewer\*\*:\s*`?(\S+?)`?\s*$", text, re.MULTILINE)
+                publisher_match = re.search(r"^\*\*Governance Publisher\*\*:\s*`?(\S+?)`?\s*$", text, re.MULTILINE)
+                if reviewer_match and publisher_match:
+                    rev_id = reviewer_match.group(1).strip("`")
+                    pub_id = publisher_match.group(1).strip("`")
+                    if rev_id == pub_id:
+                        violations.append(
+                            f"Run record {path} sets Independent Reviewer identical to Governance Publisher ('{rev_id}'); "
+                            "independent reviewer identity must be distinct from governance publisher."
+                        )
+
+                # Check that SHA metadata fields are full 40-character lowercase hex strings
+                sha_matches = re.findall(
+                    r"^\*\*(Product Main SHA|Product Head SHA|AgentOps Main SHA|Skills Lock SHA)\*\*:\s*(.+?)\s*$",
+                    text,
+                    re.MULTILINE,
+                )
+                for field_name, raw_val in sha_matches:
+                    clean_val = raw_val.strip("`").strip()
+                    if not re.fullmatch(r"[0-9a-f]{40}", clean_val):
+                        violations.append(
+                            f"Run record {path} field '{field_name}' contains invalid SHA value ('{clean_val}'); "
+                            "all primary SHA metadata fields must be full 40-character lowercase hexadecimal strings."
+                        )
+
+                # Check that cited Review ID is present and valid if an approval is claimed
+                if "**Review Verdict**: APPROVED" in text:
+                    review_id_match = re.search(r"Review ID `?(\d+)`?", text)
+                    if not review_id_match:
+                        violations.append(
+                            f"Run record {path} claims APPROVED review verdict but lacks a valid numeric Review ID citation."
+                        )
+
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")
         for v in violations:

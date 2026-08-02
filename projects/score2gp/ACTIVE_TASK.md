@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: CR-05A: PDF-Tab Barline Style Classification Seam
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
