@@ -545,3 +545,46 @@ def test_audit_fails_if_run_record_combines_reviewer_identities(tmp_path, monkey
         score2gp_governance_audit.main()
     assert raised.value.code == 1
 
+
+def test_audit_fails_if_run_record_has_short_sha_or_non_distinct_reviewer(tmp_path, monkeypatch) -> None:
+    bad_run = tmp_path / "projects/score2gp/runs/bad_sha_run.md"
+    bad_run.parent.mkdir(parents=True, exist_ok=True)
+    bad_run.write_text(
+        "**Governance Publisher**: `tticomgov-code`\n"
+        "**Independent Reviewer**: `tticomgov-code`\n"
+        "**Product Main SHA**: `5a84056`\n",
+        encoding="utf-8"
+    )
+
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "")
+
+    def mock_exists(path):
+        if "ACTIVE_TASK.md" in str(path):
+            return False
+        return True
+
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    def mock_walk(top):
+        if "runs" in str(top):
+            yield (str(bad_run.parent), [], ["bad_sha_run.md"])
+
+    monkeypatch.setattr(os, "walk", mock_walk)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        if "bad_sha_run.md" in str(path):
+            return original_open(bad_run, *args, **kwargs)
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            from unittest.mock import mock_open as m_open
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    assert raised.value.code == 1
+
+

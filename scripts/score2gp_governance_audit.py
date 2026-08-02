@@ -157,12 +157,43 @@ def main():
                 path = os.path.join(root, f)
                 with open(path, "r", encoding="utf-8") as file_obj:
                     text = file_obj.read()
+                
+                # Check for slash-combined reviewer identities
                 if re.search(r"tticom-codex\s*/\s*tticomgov-code", text, re.IGNORECASE) or \
                    re.search(r"tticomgov-code\s*/\s*tticom-codex", text, re.IGNORECASE):
                     violations.append(
                         f"Run record {path} combines distinct reviewer identities ('tticom-codex / tticomgov-code'); "
                         "independent reviewer identity must be isolated and distinct from governance publisher."
                     )
+
+                # Check that Independent Reviewer and Governance Publisher are distinct
+                reviewer_match = re.search(r"^\*\*Independent Reviewer\*\*:\s*`?(\S+?)`?\s*$", text, re.MULTILINE)
+                publisher_match = re.search(r"^\*\*Governance Publisher\*\*:\s*`?(\S+?)`?\s*$", text, re.MULTILINE)
+                if reviewer_match and publisher_match:
+                    rev_id = reviewer_match.group(1).strip("`")
+                    pub_id = publisher_match.group(1).strip("`")
+                    if rev_id == pub_id:
+                        violations.append(
+                            f"Run record {path} sets Independent Reviewer identical to Governance Publisher ('{rev_id}'); "
+                            "independent reviewer identity must be distinct from governance publisher."
+                        )
+
+                # Check that SHA metadata fields are full 40-character hex strings
+                sha_fields = re.findall(r"^\*\*(?:Product Main SHA|Product Head SHA|AgentOps Main SHA|Skills Lock SHA)\*\*:\s*`?([a-fA-F0-9]+)`?\s*$", text, re.MULTILINE)
+                for sha_val in sha_fields:
+                    if len(sha_val) != 40:
+                        violations.append(
+                            f"Run record {path} contains non-full SHA metadata field value ('{sha_val}'); "
+                            "all primary SHA metadata fields must be full 40-character hexadecimal strings."
+                        )
+
+                # Check that cited Review ID is present and valid if an approval is claimed
+                if "**Review Verdict**: APPROVED" in text:
+                    review_id_match = re.search(r"Review ID `?(\d+)`?", text)
+                    if not review_id_match:
+                        violations.append(
+                            f"Run record {path} claims APPROVED review verdict but lacks a valid numeric Review ID citation."
+                        )
 
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")

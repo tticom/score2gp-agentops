@@ -21,13 +21,9 @@ Developer slice `CR-05A` on the PDF-tab conversion seam has been completed by `t
 - **Targeted Suite**: 16 passed in `tests/test_cr05_barline_style_classification.py` and `tests/test_pdf.py::test_double_barline_ambiguity_resolution`.
 - **Full Suite**: 1061 passed, 1 skipped in 49.80s (`agent_verify.py` status: PASS).
 - **Independent Reviewer Evidence (Review 4838989933 by `tticom-codex`)**:
-  - Exact live head `0529189e148e68c0adc0fb789d7d334a7322b5a5` verified against `main`.
+  - Reviewed exact live head `0529189e148e68c0adc0fb789d7d334a7322b5a5` against `main`.
   - Replayed complete counterexample suite across remediation history: sub-point filled rectangle canonical right edge (`100.8`), horizontal merge provenance (`mixed`), multi-rect item per-item identity fail-closed, diamond 4-line identity non-barline, PyMuPDF same-x forward/reverse duplicate collapse, genuine strokes at `100.0` and `100.4` classified as `double`, two-stroke PyMuPDF shape with reverse duplicate classified as `double`.
-  - `git diff --check` clean, 4-file authorized scope preserved.
-- **Historical Dismissed Review Probe Receipts (by `tticomgov-code` on earlier heads)**:
-  - Head `5a84056` (dismissed): `probe_tests_pass` (`97074391bac7...`), `probe_rect_width_exact_boundaries` (`9bad532a97d1...`), `probe_coincident_different_primitives_mixed` (`85414c9e8484...`)
-  - Head `950016a` (dismissed): `probe_tests_pass` (`9f78edbf89c3...`), `probe_rect_width_exact_boundaries` (`0abb691ca448...`), `probe_two_filled_rects_distinct_identities` (`0abb691ca448...`)
-  - Head `bebde97` (dismissed): `probe_tests_pass` (`74286a323fe9...`), `probe_rect_width_exact_boundaries` (`85414c9e8484...`), `probe_pymupdf_two_barline_strokes_reverse_duplicate` (`cebcb402f296...`)
+  - `git diff --check` clean, 4-file authorized scope preserved (`src/score2gp/pdf_geometry.py`, `src/score2gp/pdf.py`, `src/score2gp/report.py`, `tests/test_cr05_barline_style_classification.py`).
 
 ## Promotion Action
 
