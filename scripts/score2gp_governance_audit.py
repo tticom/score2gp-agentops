@@ -157,7 +157,7 @@ def main():
                 path = os.path.join(root, f)
                 with open(path, "r", encoding="utf-8") as file_obj:
                     text = file_obj.read()
-                
+
                 # Check for slash-combined reviewer identities
                 if re.search(r"tticom-codex\s*/\s*tticomgov-code", text, re.IGNORECASE) or \
                    re.search(r"tticomgov-code\s*/\s*tticom-codex", text, re.IGNORECASE):

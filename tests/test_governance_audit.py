@@ -628,6 +628,3 @@ def test_audit_fails_if_run_record_has_non_hex_sha(tmp_path, monkeypatch) -> Non
     with pytest.raises(SystemExit) as raised:
         score2gp_governance_audit.main()
     assert raised.value.code == 1
-
-
-
