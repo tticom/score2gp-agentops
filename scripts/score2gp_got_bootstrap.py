@@ -51,16 +51,21 @@ def validate_governance_identity(
     agentops: Path,
     product: Path,
 ) -> None:
-    if linux_user != "tticom-gov":
-        raise GotError(f"Linux user must be 'tticom-gov', got '{linux_user}'")
-    if home != "/home/tticom-gov":
-        raise GotError(f"HOME must be '/home/tticom-gov', got '{home}'")
-    if gh_user != "tticomgov-code":
-        raise GotError(f"GitHub CLI account must be 'tticomgov-code', got '{gh_user}'")
-    if git_user != "tticomgov-code":
-        raise GotError(f"Git global user.name must be 'tticomgov-code', got '{git_user}'")
+    profiles = {
+        "tticom-gov": ("/home/tticom-gov", "tticomgov-code"),
+        "tticom-codex": ("/home/tticom-codex", "tticom-codex"),
+    }
+    if linux_user not in profiles:
+        raise GotError(f"unsupported governance Linux user: '{linux_user}'")
+    expected_home, expected_identity = profiles[linux_user]
+    if home != expected_home:
+        raise GotError(f"HOME must be '{expected_home}', got '{home}'")
+    if gh_user != expected_identity:
+        raise GotError(f"GitHub CLI account must be '{expected_identity}', got '{gh_user}'")
+    if git_user != expected_identity:
+        raise GotError(f"Git global user.name must be '{expected_identity}', got '{git_user}'")
 
-    workspace = Path("/home/tticom-gov/work/score2gp-workspace")
+    workspace = Path(expected_home) / "work/score2gp-workspace"
     for label, path in (("AgentOps", agentops), ("product", product)):
         try:
             path.relative_to(workspace)
