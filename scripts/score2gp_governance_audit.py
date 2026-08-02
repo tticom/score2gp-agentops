@@ -178,13 +178,18 @@ def main():
                             "independent reviewer identity must be distinct from governance publisher."
                         )
 
-                # Check that SHA metadata fields are full 40-character hex strings
-                sha_fields = re.findall(r"^\*\*(?:Product Main SHA|Product Head SHA|AgentOps Main SHA|Skills Lock SHA)\*\*:\s*`?([a-fA-F0-9]+)`?\s*$", text, re.MULTILINE)
-                for sha_val in sha_fields:
-                    if len(sha_val) != 40:
+                # Check that SHA metadata fields are full 40-character lowercase hex strings
+                sha_matches = re.findall(
+                    r"^\*\*(Product Main SHA|Product Head SHA|AgentOps Main SHA|Skills Lock SHA)\*\*:\s*(.+?)\s*$",
+                    text,
+                    re.MULTILINE,
+                )
+                for field_name, raw_val in sha_matches:
+                    clean_val = raw_val.strip("`").strip()
+                    if not re.fullmatch(r"[0-9a-f]{40}", clean_val):
                         violations.append(
-                            f"Run record {path} contains non-full SHA metadata field value ('{sha_val}'); "
-                            "all primary SHA metadata fields must be full 40-character hexadecimal strings."
+                            f"Run record {path} field '{field_name}' contains invalid SHA value ('{clean_val}'); "
+                            "all primary SHA metadata fields must be full 40-character lowercase hexadecimal strings."
                         )
 
                 # Check that cited Review ID is present and valid if an approval is claimed
