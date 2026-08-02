@@ -1,32 +1,37 @@
 # Active Task
 
-**Task**: CR-05: Repair Structural Layout and Titles Architecture
+**Task**: CR-05A: PDF-Tab Barline Style Classification Seam
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect / Diagnostic Engineer
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr05-structural-layout-and-titles-architecture`
+**PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0026-cr05-structural-layout-and-titles-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0027-cr05a-pdf-tab-barline-style-classification.md`
 
 ## Context
 
-CR-05 is authorized to proceed as bounded Architect research in `tticom/score2gp`. The maintainer accepts current product `origin/main`, including commit `f3cf042c96defdaf09c3353f16f9dbcb38e542d3`, as the baseline for CR-05 research without requiring historical reconstruction of earlier task records.
+PR #397 (`agy/cr05-structural-layout-and-titles-architecture`) on `tticom/score2gp` was merged into product `main`, establishing the decoupled layout and titles data models and authorizing Developer implementation slice `CR-05A` on the PDF-tab conversion seam.
 
 ## Goal
 
-Investigate and define the generic, testable architecture for separating double/final barline classification, system/page layout, and phrase-title anchoring in score2gp PDF conversion. Produce a Developer-ready rule and public regression plan in `tticom/score2gp` if evidence supports continuation.
+Classify PDF-tab barline candidate details into explicit, typed barline styles (`"regular"`, `"double"`, `"final"`, `"ambiguous"`, `"unclassified_stroke"`) while preserving 100% backward-compatible float `valid_barlines` arrays, `_TabSystem.barlines`, and system layout bounds.
 
 ## Allowed Files
 
-- `docs/design/cr05-structural-layout-and-titles-architecture.md` (in `score2gp`)
+- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/pdf.py`
+- `src/score2gp/report.py`
+- `tests/test_cr05_barline_style_classification.py`
 
 ## Non-goals
 
-- No edits to product source code in `score2gp` during this Architect phase.
-- No edits or creation of AgentOps candidate prompts, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/NEXT.md`, or governance run records in `score2gp-agentops` during the Architect research run.
-- Recommended follow-up candidates must be recorded inside the durable architecture report. After the product architecture PR is reviewed and merged, a separate `tticom-gov` governance cycle may promote the selected candidate in AgentOps.
+- No title classification or title ownership code changes in `CR-05A`.
+- No system layout break refactoring in `CR-05A`.
+- No changes to product `build_ir.py` conversion logic in `CR-05A`.
+- Final-barline (thick-thin) classification is deferred until vector stroke-width oracle evidence is added.
+- No editing of `docs/design/cr05-structural-layout-and-titles-architecture.md` during this Developer slice.
 
 ## Acceptance
 
-Comprehensive product architecture report written in `docs/design/cr05-structural-layout-and-titles-architecture.md` with exact geometric layout classification rules, double/final barline decoupling, title anchoring logic, falsification evidence, and public test contracts. Stop after publishing one product architecture PR in `tticom/score2gp` for independent Codex review.
+Pass validation suite (`pytest tests/test_pdf.py::test_double_barline_ambiguity_resolution`, `pytest tests/test_cr05_barline_style_classification.py`, and `python scripts/agent_verify.py`). Assert exact inclusive threshold behavior ($4.0 - \epsilon$, $4.0$, $4.0 + \epsilon$, $12.0 - \epsilon$, $12.0$, $12.0 + \epsilon$) and prove special rejection reason survival over generic stroke rejection. Publish one Developer pull request on branch `agy/cr05a-pdf-tab-barline-style-classification` in `tticom/score2gp` for independent Codex review.
