@@ -5,8 +5,14 @@ durable PR handback and exact live GitHub state.
 
 ## Gate
 
-Prove Linux worker `tticom-gov`, GitHub/Git identity `tticomgov-code`, and the
-canonical `/home/tticom-gov/work/score2gp-workspace` WSL workspace. Read
+Prove one complete, non-mixed reviewer profile:
+
+- Linux `tticom-gov`, GitHub/Git `tticomgov-code`, workspace
+  `/home/tticom-gov/work/score2gp-workspace`; or
+- Linux `tticom-codex`, GitHub/Git `tticom-codex`, workspace
+  `/home/tticom-codex/work/score2gp-workspace`.
+
+Cross-profile credentials or paths fail closed. Read
 `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the Reviewer skill, `REVIEW_RULES.md`,
 `PR_REVIEW_TEMPLATE.md`, and `PR_EVIDENCE_CONTRACT.md`. Require stable `Task`,
 `Status`, `Assigned Identity`, `Repository`, `PR Branch`, and
@@ -53,6 +59,16 @@ local task state, chat, and issue comments do not count.
   PR tests. Timing, grouping, aggregation, fallback, capacity, and fail-closed
   changes require disagreement plus order/partition/boundary challenges.
   On revised heads, rerun the original probe and add a second-order probe.
+  Maintain a cumulative counterexample registry: every earlier finding must
+  map to a freshly executed reviewer-owned probe on the current exact head.
+  A test changed by the author in the PR scores zero as reviewer-created
+  evidence, even if the reviewer executes it. For each remediation, record a
+  delta threat model covering changed symbols, the fix assumption, new
+  branches or thresholds, and adjacent false-positive/false-negative risks.
+  Challenge zero/one/many cardinality, both sides of every new threshold, the
+  closest value that must remain distinct, and the nearest representation that
+  must remain rejected. If the remediation changes a test oracle, require a
+  product contract or domain-authority citation; author intent is insufficient.
   Apply claim-to-oracle closure: every `verified` claim must cite the exact
   final-artifact assertion for the same required or forbidden value and a
   negative control killed by that oracle. Exercising a related path or checking

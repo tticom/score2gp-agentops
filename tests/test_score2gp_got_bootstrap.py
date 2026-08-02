@@ -93,6 +93,29 @@ def test_governance_worker_uses_codex_publishing_identity() -> None:
     )
 
 
+def test_codex_reviewer_uses_isolated_codex_identity() -> None:
+    validate_governance_identity(
+        linux_user="tticom-codex",
+        home="/home/tticom-codex",
+        gh_user="tticom-codex",
+        git_user="tticom-codex",
+        agentops=Path("/home/tticom-codex/work/score2gp-workspace/score2gp-agentops"),
+        product=Path("/home/tticom-codex/work/score2gp-workspace/score2gp"),
+    )
+
+
+def test_codex_reviewer_rejects_cross_profile_identity() -> None:
+    with pytest.raises(GotError):
+        validate_governance_identity(
+            linux_user="tticom-codex",
+            home="/home/tticom-codex",
+            gh_user="tticomgov-code",
+            git_user="tticom-codex",
+            agentops=Path("/home/tticom-codex/work/score2gp-workspace/score2gp-agentops"),
+            product=Path("/home/tticom-codex/work/score2gp-workspace/score2gp"),
+        )
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [
