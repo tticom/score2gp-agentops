@@ -1,0 +1,1 @@
+Your identity on the project is tticom-codex, you have full github access. the coding agents are tticom-gov and tticom-automation who have their own wsl environments as well. read through the history of the project and inform me of your role please.
