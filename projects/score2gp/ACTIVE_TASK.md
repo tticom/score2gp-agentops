@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: MXS-08: Run the Blind Comparative Bake-Off
+**Task**: MXS-09: Architecture Decision and Smallest Next Implementation
 **Status**: APPROVED
 **Assigned Identity**: tticom-gov
 **Authorised Role**: Architect
@@ -11,22 +11,22 @@
 
 ## Context
 
-Task `MXS-07` completed, establishing the [Assisted Manual Entry Control Evaluation Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs07-assisted-manual-entry-control-evaluation.md). Manual entry serves as the accuracy ($100\%$) and labor cost (~15 min/page) benchmark. Per the research plan, the project now authorizes task `MXS-08` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
+Task `MXS-08` completed, establishing the [Blind Comparative Bake-Off Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs08-comparative-bake-off-report.md). The bake-off established that zero candidates qualify as fully automated headless Linux CLI tools (`viable_automated`), while PDFtoMusic Pro and PhotoScore Ultimate represent the winning assisted sidecar producers (`viable_assisted`). Per the research plan, the project now authorizes task `MXS-09` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
 
 ## Goal
 
-Run all evaluated candidates against the common fixture set and evaluation contract (`score2gp eval-sidecar`). Score note/rest precision and recall, onset/duration agreement, Score2GP handoff, WSL automation, human correction minutes per page, and operational risks in a comparative matrix.
+Issue the final Architecture Decision Record (ADR) selecting **Outcome B — Adopt an Assisted Sidecar Workflow**. Define the human operator correction and validation boundary, sidecar provenance manifest, acceptance criteria, and smallest next workflow task.
 
 ## Allowed Files
 
-- `projects/score2gp/reviews/2026-08-03-mxs08-comparative-bake-off-report.md`
+- `projects/score2gp/reviews/2026-08-03-mxs09-architecture-decision-record.md`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
 - No product code changes in `score2gp`.
-- Do not let weighted scores mask fatal timing errors or empty output.
+- Do not authorize unapproved third-party production dependencies.
 
 ## Acceptance
 
-Produce comparative bake-off matrix covering Audiveris, PDFtoMusic Pro, `oemer`, PhotoScore/ScanScore, Cloud APIs, and Manual Entry. Prepare the evidence required for the final Architecture Decision Record (**MXS-09**).
+Document the exact selection of Outcome B, formalizing the assisted sidecar ingest workflow, operator validation contract, candidate-neutral evaluator integration (`score2gp eval-sidecar`), and smallest next governance task.
