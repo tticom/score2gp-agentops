@@ -1,32 +1,34 @@
 # Active Task
 
-**Task**: MXS-09: Architecture Decision and Smallest Next Implementation
+**Task**: MXS-10: Formalize Assisted Sidecar Ingestion & Provenance Manifest Contract
 **Status**: APPROVED
-**Assigned Identity**: tticom-gov
-**Authorised Role**: Architect
-**Repository**: tticom/score2gp-agentops
-**PR Branch**: `none`
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Developer
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/mxs10-assisted-sidecar-ingestion-manifest`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0029-mxs10-assisted-sidecar-ingestion-manifest.md`
 
 ## Context
 
-Task `MXS-08` completed, establishing the [Blind Comparative Bake-Off Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs08-comparative-bake-off-report.md). The bake-off established that zero candidates qualify as fully automated headless Linux CLI tools (`viable_automated`), while PDFtoMusic Pro and PhotoScore Ultimate represent the winning assisted sidecar producers (`viable_assisted`). Per the research plan, the project now authorizes task `MXS-09` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
+Task `MXS-09` completed, issuing the [Architecture Decision Record (ADR)](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs09-architecture-decision-record.md) selecting **Outcome B — Adopt an Assisted Sidecar Workflow**. The project now authorizes Developer slice `MXS-10` in `tticom/score2gp` to formalize the assisted sidecar ingestion and provenance manifest contract.
 
 ## Goal
 
-Issue the final Architecture Decision Record (ADR) selecting **Outcome B — Adopt an Assisted Sidecar Workflow**. Define the human operator correction and validation boundary, sidecar provenance manifest, acceptance criteria, and smallest next workflow task.
+Extend `score2gp convert` to support `--sidecar-manifest <path>`, validating sidecar SHA-256 hashes against `SidecarEvaluationResult`, requiring `eval_status == "passed"`, and embedding sidecar provenance into generated HTML conversion reports.
 
 ## Allowed Files
 
-- `projects/score2gp/reviews/2026-08-03-mxs09-architecture-decision-record.md`
-- `projects/score2gp/ACTIVE_TASK.md`
+- `src/score2gp/cli.py`
+- `src/score2gp/sidecar_evaluator.py`
+- `src/score2gp/report.py`
+- `tests/test_mxs10_sidecar_ingestion_manifest.py`
 
 ## Non-goals
 
-- No product code changes in `score2gp`.
-- Do not authorize unapproved third-party production dependencies.
+- No change to default PDF-only processing when no `--musicxml` sidecar is specified.
+- No third-party network API calls or unapproved dependency additions.
 
 ## Acceptance
 
-Document the exact selection of Outcome B, formalizing the assisted sidecar ingest workflow, operator validation contract, candidate-neutral evaluator integration (`score2gp eval-sidecar`), and smallest next governance task.
+Pass validation suite (`pytest tests/test_mxs10_sidecar_ingestion_manifest.py` and `python scripts/agent_verify.py`). Assert exact validation behavior for valid manifests, SHA-256 mismatches, and unpassed eval statuses. Publish one Developer pull request on branch `agy/mxs10-assisted-sidecar-ingestion-manifest` in `tticom/score2gp` for independent Codex review.
