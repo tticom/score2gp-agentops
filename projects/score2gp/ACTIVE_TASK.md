@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: MXS-02: Establish the Current Audiveris Control
+**Task**: MXS-03: Evaluate Vector-PDF Extraction with PDFtoMusic Pro
 **Status**: APPROVED
 **Assigned Identity**: tticom-gov
 **Authorised Role**: Researcher
@@ -11,22 +11,23 @@
 
 ## Context
 
-Task `MXS-01` completed, establishing the [Corpus Recoverable PDF Evidence Matrix](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs01-corpus-recoverable-evidence-matrix.md), confirming 100% of approved public inputs are born-digital vector PDFs. The project now authorizes research task `MXS-02` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
+Task `MXS-02` completed, establishing the [Audiveris Control Baseline Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs02-audiveris-control-baseline.md). Audiveris 5.7.0 produced 100% `empty_musicxml` on all mixed notation/TAB fixtures. Per the research plan, the project now authorizes task `MXS-03` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
 
 ## Goal
 
-Repeat the common evaluation contract with the current supported Audiveris release and its documented batch transcription/export invocation. Compare it against the historical 5.7.0 zero-note baseline (`FS-03E`) to verify whether the zero-note boundary changes.
+Evaluate PDFtoMusic Pro on the vector fixture subset identified in `MXS-01`. Record whether vector-native PDF interpretation supports unattended CLI invocation, stable MusicXML export, non-empty note/rest output, and timing-safe handoff via `score2gp eval-sidecar`.
 
 ## Allowed Files
 
-- `projects/score2gp/reviews/2026-08-03-mxs02-audiveris-control-baseline.md`
+- `projects/score2gp/reviews/2026-08-03-mxs03-pdftomusic-pro-evaluation.md`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
 - No product code changes in `score2gp`.
-- Do not begin product integration if output remains empty or timing-invalid.
+- Do not purchase licenses without explicit maintainer approval.
+- Do not claim raster PDF support (vector PDFs only).
 
 ## Acceptance
 
-Record exact Audiveris release/hash/runtime, command, logs, output structure, two-run determinism, and fixture matrix. Compare against the candidate-neutral evaluation harness (`score2gp eval-sidecar`).
+Apply the common contract using `score2gp eval-sidecar`. Compare exported MusicXML at bar/event level with `generated_tiny_tab.musicxml`. Explicitly document licensing, platform support, CLI availability, and whether at least one mixed vector fixture produces non-empty, timing-safe MusicXML.
