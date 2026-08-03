@@ -1,9 +1,9 @@
 # Active Task
 
-**Task**: MXS-01: Classify Approved Corpus by Recoverable PDF Evidence
+**Task**: MXS-02: Establish the Current Audiveris Control
 **Status**: APPROVED
 **Assigned Identity**: tticom-gov
-**Authorised Role**: Architect
+**Authorised Role**: Researcher
 **Repository**: tticom/score2gp-agentops
 **PR Branch**: `none`
 **Pull Request**: `none`
@@ -11,23 +11,22 @@
 
 ## Context
 
-PR #400 on `tticom/score2gp` (`agy/mxs00-candidate-neutral-sidecar-evaluation-harness`) was merged into product `main` at commit `9e37e89a33f54c71462c976656fda397fb5c02cf`, establishing the candidate-neutral sidecar evaluation harness (`src/score2gp/sidecar_evaluator.py`). The project now authorizes task `MXS-01` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
+Task `MXS-01` completed, establishing the [Corpus Recoverable PDF Evidence Matrix](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs01-corpus-recoverable-evidence-matrix.md), confirming 100% of approved public inputs are born-digital vector PDFs. The project now authorizes research task `MXS-02` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
 
 ## Goal
 
-Classify each approved public input score (and private inputs only locally after explicit maintainer approval) as vector notation, raster scan, mixed vector/raster, or unknown. Record embedded fonts, vector paths/text, page rendering needs, and whether notation objects appear recoverable without raster recognition.
+Repeat the common evaluation contract with the current supported Audiveris release and its documented batch transcription/export invocation. Compare it against the historical 5.7.0 zero-note baseline (`FS-03E`) to verify whether the zero-note boundary changes.
 
 ## Allowed Files
 
-- `projects/score2gp/reviews/2026-08-03-mxs01-corpus-recoverable-evidence-matrix.md`
+- `projects/score2gp/reviews/2026-08-03-mxs02-audiveris-control-baseline.md`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
 - No product code changes in `score2gp`.
-- No upload of private input files to third-party services.
-- No inference that vector presence guarantees semantic recovery.
+- Do not begin product integration if output remains empty or timing-invalid.
 
 ## Acceptance
 
-Produce a privacy-safe matrix and select vector-first and raster-first fixture subsets. Enable the decision of whether vector-first extraction (e.g., PDFtoMusic Pro in `MXS-03`) or raster OMR (e.g., Audiveris / `oemer` in `MXS-02`/`MXS-04`) takes priority for the real-world corpus.
+Record exact Audiveris release/hash/runtime, command, logs, output structure, two-run determinism, and fixture matrix. Compare against the candidate-neutral evaluation harness (`score2gp eval-sidecar`).
