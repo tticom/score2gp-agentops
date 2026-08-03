@@ -3,7 +3,8 @@
 **Task**: MXS-00: Candidate-Neutral Sidecar Evaluation Harness
 **Date**: 2026-08-03
 **Governance Publisher**: `tticomgov-code`
-**Independent Reviewer**: `tticomgov-code`
+**Independent Reviewer**: `tticom-codex`
+**Review ID**: Review ID 4845075866
 **Product Repository**: `tticom/score2gp`
 **Product Main SHA**: `8d69b62d9a7717b0c49b5a94e139e68a65073290`
 **Product PR**: [#400](https://github.com/tticom/score2gp/pull/400) (`agy/mxs00-candidate-neutral-sidecar-evaluation-harness`)
