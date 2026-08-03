@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: MXS-06: Evaluate Cloud/API Routes Behind a Privacy Gate
+**Task**: MXS-07: Measure Assisted Manual Entry as the Accuracy/Cost Control
 **Status**: APPROVED
 **Assigned Identity**: tticom-gov
 **Authorised Role**: Researcher
@@ -11,23 +11,22 @@
 
 ## Context
 
-Task `MXS-05` completed, establishing the [Commercial Desktop OMR Evaluation Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs05-commercial-desktop-omr-evaluation.md). Commercial desktop tools were classified as `viable_assisted` due to lack of headless Linux CLI. Per the research plan, the project now authorizes task `MXS-06` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
+Task `MXS-06` completed, establishing the [Cloud/API Routes Privacy Evaluation Report](file:///home/tticom-codex/work/score2gp-workspace/score2gp-agentops/projects/score2gp/reviews/2026-08-03-mxs06-cloud-api-routes-privacy-evaluation.md). Cloud/API routes were rejected due to lack of PDF OMR and unverified data retention terms. Per the research plan, the project now authorizes task `MXS-07` of the MusicXML Sidecar Generation Alternatives Research Plan (`projects/score2gp/tasks/2026-08-03-musicxml-sidecar-generation-alternatives.md`).
 
 ## Goal
 
-Inventory cloud services and web APIs that ingest notation images/PDFs or host editable notation and export MusicXML (e.g., Soundslice Data API). Record API availability, authentication, pricing, rate limits, data ownership, retention policy, training usage, deletion mechanisms, and automation terms behind a strict privacy gate.
+Enter the public control score (`generated_tiny_tab.pdf` / `generated_standard_staff_whole_note.pdf`) in a MusicXML-capable notation editor (e.g., MuseScore / Guitar Pro) using a fixed procedure. Measure active entry time, corrections, and final `score2gp eval-sidecar` results as the control for deciding whether OMR saves meaningful effort over manual entry.
 
 ## Allowed Files
 
-- `projects/score2gp/reviews/2026-08-03-mxs06-cloud-api-routes-privacy-evaluation.md`
+- `projects/score2gp/reviews/2026-08-03-mxs07-assisted-manual-entry-control-evaluation.md`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
-- No upload of private input files or unapproved score content.
-- No creation of paid cloud API accounts without maintainer approval.
-- Do not assume MusicXML export API availability implies PDF recognition.
+- No product code changes in `score2gp`.
+- Do not treat manual entry as a scalable product solution without measured comparison.
 
 ## Acceptance
 
-Document terms, privacy policies, and MusicXML export capabilities for each service. Require explicit maintainer approval before any upload of public synthetic inputs. Reject routes with unclear data retention, model training usage, or missing deletion mechanisms.
+Produce timing-safe MusicXML matching the public oracle at bar/event level (`status="passed"`). Record active entry time (minutes per page) and correction count as the baseline control for the comparative bake-off (**MXS-08**).
