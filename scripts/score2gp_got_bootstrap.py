@@ -54,13 +54,17 @@ def validate_governance_identity(
     profiles = {
         "tticom-gov": ("/home/tticom-gov", "tticomgov-code"),
         "tticom-codex": ("/home/tticom-codex", "tticom-codex"),
+        "tticom": ("/home/tticom", "tticom"),
     }
     if linux_user not in profiles:
         raise GotError(f"unsupported governance Linux user: '{linux_user}'")
     expected_home, expected_identity = profiles[linux_user]
     if home != expected_home:
         raise GotError(f"HOME must be '{expected_home}', got '{home}'")
-    if gh_user != expected_identity:
+    if linux_user == "tticom" and gh_user == "":
+        # Personal account does not require authenticated GitHub CLI
+        pass
+    elif gh_user != expected_identity:
         raise GotError(f"GitHub CLI account must be '{expected_identity}', got '{gh_user}'")
     if git_user != expected_identity:
         raise GotError(f"Git global user.name must be '{expected_identity}', got '{git_user}'")
@@ -82,10 +86,19 @@ def enforce_governance_identity(agentops: Path, product: Path) -> None:
             raise GotError(result.stderr.strip() or f"command failed: {command}")
         return result.stdout.strip()
 
+    linux_user = getpass.getuser()
+    try:
+        gh_user = output(["gh", "api", "user", "--jq", ".login"])
+    except GotError:
+        if linux_user == "tticom":
+            gh_user = ""
+        else:
+            raise
+
     validate_governance_identity(
-        linux_user=getpass.getuser(),
+        linux_user=linux_user,
         home=os.environ.get("HOME", ""),
-        gh_user=output(["gh", "api", "user", "--jq", ".login"]),
+        gh_user=gh_user,
         git_user=output(["git", "config", "--global", "--get", "user.name"]),
         agentops=agentops,
         product=product,
