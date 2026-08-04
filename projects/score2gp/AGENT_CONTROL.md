@@ -265,7 +265,7 @@ For Architect work, the Architect must read:
 `projects/score2gp/skills/architect/SKILL.md`
 
 For Reviewer work, the Reviewer must read:
-`projects/score2gp/skills/reviewer/SKILL.md`
+`skills/score2gp-pr-hard-review.md`
 
 For Developer work, the Developer must read:
 `projects/score2gp/skills/developer/SKILL.md`
