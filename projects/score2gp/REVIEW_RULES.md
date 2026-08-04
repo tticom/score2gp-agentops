@@ -88,7 +88,7 @@ The reviewer must inspect the PR for any automated or human comments, especially
 
 ## 6. Reviewing Architect & Research Outputs
 
-When reviewing Architect or research outputs, the Reviewer must apply the `projects/score2gp/skills/reviewer/SKILL.md`.
+When reviewing Architect or research outputs, the Reviewer must apply the `skills/score2gp-pr-hard-review.md`.
 
 - **Independent Reference Verification**: References must be independently verified, not merely accepted at face value.
 - **Unsupported Claims are Blockers**: Unsupported architecture claims or recommendations lacking specific references are review blockers.

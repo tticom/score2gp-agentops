@@ -26,7 +26,7 @@ projects/score2gp/APPROVED_TASK_QUEUE.md
 projects/score2gp/skills/project-director/SKILL.md
 projects/score2gp/skills/architect/SKILL.md
 projects/score2gp/skills/developer/SKILL.md
-projects/score2gp/skills/reviewer/SKILL.md
+skills/score2gp-pr-hard-review.md
 ```
 
 ## Startup Commands

@@ -31,6 +31,11 @@ The output of the bootstrap script reconstructs the status across both repositor
 - One task, one branch, one PR unless explicitly stacked.
 - Agents must never merge to `main`. Human merge is required.
 - Do not let agents start the next product implementation until the governance PR defining the task is merged.
+- **Branch check, switch, and creation workflow**:
+  - Always check the current checked-out branch before making modifications.
+  - If the current branch has been deleted, switch back to `main`.
+  - If a branch already exists for the purpose of the change, switch to that branch.
+  - If the changes are not part of the current active task, create a new branch instead of committing to the current branch.
 
 ## Agent Prompt Template
 When prompting a developer agent, use this exact structure:

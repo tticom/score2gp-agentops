@@ -37,6 +37,11 @@ Developer:
 - Must not invent data to satisfy tests.
 - Must run required tests and write tests to cover all new system code.
 - Must report changed files, commands, results, branch base, dependency PRs, and limitations.
+- **Branch check, switch, and creation workflow**:
+  - Always check the current checked-out branch before making modifications.
+  - If the current branch has been deleted, switch back to `main`.
+  - If a branch already exists for the purpose of the change, switch to that branch.
+  - If the changes are not part of the current active task, create a new branch instead of committing to the current branch.
 
 Reviewer:
 - Must check out the PR or inspect the diff deeply enough to verify it.

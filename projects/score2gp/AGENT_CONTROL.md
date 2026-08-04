@@ -265,7 +265,7 @@ For Architect work, the Architect must read:
 `projects/score2gp/skills/architect/SKILL.md`
 
 For Reviewer work, the Reviewer must read:
-`projects/score2gp/skills/reviewer/SKILL.md`
+`skills/score2gp-pr-hard-review.md`
 
 For Developer work, the Developer must read:
 `projects/score2gp/skills/developer/SKILL.md`
@@ -536,6 +536,11 @@ Branching Rules:
 - Do not push to main.
 - Do not combine unrelated tasks into one branch.
 - Do not silently rewrite another agent’s branch.
+- **Branch check, switch, and creation workflow**:
+  - Always check the current checked-out branch before making modifications.
+  - If the current branch has been deleted, switch back to `main`.
+  - If a branch already exists for the purpose of the change, switch to that branch.
+  - If the changes are not part of the current active task, create a new branch instead of committing to the current branch.
 
 Do not create separate PRs for Architect, Developer, and Reviewer phases.
 

@@ -76,7 +76,6 @@ def main():
     required_skills = [
         "projects/score2gp/skills/architect/SKILL.md",
         "projects/score2gp/skills/developer/SKILL.md",
-        "projects/score2gp/skills/reviewer/SKILL.md",
         "skills/score2gp-developer.md",
         "skills/score2gp-pr-hard-review.md",
         "skills/score2gp-task-orchestration.md"
