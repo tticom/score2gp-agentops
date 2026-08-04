@@ -145,3 +145,25 @@ def test_governance_identity_rejects_personal_account(field: str, value: str) ->
     values[field] = value
     with pytest.raises(GotError):
         validate_governance_identity(**values)
+
+
+def test_personal_reviewer_uses_personal_identity() -> None:
+    # Test with unauthenticated/empty gh_user
+    validate_governance_identity(
+        linux_user="tticom",
+        home="/home/tticom",
+        gh_user="",
+        git_user="tticom",
+        agentops=Path("/home/tticom/work/score2gp-workspace/score2gp-agentops"),
+        product=Path("/home/tticom/work/score2gp-workspace/score2gp"),
+    )
+    # Test with authenticated gh_user
+    validate_governance_identity(
+        linux_user="tticom",
+        home="/home/tticom",
+        gh_user="tticom",
+        git_user="tticom",
+        agentops=Path("/home/tticom/work/score2gp-workspace/score2gp-agentops"),
+        product=Path("/home/tticom/work/score2gp-workspace/score2gp"),
+    )
+
