@@ -1,31 +1,35 @@
 # Active Task
 
-**Task**: CR-05: Repair Structural Layout and Titles Architecture
+**Task**: CR-05A: PDF-Tab Barline Style Classification Seam
 **Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr05-structural-layout-and-titles-architecture`
+**PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0026-cr05-structural-layout-and-titles-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0027-cr05a-pdf-tab-barline-style-classification.md`
 
 ## Context
 
-Task `MXS-10` completed and merged via PR #401 (`5987aa0fe45859435067db14439cfb5598a2b704`). The project now promotes backlog task `CR-05` to determine a generic, testable architecture for independently classifying ordinary, double, and final barlines, system/page layout breaks, and phrase/piece title ownership.
+Architecture task `CR-05` completed and merged via PR #397 (`5268844e1c5596b3c3db1e5c821e93064a7417c1`). The project now promotes Developer slice `CR-05A` to implement typed barline style classification (`"regular"`, `"double"`, `"final"`, `"ambiguous"`, `"unclassified_stroke"`) on the PDF-tab conversion seam while preserving 100% backward compatibility.
 
 ## Goal
 
-Determine a generic, testable architecture in `tticom/score2gp` for independently classifying barlines, layout breaks, and title ownership without implying system breaks from barline types. Write the architectural design report at `docs/design/cr05-structural-layout-and-titles-architecture.md`.
+Classify PDF-tab barline candidate details into explicit, typed barline styles (`"regular"`, `"double"`, `"final"`, `"ambiguous"`, `"unclassified_stroke"`) while preserving 100% backward-compatible float `valid_barlines` arrays, `_TabSystem.barlines`, and system layout bounds.
 
 ## Allowed Files
 
-- `docs/design/cr05-structural-layout-and-titles-architecture.md`
+- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/pdf.py`
+- `src/score2gp/report.py`
+- `tests/test_cr05_barline_style_classification.py`
 
 ## Non-goals
 
-- No product source code modifications in `src/` or `tests/`.
-- No modifications to governance files in `score2gp-agentops`.
+- No title classification or title ownership code changes in `CR-05A`.
+- No system layout break refactoring in `CR-05A`.
+- No changes to product `build_ir.py` conversion logic in `CR-05A`.
 
 ## Acceptance
 
-Publish one product architecture PR on branch `agy/cr05-structural-layout-and-titles-architecture` in `tticom/score2gp` containing `docs/design/cr05-structural-layout-and-titles-architecture.md` for independent Codex review.
+Pass validation commands (`pytest tests/test_cr05_barline_style_classification.py` and `python scripts/agent_verify.py`). Publish one Developer pull request on branch `agy/cr05a-pdf-tab-barline-style-classification` in `tticom/score2gp` for independent Codex review.
