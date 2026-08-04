@@ -1,33 +1,31 @@
 # Active Task
 
-**Task**: CR-06A: Key Signature Evidence Contract & Fallback Removal
+**Task**: CR-07: Bounded Embellishment Attachments Architecture
 **Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Authorised Role**: Architect
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr06a-key-signature-evidence-contract`
+**PR Branch**: `agy/cr07-bounded-embellishment-attachments-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0031-cr06a-key-signature-evidence-contract.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0032-cr07-bounded-embellishment-attachments-architecture.md`
 
 ## Context
 
-Architecture task `CR-06` completed and merged via PR #402 (`8bd870e4a7b56f81713c7a3afcb975265acb89b0`). The project now promotes Developer slice `CR-06A` to introduce explicit `logical_key_signature` status handling (`EVIDENCED`, `UNKNOWN`, `AMBIGUOUS`) in `pitch.py` and `cli.py`, removing the hardcoded `"C Major"` default fallback for unevidenced notation staves.
+Developer slice `CR-06A` completed and merged via PR #403 (`6c243ed613167de943af519f9c1e21565c434952`). The project now promotes backlog task `CR-07` to determine a generic, testable architecture for bounded embellishment attachments (such as vibrato, slides, bends, hammer-ons/pull-offs, and palm muting).
 
 ## Goal
 
-Introduce explicit `logical_key_signature` status handling in `src/score2gp/notation_omr/pitch.py` and `src/score2gp/cli.py`. Remove the hardcoded `"C Major"` fallback for unevidenced staves so that unevidenced staves apply 0 key alterations without asserting a recognized C Major key signature in CLI or report metadata.
+Determine a generic, testable architecture in `tticom/score2gp` for bounded embellishment attachments. Write the architectural design report at `docs/design/cr07-bounded-embellishment-attachments-architecture.md`.
 
 ## Allowed Files
 
-- `src/score2gp/notation_omr/pitch.py`
-- `src/score2gp/cli.py`
-- `tests/test_cr06_key_signature_semantics.py`
+- `docs/design/cr07-bounded-embellishment-attachments-architecture.md`
 
 ## Non-goals
 
-- Visual accidental glyph extraction near clefs is deferred to follow-up slice CR-06B.
-- Multi-staff key signature synchronization across grand staves is deferred.
+- No product source code modifications in `src/` or `tests/`.
+- No modifications to governance files in `score2gp-agentops`.
 
 ## Acceptance
 
-Pass validation commands (`pytest tests/test_cr06_key_signature_semantics.py` and `python scripts/agent_verify.py`). Publish one Developer pull request on branch `agy/cr06a-key-signature-evidence-contract` in `tticom/score2gp` for independent Codex review.
+Publish one product architecture PR on branch `agy/cr07-bounded-embellishment-attachments-architecture` in `tticom/score2gp` containing `docs/design/cr07-bounded-embellishment-attachments-architecture.md` for independent Codex review.
