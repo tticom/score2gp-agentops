@@ -519,7 +519,7 @@ def run_go_bootstrap(
         else:
             state = "AWAITING_GOVERNANCE_REVIEW"
     else:
-        if task_status in ("APPROVED", "IN_PROGRESS"):
+        if task_status in ("APPROVED", "IN_PROGRESS", "PROMOTED"):
             state = "EXECUTE_PROMPT"
         else:
             state = "STOP_BLOCKED"
