@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: CR-06: Key-Signature Semantics Architecture
-**Status**: PROMOTED
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp
