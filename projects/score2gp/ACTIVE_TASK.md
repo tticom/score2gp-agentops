@@ -1,31 +1,33 @@
 # Active Task
 
-**Task**: CR-06: Key-Signature Semantics Architecture
+**Task**: CR-06A: Key Signature Evidence Contract & Fallback Removal
 **Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr06-key-signature-semantics-architecture`
+**PR Branch**: `agy/cr06a-key-signature-evidence-contract`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0030-cr06-key-signature-semantics-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0031-cr06a-key-signature-evidence-contract.md`
 
 ## Context
 
-Developer slice `CR-05A` completed and merged via PR #398 (`0529189e148e68c0adc0fb789d7d334a7322b5a5`). The project now promotes backlog task `CR-06` to determine a generic, testable architecture for key-signature evidence detection on notation staves.
+Architecture task `CR-06` completed and merged via PR #402 (`8bd870e4a7b56f81713c7a3afcb975265acb89b0`). The project now promotes Developer slice `CR-06A` to introduce explicit `logical_key_signature` status handling (`EVIDENCED`, `UNKNOWN`, `AMBIGUOUS`) in `pitch.py` and `cli.py`, removing the hardcoded `"C Major"` default fallback for unevidenced notation staves.
 
 ## Goal
 
-Determine a generic, testable architecture in `tticom/score2gp` for key-signature evidence detection on notation staves without defaulting unevidenced staves to recognized C-major / A-minor key signatures. Write the architectural design report at `docs/design/cr06-key-signature-semantics-architecture.md`.
+Introduce explicit `logical_key_signature` status handling in `src/score2gp/notation_omr/pitch.py` and `src/score2gp/cli.py`. Remove the hardcoded `"C Major"` fallback for unevidenced staves so that unevidenced staves apply 0 key alterations without asserting a recognized C Major key signature in CLI or report metadata.
 
 ## Allowed Files
 
-- `docs/design/cr06-key-signature-semantics-architecture.md`
+- `src/score2gp/notation_omr/pitch.py`
+- `src/score2gp/cli.py`
+- `tests/test_cr06_key_signature_semantics.py`
 
 ## Non-goals
 
-- No product source code modifications in `src/` or `tests/`.
-- No modifications to governance files in `score2gp-agentops`.
+- Visual accidental glyph extraction near clefs is deferred to follow-up slice CR-06B.
+- Multi-staff key signature synchronization across grand staves is deferred.
 
 ## Acceptance
 
-Publish one product architecture PR on branch `agy/cr06-key-signature-semantics-architecture` in `tticom/score2gp` containing `docs/design/cr06-key-signature-semantics-architecture.md` for independent Codex review.
+Pass validation commands (`pytest tests/test_cr06_key_signature_semantics.py` and `python scripts/agent_verify.py`). Publish one Developer pull request on branch `agy/cr06a-key-signature-evidence-contract` in `tticom/score2gp` for independent Codex review.
