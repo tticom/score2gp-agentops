@@ -1,31 +1,33 @@
 # Active Task
 
-**Task**: CR-07: Bounded Embellishment Attachments Architecture
+**Task**: CR-07A: Bounded Visual Vibrato and Slide Glyphs Evidence Seam
 **Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr07-bounded-embellishment-attachments-architecture`
+**PR Branch**: `agy/cr07a-bounded-visual-vibrato-and-slide-glyphs-evidence-seam`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0032-cr07-bounded-embellishment-attachments-architecture.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0033-cr07a-bounded-visual-vibrato-and-slide-glyphs-evidence-seam.md`
 
 ## Context
 
-Developer slice `CR-06A` completed and merged via PR #403 (`6c243ed613167de943af519f9c1e21565c434952`). The project now promotes backlog task `CR-07` to determine a generic, testable architecture for bounded embellishment attachments (such as vibrato, slides, bends, hammer-ons/pull-offs, and palm muting).
+Architecture task `CR-07` completed and merged via PR #405 (`f2419056a628af063e8a19ee1df47087a5f28971`). The project now promotes Developer slice `CR-07A` to introduce `VisualVibratoEvidence` and `VisualSlideEvidence` candidate extraction models and visual drawing path parsing in `src/score2gp/pdf_geometry.py` and `src/score2gp/pdf.py`.
 
 ## Goal
 
-Determine a generic, testable architecture in `tticom/score2gp` for bounded embellishment attachments. Write the architectural design report at `docs/design/cr07-bounded-embellishment-attachments-architecture.md`.
+Introduce `VisualVibratoEvidence` and `VisualSlideEvidence` candidate extraction models in `src/score2gp/pdf_geometry.py` and visual drawing path parsing in `src/score2gp/pdf.py` to capture raw embellishment drawing evidence from vector PDF path primitives (`"c"` bezier curves, line segments) before note assignment and pitch resolution.
 
 ## Allowed Files
 
-- `docs/design/cr07-bounded-embellishment-attachments-architecture.md`
+- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/pdf.py`
+- `tests/test_cr07_embellishment_attachments.py`
 
 ## Non-goals
 
-- No product source code modifications in `src/` or `tests/`.
-- No modifications to governance files in `score2gp-agentops`.
+- Downstream compiler/ScoreIR/GPIF embellishment note assignment changes are deferred to subsequent task slices.
+- Audio/OMR pitch resolution changes are deferred.
 
 ## Acceptance
 
-Publish one product architecture PR on branch `agy/cr07-bounded-embellishment-attachments-architecture` in `tticom/score2gp` containing `docs/design/cr07-bounded-embellishment-attachments-architecture.md` for independent Codex review.
+Pass validation commands (`pytest tests/test_cr07_embellishment_attachments.py` and `python scripts/agent_verify.py`). Publish one Developer pull request on branch `agy/cr07a-bounded-visual-vibrato-and-slide-glyphs-evidence-seam` in `tticom/score2gp` for independent Codex review.
