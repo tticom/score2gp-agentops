@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: CR-07C: Span-Based Embellishment Attachments for Palm Mute & Let Ring
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
