@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: CR-07B: Proximity & String-Identity Note Attachment for Visual Vibrato and Slide Evidence
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
