@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: FS-01: Runtime Provenance Baseline and Corpus Stabilisation Harness
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
