@@ -28,6 +28,10 @@ No other product files in `src/` or `tests/` may be edited in this task.
 
 1. **`src/score2gp/runtime_provenance.py`**:
    - Implement `RuntimeProvenanceRecord` model and helper functions to capture execution environment metadata, git commit SHA, dirty status, and sanitized conversion telemetry without leaking private corpus file contents or paths.
+   - Mandate sanitization of the `exact_command` list to replace all local user folders and private corpus file paths/names with anonymized strings (e.g., `[PRIVATE_INPUT_PATH]`).
+   - Require git dirty checks to handle environment/subprocess failures fail-safely by defaulting to `is_dirty = True` instead of raising exceptions.
+   - Fix `is_uncontrolled_runtime` to match Python interpreters with minor version suffixes (like `python3.12` or `python3.10` via prefix checks on `child_name`).
+   - Refine directory prefix checks for installed runtimes (e.g. standard Linux installation path setups) to avoid false-positives of uncontrolled runtimes.
 
 2. **`scripts/private_e2e_smoke.py` & `scripts/private_diagnostic_smoke.py`**:
    - Integrate `RuntimeProvenanceRecord` into corpus smoke test scripts to record durable provenance sidecars alongside test runs.
