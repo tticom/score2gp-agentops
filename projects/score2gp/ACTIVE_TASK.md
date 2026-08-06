@@ -5,8 +5,8 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `gov/promote-fs02-reconcile-entry-point`
-**Pull Request**: `469`
+**PR Branch**: `agy/fs02-reconcile-entry-point`
+**Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md`
 
 ## Context
