@@ -99,6 +99,24 @@ Suggested next task:
 - The next smallest safe step (to inform the orchestrator)
 ```
 
+## Pull Request Review Publication & Verdict Integrity
+
+To maintain the safety and integrity of PR reviews:
+1. **Always Publish Comments**: Reviews must always add detailed comments to the PR on GitHub. When a review is completed, publish the comments via:
+   ```bash
+   gh pr review <number> --comment --body-file <file>
+   ```
+2. **Explicit Changes Requested**: If the verdict is "needs changes", you must submit the review requesting changes on GitHub using:
+   ```bash
+   gh pr review <number> --request-changes --body-file <file>
+   ```
+   This ensures the "Changes Requested" state is formally set to true on the pull request.
+3. **Avoid Circular Review Logic**:
+   - Guard against state loops where one reviewer requests changes and another later approves, resetting or ignoring the blocker.
+   - A subsequent approval by a peer reviewer or automated agent (e.g., Codex) does NOT override, clear, or set the "Changes Requested" flag to false.
+   - Only the specific reviewer who requested changes (upon verifying the fix), or the authoritative human maintainer (`tticom`), can resolve the block or set the review status to approved.
+   - **Authoritative Approval**: Only the human maintainer identity `tticom` is authorized to give the final review approval for merging branches. Automated or AI agent approvals (e.g., Codex) are advisory and must never override an active "Changes Requested" block.
+
 ## Stop & Reject Conditions
 Stop the review, mark the verdict as "needs changes" or "cannot verify", and report immediately if:
 - Any test passes when the corresponding implementation logic is temporarily sabotaged.
