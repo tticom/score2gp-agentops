@@ -51,6 +51,14 @@ def test_no_pr_waits_for_author_publication() -> None:
     }
 
 
+def test_resolved_task_with_no_pr_emits_promote_resolved_task() -> None:
+    result = resolve_got_state(None, [], active_task_status="RESOLVED")
+    assert result == {
+        "state": "PROMOTE_RESOLVED_TASK",
+        "current_review": None,
+    }
+
+
 def test_open_pr_uses_latest_exact_head_review() -> None:
     head = "a" * 40
     reviews = [
