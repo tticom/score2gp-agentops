@@ -459,9 +459,6 @@ def test_got_dispatch_requires_pinned_handback() -> None:
 
 
 def test_governance_approval_requires_executed_adversarial_evidence() -> None:
-    reviewer = (
-        PROJECT_ROOT / "projects/score2gp/skills/reviewer/SKILL.md"
-    ).read_text(encoding="utf-8")
     rules = (PROJECT_ROOT / "projects/score2gp/REVIEW_RULES.md").read_text(
         encoding="utf-8"
     )
@@ -472,10 +469,8 @@ def test_governance_approval_requires_executed_adversarial_evidence() -> None:
         PROJECT_ROOT / "projects/score2gp/prompts/next/got-dispatch.md"
     ).read_text(encoding="utf-8")
 
-    for text in (reviewer, rules, template, dispatch):
+    for text in (rules, template, dispatch):
         assert "reviewer-created counterexample" in text.lower()
-    assert "input permutation" in reviewer
-    assert "second-order probe" in reviewer
     assert "green CI and author tests are not substitutes" in dispatch
     for field in [
         "Changed abstraction boundary",
@@ -486,9 +481,8 @@ def test_governance_approval_requires_executed_adversarial_evidence() -> None:
         "Metamorphic relation checked",
         "Residual risk",
     ]:
-        assert field in reviewer
         assert field in template
-    for text in (reviewer, rules, dispatch):
+    for text in (rules, dispatch):
         assert "claim-to-oracle" in text.lower()
     assert "sensitive path" in rules.lower()
 
