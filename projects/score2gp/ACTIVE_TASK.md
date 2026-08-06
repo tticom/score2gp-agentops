@@ -1,32 +1,31 @@
 # Active Task
 
-**Task**: FS-02: Reconcile Uncontrolled Runtime and Canonical Conversion Entry Point
+**Task**: CR-04A: False-Rest and Per-Voice Capacity Architecture
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/fs02-reconcile-entry-point`
+**PR Branch**: `agy/cr04a-false-rest-capacity-architecture-v2`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0007-cr04a-false-rest-capacity-architecture.md`
 
 ## Context
 
-Task `FS-01` (Runtime Provenance Baseline and Corpus Stabilisation Harness) completed and merged via product PR #409 (`2101d8cf65ed6fad3d3984657703d131a165b97b`). The project now promotes task `FS-02` from `APPROVED_TASK_QUEUE.md` under the `Runtime-Provenance and Functional-Stabilisation Series` to reconcile the canonical conversion entry point and establish a committed source-to-output call chain.
+Task `FS-02` (Reconcile Uncontrolled Runtime and Canonical Conversion Entry Point) completed and merged via PR #472 (`2aa977445d54ab8462dc9432ef9535af2afe57ad`). The project now promotes task `CR-04A` from `APPROVED_TASK_QUEUE.md` under the Visual Output Correctness Series to investigate and define the false-rest rejection and per-voice capacity gate.
 
 ## Goal
 
-Conduct an Architect phase for `FS-02` to verify and trace the canonical conversion route in `score2gp`, confirming whether `score2gp convert` or `score2gp omr` forms the committed entry point and establishing evidence bounds for downstream functional gates (FS-03/FS-04).
+Locate the first committed-evidence divergence creating the Lesson-5 false-rest candidate, define a deterministic per-voice measure-capacity gate, and produce a Developer-ready rule and public regression plan in an architecture report.
 
 ## Allowed Files
 
-- `projects/score2gp/reports/2026-08-06-fs02-canonical-entry-point-architecture.md`
+- `projects/score2gp/reports/2026-08-06-cr04a-architecture.md`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
-- No product code changes in the Architect phase.
-- Do not bypass canonical entry-point verification or invent uncommitted conversion routes.
+- Bounded architecture and diagnostic task only; no product code changes in the Architect phase.
 
 ## Acceptance
 
-Produce an architecture report detailing the verified source-to-output conversion entry point, allowed call chain, and evidence bounds. Publish one governance pull request on branch `gov/promote-fs02-reconcile-entry-point` in `tticom/score2gp-agentops` for independent Codex review.
+Produce the CR-04A architecture report, update `ACTIVE_TASK.md`, and publish one governance pull request on branch `agy/cr04a-false-rest-capacity-architecture-v2` in `tticom/score2gp-agentops` for independent Codex review.
