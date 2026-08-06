@@ -1,36 +1,35 @@
 # Active Task
 
-**Task**: CR-05A: PDF-Tab Barline Style Classification Seam
+**Task**: MXS-00: Candidate-Neutral Sidecar Evaluation Harness
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification-v3`
+**PR Branch**: `agy/mxs00-candidate-neutral-sidecar-evaluation-harness-v2`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0027-cr05a-pdf-tab-barline-style-classification.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0028-mxs00-candidate-neutral-sidecar-evaluation-harness.md`
 
 ## Context
 
-Task `CR-05` (Structural Layout and Titles Architecture) completed and merged via governance PR #480 (`e4830ae94321fa2e3f30ad28b7d056a83e1778f5`). The project now promotes task `CR-05A` from `APPROVED_TASK_QUEUE.md` under the Visual Output Correctness Series to implement bounded barline style classification on the PDF-tab conversion seam.
+Task `CR-05A` (PDF-Tab Barline Style Classification Seam) completed and merged via product PR #410 (`149919a8b4ffdcab156e519e0f0b1cfb0cbef306`). The project now promotes task `MXS-00` from `APPROVED_TASK_QUEUE.md` under the MusicXML Sidecar Ingestion Series to add a candidate-neutral evaluator module and CLI command for MusicXML/MXL sidecars.
 
 ## Goal
 
-Classify PDF-tab barline candidate details into explicit, typed barline styles (`regular`, `double`, `final`, `ambiguous`, `unclassified_stroke`) while preserving 100% backward-compatible float `valid_barlines` arrays, `_TabSystem.barlines`, and system layout bounds.
+Add `sidecar_evaluator.py` and CLI `eval-sidecar` command in `score2gp` to evaluate MusicXML sidecars against the common sidecar contract, classifying `empty_musicxml`, `timing_invalid`, `handoff_refused`, and `non_deterministic` statuses cleanly.
 
 ## Allowed Files
 
-- `src/score2gp/pdf_geometry.py`
-- `src/score2gp/pdf.py`
-- `src/score2gp/report.py`
-- `tests/test_cr05_barline_style_classification.py`
+- `src/score2gp/sidecar_evaluator.py`
+- `src/score2gp/cli.py`
+- `tests/test_mxs00_sidecar_evaluation_harness.py`
 - `projects/score2gp/ACTIVE_TASK.md`
 
 ## Non-goals
 
-- No title classification or title ownership code changes in CR-05A.
-- No system layout break refactoring in CR-05A.
-- No changes to product `build_ir.py` conversion logic in CR-05A.
+- No change to product `convert` default execution or core conversion pipeline.
+- No third-party network API calls or private input file access.
+- No model training or external OMR dependencies in this task.
 
 ## Acceptance
 
-Extend `_LineSegment` metadata, populate typed `barline_style` in candidate details, pass `test_cr05_barline_style_classification.py` and `scripts/agent_verify.py`, update `ACTIVE_TASK.md`, and publish one product pull request on branch `agy/cr05a-pdf-tab-barline-style-classification-v3` in `tticom/score2gp` for independent Codex review.
+Implement `evaluate_sidecar()`, add `score2gp eval-sidecar` subcommand, pass `test_mxs00_sidecar_evaluation_harness.py` and `scripts/agent_verify.py`, update `ACTIVE_TASK.md`, and publish one product pull request on branch `agy/mxs00-candidate-neutral-sidecar-evaluation-harness-v2` in `tticom/score2gp` for independent Codex review.
