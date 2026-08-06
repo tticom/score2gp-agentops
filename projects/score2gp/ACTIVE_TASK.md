@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: CR-04A: Current-Runtime Lesson-5 Evidence Replay
-**Status**: APPROVED
+**Status**: RESOLVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/cr04a-current-runtime-evidence-replay`
-**Pull Request**: `none`
+**Pull Request**: #476
 **Original Prompt**: `projects/score2gp/prompts/next/0008-cr04a-current-runtime-evidence-replay.md`
 
 ## Context
