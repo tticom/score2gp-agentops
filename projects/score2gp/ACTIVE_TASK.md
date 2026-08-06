@@ -1,11 +1,11 @@
 # Active Task
 
 **Task**: CR-05A: PDF-Tab Barline Style Classification Seam
-**Status**: RESOLVED
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
-**Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification-v2`
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification-v3`
 **Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/next/0027-cr05a-pdf-tab-barline-style-classification.md`
 
@@ -33,4 +33,4 @@ Classify PDF-tab barline candidate details into explicit, typed barline styles (
 
 ## Acceptance
 
-Extend `_LineSegment` metadata, populate typed `barline_style` in candidate details, pass `test_cr05_barline_style_classification.py` and `scripts/agent_verify.py`, update `ACTIVE_TASK.md`, and publish one product pull request on branch `agy/cr05a-pdf-tab-barline-style-classification-v2` in `tticom/score2gp` for independent Codex review.
+Extend `_LineSegment` metadata, populate typed `barline_style` in candidate details, pass `test_cr05_barline_style_classification.py` and `scripts/agent_verify.py`, update `ACTIVE_TASK.md`, and publish one product pull request on branch `agy/cr05a-pdf-tab-barline-style-classification-v3` in `tticom/score2gp` for independent Codex review.
