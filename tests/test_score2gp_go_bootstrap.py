@@ -740,6 +740,47 @@ def test_merged_pr_with_resolved_task_emits_promote_resolved_expected_state(
     }
 
 
+def test_resolved_task_without_pr_emits_promote_resolved_expected_state(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_ops = temp_git_repos["init_agentops"]
+
+    task_resolved = """# Active Task
+
+**Task**: CR-04A: Current-Runtime Lesson-5 Evidence Replay
+**Status**: RESOLVED
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Architect
+**Repository**: tticom/score2gp
+**PR Branch**: `agy/cr04a-current-runtime-evidence-replay`
+**Pull Request**: `none`
+**Original Prompt**: `projects/score2gp/prompts/next/0008-cr04a-current-runtime-evidence-replay.md`
+"""
+    (init_ops / "projects/score2gp/ACTIVE_TASK.md").write_text(task_resolved)
+    run_git(init_ops, ["add", "."])
+    run_git(init_ops, ["commit", "-m", "Resolved active task"])
+    run_git(init_ops, ["push", "origin", "main"])
+
+    def runner(repo: str, selected_branch: str) -> dict[str, Any] | None:
+        return None
+
+    result = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=runner,
+    )
+    assert result["state"] == "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+    assert result["next_action"] == {
+        "command": "got",
+        "expected_state": "PROMOTE_RESOLVED_TASK",
+        "owner": "governance",
+    }
+
+
 def test_merged_pr_with_approved_task_emits_promote_merged_expected_state(
     temp_git_repos: dict[str, Path],
 ) -> None:

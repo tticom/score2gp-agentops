@@ -521,6 +521,10 @@ def run_go_bootstrap(
     else:
         if task_status in ("APPROVED", "IN_PROGRESS", "PROMOTED"):
             state = "EXECUTE_PROMPT"
+        elif task_status.upper() == "RESOLVED":
+            state = "MERGED_AWAITING_GOVERNANCE_PROMOTION"
+        elif task_status.upper() == "MERGED":
+            state = "NO_ACTIVE_TASK"
         else:
             state = "STOP_BLOCKED"
 
