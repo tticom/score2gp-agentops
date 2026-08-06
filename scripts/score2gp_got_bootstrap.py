@@ -105,12 +105,15 @@ def enforce_governance_identity(agentops: Path, product: Path) -> None:
     )
 
 
-def query_pr(repo: str, branch: str) -> dict[str, Any] | None:
+def query_pr(repo: str, branch: str) -> tuple[dict[str, Any] | None, str]:
     pr = query_github_pr_state(repo, branch)
-    if pr is None:
-        alt_repo = "tticom/score2gp-agentops" if repo == "tticom/score2gp" else "tticom/score2gp"
-        pr = query_github_pr_state(alt_repo, branch)
-    return pr
+    if pr is not None:
+        return pr, repo
+    alt_repo = "tticom/score2gp-agentops" if repo == "tticom/score2gp" else "tticom/score2gp"
+    pr = query_github_pr_state(alt_repo, branch)
+    if pr is not None:
+        return pr, alt_repo
+    return None, repo
 
 
 def resolve_got_state(
@@ -171,9 +174,9 @@ def main() -> None:
     )
     repo = task["repository"]
     branch = task["pr branch"]
-    pr = query_pr(repo, branch)
+    pr, actual_repo = query_pr(repo, branch)
     reviews = (
-        query_reviews(repo, int(pr["number"]))
+        query_reviews(actual_repo, int(pr["number"]))
         if pr is not None and pr["state"].upper() == "OPEN"
         else []
     )
