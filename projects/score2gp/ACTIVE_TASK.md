@@ -1,10 +1,10 @@
 # Active Task
 
 **Task**: CR-05A: PDF-Tab Barline Style Classification Seam
-**Status**: APPROVED
+**Status**: RESOLVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 **PR Branch**: `agy/cr05a-pdf-tab-barline-style-classification-v2`
 **Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/next/0027-cr05a-pdf-tab-barline-style-classification.md`
