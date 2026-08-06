@@ -360,13 +360,19 @@ def run_go_bootstrap(
             fail_closed(f"GitHub runner failed: {e}", state="GITHUB_STATE_UNAVAILABLE")
     elif declared_repo and not _allow_custom_slug:
         pr_info = query_github_pr_state(declared_repo, pr_branch)
+        effective_repo = declared_repo
+        if pr_info is None:
+            alt_repo = "tticom/score2gp-agentops" if declared_repo == "tticom/score2gp" else "tticom/score2gp"
+            pr_info = query_github_pr_state(alt_repo, pr_branch)
+            if pr_info is not None:
+                effective_repo = alt_repo
         if pr_info:
             pr_number = pr_info.get("number")
             pr_state = pr_info.get("state")
             pr_head_sha = pr_info.get("headRefOid")
             if pr_number and pr_head_sha:
                 current_review = resolve_current_head_review(
-                    query_reviews(declared_repo, int(pr_number)),
+                    query_reviews(effective_repo, int(pr_number)),
                     pr_head_sha,
                     TRUSTED_REVIEWERS,
                 )

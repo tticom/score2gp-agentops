@@ -106,7 +106,11 @@ def enforce_governance_identity(agentops: Path, product: Path) -> None:
 
 
 def query_pr(repo: str, branch: str) -> dict[str, Any] | None:
-    return query_github_pr_state(repo, branch)
+    pr = query_github_pr_state(repo, branch)
+    if pr is None:
+        alt_repo = "tticom/score2gp-agentops" if repo == "tticom/score2gp" else "tticom/score2gp"
+        pr = query_github_pr_state(alt_repo, branch)
+    return pr
 
 
 def resolve_got_state(
@@ -115,6 +119,10 @@ def resolve_got_state(
     active_task_status: str | None = None,
 ) -> dict[str, Any]:
     if pr is None:
+        if active_task_status and active_task_status.upper() == "RESOLVED":
+            return {"state": "PROMOTE_RESOLVED_TASK", "current_review": None}
+        if active_task_status and active_task_status.upper() == "MERGED":
+            return {"state": "NO_ACTIVE_TASK", "current_review": None}
         return {"state": "AWAITING_AGY_PUBLICATION", "current_review": None}
     state = str(pr.get("state", "")).upper()
     head = str(pr.get("headRefOid", ""))
