@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: MXS-10: Assisted Sidecar Ingestion Manifest
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
