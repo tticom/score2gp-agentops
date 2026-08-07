@@ -9,7 +9,7 @@ python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 
 The Linux worker identity, not the command word, selects the role:
 `tticom-automation` runs author `go`; `tticom-gov` runs governance `got`
-using Git/GitHub service identity `tticomgov-code`. Never bypass the router by
+using Git/GitHub service identity `tticomgov-code`. The `tticom-codex` (Codex) identity acts primarily as an independent reviewer and is not concerned with acting upon `go` or `got` commands (which are reserved for `tticom-automation` and `tticom-gov` respectively). Never bypass the router by
 calling the other role's helper. Treat its JSON as authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
