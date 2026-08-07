@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: M1: Bar-Level Comparator and Mismatch Ledger
-**Status**: APPROVED
+**Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/m1-bar-level-comparator`
-**Pull Request**: `none`
+**Pull Request**: https://github.com/tticom/score2gp/pull/414
 **Original Prompt**: `projects/score2gp/prompts/next/0038-m1-bar-level-comparator-and-mismatch-ledger.md`
 
 ## Context
