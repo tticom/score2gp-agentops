@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: MXS-10: Assisted Sidecar Ingestion Manifest
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/mxs10-assisted-sidecar-ingestion-manifest-v2`
-**Pull Request**: `none`
+**Pull Request**: #412
 **Original Prompt**: `projects/score2gp/prompts/next/0029-mxs10-assisted-sidecar-ingestion-manifest.md`
 
 ## Context
