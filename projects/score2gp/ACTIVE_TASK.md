@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: Remediate PyMuPDF Deprecation Warning Failures
-**Status**: PR_OPEN
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/fix-pymupdf-deprecation-warning`
-**Pull Request**: https://github.com/tticom/score2gp/pull/413
+**Pull Request**: #413
 **Original Prompt**: `projects/score2gp/prompts/next/0037-remediate-pymupdf-deprecation-warning-failures.md`
 
 ## Context
