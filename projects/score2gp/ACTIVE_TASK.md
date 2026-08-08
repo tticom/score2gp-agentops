@@ -1,13 +1,13 @@
 # Active Task
 
-**Task**: M4: Fix OMR Sidecar Timeline Overlaps and Gating
-**Status**: APPROVED
+**Task**: M3: Integrate and Test OMR Sidecar Generator
+**Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/m4-fix-sidecar-overlaps-and-alignment`
-**Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0041-m4-fix-sidecar-overlaps-and-alignment.md`
+**PR Branch**: `agy/m3-integrate-and-test-sidecar-generator`
+**Pull Request**: `https://github.com/tticom/score2gp/pull/416`
+**Original Prompt**: `projects/score2gp/prompts/next/0040-m3-integrate-and-test-sidecar-generator.md`
 
 ## Context
 
