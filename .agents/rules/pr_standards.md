@@ -15,3 +15,8 @@ Whenever any agent creates or opens a Pull Request (via `gh pr create`, CLI scri
 
 3. **Pre-flight Field Verification**:
    - Before executing `gh pr create`, agents MUST verify that `--title` and `--body` (or `--body-file`) parameters are explicitly defined with populated, non-default content.
+
+4. **Prohibition on Merging Pull Requests**:
+   - Agents MUST NEVER merge a Pull Request under any circumstances.
+   - Prohibited actions include running `gh pr merge`, merging PR branches directly into `main`, or triggering automated merges.
+   - Merging Pull Requests is strictly reserved for human maintainers or designated governance processes.
