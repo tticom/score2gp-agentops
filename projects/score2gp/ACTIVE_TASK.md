@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: M3: Integrate and Test OMR Sidecar Generator
-**Status**: APPROVED
+**Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/m3-integrate-and-test-sidecar-generator`
-**Pull Request**: `NO_PR_OPEN`
+**Pull Request**: `https://github.com/tticom/score2gp/pull/416`
 **Original Prompt**: `projects/score2gp/prompts/next/0040-m3-integrate-and-test-sidecar-generator.md`
 
 ## Context
