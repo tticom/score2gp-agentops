@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: M2: Fix Event Timing and Duration Semantics
-**Status**: APPROVED
+**Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/m2-fix-event-timing-and-duration-semantics`
-**Pull Request**: `none`
+**Pull Request**: `https://github.com/tticom/score2gp/pull/415`
 **Original Prompt**: `projects/score2gp/prompts/next/0039-m2-fix-event-timing-and-duration-semantics.md`
 
 ## Context
