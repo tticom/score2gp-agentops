@@ -77,9 +77,10 @@ Apply the project-specific rules in AgentOps:
   in `REVIEW_RULES.md`;
 - private inputs remain local and ignored;
 - runtime provenance is required for conversion claims;
-- Agy may publish its authorised branch/PR but may not self-approve or merge;
-- Codex independently reviews and may publish its review under the current
-  maintainer policy;
+- Agy may publish its authorised branch/PR but may not self-approve or merge; you may not ever merge a PR;
+- once you have raised a PR, you must expect a review;
+- you must write an accurate comment to any PR you review, including any you raised;
+- Codex independently reviews and may publish its review under the current maintainer policy;
 - candidate follow-ups are not active tasks.
 
 ## Continuation
