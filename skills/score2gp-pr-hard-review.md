@@ -102,11 +102,10 @@ Suggested next task:
 ## Pull Request Review Publication & Verdict Integrity
 
 To maintain the safety and integrity of PR reviews:
-1. **Always Publish Comments Immediately**: Reviews must always publish detailed comments and verdict directly to the PR on GitHub immediately upon completion. When a review is completed, publish the review via:
-   ```bash
-   gh pr review <number> --comment --body-file <file>  # or --approve / --request-changes
-   ```
-   Do NOT pause to ask the user for confirmation before submitting completed PR review comments.
+1. **Always Publish Comments and Verdicts Immediately**: Reviews must always publish detailed comments and verdict directly to the PR on GitHub immediately upon completion.
+   - If the verdict is **APPROVE**, record the approval on the PR (using `--approve` or `score2gp_publish_review.py --verdict APPROVED` with the required evidence packet).
+   - For other verdicts, publish using `--comment` or `--request-changes` as appropriate.
+   - Do NOT pause to ask the user for confirmation before submitting completed PR reviews.
 2. **Explicit Changes Requested**: If the verdict is "needs changes", you must submit the review requesting changes on GitHub using:
    ```bash
    gh pr review <number> --request-changes --body-file <file>
