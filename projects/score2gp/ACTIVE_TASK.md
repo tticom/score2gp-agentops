@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: M5: Corpus Generalisation and Final Report
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
