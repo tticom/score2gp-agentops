@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: M3: Integrate and Test OMR Sidecar Generator
-**Status**: ACTIVE
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
