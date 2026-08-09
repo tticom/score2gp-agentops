@@ -2738,7 +2738,7 @@ make the committed `convert` path usable before any naming or package refactor.
 Automatic continuation: after each accepted task, Agy records an external-merge
 handoff and may continue only with independent eligible work. A human maintainer
 or external release integrator updates governance and promotes dependent work
-after merge. A role transition, review completion, or merged PR is not a stop
+after merge. A role transition, review completion, or merge is not a stop
 condition. The series stops only for an evidenced missing direction, unavailable
 credentials, or an unsafe inference that has no credible research pivot.
 
@@ -2746,42 +2746,24 @@ credentials, or an unsafe inference that has no credible research pivot.
 
 ---
 
-## Task 88 — Conversion Recovery Evidence Adjudication and Architecture Review
+## Task 88 — Conversion Recovery Architecture
 
-Status: ACTIVE
+Status: DONE
 
 Owning repo: score2gp
 
 Branch:
-agy/conversion-recovery-architecture
+`agy/conversion-recovery-architecture`
 
 PR title:
 docs(design): define evidence-backed conversion recovery architecture
+
+Product PR: #421 (Merge SHA: `c3df9006014fe2b02fcf7ec84bd6b9f69d68e530`)
 
 Purpose:
 Adjudicate contradictory reports and open PRs, trace the current architecture,
 design two target routes, select an A/B/C outcome, define real-source-only
 testing and sidecar decisions, and produce the dependency-ordered migration.
-
-Requirement:
-CRP-00, CRP-01, and CRP-02
-
-Evidence basis:
-- projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md
-- projects/score2gp/programmes/2026-08-09-conversion-recovery.md
-- projects/score2gp/tasks/2026-08-09-conversion-recovery-backlog.md
-- projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md
-
-Acceptance:
-- exact-revision claim and PR dispositions;
-- current and target module seam maps;
-- preserve, wrap, replace, and delete matrix;
-- sidecar A/B/C decision with Lesson 6 4/4-triplet evidence;
-- private real-source test and CI architecture with reference isolation;
-- implementation-ready first-prompt specification in the product migration
-  map, for later publication by a separate AgentOps governance promotion, and
-  dependency-bound skeletons;
-- docs-only product PR and full product verification.
 
 ---
 
@@ -2803,41 +2785,92 @@ Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, 
 Prompts:
 - projects/score2gp/prompts/next/0044-m6-port-and-harmonize-barline-detection.md
 
+Acceptance:
+- `pytest tests/test_pdf_geometry_candidate_extractor.py` and `pytest tests/test_pdf.py` pass cleanly.
+- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` increases extracted notation bar boxes on `Lesson-5.pdf` from 31 (on main) to 41 across 12 systems without triggering 300pt snapping hacks. Downstream `CRP-02` (Topologically Locked System Barlines) and `CRP-03` (Page-Continuous Measure Indexing) hold measurable responsibility for extracting the remaining 2 bars (41 -> 43) and establishing page continuity.
+- Held-out real-source probe on `fixtures/private/Lesson-6.pdf` increases extracted notation bar boxes from 13 (on main) to 40 across 10 systems without snapping hacks (with full 72-measure page continuity completed downstream in CRP-02/03).
+
 ---
 
-## Task 90 — Sidecar and Recognition Research Decisions
+## Task 90 — Topologically Locked System Barlines (CRP-02)
 
 Status: BLOCKED
 
 Blocked by:
-Task 89 real-source oracle.
+Task 89 (`CRP-01`).
 
 Purpose:
-Execute the timing-complete sidecar bake-off and source-modality/TAB
-recognition probes using the common real-source contract. Select explicit A, B,
-or C outcomes; add no production dependency.
+Lock system barlines topologically across notation and TAB staves to recover system boundary alignment.
+
+Measurable responsibility:
+Recover the two missing `Lesson-5.pdf` bar boxes (`41 → 43`) and ensure system boundary barline integrity using real-source evidence without fixture-specific logic.
+
+Note:
+Its executable prompt requires a later governance promotion.
+
+---
+
+## Task 91 — Page-Continuous Measure Indexing (CRP-03)
+
+Status: BLOCKED
+
+Blocked by:
+Task 90 (`CRP-02`).
+
+Purpose:
+Preserve global measure identity across page boundaries and enforce page-continuous measure indexing.
+
+Measurable responsibility:
+Preserve global measure identity across page boundaries (including full 72-measure page continuity on `Lesson-6.pdf`).
 
 Prompts:
-- projects/score2gp/prompts/next/0048-timing-complete-sidecar-bakeoff.md
-- projects/score2gp/prompts/next/0049-source-modality-tab-recognition.md
+- Candidate prompt `projects/score2gp/prompts/next/0045-m6-implement-page-coordinate-offsets.md` (non-executable until separately promoted).
 
 ---
 
-## Task 91 — Conversion Module Migration Series
+## Task 92 — Real-Source Oracle and Harness (CRP-04)
 
 Status: BLOCKED
 
 Blocked by:
-Tasks 88–90 and separately reviewed prompt completion.
+Task 91 (`CRP-03`).
 
 Purpose:
-Implement one deep module seam per product PR: document topology, recognition
-adapters, paired-staff fusion, musical timeline, TAB token ownership, compiler,
-legacy removal, and final corpus acceptance.
+Implement the generic semantic oracle and private-fixture runner selected by the architecture. It must reject every known destructive branch and provide the reference-isolated real-source harness required by downstream research and implementation.
+
+Prompts:
+- `projects/score2gp/prompts/next/0047-real-source-oracle-harness.md`
+- `projects/score2gp/prompts/next/0047a-real-source-test-migration.md`
+
+---
+
+## Task 93 — Sidecar and Recognition Research
+
+Status: BLOCKED
+
+Blocked by:
+Task 92 (`CRP-04`).
+
+Purpose:
+Execute the timing-complete sidecar bake-off and source-modality/TAB recognition probes using the common real-source contract. Select explicit A, B, or C outcomes; add no production dependency.
+
+Prompts:
+- `projects/score2gp/prompts/next/0048-timing-complete-sidecar-bakeoff.md`
+- `projects/score2gp/prompts/next/0049-source-modality-tab-recognition.md`
+
+---
+
+## Task 94 — Conversion Module Migration Series
+
+Status: BLOCKED
+
+Blocked by:
+Tasks 88–93 and separately reviewed prompt completion.
+
+Purpose:
+Implement one deep module seam per product PR: document topology, recognition adapters, paired-staff fusion, musical timeline, TAB token ownership, compiler, legacy removal, and final corpus acceptance.
 
 Prompt skeletons:
-- existing M6 prompts 0043–0046, now blocked;
-- prompts 0050–0056 in the conversion-recovery series.
+- prompts `0050–0056` in the conversion-recovery series.
 
-No skeleton is executable until all TBD_FROM fields are replaced from accepted
-upstream evidence and it is separately promoted to ACTIVE_TASK.md.
+No skeleton is executable until all TBD_FROM fields are replaced from accepted upstream evidence and it is separately promoted to `ACTIVE_TASK.md`.
