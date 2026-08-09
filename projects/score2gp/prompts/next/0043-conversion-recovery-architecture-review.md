@@ -26,9 +26,14 @@ Pinned planning evidence:
 - AgentOps report PR 512 head f9d81b31c4419c039cda4db7efaff4aaf187d8eb;
 - AgentOps report PR 513 head 648d750489faf849e30d78d391d3d5d275db7649;
 - master aggregation head 14cccf577c9479200c58fbb79ee6145edb243f62.
+- investigation disposition and archive index:
+  projects/score2gp/reports/2026-08-09-investigation-pr-and-branch-disposition.md.
 
 Re-query all SHAs at execution. A moved head invalidates the pin and must be
 recorded before analysis continues.
+
+Superseded investigation branches may be absent by execution time. Resolve
+their exact trees through the archive tags named in the disposition report.
 
 ## Goal
 

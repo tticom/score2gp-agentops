@@ -29,6 +29,22 @@ Read, in order:
 6. Replay the corpus oracle after merge and record the first remaining
    divergence before promoting the next task.
 
+## Investigation lifecycle and repository hygiene
+
+- Keep diagnostic evidence separate from product implementation unless the
+  active task explicitly authorises both in one review unit.
+- End every investigation with an exact-head claim ledger and an explicit
+  merge, supersede, archive, or delete disposition.
+- Before deleting an unmerged branch, preserve unique evidence as reviewed
+  repository documentation or as a verified annotated archive tag.
+- A closed PR, chat transcript, or local worktree is not durable preservation.
+- Do not merge contradictory source reports merely to retain them. Archive
+  their exact heads and carry only adjudicated claims into active governance.
+- A combined-fix result must name a committed integration SHA. Uncommitted
+  branch combinations cannot authorize implementation or approval.
+- After preservation and closure, remove redundant working branches so stale
+  heads cannot be mistaken for current task authority.
+
 ## Evidence rules
 
 - A safe refusal proves safety only.
