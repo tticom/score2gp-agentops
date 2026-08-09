@@ -1,31 +1,51 @@
 # Active Task
 
-**Task**: M5: Corpus Generalisation and Final Report
-**Status**: MERGED
+**Task**: Task 88 — Conversion Recovery Evidence Adjudication & Architecture Review
+**Status**: ACTIVE
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Authorised Role**: Architect / Researcher
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/m5-corpus-generalisation-and-report`
+**PR Branch**: `agy/conversion-recovery-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0042-m5-corpus-generalisation-and-final-report.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md`
 
 ## Context
 
-Task `M4: Fix OMR Sidecar Timeline Overlaps and Gating` completed and merged via product PR #417. The project now promotes task `0042` to run final corpus generalization conversions and compile the failure clustering report.
+The source reports conflict, three competing product PRs remain open, and the
+existing M6 implementation prompts assume unverified constants and counts.
+Before product behaviour changes, perform the full evidence adjudication,
+architecture review, sidecar decision, and real-source testing design required
+by the conversion-recovery programme.
 
 ## Goal
 
-Run the complete corpus conversion smoke matrix on the updated pipeline, cluster failures by capability, and write the final report.
+Produce an evidence-backed target architecture and migration decision that
+preserves verified working behaviour, replaces destructive paths, defines
+real-source-only acceptance, and completes the first unblocked downstream
+prompt.
 
 ## Allowed Files
 
-- `projects/score2gp/reports/2026-08-08-m5-corpus-generalisation-final-report.md`
-- `projects/score2gp/ACTIVE_TASK.md`
+- docs/design/2026-08-09-conversion-recovery-architecture.md
+- docs/design/2026-08-09-real-source-testing-architecture.md
+- docs/design/2026-08-09-conversion-module-migration-map.md
 
 ## Non-goals
 
-- Do not implement any key signature, meter, layout, double/final barlines, page breaks, or legato/pull-off/slides/vibrato (embellishment) changes.
+- Do not modify product source, tests, fixtures, dependencies, schemas, or workflows.
+- Do not merge, close, or rewrite open investigation PRs.
+- Do not promote downstream implementation from an unresolved report claim.
 
 ## Acceptance
 
-Successfully run corpus conversion, cluster conversion failures, compile the findings into `projects/score2gp/reports/2026-08-08-m5-corpus-generalisation-final-report.md`, and update `ACTIVE_TASK.md` to set task status to `MERGED` once the report is finalized.
+- Material report contradictions and open PR hunks are dispositioned at exact revisions.
+- Current and target module seams, interfaces, invariants, and migration order are explicit.
+- Sidecar generation receives an A, B, or C decision using Lesson 6 4/4 triplets as a mandatory discriminator.
+- Lesson 6 is a held-out acceptance oracle only. No product rule may inspect
+  its filename, hash, page, coordinates, expected counts, or other
+  fixture-specific identity.
+- Real-source test architecture isolates generation from reference GP data and does not accept skipped private tests as evidence.
+- A preserve, wrap, replace, and delete matrix and dependency graph are complete.
+- The migration map contains an implementation-ready specification for the
+  first downstream prompt; publishing that prompt requires a separate
+  AgentOps governance promotion. Dependent prompts remain skeletons.

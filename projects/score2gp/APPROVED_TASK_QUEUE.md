@@ -2741,3 +2741,101 @@ or external release integrator updates governance and promotes dependent work
 after merge. A role transition, review completion, or merged PR is not a stop
 condition. The series stops only for an evidenced missing direction, unavailable
 credentials, or an unsafe inference that has no credible research pivot.
+
+---
+
+---
+
+## Task 88 — Conversion Recovery Evidence Adjudication and Architecture Review
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+agy/conversion-recovery-architecture
+
+PR title:
+docs(design): define evidence-backed conversion recovery architecture
+
+Purpose:
+Adjudicate contradictory reports and open PRs, trace the current architecture,
+design two target routes, select an A/B/C outcome, define real-source-only
+testing and sidecar decisions, and produce the dependency-ordered migration.
+
+Requirement:
+CRP-00, CRP-01, and CRP-02
+
+Evidence basis:
+- projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md
+- projects/score2gp/programmes/2026-08-09-conversion-recovery.md
+- projects/score2gp/tasks/2026-08-09-conversion-recovery-backlog.md
+- projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md
+
+Acceptance:
+- exact-revision claim and PR dispositions;
+- current and target module seam maps;
+- preserve, wrap, replace, and delete matrix;
+- sidecar A/B/C decision with Lesson 6 4/4-triplet evidence;
+- private real-source test and CI architecture with reference isolation;
+- implementation-ready first-prompt specification in the product migration
+  map, for later publication by a separate AgentOps governance promotion, and
+  dependency-bound skeletons;
+- docs-only product PR and full product verification.
+
+---
+
+## Task 89 — Real-Source Oracle and Harness
+
+Status: BLOCKED
+
+Blocked by:
+Task 88 architecture review and independent acceptance.
+
+Purpose:
+Implement the generic semantic oracle and private-fixture runner selected by the
+architecture. It must reject every known destructive branch and keep reference
+GP data unavailable to generation.
+
+Prompts:
+- projects/score2gp/prompts/next/0047-real-source-oracle-harness.md
+- projects/score2gp/prompts/next/0047a-real-source-test-migration.md
+
+---
+
+## Task 90 — Sidecar and Recognition Research Decisions
+
+Status: BLOCKED
+
+Blocked by:
+Task 89 real-source oracle.
+
+Purpose:
+Execute the timing-complete sidecar bake-off and source-modality/TAB
+recognition probes using the common real-source contract. Select explicit A, B,
+or C outcomes; add no production dependency.
+
+Prompts:
+- projects/score2gp/prompts/next/0048-timing-complete-sidecar-bakeoff.md
+- projects/score2gp/prompts/next/0049-source-modality-tab-recognition.md
+
+---
+
+## Task 91 — Conversion Module Migration Series
+
+Status: BLOCKED
+
+Blocked by:
+Tasks 88–90 and separately reviewed prompt completion.
+
+Purpose:
+Implement one deep module seam per product PR: document topology, recognition
+adapters, paired-staff fusion, musical timeline, TAB token ownership, compiler,
+legacy removal, and final corpus acceptance.
+
+Prompt skeletons:
+- existing M6 prompts 0043–0046, now blocked;
+- prompts 0050–0056 in the conversion-recovery series.
+
+No skeleton is executable until all TBD_FROM fields are replaced from accepted
+upstream evidence and it is separately promoted to ACTIVE_TASK.md.
