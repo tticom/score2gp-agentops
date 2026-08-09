@@ -1,4 +1,4 @@
-# 0044 - M6: Implement Page Coordinate Offsets and Global Indexing
+# 0045 - M6: Implement Page Coordinate Offsets and Global Indexing
 
 ## Objective
 Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in the OMR candidate parser to prevent page-boundary index conflicts.
@@ -13,6 +13,7 @@ Enable sequential measure tracking across page boundaries and compute cumulative
 Modify only `src/score2gp/pdf.py`:
 1. **Sequential Page Indexing**: Update `_extract_pdf_text_candidates` to track `running_bar_index` dynamically across page iterations, passing it to `_detect_tab_systems` instead of re-initializing to 1 on page change.
 2. **Cumulative Page Offsets**: Calculate global y-coordinate offsets by summing the heights of preceding pages (`page.rect.height`) to prevent candidate overlap and coordinate collisions.
+3. **Isolated Unit Testing**: If isolated unit testing adds coverage value, write/update a separate unit test using public/synthetic inputs that can run in GitHub Actions.
 
 ## Validation Commands
 1. Run sidecar generation on `Lesson-6.pdf`:

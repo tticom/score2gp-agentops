@@ -1,4 +1,4 @@
-# 0046 - M6: In-Situ Real-Fixture Testing Integration
+# 0043 - M6: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
 
 ## Objective
 Enforce the ban on synthetic mock-point tests by introducing an in-situ test suite running against real-world private fixtures (`Lesson-5.pdf` and `Lesson-6.pdf`). Remove the hacky snapping tolerances and fallback synthesis paths to ensure true note-for-note conversion correctness.
@@ -16,6 +16,8 @@ Modify the gating, snapping, and test modules:
    - Load `Lesson-5.pdf` and `Lesson-6.pdf` from the private fixtures repository.
    - Assert that `_detect_tab_systems` returns exactly `38` and `72` measures respectively.
    - Assert that no unassigned playable fret candidates are present in the final `ScoreIR`.
+   - Use `pytest.mark.skipif` to gracefully skip the private fixture tests if the private fixtures directory is not present, allowing public unit tests to run in public CI.
+4. **Isolated Unit Testing**: If isolated unit testing adds coverage value, write a separate unit test using public/synthetic inputs that can run in GitHub Actions.
 
 ## Validation Commands
 1. Run the new in-situ test suite:

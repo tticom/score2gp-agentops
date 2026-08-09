@@ -160,3 +160,242 @@ All future development must prioritize the following sequential phases:
 ### Phase 5: Build Ground-Truth Semantic Comparison CI Harness
 - Add E2E CI gate comparing generated `.gp` files against `Lesson-5.gp`, `Lesson-6.gp`, `Derek Trucks BB King.gp`, etc.
 - Reject any PR that increases measure count error or note count error relative to ground truth.
+
+---
+
+## 7. The Remediation Backlog (Milestone 6)
+
+All tasks in this backlog must strictly adhere to the following **Test Writing and Isolation Standards**:
+- **Real-World Test Requirement**: Every code modification MUST be verified by an in-situ integration test loading `Lesson-5.pdf` or `Lesson-6.pdf` from the private fixtures repository.
+- **Isolated Unit Test Requirement**: If isolated unit testing adds coverage value, write a separate unit test using public/synthetic inputs.
+- **CI Portability**: All in-situ integration tests that require private fixtures MUST use a graceful skip mechanism (e.g., `@pytest.mark.skipif`) when the private fixtures repository is not present. This ensures that the public unit tests still run successfully in public GitHub Actions without access to private files.
+- **Banned**: Purely synthetic/mocked tests are banned from being the *sole* validation instrument.
+
+The following four tasks form the complete backlog for Milestone 6:
+
+### Task 1: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
+* **Branch**: `feature/agy/m6-in-situ-testing`
+* **Target Files**: `src/score2gp/build_ir.py`, `src/score2gp/pdf.py`, `tests/test_real_fixtures_alignment.py` (New File)
+* **Changes**:
+  - **Remove** the `synthesize_missing_tab` fallback from `build_ir.py`.
+  - **Reset** `outer_tolerance` back to `24.0` in `pdf.py` (removing the 300.0 hack).
+  - Create the new test suite loading `Lesson-5.pdf` and `Lesson-6.pdf` directly.
+  - Assert that all barlines are inherited and grouping results in no unassigned playable candidates.
+  - Assert exactly `38` and `72` measures respectively and verify no unassigned playable candidates remain.
+  - Integration tests use `pytest.mark.skipif` to skip gracefully when private fixtures are missing, allowing CI to pass.
+
+### Task 2: Port and Harmonize Barline Detection
+* **Branch**: `feature/agy/m6-barline-harmonization`
+* **Target Files**: `src/score2gp/pdf.py`, `src/score2gp/notation_omr/pipeline.py`
+* **Changes**:
+  - Set `MIN_INHERITED_INTERNAL_BAR_WIDTH` to `20.0` points.
+  - Relax barline height threshold to `min(15.0, staff_height - 2.0)`.
+  - Add edge-barline double clustering and mixed-primitive resolvers.
+  - Integrate standard staff notation barlines with TAB staff barlines in `pipeline.py`.
+  - Governed by both in-situ and isolated tests (if value added).
+
+### Task 3: Implement Page Coordinate Offsets & Global Indexing
+* **Branch**: `feature/agy/m6-page-offsets`
+* **Target Files**: `src/score2gp/pdf.py`
+* **Changes**:
+  - Implement `running_bar_index` sequential passing between pages.
+  - Calculate global y-coordinate offsets based on page height to prevent overlap coordinate collisions.
+  - Governed by both in-situ and isolated tests (if value added).
+
+### Task 4: Prevent Digit Over-Merging
+* **Branch**: `feature/agy/m6-digit-merging-guard`
+* **Target Files**: `src/score2gp/pdf.py`
+* **Changes**:
+  - Enforce `int(proposed) <= 24` inside the horizontal digit grouping loop to prevent adjacent single-digit frets from merging into invalid fret numbers.
+  - Governed by both in-situ and isolated tests (if value added).
+
+---
+
+## 8. Detailed Developer Prompts
+
+### Developer Prompt 1: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
+
+```text
+Title: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
+
+Context:
+Synthetic data tests pass on dummy layouts but fail to detect regressions in barline detection, digit merging, and page resets. We must enforce in-situ testing using the private fixtures and remove the hacky fallbacks.
+
+Current verified state:
+- Branch: feature/agy/m6-in-situ-testing
+- build_ir.py contains synthesize_missing_tab pitch-to-fret synthesis.
+- outer_tolerance is set to 300.0.
+
+Goal:
+Remove synthesize_missing_tab, reset outer_tolerance to 24.0, and add real-fixture in-situ tests alongside isolated unit tests.
+
+Non-goals:
+- Do not write any new synthetic unit tests that serve as the sole validation instrument.
+
+Constraints:
+- Branch name: feature/agy/m6-in-situ-testing
+- Target files: src/score2gp/build_ir.py, src/score2gp/pdf.py, tests/test_real_fixtures_alignment.py
+- Every code modification must be verified by BOTH an in-situ integration test on real private fixtures and an isolated unit test using public/synthetic inputs (if isolated testing adds coverage value).
+
+Required pre-flight checks:
+- PYTHONPATH=. .venv/bin/python3 scripts/agent_verify.py
+
+Implementation guidance:
+1. In build_ir.py: delete synthesize_missing_tab and references to it. Let the pipeline refuse if candidates are missing.
+2. In pdf.py: reset outer_tolerance back to 24.0.
+3. Create tests/test_real_fixtures_alignment.py:
+   - Write tests that load Lesson-5.pdf and Lesson-6.pdf.
+   - Assert that barline counts are exactly 38 and 72 respectively.
+   - Assert that no unassigned playable candidates remain.
+   - Use pytest.mark.skipif to gracefully skip the private fixture tests if the private fixtures directory is not present, allowing public unit tests to run in public CI.
+4. If value is added, write/update an isolated unit test using public/synthetic inputs that can run in GitHub Actions.
+
+Validation:
+- Run pytest tests/test_real_fixtures_alignment.py.
+- Run python3 scripts/private_e2e_smoke.py.
+
+Acceptance criteria:
+- synthesize_missing_tab is deleted.
+- outer_tolerance is 24.0.
+- In-situ real-fixture tests pass cleanly (and skip gracefully in public CI).
+- Isolated unit tests pass in public CI.
+
+Stop conditions:
+- Private fixture paths are hardcoded as relative to the user's homedir instead of workspace roots.
+- Tests fail.
+```
+
+### Developer Prompt 2: Port and Harmonize Barline Detection
+
+```text
+Title: Port and Harmonize Barline Detection
+
+Context:
+Real-world guitar tutorial PDFs (Lesson-5 and Lesson-6) contain compact staves (~18pt tall) and narrow measures (~128pt wide). The default barline thresholds in pdf.py (130pt minimum width, 20pt minimum height) reject these barlines, lumping the score into a single measure and failing alignment.
+
+Current verified state:
+- Branch: feature/agy/m6-barline-harmonization
+- Current barline settings in pdf.py reject narrow measures and short relative barlines on Lesson-5.pdf.
+
+Goal:
+Update pdf.py and pipeline.py to accept compact barlines, resolve edge double barlines, and merge notation structural barlines.
+
+Non-goals:
+- Do not implement page offsets, digit merging bounds, or new test files.
+
+Constraints:
+- Branch name: feature/agy/m6-barline-harmonization
+- Every code modification must be verified by BOTH an in-situ integration test on real private fixtures and an isolated unit test using public/synthetic inputs (if isolated testing adds coverage value).
+
+Required pre-flight checks:
+- PYTHONPATH=. .venv/bin/python3 scripts/agent_verify.py
+
+Implementation guidance:
+1. Open src/score2gp/pdf.py:
+   - Change MIN_INHERITED_INTERNAL_BAR_WIDTH to 20.0.
+   - Relax height check to min(15.0, staff_height - 2.0).
+   - Integrate double-barline resolution for edge margins in filter_tab_barline_candidates.
+2. Open src/score2gp/notation_omr/pipeline.py:
+   - Import extract_structural_skeleton_diagnostics_dict and map confirmed_barline from standard staff to barline_locations.
+3. Write/update an isolated unit test verifying barline thresholds using a public/synthetic staff if it adds coverage value.
+
+Validation:
+- Run generate-sidecar on Lesson-5.pdf:
+  ../score2gp/.venv/bin/score2gp generate-sidecar --pdf <Lesson-5.pdf> --out /tmp/Lesson-5.mxl
+- Verify that it outputs exactly 38 measures (unzip -p /tmp/Lesson-5.mxl | grep -c "<measure").
+
+Acceptance criteria:
+- MIN_INHERITED_INTERNAL_BAR_WIDTH is 20.0.
+- Sidecar generated for Lesson-5 has 38 measures.
+- Both in-situ real-world tests and isolated unit tests pass.
+
+Stop conditions:
+- Product workspace is dirty before starting.
+- Standard test suite fails post-implementation.
+```
+
+### Developer Prompt 3: Implement Page Coordinate Offsets & Global Indexing
+
+```text
+Title: Implement Page Coordinate Offsets & Global Indexing
+
+Context:
+On page boundaries, next_bar_index resets to 1, causing measure numbering conflicts. In addition, coordinate queries do not scale across multiple pages because y-coordinates overlap.
+
+Current verified state:
+- Branch: feature/agy/m6-page-offsets
+- pdf.py does not pass running_bar_index sequentially between pages.
+
+Goal:
+Maintain measure indices sequentially across pages and calculate cumulative y-offsets based on page height.
+
+Non-goals:
+- Do not modify digit merging or remove fallback synthesis.
+
+Constraints:
+- Branch name: feature/agy/m6-page-offsets
+- Only modify src/score2gp/pdf.py.
+- Every code modification must be verified by BOTH an in-situ integration test on real private fixtures and an isolated unit test using public/synthetic inputs (if isolated testing adds coverage value).
+
+Required pre-flight checks:
+- PYTHONPATH=. .venv/bin/python3 scripts/agent_verify.py
+
+Implementation guidance:
+1. Update _extract_pdf_text_candidates in pdf.py to track running_bar_index across the page loop.
+2. Calculate page offsets: accumulate page.rect.height for global y-coordinates across pages.
+3. Write/update an isolated unit test verifying page index continuity using a public/synthetic multi-page structure if it adds coverage value.
+
+Validation:
+- Run generate-sidecar and verify measure counts are sequentially incremental.
+
+Acceptance criteria:
+- next_bar_index does not reset on page boundaries.
+- Cumulative y-offsets are used for systems.
+- Both in-situ real-world tests and isolated unit tests pass.
+
+Stop conditions:
+- Code fails to compile or tests fail.
+```
+
+### Developer Prompt 4: Prevent Digit Over-Merging
+
+```text
+Title: Prevent Digit Over-Merging
+
+Context:
+Horizontally adjacent single-digit frets (e.g. 7 and 10) are merged into single invalid text spans ('710') because the horizontal grouping parser lacks bounds.
+
+Current verified state:
+- Branch: feature/agy/m6-digit-merging-guard
+- pdf.py merges adjacent numbers within 5.0pt without verifying if the merged result is a valid guitar fret.
+
+Goal:
+Guard the horizontal digit grouping loop to prevent over-merging.
+
+Non-goals:
+- Do not modify barlines or page indexing.
+
+Constraints:
+- Branch name: feature/agy/m6-digit-merging-guard
+- Only modify src/score2gp/pdf.py.
+- Every code modification must be verified by BOTH an in-situ integration test on real private fixtures and an isolated unit test using public/synthetic inputs (if isolated testing adds coverage value).
+
+Required pre-flight checks:
+- PYTHONPATH=. .venv/bin/python3 scripts/agent_verify.py
+
+Implementation guidance:
+1. In the horizontal text-merging loop of pdf.py, inspect if the proposed merged string is a digit.
+2. If it is a digit, ensure int(proposed) <= 24 before committing the merge. Otherwise, break the merge loop.
+3. Write/update an isolated unit test verifying digit merging using public/synthetic digit strings (e.g., asserting '7 10' is kept separate while '1 0' merges to '10') if it adds coverage value.
+
+Validation:
+- Verify that consecutive fret numbers like '7 10' are parsed as separate fret candidate digits.
+
+Acceptance criteria:
+- Merged fret digits never exceed 24.
+- Both in-situ real-world tests and isolated unit tests pass.
+
+Stop conditions:
+- Merging loop triggers infinite loops or crashes on empty strings.
+```
+

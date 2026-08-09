@@ -2741,3 +2741,141 @@ or external release integrator updates governance and promotes dependent work
 after merge. A role transition, review completion, or merged PR is not a stop
 condition. The series stops only for an evidenced missing direction, unavailable
 credentials, or an unsafe inference that has no credible research pivot.
+
+---
+
+## Task 88 — In-Situ Real-Fixture Testing Integration & Fallback Cleanup
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+feature/agy/m6-in-situ-testing
+
+PR title:
+feat(test): implement in-situ real-fixture testing and fallback cleanup
+
+Purpose:
+Establish the in-situ real-fixture testing harness using Lesson-5.pdf and Lesson-6.pdf. Remove the synthesize_missing_tab standard tuning fallback, and reset outer_tolerance to 24.0. Implement isolated unit tests if value added, skipping private tests gracefully in public CI.
+
+Requirement:
+Milestone 6, Task 1
+
+Evidence basis:
+- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
+- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
+
+Acceptance:
+- synthesize_missing_tab is completely deleted from build_ir.py.
+- outer_tolerance is reset to 24.0 points in pdf.py.
+- Real-fixture integration tests assert exactly 38 measures for Lesson-5 and 72 for Lesson-6, checking that no unassigned playable candidates remain.
+- Integration tests use pytest.mark.skipif to gracefully skip when private fixtures are missing, allowing CI to pass.
+- Isolated unit tests are written to verify isolated logic if they add coverage value.
+- standard pytest passes.
+
+Validation:
+cd /home/tticom/work/score2gp-workspace/score2gp
+.venv/bin/python3 -m pytest tests/test_real_fixtures_alignment.py
+
+---
+
+## Task 89 — Port and Harmonize Barline Detection
+
+Status: APPROVED
+
+Owning repo: score2gp
+
+Branch:
+feature/agy/m6-barline-harmonization
+
+PR title:
+feat(pdf): port and harmonize notation and TAB barline detection thresholds
+
+Purpose:
+Accept compact barlines, resolve edge double barlines, and inherit notation staff barlines to prevent safety gate refusals on compact measures.
+
+Requirement:
+Milestone 6, Task 2
+
+Evidence basis:
+- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
+- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
+
+Acceptance:
+- MIN_INHERITED_INTERNAL_BAR_WIDTH is 20.0 points.
+- Relative height checks accept barlines shorter than 20.0 points (min 15.0 or staff_height - 2.0).
+- Double barlines near system margins are resolved.
+- Notation staff confirmed barlines are extracted and merged in the pipeline.
+- verified by both in-situ integration tests and isolated unit tests (where value added).
+- Lesson-5 sidecar generates with 38 measures.
+
+Validation:
+cd /home/tticom/work/score2gp-workspace/score2gp
+.venv/bin/python3 -m pytest
+
+---
+
+## Task 90 — Page Coordinate Offsets and Global Indexing
+
+Status: APPROVED
+
+Owning repo: score2gp
+
+Branch:
+feature/agy/m6-page-offsets
+
+PR title:
+feat(pdf): implement sequential page indexing and cumulative page offsets
+
+Purpose:
+Maintain sequentially incrementing measure indices across page boundaries and compute cumulative page height offsets to resolve coordinate query overlaps.
+
+Requirement:
+Milestone 6, Task 3
+
+Evidence basis:
+- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
+- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
+
+Acceptance:
+- running_bar_index sequentially tracks measures across pages.
+- Cumulative page heights are used as y-coordinate offsets in pdf.py.
+- verified by both in-situ integration tests and isolated unit tests (where value added).
+
+Validation:
+cd /home/tticom/work/score2gp-workspace/score2gp
+.venv/bin/python3 -m pytest
+
+---
+
+## Task 91 — Prevent Fret Digit Over-Merging
+
+Status: APPROVED
+
+Owning repo: score2gp
+
+Branch:
+feature/agy/m6-digit-merging-guard
+
+PR title:
+feat(pdf): guard horizontal digit merging loop against impossible values
+
+Purpose:
+Prevent adjacent single-digit frets (e.g. 7 and 10) from merging into invalid fret numbers (> 24).
+
+Requirement:
+Milestone 6, Task 4
+
+Evidence basis:
+- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
+- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
+
+Acceptance:
+- Merged fret values never exceed 24.
+- Consecutive fret digits (like '7 10') are kept separate.
+- verified by both in-situ integration tests and isolated unit tests (where value added).
+
+Validation:
+cd /home/tticom/work/score2gp-workspace/score2gp
+.venv/bin/python3 -m pytest

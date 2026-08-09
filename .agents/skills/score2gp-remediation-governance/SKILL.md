@@ -10,9 +10,11 @@ This skill provides specific rules and checks for executing the Milestone 6 conv
 
 ## Core Rules
 
-### 1. In-Situ Real-Data Testing Enforcement
-* **Banned**: Do not write, review, or accept new unit tests that rely on mocked coordinates or hard-coded synthetic staff lines.
-* **Mandated**: All new tests must load `Lesson-5.pdf` or `Lesson-6.pdf` from the private fixtures repository. Use actual coordinates and pages from these PDFs to write assertions.
+### 1. Test Writing and Isolation Standards
+* **Real-World Test Requirement**: Every code modification MUST be verified by an in-situ integration test loading `Lesson-5.pdf` or `Lesson-6.pdf` from the private fixtures repository.
+* **Isolated Unit Test Requirement**: If isolated unit testing adds coverage value, write a separate unit test using public/synthetic inputs.
+* **CI Portability**: All in-situ integration tests that require private fixtures MUST use a graceful skip mechanism (e.g., `@pytest.mark.skipif`) when the private fixtures repository is not present. This ensures that the public unit tests still run in public GitHub Actions.
+* **Banned**: Purely synthetic/mocked tests are banned from being the *sole* validation instrument.
 
 ### 2. Snapping Tolerance & Synthesis Fallbacks
 * **Tolerance Restriction**: Snapping tolerance `outer_tolerance` in `pdf.py` must remain at `24.0` points. Do not expand it.

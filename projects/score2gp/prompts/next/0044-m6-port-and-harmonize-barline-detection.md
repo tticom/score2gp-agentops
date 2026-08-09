@@ -1,4 +1,4 @@
-# 0043 - M6: Port and Harmonize Barline Detection
+# 0044 - M6: Port and Harmonize Barline Detection
 
 ## Objective
 Update the OMR pipeline and barline thresholds to accept compact notation barlines, resolve edge double barlines, and inherit notation staff barlines cleanly to prevent `partial_pdf_grouping` refusals on compact scores (e.g. `Lesson-5.pdf`).
@@ -7,7 +7,7 @@ Update the OMR pipeline and barline thresholds to accept compact notation barlin
 1. Branch from `origin/main` in the `score2gp` product repository.
 2. Confirm the branch name is `feature/agy/m6-barline-harmonization`.
 3. Read `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`.
-4. Verify standard tests pass: `PYTHONPATH=. .venv/bin/python3 scripts/agent_verify.py`
+4. Verify standard tests pass.
 
 ## Implementation Scope & Seam Contract
 Modify only the barline extraction and mapping modules:
@@ -16,6 +16,7 @@ Modify only the barline extraction and mapping modules:
    - Relative height checks in `filter_tab_barline_candidates` from `height >= 20.0` to `height >= min(15.0, staff_height - 2.0)`.
 2. **Edge Double Barlines**: Update mixed-primitive checks in `filter_tab_barline_candidates` to resolve representative edge barlines within `10.0` points of the system boundaries, rather than marking them ambiguous.
 3. **Notation Staff Inheritance**: Update `src/score2gp/notation_omr/pipeline.py` to extract confirmed barlines from standard notation staves (using `extract_structural_skeleton_diagnostics_dict`) and merge them into `barline_locations` while deduplicating against TAB-inherited barlines.
+4. **Isolated Unit Testing**: If isolated unit testing adds coverage value, write/update a separate unit test using public/synthetic inputs that can run in GitHub Actions.
 
 ## Validation Commands
 1. Run sidecar generation on `Lesson-5.pdf`:
