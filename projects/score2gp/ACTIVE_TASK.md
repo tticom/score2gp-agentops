@@ -1,51 +1,36 @@
 # Active Task
 
-**Task**: Task 88 — Conversion Recovery Evidence Adjudication & Architecture Review
+**Task**: Task 89 — Port and Harmonize Barline Detection & Geometry Cleanup (CRP-01)
 **Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Architect / Researcher
+**Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/conversion-recovery-architecture`
+**PR Branch**: `agy/crp-01-barline-detection-harmonization`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0044-m6-port-and-harmonize-barline-detection.md`
 
 ## Context
 
-The source reports conflict, three competing product PRs remain open, and the
-existing M6 implementation prompts assume unverified constants and counts.
-Before product behaviour changes, perform the full evidence adjudication,
-architecture review, sidecar decision, and real-source testing design required
-by the conversion-recovery programme.
+Task 88 established the governing conversion recovery architecture, real-source testing rules, and 16-task migration map (`CRP-00` to `CRP-15`). Task 89 (`CRP-01`) is the first unblocked downstream implementation task.
 
 ## Goal
 
-Produce an evidence-backed target architecture and migration decision that
-preserves verified working behaviour, replaces destructive paths, defines
-real-source-only acceptance, and completes the first unblocked downstream
-prompt.
+Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, revert the `outer_tolerance = 300.0` geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.
 
 ## Allowed Files
 
-- docs/design/2026-08-09-conversion-recovery-architecture.md
-- docs/design/2026-08-09-real-source-testing-architecture.md
-- docs/design/2026-08-09-conversion-module-migration-map.md
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_staff_notation_diagnostics.py`
+- `tests/test_pdf_geometry_candidate_extractor.py`
 
 ## Non-goals
 
-- Do not modify product source, tests, fixtures, dependencies, schemas, or workflows.
-- Do not merge, close, or rewrite open investigation PRs.
-- Do not promote downstream implementation from an unresolved report claim.
+- Do not modify higher-level timeline, measure assembly, or IR compilation modules.
+- Do not re-introduce 300pt outer tolerance or duration scaling hacks.
+- Do not calibrate rules to target fixture coordinates or file hashes.
 
 ## Acceptance
 
-- Material report contradictions and open PR hunks are dispositioned at exact revisions.
-- Current and target module seams, interfaces, invariants, and migration order are explicit.
-- Sidecar generation receives an A, B, or C decision using Lesson 6 4/4 triplets as a mandatory discriminator.
-- Lesson 6 is a held-out acceptance oracle only. No product rule may inspect
-  its filename, hash, page, coordinates, expected counts, or other
-  fixture-specific identity.
-- Real-source test architecture isolates generation from reference GP data and does not accept skipped private tests as evidence.
-- A preserve, wrap, replace, and delete matrix and dependency graph are complete.
-- The migration map contains an implementation-ready specification for the
-  first downstream prompt; publishing that prompt requires a separate
-  AgentOps governance promotion. Dependent prompts remain skeletons.
+- `pytest tests/test_pdf_geometry_candidate_extractor.py` passes cleanly.
+- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` successfully extracts 43 notation barlines on `Lesson-5.pdf` without triggering 300pt snapping hacks.
+- `python3 scripts/agent_verify.py` passes with zero regression.
