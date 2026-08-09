@@ -16,6 +16,8 @@ REQUIRED_SKILLS = {
     "identity-safe-git": "skills/engineering/identity-safe-git",
     "durable-handoff": "skills/productivity/durable-handoff",
     "code-review": "skills/engineering/code-review",
+    "hard-review": "skills/engineering/hard-review",
+    "devils-advocate-review": "skills/engineering/devils-advocate-review",
 }
 
 
@@ -32,6 +34,14 @@ def git(repo: Path, *args: str, check: bool = True) -> str:
     if check and result.returncode:
         raise GateError(result.stderr.strip() or "git command failed")
     return result.stdout.strip() if result.returncode == 0 else ""
+
+
+def git_succeeds(repo: Path, *args: str) -> bool:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        capture_output=True,
+        text=True,
+    ).returncode == 0
 
 
 def require_clean(repo: Path, name: str) -> None:
@@ -59,24 +69,59 @@ def read_skills_pin(agentops: Path) -> str:
     return match.group(1)
 
 
-def materialize_and_activate_skills(skills_repo: Path, pin: str) -> str:
-    git(skills_repo, "fetch", "origin")
+def read_required_skills(agentops: Path) -> dict[str, str]:
+    text = (agentops / "projects/score2gp/SKILLS_LOCK.md").read_text(
+        encoding="utf-8"
+    )
+    try:
+        block = text.split("Required skills:", 1)[1].split("## Activation gate", 1)[0]
+    except IndexError as error:
+        raise GateError("SKILLS_LOCK_REQUIRED_SKILLS_INVALID") from error
+    names = re.findall(r"^- `([a-z0-9-]+)`\s*$", block, flags=re.MULTILINE)
+    if not names or len(names) != len(set(names)):
+        raise GateError("SKILLS_LOCK_REQUIRED_SKILLS_INVALID")
+    unknown = [name for name in names if name not in REQUIRED_SKILLS]
+    if unknown:
+        raise GateError(f"SKILLS_LOCK_UNKNOWN_SKILL {unknown[0]}")
+    return {name: REQUIRED_SKILLS[name] for name in names}
+
+
+def materialize_skills_checkout(skills_repo: Path, pin: str) -> Path:
+    """Materialize a merged immutable skills pin without activating it."""
+    if not FULL_SHA.fullmatch(pin):
+        raise GateError("SKILLS_PIN_INVALID")
+    git(skills_repo, "fetch", "origin", "main")
     resolved = git(skills_repo, "rev-parse", "--verify", f"{pin}^{{commit}}", check=False)
     if resolved != pin:
         raise GateError("SKILLS_PIN_UNAVAILABLE")
+    if not git_succeeds(skills_repo, "merge-base", "--is-ancestor", pin, "origin/main"):
+        raise GateError("SKILLS_PIN_NOT_MERGED")
 
     pins_root = skills_repo.parent / "agy-skills-pins"
     checkout = pins_root / pin
     if not checkout.exists():
         pins_root.mkdir(parents=True, exist_ok=True)
         git(skills_repo, "worktree", "add", "--detach", str(checkout), pin)
+    require_clean(checkout, "skills_checkout")
     head = git(checkout, "rev-parse", "HEAD")
     if head != pin:
         raise GateError(f"SKILLS_PIN_MISMATCH expected={pin} actual={head}")
 
+    return checkout
+
+
+def validate_skills_checkout(checkout: Path, required_skills: dict[str, str]) -> None:
+    for name, relative in required_skills.items():
+        if not (checkout / relative / "SKILL.md").is_file():
+            raise GateError(f"REQUIRED_SKILL_MISSING {name}")
+
+
+def activate_skills_checkout(
+    checkout: Path, required_skills: dict[str, str]
+) -> None:
     installed_root = Path.home() / ".agents/skills"
     installed_root.mkdir(parents=True, exist_ok=True)
-    for name, relative in REQUIRED_SKILLS.items():
+    for name, relative in required_skills.items():
         source = checkout / relative
         if not (source / "SKILL.md").is_file():
             raise GateError(f"REQUIRED_SKILL_MISSING {name}")
@@ -90,6 +135,18 @@ def materialize_and_activate_skills(skills_repo: Path, pin: str) -> str:
             replacement.unlink()
         replacement.symlink_to(source, target_is_directory=True)
         os.replace(replacement, destination)
+
+
+def materialize_and_activate_skills(
+    skills_repo: Path,
+    pin: str,
+    required_skills: dict[str, str] | None = None,
+) -> str:
+    required = required_skills or REQUIRED_SKILLS
+    checkout = materialize_skills_checkout(skills_repo, pin)
+    validate_skills_checkout(checkout, required)
+    activate_skills_checkout(checkout, required)
+    head = git(checkout, "rev-parse", "HEAD")
     return head
 
 

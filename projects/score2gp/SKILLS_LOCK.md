@@ -4,12 +4,14 @@
 
 - Repository: `https://github.com/tticom/agy-skills`
 - Required source commit:
-  `d24d69a3d23aae733245eabd6b9fcf76c0b16803`
+  `439404f7342f4e324147efb6b0276f698fbf2bdb`
 - Introduction PR: `https://github.com/tticom/agy-skills/pull/2`
 - Review hardening PRs:
   `https://github.com/tticom/agy-skills/pull/4`,
   `https://github.com/tticom/agy-skills/pull/5`, and
   `https://github.com/tticom/agy-skills/pull/6`
+- Reviewer-role firewall and tiered review PR:
+  `https://github.com/tticom/agy-skills/pull/14`
 
 Required skills:
 
@@ -17,6 +19,8 @@ Required skills:
 - `identity-safe-git`
 - `durable-handoff`
 - `code-review`
+- `hard-review`
+- `devils-advocate-review`
 
 ## Activation gate
 
@@ -28,13 +32,13 @@ For each agent identity:
 
 1. use that identity's own `agy-skills` clone;
 2. fetch the repository;
-3. check out the required source commit in a detached, read-only worktree o
+3. check out the required source commit in a detached, read-only worktree or
    a local tag that resolves exactly to it;
 4. point installed skill links at that pinned checkout;
 5. verify every required `SKILL.md` resolves below that checkout;
 6. record `git rev-parse HEAD` in every durable run record.
 
-Both identities must use the same required source commit. Credentials,
+All identities must use the same required source commit. Credentials,
 worktrees, and home directories remain separate.
 
 ## Update policy

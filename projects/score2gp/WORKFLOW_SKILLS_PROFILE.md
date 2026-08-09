@@ -26,16 +26,32 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 - May not self-approve, merge, auto-merge, bypass protection, force-push, or
   delete branches
 
-### Codex reviewer/governor
+### Governance worker
 
 - OS user/home: `tticom-gov` / `/home/tticom-gov`
 - GitHub and Git name: `tticomgov-code`
 - Git email: `tticomgov@gmail.com`
 - Workspace prefix: `/home/tticom-gov/work/score2gp-workspace`
 - Uses separate clones and credential store
-- May publish independent reviews and bounded governance PRs
-- Merge remains a maintainer action unless the user explicitly authorises the
-  exact merge
+- May publish independent review metadata or, in a separate authoring run,
+  bounded governance PRs
+- May never modify a reviewed PR branch or merge any PR
+
+### Independent Codex reviewer
+
+- OS user/home: `tticom-codex` / `/home/tticom-codex`
+- GitHub and Git name: `tticom-codex`
+- Git email: `tticom-codex@users.noreply.github.com`
+- Workspace prefix: `/home/tticom-codex/work/score2gp-workspace`
+- During review may publish only formal reviews, inline review comments, and
+  the mandatory PR summary comment
+- May not modify the reviewed repository or author fixes in the review run
+- May merge only in a separate operation after a current explicit instruction
+  from `tticom` naming the exact repository, PR number, and reviewed full head SHA
+
+`tticom-automation` and `tticom-gov` never merge. Review and governance-authoring
+roles must never be mixed in one run. An identity or role mismatch is a
+no-write stop.
 
 An identity mismatch is a no-write stop. Never switch accounts inside the
 other identity's workspace.
@@ -53,20 +69,36 @@ other identity's workspace.
 ### Review
 
 1. `identity-safe-git`
-2. `code-review` for separate Standards, Spec, and Evidence/Falsification axes
-3. Score2GP hard-review overlay:
+2. the exact review skill returned by `score2gp_got_bootstrap.py`:
+   - `code-review` for low-risk documentation-only PRs;
+   - `hard-review` for code, tests, fixtures, executable scripts, domain data,
+     or empirical claims;
+   - `devils-advocate-review` for governance/control-plane changes,
+     architecture/research, conversion correctness, or any re-review after a
+     trusted review on an earlier head
+3. Score2GP project overlay:
    - `projects/score2gp/REVIEW_RULES.md`
    - `projects/score2gp/PR_REVIEW_TEMPLATE.md`
    - `projects/score2gp/PR_EVIDENCE_CONTRACT.md`
    - the active task/prompt
 4. unresolved comment/thread disposition
-5. publish the review when reviewer authority permits
-6. `durable-handoff` when a durable review record is required
+5. publish line-specific review comments where useful, one formal exact-head
+   review, and one mandatory marked PR summary comment
 
 For a live PR, Codex must review a detached or dedicated worktree whose local
 `HEAD` exactly equals GitHub's full `headRefOid`. Initial live head, reviewed
 local head, and final re-queried live head must all be identical before a
 verdict is published.
+
+The review worktree must remain byte-for-byte clean. Reviewer probes, bodies,
+evidence packets, and notes live outside the reviewed repository. A reviewer
+must never edit source, tests, prompts, reports, branches, commits, or PR
+content; findings belong in review metadata. Process improvements are proposed
+in the mandatory summary and implemented only in a separate authorised cycle.
+
+A review-level declaration may escalate the dispatcher-selected minimum but
+may never weaken it. The phrases `real review`, `devil's advocate`, and
+`devils-advocate` explicitly select `devils-advocate-review`.
 
 ## Control-plane synchronization
 
@@ -75,19 +107,32 @@ Both `go` and `got` automatically fetch and fast-forward only clean canonical
 branch. Both verify the immutable `SKILLS_LOCK.md` commit from a pinned
 checkout; neither silently adopts `agy-skills/main`. When a newly merged lock
 names a new commit, the gate fetches that exact object, creates its immutable
-pin worktree, and atomically repoints only the four required skill symlinks.
+pin worktree, and atomically repoints all six required skill symlinks.
 It never changes the mutable `agy-skills` source branch.
+
+A PR that changes `SKILLS_LOCK.md` is the bootstrap boundary. Review it with the
+currently active control plane, but load its proposed review skill directly from
+an immutable checkout only after proving the proposed pin is contained in
+`agy-skills/origin/main`. Return `review_skills_mode=proposed-pin-isolated` and
+the exact `review_skill_path` and `review_publisher_path`. Both paths must
+resolve below the same immutable checkout. Do not activate that pin or repoint installed
+links until the AgentOps lock PR itself merges.
 
 Every dispatch reports the exact AgentOps main SHA, product main SHA, and
 skills SHA. Reviewer dispatch additionally reports equal live and local PR
 head SHAs.
 
-Both identities use `scripts/score2gp_pr_review_state.py` as the sole formal
+All three identities use `scripts/score2gp_pr_review_state.py` as the sole formal
 verdict resolver. It queries reviews separately from author handback comments,
 filters to the exact live head and the trusted reviewer set (`tticomgov-code`,
 `tticom-codex`, and repository owner `tticom`), and selects the latest across
 that set by server timestamp then review ID. Reviews from other accounts never
 govern dispatch.
+
+An agent review is not terminal until a marked issue comment from the same
+reviewer proves the selected review level, exact head, and matching verdict.
+A formal review without that receipt dispatches `REVIEW_PUBLICATION_INCOMPLETE`;
+a local transcript has no state-machine effect.
 
 Generic skill output never weakens the Score2GP overlay. When rules conflict,
 use the stricter identity, privacy, evidence, disconfirmation, or stop rule.

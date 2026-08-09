@@ -622,3 +622,34 @@ def test_audit_fails_if_run_record_has_non_hex_sha(tmp_path, monkeypatch) -> Non
     with pytest.raises(SystemExit) as raised:
         score2gp_governance_audit.main()
     assert raised.value.code == 1
+
+
+def test_sha_metadata_accepts_canonical_and_reapproved_head_forms() -> None:
+    first = "a" * 40
+    second = "b" * 40
+    assert score2gp_governance_audit.is_valid_sha_metadata(
+        "Product Main SHA", f"`{first}`"
+    )
+    assert score2gp_governance_audit.is_valid_sha_metadata(
+        "Product Head SHA",
+        f"`{first}` (Re-approved head SHA: `{second}`)",
+    )
+    assert not score2gp_governance_audit.is_valid_sha_metadata(
+        "Product Main SHA",
+        f"`{first}` (Re-approved head SHA: `{second}`)",
+    )
+    assert not score2gp_governance_audit.is_valid_sha_metadata(
+        "Product Head SHA", "deadbee"
+    )
+
+
+def test_review_id_accepts_rest_numeric_and_graphql_node_ids() -> None:
+    assert score2gp_governance_audit.has_valid_review_id(
+        "**Review Verdict**: APPROVED (Review ID `4889312509`)"
+    )
+    assert score2gp_governance_audit.has_valid_review_id(
+        "**Review Verdict**: APPROVED (Review ID `PRR_kwDOShNpkc8AAAABI2oOKg`)"
+    )
+    assert not score2gp_governance_audit.has_valid_review_id(
+        "**Review Verdict**: APPROVED (Review ID `looks-good`)"
+    )

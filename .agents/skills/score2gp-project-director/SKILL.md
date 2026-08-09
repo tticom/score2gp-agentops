@@ -29,14 +29,18 @@ it and stop without rerunning tests, re-verifying the merge, summarizing the
 completed task, creating a promotion, or taking any product action. All other
 non-action and unknown states are terminal and fail closed.
 
-For a governance worker, the router selects `got`; this state machine is distinct from `go`.
-`REVIEW_CURRENT_HEAD`
-authorizes and requires materializing the exact live PR head, invoking pinned
-`code-review` with the Score2GP hard-review overlay, and publishing the formal
-verdict. A status-only response on `REVIEW_CURRENT_HEAD` is a dispatcher
-failure. `READY_FOR_HUMAN_MERGE` and `AWAITING_AGY_FIXES` are report-and-stop
-states. `PROMOTE_MERGED_TASK` and `PROMOTE_RESOLVED_TASK` authorize and require the post-merge
-continuation described below; a status-only response is a dispatcher failure.
+For a governance/reviewer worker, the router selects `got`; this state machine is distinct from `go`.
+`REVIEW_CURRENT_HEAD` requires the returned exact-head
+review worktree and the returned `review_skill`. Invoke that skill with the
+Score2GP overlay and publish a formal verdict, useful inline comments, and the
+mandatory marked PR summary. Reviewer mode is review-metadata-only: never edit
+the reviewed repository, branch, PR body, task state, prompt, report, or
+evidence artifact. A status-only response is a dispatcher failure.
+
+`READY_FOR_HUMAN_MERGE` and `AWAITING_AGY_FIXES` are report-and-stop states.
+`PROMOTE_MERGED_TASK` and `PROMOTE_RESOLVED_TASK` authorize and require the
+post-merge continuation described below; a status-only response is a dispatcher
+failure.
 
 ## Load in order
 
@@ -47,10 +51,11 @@ continuation described below; a status-only response is a dispatcher failure.
 5. the exact prompt selected by `projects/score2gp/prompts/NEXT.md`, when the
    active task uses the fast lane
 6. project evidence/review contracts referenced by the profile
-7. pinned `identity-safe-git`, `governed-development-loop`, and
-   `durable-handoff`
+7. pinned `identity-safe-git`, `governed-development-loop`, `durable-handoff`,
+   `code-review`, `hard-review`, and `devils-advocate-review`
 
-For reviews, also invoke `code-review` and overlay Score2GP's
+For reviews, invoke exactly the dispatcher's selected review skill and overlay
+Score2GP's
 `REVIEW_RULES.md`, `PR_REVIEW_TEMPLATE.md`, and active prompt.
 
 If the required skills commit is unavailable, not checked out in the assigned
@@ -77,8 +82,14 @@ Apply the project-specific rules in AgentOps:
   in `REVIEW_RULES.md`;
 - private inputs remain local and ignored;
 - runtime provenance is required for conversion claims;
-- Agy may publish its authorised branch/PR but may not self-approve or merge; you may not ever merge a PR;
+- Agy may publish its authorised branch/PR but may not self-approve or merge;
+- `tticom-automation` and `tticom-gov` may never merge;
+- `tticom-codex` may merge only in a separate operation after a current explicit
+  instruction from `tticom` naming the exact repository, PR number, and
+  reviewed full head SHA;
 - once you have raised a PR, you must expect a review;
+- review runs may change review metadata only and must leave the reviewed
+  worktree clean;
 - you must write an accurate comment to any PR you review, including any you raised;
 - Codex independently reviews and may publish its review under the current maintainer policy;
 - candidate follow-ups are not active tasks.
