@@ -68,7 +68,8 @@ def test_got_dispatch_uses_pinned_tiered_skills_and_shared_publisher() -> None:
     assert "real review` means `devils-advocate-review" in text
     assert "synthetic/data-free evidence" in text
     assert "mandatory summary comment" in text
-    assert "$HOME/.agents/skills/code-review/scripts/publish_review.py" in text
+    assert 'python3 "<review_publisher_path>"' in text
+    assert "$HOME/.agents/skills/code-review/scripts/publish_review.py" not in text
     assert "scripts/score2gp_publish_review.py" not in text
 
 

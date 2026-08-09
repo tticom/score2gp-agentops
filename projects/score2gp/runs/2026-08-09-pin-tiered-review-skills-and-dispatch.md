@@ -41,9 +41,29 @@ existing strict re-approved-head syntax when both values are full SHAs and
 accepts either REST numeric review IDs or GitHub `PRR_...` node IDs. Invalid,
 short, non-hex, or unstructured metadata remains rejected.
 
+## Review-Loop Failure Reproduced
+
+A `tticom-gov` chat report named PR #515 head
+`fcbd4a3e86d70eb8e915fd5933c6a79291c596bc`, but the commands ran from the
+canonical AgentOps `main` checkout at
+`c1c7305c81ff800eface43867406728715af8e20`. No exact-head review worktree or
+tiered reviewer skill existed in that environment, and neither a formal review
+nor the mandatory marked summary was published to GitHub. Its reported three
+test failures were therefore not evidence about PR #515: the exact PR head
+passed all 124 tests.
+
+The dispatcher now accepts an explicit repository and PR number, materializes
+that exact live head, selects the required review tier, and returns the immutable
+skill and publisher paths. A lock-changing AgentOps PR is reviewed using its
+proposed merged skills pin in isolation without activating it; the installed
+`$HOME/.agents` publisher cannot be substituted. Formal agent reviews are not
+terminal until GitHub readback finds a same-reviewer, same-tier, same-head,
+same-verdict marked summary comment; otherwise dispatch returns
+`REVIEW_PUBLICATION_INCOMPLETE`.
+
 ## Validation
 
-- Full AgentOps test suite: PASS (`124 passed`).
+- Full AgentOps test suite: PASS (`138 passed`).
 - Governance audit: PASS.
 - Python compilation of changed scripts: PASS.
 - `git diff --check`: PASS.

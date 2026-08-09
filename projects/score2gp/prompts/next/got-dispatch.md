@@ -42,6 +42,12 @@ skills are prohibited.
 
 ## Dispatch
 
+When the maintainer names a PR, invoke the router with `--review-repo` and
+`--review-pr`; pass `--review-level devils-advocate` for `real review` or
+`devil's advocate review`. The explicit target overrides active-task PR
+selection for review metadata only. Never guess that a same-numbered PR belongs
+to the other Score2GP repository.
+
 Query the configured repository for the PR whose head is exactly `PR Branch`.
 Never choose by recency.
 
@@ -55,8 +61,12 @@ local task state, chat, and issue comments do not count.
   `AWAITING_AGY_HANDBACK`; never review a chat summary.
 - New head with complete finding dispositions, or no current-head trusted
   review: require `review_local_head == pr.headRefOid`, work only in the
-  returned detached `review_worktree`, and invoke exactly `review_skill` from
-  the routed JSON. The dispatcher selects the minimum review level from live
+  returned detached `review_worktree`, and invoke `review_skill` from the exact
+  returned `review_skill_path`. For a lock-changing AgentOps PR, use the
+  proposed pin only when it is already contained in `agy-skills/origin/main`;
+  materialize it immutably as `proposed-pin-isolated` and never activate or
+  relink it before the AgentOps PR merges. The dispatcher selects the minimum
+  review level from live
   changed paths, active authority, risk markers, and earlier-head reviews:
   - `code-review` / BASIC only for genuinely low-risk documentation;
   - `hard-review` for code, tests, fixtures, executable scripts, domain data,
@@ -66,6 +76,9 @@ local task state, chat, and issue comments do not count.
     trusted review on an earlier head.
   A task declaration or current maintainer request may escalate this level but
   may never weaken it. `real review` means `devils-advocate-review`.
+  The dispatcher also returns `review_publisher_path` from the same immutable
+  checkout as `review_skill_path`. Never substitute a mutable or installed
+  publisher path.
 - Read the selected pinned skill completely and then apply Score2GP's project
   overlay. BASIC performs exact-head code sanity and contract checks. HARD also
   classifies every material test as real-source, extracted-real-source,
@@ -91,6 +104,10 @@ local task state, chat, and issue comments do not count.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
   `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
+- Formal agent review without the exact selected-level marked summary: report
+  `REVIEW_PUBLICATION_INCOMPLETE`. Publish or repair only that missing review
+  metadata, re-query GitHub, and stop; do not rerun the review, change the
+  verdict, or claim completion from a local transcript.
 - Merged PR: emit actionable state `PROMOTE_MERGED_TASK` (or `PROMOTE_RESOLVED_TASK` when active task status is RESOLVED), verify the merge on
   remote main, synchronize the Codex clone, reread `ACTIVE_TASK.md`, and
   prepare the smallest governance promotion. A status-only response is a
@@ -108,7 +125,7 @@ provenance ledger, fixture-coupling result, and external evidence packet.
 Publish through the pinned shared guarded publisher:
 
 ```bash
-python3 "$HOME/.agents/skills/code-review/scripts/publish_review.py" \
+python3 "<review_publisher_path>" \
   --repo <Repository> \
   --pr <PR number> \
   --expected-head <reviewed full head SHA> \

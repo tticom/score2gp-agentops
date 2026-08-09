@@ -110,6 +110,14 @@ names a new commit, the gate fetches that exact object, creates its immutable
 pin worktree, and atomically repoints all six required skill symlinks.
 It never changes the mutable `agy-skills` source branch.
 
+A PR that changes `SKILLS_LOCK.md` is the bootstrap boundary. Review it with the
+currently active control plane, but load its proposed review skill directly from
+an immutable checkout only after proving the proposed pin is contained in
+`agy-skills/origin/main`. Return `review_skills_mode=proposed-pin-isolated` and
+the exact `review_skill_path` and `review_publisher_path`. Both paths must
+resolve below the same immutable checkout. Do not activate that pin or repoint installed
+links until the AgentOps lock PR itself merges.
+
 Every dispatch reports the exact AgentOps main SHA, product main SHA, and
 skills SHA. Reviewer dispatch additionally reports equal live and local PR
 head SHAs.
@@ -120,6 +128,11 @@ filters to the exact live head and the trusted reviewer set (`tticomgov-code`,
 `tticom-codex`, and repository owner `tticom`), and selects the latest across
 that set by server timestamp then review ID. Reviews from other accounts never
 govern dispatch.
+
+An agent review is not terminal until a marked issue comment from the same
+reviewer proves the selected review level, exact head, and matching verdict.
+A formal review without that receipt dispatches `REVIEW_PUBLICATION_INCOMPLETE`;
+a local transcript has no state-machine effect.
 
 Generic skill output never weakens the Score2GP overlay. When rules conflict,
 use the stricter identity, privacy, evidence, disconfirmation, or stop rule.

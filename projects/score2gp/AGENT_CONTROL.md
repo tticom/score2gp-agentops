@@ -258,6 +258,13 @@ Do not update or relink skills during an active Score2GP task. Skills upgrades
 require their own `agy-skills` PR followed by a separate AgentOps lock-update
 PR; they are never an incidental part of product conversion work.
 
+The lock-update PR itself is reviewed through a non-activating bootstrap: prove
+its proposed pin is merged into `agy-skills/main`, materialize that pin in an
+immutable checkout, and invoke the proposed review skill by its returned exact
+path. The reviewer must not relink installed skills or treat the unmerged
+AgentOps branch as active authority. This exception permits inspection only; it
+does not authorize task execution or repository mutation.
+
 The PR Evidence Contract is an author-side gate. It does not replace the
 adversarial Reviewer role or human merge requirement. Its purpose is to make
 the exact claims, proof, limits, and remaining unknowns inspectable in one

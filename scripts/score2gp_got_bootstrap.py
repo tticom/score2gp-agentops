@@ -12,10 +12,14 @@ from typing import Any
 
 try:
     from scripts.score2gp_control_plane import (
+        FULL_SHA,
         GateError,
-        materialize_review_head,
         materialize_and_activate_skills,
+        materialize_review_head,
+        materialize_skills_checkout,
+        read_required_skills,
         read_skills_pin,
+        validate_skills_checkout,
         sync_main,
     )
     from scripts.score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
@@ -26,10 +30,14 @@ try:
     )
 except ModuleNotFoundError:  # Direct execution: python3 scripts/score2gp_got_bootstrap.py
     from score2gp_control_plane import (
+        FULL_SHA,
         GateError,
-        materialize_review_head,
         materialize_and_activate_skills,
+        materialize_review_head,
+        materialize_skills_checkout,
+        read_required_skills,
         read_skills_pin,
+        validate_skills_checkout,
         sync_main,
     )
     from score2gp_go_bootstrap import parse_active_task_content, query_github_pr_state
@@ -186,6 +194,33 @@ def query_pr_review_context(repo: str, pr_number: int) -> dict[str, Any]:
         "changed_paths": paths,
     }
 
+def query_pr_number(repo: str, pr_number: int) -> dict[str, Any]:
+    result = subprocess.run(
+        [
+            "gh", "pr", "view", str(pr_number), "--repo", repo,
+            "--json", "number,state,headRefOid,headRefName,mergedAt",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode:
+        raise GotError(result.stderr.strip() or "explicit PR query failed")
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise GotError("invalid explicit PR JSON") from error
+    if int(payload.get("number") or 0) != pr_number:
+        raise GotError("explicit PR query returned the wrong pull request")
+    state = str(payload.get("state", "")).upper()
+    head = str(payload.get("headRefOid", ""))
+    if state not in {"OPEN", "CLOSED", "MERGED"}:
+        raise GotError(f"unsupported explicit PR state: {state}")
+    if not FULL_SHA.fullmatch(head):
+        raise GotError("explicit PR query returned an invalid head SHA")
+    payload["state"] = state
+    return payload
+
+
 HANDOFF_MARKERS = (
     "AWAITING_CODEX_REVIEW",
     "AWAITING_GOVERNANCE_REVIEW",
@@ -236,6 +271,127 @@ def gate_review_on_handback(
     if resolved.get("state") == "REVIEW_CURRENT_HEAD" and handback is None:
         return {"state": "AWAITING_AGY_HANDBACK", "current_review": None}
     return resolved
+
+
+REVIEW_AGENT_LOGINS = {
+    "tticom-automation",
+    "tticom-codex",
+    "tticomgov-code",
+}
+
+
+def find_current_head_review_summary(
+    comments: list[dict[str, Any]],
+    *,
+    review: dict[str, Any],
+    head: str,
+    level: str,
+) -> dict[str, Any] | None:
+    reviewer = str((review.get("user") or {}).get("login", ""))
+    state = str(review.get("state", "")).upper()
+    if reviewer not in REVIEW_AGENT_LOGINS or review.get("commit_id") != head:
+        return None
+    verdicts = {
+        "APPROVED": ("APPROVE",),
+        "CHANGES_REQUESTED": ("CHANGES_REQUESTED", "CANNOT_VERIFY"),
+    }.get(state, ())
+    marker = f"<!-- reviewer-summary:{level}:{head} -->"
+    eligible = []
+    for comment in comments:
+        body = str(comment.get("body", ""))
+        login = str((comment.get("user") or {}).get("login", ""))
+        if (
+            login == reviewer
+            and marker in body
+            and head in body
+            and any(f"Verdict: {verdict}" in body for verdict in verdicts)
+        ):
+            eligible.append(comment)
+    if not eligible:
+        return None
+    return max(eligible, key=lambda comment: int(comment.get("id") or 0))
+
+
+def gate_review_on_publication(
+    resolved: dict[str, Any],
+    *,
+    comments: list[dict[str, Any]],
+    head: str,
+    level: str,
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    review = resolved.get("current_review")
+    if not isinstance(review, dict):
+        return resolved, None
+    reviewer = str((review.get("user") or {}).get("login", ""))
+    if reviewer not in REVIEW_AGENT_LOGINS:
+        return resolved, None
+    summary = find_current_head_review_summary(
+        comments,
+        review=review,
+        head=head,
+        level=level,
+    )
+    if summary is None:
+        return {
+            "state": "REVIEW_PUBLICATION_INCOMPLETE",
+            "current_review": review,
+        }, None
+    return resolved, summary
+
+
+def select_review_skills_pin(
+    *,
+    active_pin: str,
+    actual_repository: str,
+    changed_paths: list[str],
+    review_worktree: Path,
+) -> dict[str, str]:
+    lock_changed = any(
+        path.lower() == "projects/score2gp/skills_lock.md"
+        for path in changed_paths
+    )
+    if actual_repository == "tticom/score2gp-agentops" and lock_changed:
+        return {
+            "pin": read_skills_pin(review_worktree),
+            "mode": "proposed-pin-isolated",
+        }
+    return {"pin": active_pin, "mode": "active-pin"}
+
+
+def required_skills_for_review(
+    *,
+    mode: str,
+    active_required_skills: dict[str, str],
+    review_worktree: Path,
+) -> dict[str, str]:
+    """Resolve the lock contract without assuming a product PR contains AgentOps files."""
+    if mode == "active-pin":
+        return active_required_skills
+    if mode == "proposed-pin-isolated":
+        return read_required_skills(review_worktree)
+    raise GotError(f"unsupported review skills mode: {mode}")
+
+
+def review_tool_paths(
+    *,
+    checkout: Path,
+    required_skills: dict[str, str],
+    review_skill_name: str,
+) -> tuple[str, str]:
+    if review_skill_name not in required_skills:
+        raise GotError(f"REVIEW_SKILL_NOT_PINNED {review_skill_name}")
+    if "code-review" not in required_skills:
+        raise GotError("REVIEW_PUBLISHER_NOT_PINNED code-review")
+    skill_path = checkout / required_skills[review_skill_name]
+    publisher_path = (
+        checkout
+        / required_skills["code-review"]
+        / "scripts"
+        / "publish_review.py"
+    )
+    if not publisher_path.is_file():
+        raise GotError(f"REVIEW_PUBLISHER_MISSING {publisher_path}")
+    return str(skill_path), str(publisher_path)
 
 
 def validate_governance_identity(
@@ -355,33 +511,57 @@ def main() -> None:
     parser.add_argument("--agentops", type=Path, default=Path("."))
     parser.add_argument("--product", type=Path, default=Path("../score2gp"))
     parser.add_argument("--skills-repo", type=Path, default=Path("../../agy-skills"))
+    parser.add_argument("--review-repo")
+    parser.add_argument("--review-pr", type=int)
+    parser.add_argument("--review-level")
     args = parser.parse_args()
+    if (args.review_repo is None) != (args.review_pr is None):
+        raise GotError(
+            "--review-repo and --review-pr must be supplied together"
+        )
 
     agentops = args.agentops.resolve()
     product = args.product.resolve()
     enforce_governance_identity(agentops, product)
     agentops_sha = sync_main(agentops, "agentops")
     product_sha = sync_main(product, "product")
+    active_skills_pin = read_skills_pin(agentops)
+    active_required_skills = read_required_skills(agentops)
     skills_sha = materialize_and_activate_skills(
-        args.skills_repo.resolve(), read_skills_pin(agentops)
+        args.skills_repo.resolve(), active_skills_pin, active_required_skills
     )
     task = parse_active_task_content(
         (agentops / "projects/score2gp/ACTIVE_TASK.md").read_text(encoding="utf-8")
     )
-    repo = task["repository"]
-    branch = task["pr branch"]
-    pr, actual_repo = query_pr(repo, branch)
+    explicit_review = args.review_pr is not None
+    if explicit_review:
+        repo = str(args.review_repo)
+        actual_repo = repo
+        pr = query_pr_number(repo, int(args.review_pr))
+        branch = str(pr.get("headRefName", ""))
+        task_context: dict[str, str] = {}
+        task_status = None
+    else:
+        repo = task["repository"]
+        branch = task["pr branch"]
+        pr, actual_repo = query_pr(repo, branch)
+        task_context = task
+        task_status = task.get("status")
     reviews = (
         query_reviews(actual_repo, int(pr["number"]))
         if pr is not None and pr["state"].upper() == "OPEN"
         else []
     )
-    task_status = task.get("status")
     resolved = resolve_got_state(pr, reviews, active_task_status=task_status)
     review_selection = None
+    review_summary = None
     review_worktree = None
     review_local_head = None
     review_context = None
+    review_skill_path = None
+    review_publisher_path = None
+    review_skills_mode = None
+    review_skills_sha = skills_sha
     author_handback = None
     if pr is not None and str(pr.get("state", "")).upper() == "OPEN":
         review_context = query_pr_review_context(actual_repo, int(pr["number"]))
@@ -395,14 +575,23 @@ def main() -> None:
         review_selection = select_review_level(
             repository=actual_repo,
             changed_paths=review_context["changed_paths"],
-            task=task.get("task", ""),
-            authorised_role=task.get("authorised role", ""),
+            task=task_context.get("task", ""),
+            authorised_role=task_context.get("authorised role", ""),
             title=review_context["title"],
             live_head=str(pr.get("headRefOid", "")),
             reviews=reviews,
-            declared_level=task.get("review level"),
+            declared_level=args.review_level or task_context.get("review level"),
         )
-        if resolved["state"] == "REVIEW_CURRENT_HEAD":
+        resolved, review_summary = gate_review_on_publication(
+            resolved,
+            comments=comments,
+            head=str(pr["headRefOid"]),
+            level=review_selection["level"],
+        )
+        if resolved["state"] in {
+            "REVIEW_CURRENT_HEAD",
+            "REVIEW_PUBLICATION_INCOMPLETE",
+        }:
             review_repo = agentops if actual_repo == "tticom/score2gp-agentops" else product
             head = str(pr["headRefOid"])
             review_worktree_path = (
@@ -413,12 +602,42 @@ def main() -> None:
                 review_repo, review_worktree_path, head
             )
             review_worktree = str(review_worktree_path)
+            review_skills = select_review_skills_pin(
+                active_pin=active_skills_pin,
+                actual_repository=actual_repo,
+                changed_paths=review_context["changed_paths"],
+                review_worktree=review_worktree_path,
+            )
+            review_skills_sha = review_skills["pin"]
+            review_skills_mode = review_skills["mode"]
+            review_skills_checkout = materialize_skills_checkout(
+                args.skills_repo.resolve(), review_skills_sha
+            )
+            review_required_skills = required_skills_for_review(
+                mode=review_skills_mode,
+                active_required_skills=active_required_skills,
+                review_worktree=review_worktree_path,
+            )
+            validate_skills_checkout(
+                review_skills_checkout, review_required_skills
+            )
+            review_skill_name = review_selection["skill"]
+            review_skill_path, review_publisher_path = review_tool_paths(
+                checkout=review_skills_checkout,
+                required_skills=review_required_skills,
+                review_skill_name=review_skill_name,
+            )
     print(json.dumps({
         "ok": True,
         **resolved,
         "agentops_sha": agentops_sha,
         "product_main_sha": product_sha,
         "skills_sha": skills_sha,
+        "review_skills_sha": review_skills_sha,
+        "review_skills_mode": review_skills_mode,
+        "review_skill_path": review_skill_path,
+        "review_publisher_path": review_publisher_path,
+        "dispatch_mode": "explicit-pr-review" if explicit_review else "active-task",
         "task": task.get("task"),
         "repository": repo,
         "actual_repository": actual_repo,
@@ -431,6 +650,7 @@ def main() -> None:
         "review_author": (review_context or {}).get("author"),
         "review_worktree": review_worktree,
         "review_local_head": review_local_head,
+        "review_summary": review_summary,
         "author_handback": author_handback,
     }, indent=2))
 

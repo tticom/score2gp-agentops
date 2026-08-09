@@ -57,9 +57,18 @@ def main() -> None:
     parser.add_argument("--product", default="../score2gp")
     parser.add_argument("--skills-repo", default="../../agy-skills")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--review-repo")
+    parser.add_argument("--review-pr", type=int)
+    parser.add_argument("--review-level")
     args = parser.parse_args()
 
     linux_user = getpass.getuser()
+    if (args.review_repo is None) != (args.review_pr is None):
+        raise DispatchError("--review-repo and --review-pr must be supplied together")
+    if linux_user == "tticom-automation" and args.review_pr is not None:
+        raise DispatchError(
+            "tticom-automation cannot use explicit reviewer dispatch"
+        )
     agentops = Path(args.agentops).resolve()
     product = Path(args.product).resolve()
     skills_repo = Path(args.skills_repo).resolve()
@@ -72,6 +81,13 @@ def main() -> None:
         "--agentops", os.fspath(agentops),
         "--skills-repo", os.fspath(skills_repo),
     ]
+    if args.review_pr is not None:
+        command.extend([
+            "--review-repo", str(args.review_repo),
+            "--review-pr", str(args.review_pr),
+        ])
+    if args.review_level:
+        command.extend(["--review-level", args.review_level])
     if helper.name == "score2gp_go_bootstrap.py" and args.json:
         command.append("--json")
     completed = subprocess.run(command, cwd=agentops)

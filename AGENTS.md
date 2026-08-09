@@ -7,6 +7,15 @@ For any request to continue, advance, run the next command, `go`, `got`, or
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
+For an explicit PR review request, including `review #N`, `hard review`, or
+`real review`, route the named repository and PR instead of silently falling
+back to the active task:
+
+```bash
+python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
+  --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
+```
+
 The Linux worker identity, not the command word, selects the role.
 `tticom-automation` runs author `go`; `tticom-gov` and `tticom-codex` run
 governance/reviewer `got` under their own isolated GitHub identities. Never
@@ -27,15 +36,24 @@ Read `AGENT-RULES.md` for the remaining repository rules.
 For governance/review, treat the routed JSON as authoritative and never resume
 a cached managed task. `REVIEW_CURRENT_HEAD` authorizes and requires a formal
 review in the returned `review_worktree`. Require
-`review_local_head == pr.headRefOid`, invoke exactly the returned
-`review_skill`, and apply the Score2GP project overlay. A stricter review may
-be chosen; a weaker review may not.
+`review_local_head == pr.headRefOid`, invoke the returned `review_skill` from
+the exact returned `review_skill_path`, and apply the Score2GP project overlay.
+A stricter review may be chosen; a weaker review may not. For an AgentOps lock
+upgrade, `review_skills_mode=proposed-pin-isolated` means the proposed merged
+skills pin is used by immutable path for this review only; never relink the
+active installation before the AgentOps PR merges.
+
+`REVIEW_PUBLICATION_INCOMPLETE` means a formal agent review exists but its
+required exact-level, exact-head marked summary does not. Reconcile that review
+metadata and prove it by GitHub read-back; do not rerun tests or invent a new
+verdict.
 
 Reviewer mode is metadata-only: formal review, inline review comments, and one
 mandatory marked PR summary comment. Do not edit any repository file, branch,
 commit, PR body, task status, prompt, report, or evidence artifact. Publish
-through the pinned `code-review/scripts/publish_review.py`; a chat-only or
-status-only response is a dispatcher failure.
+through the exact immutable `review_publisher_path` returned alongside
+`review_skill_path`; never substitute the installed `$HOME/.agents` copy. A
+chat-only or status-only response is a dispatcher failure.
 
 `tticom-automation` and `tticom-gov` never merge. `tticom-codex` may merge only
 in a separate operation after a current explicit instruction from `tticom`

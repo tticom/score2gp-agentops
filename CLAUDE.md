@@ -7,6 +7,15 @@ For any request to continue, advance, run the next command, `go`, `got`, or
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
+For an explicit PR review request, route the exact repository and number:
+
+```bash
+python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
+  --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
+```
+
+Never substitute the active-task PR when the user named another PR.
+
 Run it from the `score2gp-agentops` repository root. The Linux worker identity
 selects the role: `tticom-automation` routes to author `go`; `tticom-gov` and
 `tticom-codex` route to governance/reviewer `got` under their own isolated
@@ -32,12 +41,19 @@ task, review, or handback.
 For governance/review, the routed JSON is authoritative. Never resume or replay
 a prior managed task.
 - `REVIEW_CURRENT_HEAD`: use the returned `review_worktree`, prove
-  `review_local_head == pr.headRefOid`, invoke exactly the returned
-  `review_skill`, apply the Score2GP overlay, and publish the exact-head formal
-  verdict, useful inline findings, and mandatory marked PR summary comment.
+  `review_local_head == pr.headRefOid`, invoke the returned `review_skill` from
+  the exact `review_skill_path`, apply the Score2GP overlay, and publish the
+  exact-head formal verdict, useful inline findings, and mandatory marked PR summary comment.
+  `proposed-pin-isolated` uses a proposed merged skills pin by
+  immutable path without changing installed skill links.
+  Publish only through the returned `review_publisher_path`; never substitute
+  the installed `$HOME/.agents` publisher.
   Reviewer mode may mutate review metadata only; it must not modify repository
   content, refs, branches, commits, PR bodies, prompts, reports, or task state.
   A status-only or chat-only response is a dispatcher failure.
+- `REVIEW_PUBLICATION_INCOMPLETE`: reconcile the missing marked summary for the
+  existing exact-head formal review, verify it remotely, and stop. Do not rerun
+  the review or create a replacement verdict.
 - `READY_FOR_HUMAN_MERGE`: report and stop.
 - `AWAITING_AGY_FIXES`: report the current exact-head findings and stop.
 - `PROMOTE_MERGED_TASK` / `PROMOTE_RESOLVED_TASK`: verify merged main and prepare the next governance
