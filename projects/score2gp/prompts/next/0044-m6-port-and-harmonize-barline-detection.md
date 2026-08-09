@@ -15,6 +15,7 @@ Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, 
 - `src/score2gp/pdf.py`
 - `src/score2gp/pdf_staff_notation_diagnostics.py`
 - `tests/test_pdf_geometry_candidate_extractor.py`
+- `tests/test_pdf.py`
 
 ## Implementation Specification
 1. Update `pdf.py` barline height check from `height >= 20.0` to `height >= min(15.0, staff_height - 2.0)`.
@@ -23,8 +24,8 @@ Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, 
 4. Re-enable `pdf_candidate_outside_system` warning gate.
 
 ## Acceptance Criteria
-- `pytest tests/test_pdf_geometry_candidate_extractor.py` passes cleanly.
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` successfully extracts 43 notation barlines on `Lesson-5.pdf` without triggering 300pt snapping hacks.
+- `pytest tests/test_pdf_geometry_candidate_extractor.py` and `pytest tests/test_pdf.py` pass cleanly.
+- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` increases extracted notation bar boxes on `Lesson-5.pdf` from 31 to 41 across 12 systems without triggering 300pt snapping hacks (with full 43-measure multi-page grouping completed downstream in CRP-02/03).
 - `python3 scripts/agent_verify.py` passes with zero regression.
 
 ## Deliverables
