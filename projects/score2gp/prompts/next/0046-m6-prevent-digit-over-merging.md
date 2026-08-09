@@ -1,33 +1,32 @@
-# 0046 - M6: Prevent Fret Digit Over-Merging
+# 0046 — M6: Page-Continuous Measure Indexing & Offsets (CRP-03)
 
-Status: SKELETON — blocked pending real-source token-classification research. A maximum-fret guard cannot distinguish fret 13 from adjacent fingering digits 1 and 3.
+Status: APPROVED
 
 ## Objective
-Implement a validation check on the horizontal text merging loop in the PDF OMR parser to prevent chronologically adjacent single-digit frets (e.g. `7` and `10`) from merging into impossible guitar frets (> 24).
+Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in `src/score2gp/pdf.py` (`_extract_pdf_text_candidates`) to prevent page-boundary index conflicts and coordinate collisions.
 
 ## Start
 1. Branch from `origin/main` in the `score2gp` product repository.
-2. Confirm the branch name is `feature/agy/m6-digit-merging-guard`.
-3. Read `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`.
+2. Confirm the branch name is `agy/crp-03-page-continuous-measure-indexing`.
+3. Read `docs/design/2026-08-09-conversion-module-migration-map.md`.
 4. Verify standard tests pass.
 
 ## Implementation Scope & Seam Contract
-Modify only `src/score2gp/pdf.py`:
-1. **Fret Limit Validation**: In the horizontal text-merging loop, check if the proposed merged string is a digit.
-2. **Merge Break**: If it is a digit, ensure `int(proposed) <= 24` before committing the merge operation. If the proposed value exceeds 24, break the merge loop and treat them as separate fret digit candidates.
-3. **Real-Source Contract Testing**: Use real examples of multi-digit frets, adjacent notes, fingering, string labels, tempo text, and valid merged values below 24 that must remain separate.
+Modify only `src/score2gp/pdf.py` and test file `tests/test_pdf.py`:
+1. **Sequential Page Indexing**: Update `_extract_pdf_text_candidates` to track `running_bar_index` dynamically across page iterations, passing it to `_detect_tab_systems` instead of re-initializing to 1 on page change.
+2. **Cumulative Page Offsets**: Calculate global y-coordinate offsets by summing preceding page heights to prevent candidate overlap and coordinate collisions across page boundaries.
 
 ## Validation Commands
-1. Run the test suite:
+1. Run `agent_verify.py`:
    ```bash
-   PYTHONPATH=. .venv/bin/python3 -m pytest
+   python3 scripts/agent_verify.py
    ```
-2. Verify that consecutive fret candidates like `7` and `10` on Lesson-5.pdf Page 1 System 5 are extracted as separate fret number digits.
+2. Verify multi-page smoke tests:
+   ```bash
+   python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf
+   ```
 
 ## Deliverables
-- Branch `feature/agy/m6-digit-merging-guard` pushed to `origin`.
-- Only `src/score2gp/pdf.py` changed.
+- Branch `agy/crp-03-page-continuous-measure-indexing` pushed to `origin`.
 - Pull Request opened on GitHub.
 
-## Stop Conditions
-- Merge validation causes crashes on non-digit characters.
