@@ -42,6 +42,19 @@ except ModuleNotFoundError:
         resolve_current_head_review,
     )
 
+try:
+    from scripts.score2gp_task_status import (
+        EXECUTABLE_TASK_STATUSES,
+        KNOWN_TASK_STATUSES,
+        normalize_task_status,
+    )
+except ModuleNotFoundError:
+    from score2gp_task_status import (
+        EXECUTABLE_TASK_STATUSES,
+        KNOWN_TASK_STATUSES,
+        normalize_task_status,
+    )
+
 
 def resolve_merged_task_state(task_status: str) -> str:
     """Distinguish an unpromoted product merge from completed governance."""
@@ -256,11 +269,21 @@ def run_go_bootstrap(
         fail_closed(f"ACTIVE_TASK.md on origin/main is missing required fields: {missing}", state="MISSING_REQUIRED_TASK_FIELDS")
 
     task_name = task_data["task"]
-    task_status = task_data["status"]
+    task_status = normalize_task_status(task_data["status"])
     assigned_identity = task_data["assigned identity"]
     declared_repo = task_data["repository"]
     pr_branch = task_data["pr branch"]
     original_prompt = task_data["original prompt"]
+
+    # Reject authority vocabulary errors before synchronizing or creating a
+    # branch in the product repository.  A governance promotion must use a
+    # status understood by every control-plane consumer.
+    if task_status not in KNOWN_TASK_STATUSES:
+        fail_closed(
+            f"ACTIVE_TASK.md has unsupported status '{task_status}'. "
+            f"Expected one of: {', '.join(sorted(KNOWN_TASK_STATUSES))}.",
+            state="INVALID_TASK_STATUS",
+        )
 
     # Enforce Assigned Identity == tticom-automation
     if assigned_identity.lower() != "tticom-automation":
@@ -525,7 +548,7 @@ def run_go_bootstrap(
         else:
             state = "AWAITING_GOVERNANCE_REVIEW"
     else:
-        if task_status in ("APPROVED", "IN_PROGRESS", "PROMOTED"):
+        if task_status in EXECUTABLE_TASK_STATUSES:
             state = "EXECUTE_PROMPT"
         elif task_status.upper() == "RESOLVED":
             state = "MERGED_AWAITING_GOVERNANCE_PROMOTION"
