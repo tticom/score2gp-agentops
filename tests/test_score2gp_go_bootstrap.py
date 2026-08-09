@@ -605,6 +605,39 @@ def test_case_18_exact_recognised_no_pr_returns_none() -> None:
     monkeypatch.undo()
 
 
+def test_case_20_unsupported_status_fails_before_product_branch_creation(
+    temp_git_repos: dict[str, Path],
+) -> None:
+    local_ops = temp_git_repos["local_agentops"]
+    local_prod = temp_git_repos["local_product"]
+    init_ops = temp_git_repos["init_agentops"]
+    task_branch = "agy/generate-public-pdf-tab-duration-fixture"
+
+    active_task = init_ops / "projects/score2gp/ACTIVE_TASK.md"
+    active_task.write_text(
+        active_task.read_text().replace("**Status**: APPROVED", "**Status**: ACTIVE")
+    )
+    run_git(init_ops, ["add", "."])
+    run_git(init_ops, ["commit", "-m", "Set unsupported task status"])
+    run_git(init_ops, ["push", "origin", "main"])
+
+    starting_branch = run_git(local_prod, ["branch", "--show-current"])
+    with pytest.raises(SystemExit) as raised:
+        run_go_bootstrap(
+            agentops_path=local_ops,
+            product_path=local_prod,
+            _skip_identity_check=True,
+            _allow_custom_slug=True,
+        )
+
+    assert raised.value.code == 1
+    assert run_git(local_prod, ["branch", "--show-current"]) == starting_branch
+    assert run_git(
+        local_prod,
+        ["branch", "--list", task_branch],
+    ) == ""
+
+
 def test_no_pr_lookup_uses_exact_head_and_all_states(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: list[str] = []
 

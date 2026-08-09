@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 88 — Conversion Recovery Evidence Adjudication & Architecture Review
-**Status**: ACTIVE
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect / Researcher
 **Repository**: tticom/score2gp

@@ -5,6 +5,19 @@ import re
 import subprocess
 import sys
 
+try:
+    from scripts.score2gp_task_status import (
+        EXECUTABLE_TASK_STATUSES,
+        KNOWN_TASK_STATUSES,
+        PR_LIFECYCLE_TASK_STATUSES,
+    )
+except ModuleNotFoundError:
+    from score2gp_task_status import (
+        EXECUTABLE_TASK_STATUSES,
+        KNOWN_TASK_STATUSES,
+        PR_LIFECYCLE_TASK_STATUSES,
+    )
+
 def run_cmd(args):
     try:
         res = subprocess.run(args, capture_output=True, text=True, check=True)
@@ -139,13 +152,25 @@ def main():
 
         status, repository, branch_name = parse_active_task_state(content)
 
-        if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and not branch_name:
+        if not status:
+            violations.append("ACTIVE_TASK.md has no parseable status.")
+        elif status not in KNOWN_TASK_STATUSES:
+            violations.append(
+                f"ACTIVE_TASK.md has unsupported status '{status}'; expected one of: "
+                f"{', '.join(sorted(KNOWN_TASK_STATUSES))}."
+            )
+
+        branch_relevant_statuses = (
+            EXECUTABLE_TASK_STATUSES | PR_LIFECYCLE_TASK_STATUSES
+        )
+
+        if status in branch_relevant_statuses and not branch_name:
             violations.append(
                 "ACTIVE_TASK.md has an executable status but no parseable PR Branch; "
                 "refusing to skip merged-task replay verification."
             )
 
-        if status in ("APPROVED", "IN_PROGRESS", "PR_OPEN", "CHANGES_REQUESTED") and branch_name:
+        if status in branch_relevant_statuses and branch_name:
             # Query gh to see if a PR exists for this branch and whether it is already merged
             try:
                 res = subprocess.run(
