@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from scripts.score2gp_control_plane import (
+    REQUIRED_SKILLS,
     GateError,
     materialize_review_head,
     read_skills_pin,
@@ -32,3 +33,12 @@ def test_rejects_abbreviated_skills_pin(tmp_path: Path) -> None:
 def test_rejects_abbreviated_live_pr_head(tmp_path: Path) -> None:
     with pytest.raises(GateError, match="LIVE_HEAD_INVALID"):
         materialize_review_head(tmp_path, tmp_path / "review", "deadbee")
+
+
+def test_tiered_review_skills_are_required_by_control_plane() -> None:
+    assert REQUIRED_SKILLS["code-review"] == "skills/engineering/code-review"
+    assert REQUIRED_SKILLS["hard-review"] == "skills/engineering/hard-review"
+    assert (
+        REQUIRED_SKILLS["devils-advocate-review"]
+        == "skills/engineering/devils-advocate-review"
+    )

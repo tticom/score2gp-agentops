@@ -2,7 +2,14 @@ from pathlib import Path
 
 import pytest
 
-from scripts.score2gp_got_bootstrap import GotError, resolve_got_state, validate_governance_identity
+from scripts.score2gp_got_bootstrap import (
+    GotError,
+    resolve_got_state,
+    find_current_head_handback,
+    gate_review_on_handback,
+    select_review_level,
+    validate_governance_identity,
+)
 
 
 def test_merged_pr_overrides_historical_review_state() -> None:
@@ -175,3 +182,178 @@ def test_personal_reviewer_uses_personal_identity() -> None:
         product=Path("/home/tticom/work/score2gp-workspace/score2gp"),
     )
 
+
+def test_low_risk_documentation_pr_selects_basic_review() -> None:
+    selected = select_review_level(
+        repository="tticom/score2gp",
+        changed_paths=["docs/user-guide.md"],
+        task="Clarify CLI spelling",
+        title="docs: clarify CLI spelling",
+        live_head="a" * 40,
+    )
+    assert selected == {
+        "level": "basic",
+        "skill": "code-review",
+        "reasons": ["low-risk documentation-only change"],
+    }
+
+
+def test_code_or_test_change_selects_hard_review() -> None:
+    selected = select_review_level(
+        repository="tticom/score2gp",
+        changed_paths=["src/score2gp/config.py", "tests/test_config.py"],
+        task="Configuration cleanup",
+        title="refactor: simplify configuration loading",
+        live_head="b" * 40,
+    )
+    assert selected["level"] == "hard"
+    assert selected["skill"] == "hard-review"
+    assert "code, test, fixture, or executable-script change" in selected["reasons"]
+
+
+@pytest.mark.parametrize(
+    ("repository", "paths", "task", "role", "reason"),
+    [
+        (
+            "tticom/score2gp-agentops",
+            ["projects/score2gp/ACTIVE_TASK.md"],
+            "Promote task",
+            "Governor",
+            "governance/control-plane repository change",
+        ),
+        (
+            "tticom/score2gp",
+            ["docs/design/conversion-architecture.md"],
+            "Conversion architecture",
+            "Architect / Researcher",
+            "architecture, research, or authority translation",
+        ),
+        (
+            "tticom/score2gp",
+            ["src/score2gp/timing.py"],
+            "Repair MusicXML timing",
+            "Developer",
+            "high-risk conversion or evidence claim",
+        ),
+    ],
+)
+def test_high_risk_context_selects_devils_advocate_review(
+    repository: str,
+    paths: list[str],
+    task: str,
+    role: str,
+    reason: str,
+) -> None:
+    selected = select_review_level(
+        repository=repository,
+        changed_paths=paths,
+        task=task,
+        authorised_role=role,
+        live_head="c" * 40,
+    )
+    assert selected["level"] == "devils-advocate"
+    assert selected["skill"] == "devils-advocate-review"
+    assert reason in selected["reasons"]
+
+
+def test_prior_trusted_review_on_earlier_head_forces_devils_advocate_rereview() -> None:
+    selected = select_review_level(
+        repository="tticom/score2gp",
+        changed_paths=["docs/user-guide.md"],
+        task="Clarify CLI spelling",
+        live_head="d" * 40,
+        reviews=[
+            {
+                "commit_id": "e" * 40,
+                "state": "APPROVED",
+                "user": {"login": "tticomgov-code"},
+            }
+        ],
+    )
+    assert selected["level"] == "devils-advocate"
+    assert "re-review after a trusted review on an earlier head" in selected["reasons"]
+
+
+def test_declared_review_level_can_escalate_but_not_weaken() -> None:
+    escalated = select_review_level(
+        repository="tticom/score2gp",
+        changed_paths=["docs/user-guide.md"],
+        declared_level="real review",
+        live_head="f" * 40,
+    )
+    assert escalated["level"] == "devils-advocate"
+
+    not_weakened = select_review_level(
+        repository="tticom/score2gp",
+        changed_paths=["src/score2gp/config.py"],
+        declared_level="basic",
+        live_head="f" * 40,
+    )
+    assert not_weakened["level"] == "hard"
+
+
+def test_invalid_declared_review_level_fails_closed() -> None:
+    with pytest.raises(GotError, match="unsupported Review Level"):
+        select_review_level(
+            repository="tticom/score2gp",
+            changed_paths=["docs/user-guide.md"],
+            declared_level="friendly glance",
+        )
+
+
+def test_exact_head_author_handback_is_required_for_review_dispatch() -> None:
+    head = "a" * 40
+    handback = {
+        "id": 12,
+        "body": f"Head: {head}\nAWAITING_GOVERNANCE_REVIEW",
+        "user": {"login": "tticom-automation"},
+    }
+    found = find_current_head_handback(
+        [handback], head=head, author="tticom-automation"
+    )
+    assert found == handback
+    assert gate_review_on_handback(
+        {"state": "REVIEW_CURRENT_HEAD", "current_review": None}, found
+    ) == {"state": "REVIEW_CURRENT_HEAD", "current_review": None}
+
+
+@pytest.mark.parametrize(
+    "comment",
+    [
+        {
+            "id": 1,
+            "body": f"Head: {'b' * 40}\nAWAITING_GOVERNANCE_REVIEW",
+            "user": {"login": "tticom-automation"},
+        },
+        {
+            "id": 2,
+            "body": f"Head: {'a' * 40}\nAWAITING_GOVERNANCE_REVIEW",
+            "user": {"login": "tticom-gov"},
+        },
+        {
+            "id": 3,
+            "body": f"Head: {'a' * 40}\nTests passed",
+            "user": {"login": "tticom-automation"},
+        },
+    ],
+)
+def test_stale_wrong_author_or_unmarked_comment_is_not_a_handback(
+    comment: dict,
+) -> None:
+    assert find_current_head_handback(
+        [comment], head="a" * 40, author="tticom-automation"
+    ) is None
+
+
+def test_missing_handback_emits_terminal_wait_state() -> None:
+    assert gate_review_on_handback(
+        {"state": "REVIEW_CURRENT_HEAD", "current_review": None}, None
+    ) == {"state": "AWAITING_AGY_HANDBACK", "current_review": None}
+
+
+def test_handback_gate_does_not_override_other_states() -> None:
+    resolved = {
+        "state": "AWAITING_AGY_FIXES",
+        "current_review": {"id": 99},
+    }
+    assert gate_review_on_handback(resolved, None) is resolved

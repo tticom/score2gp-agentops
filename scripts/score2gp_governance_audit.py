@@ -68,6 +68,28 @@ def parse_active_task_state(content: str) -> tuple[str, str, str]:
 
     return status, repository, branch_name
 
+FULL_SHA_METADATA = re.compile(r"`?[0-9a-f]{40}`?")
+REAPPROVED_HEAD_METADATA = re.compile(
+    r"`?[0-9a-f]{40}`?\s+"
+    r"\(Re-approved head SHA:\s*`?[0-9a-f]{40}`?\)"
+)
+REVIEW_ID = re.compile(r"Review ID `?(?:\d+|PRR_[A-Za-z0-9_-]+)`?")
+
+
+def is_valid_sha_metadata(field_name: str, raw_value: str) -> bool:
+    value = raw_value.strip()
+    if FULL_SHA_METADATA.fullmatch(value):
+        return True
+    return (
+        field_name == "Product Head SHA"
+        and REAPPROVED_HEAD_METADATA.fullmatch(value) is not None
+    )
+
+
+def has_valid_review_id(text: str) -> bool:
+    return REVIEW_ID.search(text) is not None
+
+
 def main():
     print("Running Score2GP Governance Audit...")
     violations = []
@@ -184,20 +206,17 @@ def main():
                     re.MULTILINE,
                 )
                 for field_name, raw_val in sha_matches:
-                    clean_val = raw_val.strip("`").strip()
-                    if not re.fullmatch(r"[0-9a-f]{40}", clean_val):
+                    if not is_valid_sha_metadata(field_name, raw_val):
                         violations.append(
-                            f"Run record {path} field '{field_name}' contains invalid SHA value ('{clean_val}'); "
-                            "all primary SHA metadata fields must be full 40-character lowercase hexadecimal strings."
+                            f"Run record {path} field '{field_name}' contains invalid SHA value ('{raw_val.strip()}'); "
+                            "SHA metadata must use full lowercase 40-character values and approved syntax."
                         )
 
                 # Check that cited Review ID is present and valid if an approval is claimed
-                if "**Review Verdict**: APPROVED" in text:
-                    review_id_match = re.search(r"Review ID `?(\d+)`?", text)
-                    if not review_id_match:
-                        violations.append(
-                            f"Run record {path} claims APPROVED review verdict but lacks a valid numeric Review ID citation."
-                        )
+                if "**Review Verdict**: APPROVED" in text and not has_valid_review_id(text):
+                    violations.append(
+                        f"Run record {path} claims APPROVED review verdict but lacks a valid numeric or GitHub node Review ID citation."
+                    )
 
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")

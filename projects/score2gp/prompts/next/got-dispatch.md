@@ -53,27 +53,41 @@ local task state, chat, and issue comments do not count.
   `AWAITING_AGY_PUBLICATION`.
 - No author handback comment pins the current head: report
   `AWAITING_AGY_HANDBACK`; never review a chat summary.
-- New head with complete finding dispositions, or no current-head Codex
-  review: run the pinned two-axis review and Score2GP hard-review overlay.
-  Before approval, execute a reviewer-created counterexample absent from the
-  PR tests. Timing, grouping, aggregation, fallback, capacity, and fail-closed
-  changes require disagreement plus order/partition/boundary challenges.
-  On revised heads, rerun the original probe and add a second-order probe.
-  Maintain a cumulative counterexample registry: every earlier finding must
-  map to a freshly executed reviewer-owned probe on the current exact head.
-  A test changed by the author in the PR scores zero as reviewer-created
-  evidence, even if the reviewer executes it. For each remediation, record a
-  delta threat model covering changed symbols, the fix assumption, new
-  branches or thresholds, and adjacent false-positive/false-negative risks.
-  Challenge zero/one/many cardinality, both sides of every new threshold, the
-  closest value that must remain distinct, and the nearest representation that
-  must remain rejected. If the remediation changes a test oracle, require a
-  product contract or domain-authority citation; author intent is insufficient.
-  Apply claim-to-oracle closure: every `verified` claim must cite the exact
+- New head with complete finding dispositions, or no current-head trusted
+  review: require `review_local_head == pr.headRefOid`, work only in the
+  returned detached `review_worktree`, and invoke exactly `review_skill` from
+  the routed JSON. The dispatcher selects the minimum review level from live
+  changed paths, active authority, risk markers, and earlier-head reviews:
+  - `code-review` / BASIC only for genuinely low-risk documentation;
+  - `hard-review` for code, tests, fixtures, executable scripts, domain data,
+    generated artifacts, or empirical claims;
+  - `devils-advocate-review` for AgentOps/control-plane changes,
+    architecture/research, conversion correctness, or any re-review after a
+    trusted review on an earlier head.
+  A task declaration or current maintainer request may escalate this level but
+  may never weaken it. `real review` means `devils-advocate-review`.
+- Read the selected pinned skill completely and then apply Score2GP's project
+  overlay. BASIC performs exact-head code sanity and contract checks. HARD also
+  classifies every material test as real-source, extracted-real-source,
+  synthetic/mocked, or data-free and rejects synthetic/data-free evidence for
+  domain acceptance. DEVILS_ADVOCATE assumes every developer and prior-reviewer
+  assertion is wrong and attempts to disprove it independently.
+- Before approval, execute the selected skill's reviewer-created counterexample probes outside
+  the repository. Timing, grouping, aggregation, fallback, capacity,
+  fail-closed, parser, conversion, and privacy claims require the stricter
+  devil's-advocate quota and production-path evidence.
+  green CI and author tests are not substitutes.
+- On revised heads, rerun the original counterexample and attack the repair.
+  Maintain a cumulative contradiction ledger: every earlier finding and
+  approval claim must map to a freshly executed reviewer-owned probe on the
+  current exact head. An author test never becomes reviewer-created evidence.
+- Apply claim-to-oracle closure: every `verified` claim must cite the exact
   final-artifact assertion for the same required or forbidden value and a
-  negative control killed by that oracle. Exercising a related path or checking
-  adjacent symptoms is not verification. A claim/oracle scope mismatch requires
-  changes.
+  negative control killed by that oracle. A claim/oracle scope mismatch
+  requires changes.
+- Reviewer mode may mutate review metadata only. It must leave both the review
+  worktree and repository refs unchanged and clean. Never edit code, tests,
+  prompts, reports, tasks, PR bodies, commits, or branches while reviewing.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
   `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
@@ -88,31 +102,37 @@ local task state, chat, and issue comments do not count.
   governance promotion.
 - Closed unmerged PR: report `BLOCKED`.
 
-Every approval includes the disconfirmation record and the three equal full
-head SHAs. After review, publish the
-verdict on the exact head with the guarded publisher:
+Every review includes the three equal full head SHAs. HARD and
+DEVILS_ADVOCATE reviews also include the required disconfirmation record,
+provenance ledger, fixture-coupling result, and external evidence packet.
+Publish through the pinned shared guarded publisher:
 
 ```bash
-python3 scripts/score2gp_publish_review.py \
+python3 "$HOME/.agents/skills/code-review/scripts/publish_review.py" \
   --repo <Repository> \
   --pr <PR number> \
-  --head <reviewed full head SHA> \
-  --verdict "<needs changes|APPROVED>" \
-  --body-file <formal review markdown> \
-  --evidence-file <review-evidence.json> \
-  [--high-risk]
+  --expected-head <reviewed full head SHA> \
+  --level <basic|hard|devils-advocate> \
+  --verdict <APPROVE|CHANGES_REQUESTED|CANNOT_VERIFY> \
+  --review-body-file <external-formal-review.md> \
+  --summary-file <external-pr-summary.md> \
+  [--inline-comments-file <external-inline-comments.json>] \
+  [--packet <external-evidence.json>] \
+  [--prior-packet <external-prior-evidence.json>] \
+  [--prior-overturns <count>]
 ```
 
-The publisher normalizes `needs changes` to GitHub `CHANGES_REQUESTED`, pins
-the review to the exact head, and re-queries the formal review before
-returning one machine-actionable state:
-`AWAITING_AGY_FIXES`, `READY_FOR_HUMAN_MERGE`,
-`AWAITING_AGY_HANDBACK`, or `BLOCKED`.
-Do not return a chat-only verdict. A publisher failure is a hard stop.
-The publisher rejects approvals whose review body lacks populated executable
-adversarial-evidence fields; green CI and author tests are not substitutes.
-For approval, it also reads `projects/score2gp/REVIEWER_SCORECARD.json` and
-requires a machine-validated evidence packet. Active reviewer strikes increase
-the probe quota. Omit `--evidence-file` for a changes-requested verdict.
+The publisher pins the formal review and inline comments to the exact head and
+always creates or updates one marked PR issue comment containing review level,
+head, base, verdict, findings, validation, and residual risk. It re-queries the
+head after publication and fails closed on movement or proof mismatch.
+
+Do not substitute a chat verdict, committed report, task-state edit, or PR-body
+rewrite for review metadata. A publisher failure is a hard stop. Re-query and
+prove the formal review, any inline findings, and mandatory summary comment
+exist on the exact head. Finally prove the review worktree is still clean.
+`tticom-gov` and `tticom-automation` never merge. `tticom-codex` requires a
+separate current exact-PR maintainer instruction before any merge operation.
+
 Repeated `got` with unchanged remote inputs creates no new task or duplicate
 review.

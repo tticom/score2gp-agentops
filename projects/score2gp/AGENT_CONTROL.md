@@ -21,13 +21,16 @@ identity:
   `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
 - Governance worker / `tticom-gov` using Git/GitHub identity `tticomgov-code`:
   `/home/tticom-gov/work/score2gp-workspace/score2gp-agentops`
+- Independent reviewer / `tticom-codex`:
+  `/home/tticom-codex/work/score2gp-workspace/score2gp-agentops`
 
 ## Identity-Isolated Workspace Gate
 
-`tticom-automation` and `tticom-gov` must use separate Linux users, home
-directories, GitHub CLI credential stores, Git identities, and repository
-clones. An agent must never operate from the other identity's home or
-workspace and must never copy GitHub credentials between homes.
+`tticom-automation`, `tticom-gov`, and `tticom-codex` must use separate Linux
+users, homes, GitHub CLI credential stores, Git identities, and repository
+clones. An agent must never operate from the other identity's home or workspace,
+must never use another identity's clone, and must never copy GitHub credentials
+between homes.
 
 Before any Git, GitHub, filesystem, or task write, prove:
 
@@ -134,7 +137,8 @@ task branch before checking GitHub PR state and selecting implementation, PR
 monitoring, review fixes, a review wait, or a post-merge stop. It must never blindly
 replay the original prompt or read task authority from a stale working-tree branch.
 
-The user command `got` is reserved for Codex. It executes the permanent Codex
+The user command `got` is used by the isolated `tticom-gov` and
+`tticom-codex` governance/reviewer identities. It executes the permanent
 dispatcher named by `NEXT.md`, verifies an exact Agy handback against live
 GitHub state, and routes to first review, re-review, wait, readiness reporting,
 or post-merge governance. A chat summary alone is never a handback.
@@ -149,7 +153,14 @@ Agy must never:
 - begin a second task while its current task PR is open;
 - claim musical correctness, a fix, or completion without the prompt's required evidence.
 
-The cadence is one governance step followed by one development step. Agy does the implementation or evidence collection and publishes its PR. Codex reviews, makes any small publication correction, and merges. Agy may approve a Codex-authored governance PR only when its versioned prompt explicitly identifies that PR; it still must not merge it.
+The cadence is one governance step followed by one development step. Agy does
+the implementation or evidence collection and publishes its PR. A reviewer
+publishes review metadata only and never corrects the reviewed branch, PR body,
+task state, report, prompt, or evidence artifact. `tticom-automation` and
+`tticom-gov` never merge. `tticom-codex` may merge only in a separate operation
+after a current explicit instruction from `tticom` naming the exact repository,
+PR number, and reviewed full head SHA. Agy may independently review a
+Codex-authored governance PR only when the active authority identifies it.
 
 ## Continuous Forward Motion and Real-World Validation
 
@@ -264,8 +275,10 @@ Every agent run for the Score2GP project must load and obey:
 For Architect work, the Architect must read:
 `projects/score2gp/skills/architect/SKILL.md`
 
-For Reviewer work, the Reviewer must read:
-`skills/score2gp-pr-hard-review.md`
+For Reviewer work, the Reviewer must read the exact pinned `review_skill`
+returned by `scripts/score2gp_got_bootstrap.py`, then apply
+`projects/score2gp/REVIEW_RULES.md` and the compatibility notes in
+`skills/score2gp-pr-hard-review.md`.
 
 For Developer work, the Developer must read:
 `projects/score2gp/skills/developer/SKILL.md`
@@ -602,16 +615,27 @@ Agents operate under the following role boundaries during team operation:
 - **Orchestrator**: identifies active blocker, sequences approved work, reports state.
 - **Architect**: defines requirements, assumptions, acceptance criteria, risks.
 - **Developer**: implements smallest useful approved change.
-- **Reviewer**: reviews code/docs/process/evidence and comments, ensures all Codex comments on the PR are addressed before claiming that the PR is ready for review, but does not merge or self-approve.
+- **Reviewer**: reviews code/docs/process/evidence and publishes formal review
+  metadata, useful inline comments, and one mandatory PR summary comment. The
+  Reviewer never modifies repository content, refs, branches, commits, PR
+  bodies, task state, prompts, reports, or evidence artifacts.
 - **Researcher**: investigates uncertainty and records evidence without changing product implementation unless approved.
 
 ### Forbidden Actions
 
-Agents must not push directly to `main`, force-push, run `git reset --hard`, run `git clean` with deletion flags, delete branches, run commands containing `--delete-branch`, use the `hgh` CLI alias, approve their own PR, bypass failing checks, start unrelated backlog work, expand scope without human approval, or mark unmerged work as merged/done. Agy must never run `gh pr merge`, use `--admin`, use a merge API, or merge through a web UI.
+Agents must not push directly to `main`, force-push, run `git reset --hard`, run
+`git clean` with deletion flags, delete branches, bypass failing checks, approve
+their own PR, or expand scope without authority. Reviewer mode permits review
+metadata only. `tticom-automation` and `tticom-gov` must never attempt a merge.
 
 ### Human-Only Operations
 
-Only the human maintainer or a separately operated external release integrator may merge a PR, approve scope expansion, accept a known failing-check risk, or explicitly close/abandon a task without merge. Agy has no merge exception, including for a Teamwork programme.
+Only the human maintainer or a separately operated external release integrator
+may merge a PR, approve scope expansion, accept a known failing-check risk, or
+explicitly close/abandon a task without merge. `tticom-automation` and
+`tticom-gov` have no merge exception. `tticom-codex` may merge only after a
+separate current explicit `tticom` instruction naming the exact repository, PR
+number, and reviewed full head SHA.
 
 ## Product Boundaries
 
@@ -635,9 +659,14 @@ boundary:
 - committing private inputs, generated private GP/MusicXML, screenshots,
   overlays, or reports containing extractable private content.
 
-Every functional change must be generic, traceable to PDF/MusicXML/GPIF
-evidence, covered by a public synthetic regression where feasible, and checked
-against more than one approved corpus input before it is claimed as a fix.
+Every functional change must be generic and traceable to real-source
+PDF/MusicXML/GPIF evidence. Domain acceptance tests must use a genuine approved
+source or a reproducible extract that retains source provenance and reaches the
+changed production seam. Synthetic, mocked, generated-notation, invented-value,
+and data-free tests carry zero acceptance weight for recognition, conversion,
+timing, grouping, geometry, parser, or fidelity claims. They may supplement
+non-domain infrastructure coverage only with an explicit rationale. General
+claims require more than one approved corpus input.
 
 ## Product-Output Evidence Standard
 

@@ -7,10 +7,11 @@ For any request to continue, advance, run the next command, `go`, `got`, or
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
-The Linux worker identity, not the command word, selects the role:
-`tticom-automation` runs author `go`; `tticom-gov` runs governance `got`
-using Git/GitHub service identity `tticomgov-code`. The `tticom-codex` (Codex) identity acts primarily as an independent reviewer and is not concerned with acting upon `go` or `got` commands (which are reserved for `tticom-automation` and `tticom-gov` respectively). Never bypass the router by
-calling the other role's helper. Treat its JSON as authoritative. Never replace it with direct GitHub queries
+The Linux worker identity, not the command word, selects the role.
+`tticom-automation` runs author `go`; `tticom-gov` and `tticom-codex` run
+governance/reviewer `got` under their own isolated GitHub identities. Never
+bypass the router by calling the other role's helper. Treat its JSON as
+authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
 formal review ID, commit ID, and body. Fail closed if the helper fails.
@@ -23,12 +24,23 @@ terminal.
 
 Read `AGENT-RULES.md` for the remaining repository rules.
 
-For governance, treat the routed JSON as authoritative and never resume a
-cached managed task.
-For `got`, `REVIEW_CURRENT_HEAD` authorizes and requires an exact-head formal
-review using the pinned `code-review` skill and Score2GP hard-review overlay;
-a status-only response is a dispatcher failure. This `got` state is separate
-from the action-authorizing states defined above for `go`.
+For governance/review, treat the routed JSON as authoritative and never resume
+a cached managed task. `REVIEW_CURRENT_HEAD` authorizes and requires a formal
+review in the returned `review_worktree`. Require
+`review_local_head == pr.headRefOid`, invoke exactly the returned
+`review_skill`, and apply the Score2GP project overlay. A stricter review may
+be chosen; a weaker review may not.
+
+Reviewer mode is metadata-only: formal review, inline review comments, and one
+mandatory marked PR summary comment. Do not edit any repository file, branch,
+commit, PR body, task status, prompt, report, or evidence artifact. Publish
+through the pinned `code-review/scripts/publish_review.py`; a chat-only or
+status-only response is a dispatcher failure.
+
+`tticom-automation` and `tticom-gov` never merge. `tticom-codex` may merge only
+in a separate operation after a current explicit instruction from `tticom`
+naming the exact repository, PR number, and reviewed full head SHA.
+This `got` state is separate from the action-authorizing states for `go`.
 `PROMOTE_MERGED_TASK` authorizes and requires verifying the merge on remote
 main, synchronizing product and governance mains, rereading `ACTIVE_TASK.md`,
 and preparing the smallest bounded governance promotion. A status-only

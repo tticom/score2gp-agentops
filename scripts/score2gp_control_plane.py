@@ -16,6 +16,8 @@ REQUIRED_SKILLS = {
     "identity-safe-git": "skills/engineering/identity-safe-git",
     "durable-handoff": "skills/productivity/durable-handoff",
     "code-review": "skills/engineering/code-review",
+    "hard-review": "skills/engineering/hard-review",
+    "devils-advocate-review": "skills/engineering/devils-advocate-review",
 }
 
 
