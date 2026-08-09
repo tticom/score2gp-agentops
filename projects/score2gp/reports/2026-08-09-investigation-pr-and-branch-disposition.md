@@ -1,7 +1,7 @@
 # Investigation PR and Branch Disposition
 
 Date: 2026-08-09
-Status: REVIEWED_FOR_ARCHIVAL
+Status: ARCHIVED_AND_CLOSED
 Product main: 4a4f5c339e09987b9f41641397f1db7e8ab1be5d
 AgentOps main: c1c7305c81ff800eface43867406728715af8e20
 
@@ -15,6 +15,26 @@ the complete commit tree; this report supplies the claim and disposition index.
 The consolidated recovery programme and Task 88 architecture review remain the
 decision authority. Archived code is evidence and a source of counterexamples,
 not implementation authority.
+
+## Execution receipt
+
+All six superseded PRs received a formal exact-head CHANGES_REQUESTED review
+and were then closed:
+
+| PR | Review ID | Reviewed head |
+|---|---:|---|
+| score2gp 418 | 4890781304 | 6f8e438a600a3b33b1b017de462ba906e4861a9d |
+| score2gp 419 | 4890781331 | 28c8a5965cb7a19a88ad76a38c86406dedb4655c |
+| score2gp 420 | 4890781355 | 70a2d05077374640cf496503506226ac71b5ce38 |
+| AgentOps 511 | 4890781382 | b99fc3b218eff4311236283ca4d6079edfad5a64 |
+| AgentOps 512 | 4890781408 | f9d81b31c4419c039cda4db7efaff4aaf187d8eb |
+| AgentOps 513 | 4890781431 | 648d750489faf849e30d78d391d3d5d275db7649 |
+
+After remote tag targets were verified, four product and seven AgentOps
+investigation branch refs were deleted. Live branch inventory then contained
+only product main, AgentOps main, and the AgentOps PR 514 branch. The private
+fixtures and agy-skills repositories contained only main and required no
+cleanup.
 
 ## Independent source-modality check
 
