@@ -1,5 +1,7 @@
 # 0043 - M6: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
 
+Status: SKELETON — blocked pending conversion-recovery architecture and the private test contract. This prompt is not executable.
+
 ## Objective
 Enforce the ban on synthetic mock-point tests by introducing an in-situ test suite running against real-world private fixtures (`Lesson-5.pdf` and `Lesson-6.pdf`). Remove the hacky snapping tolerances and fallback synthesis paths to ensure true note-for-note conversion correctness.
 
@@ -17,7 +19,7 @@ Modify the gating, snapping, and test modules:
    - Assert that `_detect_tab_systems` returns exactly `38` and `72` measures respectively.
    - Assert that no unassigned playable fret candidates are present in the final `ScoreIR`.
    - Use `pytest.mark.skipif` to gracefully skip the private fixture tests if the private fixtures directory is not present, allowing public unit tests to run in public CI.
-4. **Isolated Unit Testing**: If isolated unit testing adds coverage value, write a separate unit test using public/synthetic inputs that can run in GitHub Actions.
+4. **Unit/Contract Testing**: Use provenance-linked cases extracted from real fixture PDFs. Do not invent synthetic geometry, IR, or musical events.
 
 ## Validation Commands
 1. Run the new in-situ test suite:

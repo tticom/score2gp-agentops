@@ -2744,138 +2744,98 @@ credentials, or an unsafe inference that has no credible research pivot.
 
 ---
 
-## Task 88 — In-Situ Real-Fixture Testing Integration & Fallback Cleanup
+---
+
+## Task 88 — Conversion Recovery Evidence Adjudication and Architecture Review
 
 Status: ACTIVE
 
 Owning repo: score2gp
 
 Branch:
-feature/agy/m6-in-situ-testing
+agy/conversion-recovery-architecture
 
 PR title:
-feat(test): implement in-situ real-fixture testing and fallback cleanup
+docs(design): define evidence-backed conversion recovery architecture
 
 Purpose:
-Establish the in-situ real-fixture testing harness using Lesson-5.pdf and Lesson-6.pdf. Remove the synthesize_missing_tab standard tuning fallback, and reset outer_tolerance to 24.0. Implement isolated unit tests if value added, skipping private tests gracefully in public CI.
+Adjudicate contradictory reports and open PRs, trace the current architecture,
+design two target routes, select an A/B/C outcome, define real-source-only
+testing and sidecar decisions, and produce the dependency-ordered migration.
 
 Requirement:
-Milestone 6, Task 1
+CRP-00, CRP-01, and CRP-02
 
 Evidence basis:
-- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
-- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
+- projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md
+- projects/score2gp/programmes/2026-08-09-conversion-recovery.md
+- projects/score2gp/tasks/2026-08-09-conversion-recovery-backlog.md
+- projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md
 
 Acceptance:
-- synthesize_missing_tab is completely deleted from build_ir.py.
-- outer_tolerance is reset to 24.0 points in pdf.py.
-- Real-fixture integration tests assert exactly 38 measures for Lesson-5 and 72 for Lesson-6, checking that no unassigned playable candidates remain.
-- Integration tests use pytest.mark.skipif to gracefully skip when private fixtures are missing, allowing CI to pass.
-- Isolated unit tests are written to verify isolated logic if they add coverage value.
-- standard pytest passes.
-
-Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-.venv/bin/python3 -m pytest tests/test_real_fixtures_alignment.py
+- exact-revision claim and PR dispositions;
+- current and target module seam maps;
+- preserve, wrap, replace, and delete matrix;
+- sidecar A/B/C decision with Lesson 6 4/4-triplet evidence;
+- private real-source test and CI architecture with reference isolation;
+- implementation-ready first-prompt specification in the product migration
+  map, for later publication by a separate AgentOps governance promotion, and
+  dependency-bound skeletons;
+- docs-only product PR and full product verification.
 
 ---
 
-## Task 89 — Port and Harmonize Barline Detection
+## Task 89 — Real-Source Oracle and Harness
 
-Status: APPROVED
+Status: BLOCKED
 
-Owning repo: score2gp
-
-Branch:
-feature/agy/m6-barline-harmonization
-
-PR title:
-feat(pdf): port and harmonize notation and TAB barline detection thresholds
+Blocked by:
+Task 88 architecture review and independent acceptance.
 
 Purpose:
-Accept compact barlines, resolve edge double barlines, and inherit notation staff barlines to prevent safety gate refusals on compact measures.
+Implement the generic semantic oracle and private-fixture runner selected by the
+architecture. It must reject every known destructive branch and keep reference
+GP data unavailable to generation.
 
-Requirement:
-Milestone 6, Task 2
-
-Evidence basis:
-- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
-- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
-
-Acceptance:
-- MIN_INHERITED_INTERNAL_BAR_WIDTH is 20.0 points.
-- Relative height checks accept barlines shorter than 20.0 points (min 15.0 or staff_height - 2.0).
-- Double barlines near system margins are resolved.
-- Notation staff confirmed barlines are extracted and merged in the pipeline.
-- verified by both in-situ integration tests and isolated unit tests (where value added).
-- Lesson-5 sidecar generates with 38 measures.
-
-Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-.venv/bin/python3 -m pytest
+Prompts:
+- projects/score2gp/prompts/next/0047-real-source-oracle-harness.md
+- projects/score2gp/prompts/next/0047a-real-source-test-migration.md
 
 ---
 
-## Task 90 — Page Coordinate Offsets and Global Indexing
+## Task 90 — Sidecar and Recognition Research Decisions
 
-Status: APPROVED
+Status: BLOCKED
 
-Owning repo: score2gp
-
-Branch:
-feature/agy/m6-page-offsets
-
-PR title:
-feat(pdf): implement sequential page indexing and cumulative page offsets
+Blocked by:
+Task 89 real-source oracle.
 
 Purpose:
-Maintain sequentially incrementing measure indices across page boundaries and compute cumulative page height offsets to resolve coordinate query overlaps.
+Execute the timing-complete sidecar bake-off and source-modality/TAB
+recognition probes using the common real-source contract. Select explicit A, B,
+or C outcomes; add no production dependency.
 
-Requirement:
-Milestone 6, Task 3
-
-Evidence basis:
-- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
-- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
-
-Acceptance:
-- running_bar_index sequentially tracks measures across pages.
-- Cumulative page heights are used as y-coordinate offsets in pdf.py.
-- verified by both in-situ integration tests and isolated unit tests (where value added).
-
-Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-.venv/bin/python3 -m pytest
+Prompts:
+- projects/score2gp/prompts/next/0048-timing-complete-sidecar-bakeoff.md
+- projects/score2gp/prompts/next/0049-source-modality-tab-recognition.md
 
 ---
 
-## Task 91 — Prevent Fret Digit Over-Merging
+## Task 91 — Conversion Module Migration Series
 
-Status: APPROVED
+Status: BLOCKED
 
-Owning repo: score2gp
-
-Branch:
-feature/agy/m6-digit-merging-guard
-
-PR title:
-feat(pdf): guard horizontal digit merging loop against impossible values
+Blocked by:
+Tasks 88–90 and separately reviewed prompt completion.
 
 Purpose:
-Prevent adjacent single-digit frets (e.g. 7 and 10) from merging into invalid fret numbers (> 24).
+Implement one deep module seam per product PR: document topology, recognition
+adapters, paired-staff fusion, musical timeline, TAB token ownership, compiler,
+legacy removal, and final corpus acceptance.
 
-Requirement:
-Milestone 6, Task 4
+Prompt skeletons:
+- existing M6 prompts 0043–0046, now blocked;
+- prompts 0050–0056 in the conversion-recovery series.
 
-Evidence basis:
-- `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`
-- `projects/score2gp/tasks/2026-08-09-master-conversion-failure-remediation-backlog.md`
-
-Acceptance:
-- Merged fret values never exceed 24.
-- Consecutive fret digits (like '7 10') are kept separate.
-- verified by both in-situ integration tests and isolated unit tests (where value added).
-
-Validation:
-cd /home/tticom/work/score2gp-workspace/score2gp
-.venv/bin/python3 -m pytest
+No skeleton is executable until all TBD_FROM fields are replaced from accepted
+upstream evidence and it is separately promoted to ACTIVE_TASK.md.

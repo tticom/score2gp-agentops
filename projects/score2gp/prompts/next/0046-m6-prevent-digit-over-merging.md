@@ -1,5 +1,7 @@
 # 0046 - M6: Prevent Fret Digit Over-Merging
 
+Status: SKELETON — blocked pending real-source token-classification research. A maximum-fret guard cannot distinguish fret 13 from adjacent fingering digits 1 and 3.
+
 ## Objective
 Implement a validation check on the horizontal text merging loop in the PDF OMR parser to prevent chronologically adjacent single-digit frets (e.g. `7` and `10`) from merging into impossible guitar frets (> 24).
 
@@ -13,7 +15,7 @@ Implement a validation check on the horizontal text merging loop in the PDF OMR 
 Modify only `src/score2gp/pdf.py`:
 1. **Fret Limit Validation**: In the horizontal text-merging loop, check if the proposed merged string is a digit.
 2. **Merge Break**: If it is a digit, ensure `int(proposed) <= 24` before committing the merge operation. If the proposed value exceeds 24, break the merge loop and treat them as separate fret digit candidates.
-3. **Isolated Unit Testing**: If isolated unit testing adds coverage value, write/update a separate unit test using public/synthetic inputs (asserting '7 10' is kept separate while '1 0' merges to '10') that can run in GitHub Actions.
+3. **Real-Source Contract Testing**: Use real examples of multi-digit frets, adjacent notes, fingering, string labels, tempo text, and valid merged values below 24 that must remain separate.
 
 ## Validation Commands
 1. Run the test suite:

@@ -2,14 +2,15 @@
 
 All tasks in this backlog must strictly adhere to the following **Test Writing and Isolation Standards**:
 - **Real-World Test Requirement**: Every code modification MUST be verified by an in-situ integration test loading `Lesson-5.pdf` or `Lesson-6.pdf` from the private fixtures repository.
-- **Isolated Unit Test Requirement**: If isolated unit testing adds coverage value, write a separate unit test using public/synthetic inputs.
-- **CI Portability**: All in-situ integration tests that require private fixtures MUST use a graceful skip mechanism (e.g., `@pytest.mark.skipif`) when the private fixtures repository is not present. This ensures that the public unit tests still run in public GitHub Actions.
-- **Banned**: Purely synthetic/mocked tests are banned from being the *sole* validation instrument.
+- **Real-Source Unit/Contract Requirement**: Behavioural cases must be whole private fixtures or provenance-linked extractions from real PDFs.
+- **CI Portability**: Public CI may report private tests as NOT_EVALUATED, but a skipped required suite cannot satisfy review or merge acceptance.
+- **Banned**: Synthetic or mocked behavioural conversion tests as acceptance and refusal-only completion claims.
+- **Architecture Gate**: Every M6 task below is blocked by Task 88 until its constants, seams, and oracle are accepted.
 
 ---
 
 ## M6-1: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
-* **Status**: APPROVED
+* **Status**: BLOCKED — architecture and oracle prerequisites unresolved
 * **Owning Repo**: `score2gp`
 * **Branch**: `feature/agy/m6-in-situ-testing`
 * **Target Files**: `src/score2gp/build_ir.py`, `src/score2gp/pdf.py`, `tests/test_real_fixtures_alignment.py` (New File)
@@ -19,10 +20,10 @@ All tasks in this backlog must strictly adhere to the following **Test Writing a
   - `outer_tolerance` snapping tolerance is reset to `24.0` points in `pdf.py`.
   - New test suite loads `Lesson-5.pdf` and `Lesson-6.pdf` from the private fixtures repository.
   - Asserts exactly `38` and `72` measures respectively and verifies no unassigned playable candidates remain.
-  - Integration tests use `pytest.mark.skipif` to skip gracefully when private fixtures are missing, allowing CI to pass.
+  - A missing private corpus reports NOT_EVALUATED and cannot satisfy merge evidence.
 
 ## M6-2: Port and Harmonize Barline Detection
-* **Status**: APPROVED
+* **Status**: BLOCKED — architecture and oracle prerequisites unresolved
 * **Owning Repo**: `score2gp`
 * **Branch**: `feature/agy/m6-barline-harmonization`
 * **Target Files**: `src/score2gp/pdf.py`, `src/score2gp/notation_omr/pipeline.py`
@@ -36,7 +37,7 @@ All tasks in this backlog must strictly adhere to the following **Test Writing a
   - Governed by both in-situ and isolated tests (if value added).
 
 ## M6-3: Implement Page Coordinate Offsets and Global Indexing
-* **Status**: APPROVED
+* **Status**: BLOCKED — architecture and oracle prerequisites unresolved
 * **Owning Repo**: `score2gp`
 * **Branch**: `feature/agy/m6-page-offsets`
 * **Target Files**: `src/score2gp/pdf.py`
@@ -48,7 +49,7 @@ All tasks in this backlog must strictly adhere to the following **Test Writing a
   - Governed by both in-situ and isolated tests (if value added).
 
 ## M6-4: Prevent Fret Digit Over-Merging
-* **Status**: APPROVED
+* **Status**: BLOCKED — architecture and oracle prerequisites unresolved
 * **Owning Repo**: `score2gp`
 * **Branch**: `feature/agy/m6-digit-merging-guard`
 * **Target Files**: `src/score2gp/pdf.py`
