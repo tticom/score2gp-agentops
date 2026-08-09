@@ -1,33 +1,32 @@
-# 0045 - M6: Implement Page Coordinate Offsets and Global Indexing
+# 0045 — M6: Topologically Locked System Barlines (CRP-02)
 
-Status: SKELETON — blocked pending document-topology ownership and proof of the required coordinate model.
+Status: APPROVED
 
 ## Objective
-Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in the OMR candidate parser to prevent page-boundary index conflicts.
+Topologically lock 5-line notation barlines to 6-line TAB barlines system-by-system in `src/score2gp/pdf.py` before event extraction, closing the remaining 2-bar gap (41 -> 43 bars on `Lesson-5.pdf`) and ensuring system barlines do not bleed across system or page boundaries.
 
 ## Start
 1. Branch from `origin/main` in the `score2gp` product repository.
-2. Confirm the branch name is `feature/agy/m6-page-offsets`.
-3. Read `projects/score2gp/reports/2026-08-09-master-conversion-failure-diagnosis.md`.
+2. Confirm the branch name is `agy/crp-02-topologically-locked-system-barlines`.
+3. Read `docs/design/2026-08-09-conversion-module-migration-map.md`.
 4. Verify standard tests pass.
 
 ## Implementation Scope & Seam Contract
-Modify only `src/score2gp/pdf.py`:
-1. **Sequential Page Indexing**: Update `_extract_pdf_text_candidates` to track `running_bar_index` dynamically across page iterations, passing it to `_detect_tab_systems` instead of re-initializing to 1 on page change.
-2. **Cumulative Page Offsets**: Calculate global y-coordinate offsets by summing the heights of preceding pages (`page.rect.height`) to prevent candidate overlap and coordinate collisions.
-3. **Real-Source Contract Testing**: Use multi-page cases from at least two private PDFs and prove stable page, system, staff, and bar identity.
+Modify only `src/score2gp/pdf.py` and test files `tests/test_pdf_geometry_candidate_extractor.py`, `tests/test_pdf.py`:
+1. **System-by-System Topological Locking**: Lock notation staff and TAB staff barlines system-by-system before event extraction, preventing barline bleed across system boundaries.
+2. **43-Bar Alignment**: Ensure extracted notation bar boxes on `Lesson-5.pdf` reach full 43-bar alignment across 12 systems.
 
 ## Validation Commands
-1. Run sidecar generation on `Lesson-6.pdf`:
+1. Run `agent_verify.py`:
    ```bash
-   ../score2gp/.venv/bin/score2gp generate-sidecar --pdf /home/tticom/work/score2gp-workspace/score2gp-private-fixtures/fixtures/private/Lesson-6.pdf --out /tmp/Lesson-6.mxl
+   python3 scripts/agent_verify.py
    ```
-2. Verify it outputs sequentially incrementing measures across all 6 pages.
+2. Verify `Lesson-5.pdf` barline extraction:
+   ```bash
+   python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf
+   ```
 
 ## Deliverables
-- Branch `feature/agy/m6-page-offsets` pushed to `origin`.
-- Only `src/score2gp/pdf.py` changed.
+- Branch `agy/crp-02-topologically-locked-system-barlines` pushed to `origin`.
 - Pull Request opened on GitHub.
 
-## Stop Conditions
-- Global y-coordinate overflow or incorrect layout offsets causing bounding box validation errors.
