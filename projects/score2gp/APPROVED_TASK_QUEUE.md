@@ -2785,21 +2785,23 @@ Acceptance:
 
 ---
 
-## Task 89 — Real-Source Oracle and Harness
+## Task 89 — Port and Harmonize Barline Detection & Geometry Cleanup (CRP-01)
 
-Status: BLOCKED
+Status: ACTIVE
 
-Blocked by:
-Task 88 architecture review and independent acceptance.
+Owning repo: score2gp
+
+Branch:
+`agy/crp-01-barline-detection-harmonization`
+
+PR title:
+feat(pdf): port compact barline height bounds and inherited bar width limit for CRP-01
 
 Purpose:
-Implement the generic semantic oracle and private-fixture runner selected by the
-architecture. It must reject every known destructive branch and keep reference
-GP data unavailable to generation.
+Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, revert the `outer_tolerance = 300.0` geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.
 
 Prompts:
-- projects/score2gp/prompts/next/0047-real-source-oracle-harness.md
-- projects/score2gp/prompts/next/0047a-real-source-test-migration.md
+- projects/score2gp/prompts/next/0044-m6-port-and-harmonize-barline-detection.md
 
 ---
 
