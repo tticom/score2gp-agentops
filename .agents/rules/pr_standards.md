@@ -20,3 +20,7 @@ Whenever any agent creates or opens a Pull Request (via `gh pr create`, CLI scri
    - Agents MUST NEVER merge a Pull Request under any circumstances.
    - Prohibited actions include running `gh pr merge`, merging PR branches directly into `main`, or triggering automated merges.
    - Merging Pull Requests is strictly reserved for human maintainers or designated governance processes.
+
+5. **Prohibition on Synthetic-Data Unit Tests**:
+   - Every Pull Request introducing or modifying tests for layout, barlines, digit extraction, or note alignment MUST NOT use synthetic JSON mocks or hardcoded mock-coordinate vectors.
+   - All tests MUST load and assert against real-world private fixtures (e.g. `Lesson-5.pdf` or `Lesson-6.pdf`).
