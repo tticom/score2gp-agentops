@@ -41,6 +41,9 @@ prompt.
 - Material report contradictions and open PR hunks are dispositioned at exact revisions.
 - Current and target module seams, interfaces, invariants, and migration order are explicit.
 - Sidecar generation receives an A, B, or C decision using Lesson 6 4/4 triplets as a mandatory discriminator.
+- Lesson 6 is a held-out acceptance oracle only. No product rule may inspect
+  its filename, hash, page, coordinates, expected counts, or other
+  fixture-specific identity.
 - Real-source test architecture isolates generation from reference GP data and does not accept skipped private tests as evidence.
 - A preserve, wrap, replace, and delete matrix and dependency graph are complete.
 - The migration map contains an implementation-ready specification for the

@@ -167,6 +167,11 @@ triplets with balanced measures. File creation, 12/8 substitution, silent
 repair, or parseability is failure. Produce an A, B, or C decision and smallest
 next probe. Do not add a production dependency.
 
+Lesson 6 is held-out acceptance evidence only. Reject any design that inspects
+its filename, hash, page, coordinates, expected counts, or reference identity,
+or that introduces constants or branches calibrated only to this fixture. The
+same generic route must be evaluated on a second structurally distinct score.
+
 ## Real-source testing architecture
 
 Design a three-repository contract:

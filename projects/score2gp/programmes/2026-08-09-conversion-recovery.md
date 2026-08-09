@@ -17,6 +17,11 @@ its source metre and triplet timing; a sidecar that reinterprets 4/4 triplets
 as 12/8 or emits underfull or overlapping voices is not adequate merely
 because it is parseable.
 
+These scores are held-out acceptance oracles, not implementation inputs. No
+product code may branch on fixture name, hash, page, coordinates, reference
+counts, or any other fixture identity. Every claimed repair must be generic and
+must also pass a second structurally distinct approved score.
+
 ## Authority and execution
 
 This document and its backlog are informative until a governance PR promotes
