@@ -1,38 +1,36 @@
 # Active Task
 
-**Task**: Task 91 — Page-Continuous Measure Indexing & Offsets (CRP-03)
-**Status**: MERGED
+**Task**: Task 92 — Real-Source Oracle Harness & Process Isolation (CRP-04)
+**Status**: PROMOTED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/crp-03-page-continuous-measure-indexing`
+**PR Branch**: `agy/crp-04-real-source-oracle-harness`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0046-m6-prevent-digit-over-merging.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0047-real-source-oracle-harness.md`
 
 ## Context
 
-Task 90 (CRP-02) topologically locked notation and TAB staves system-by-system in `src/score2gp/pdf.py`.
-Task 91 (CRP-03) is the third stage of the Conversion Recovery Programme. It passes `running_bar_index` across multi-page boundaries in `_extract_pdf_text_candidates` to prevent measure index reset on Page 2 and calculates cumulative page height coordinate offsets.
+Task 91 (CRP-03) enabled page-continuous measure indexing and cumulative page offsets across score systems in `src/score2gp/pdf.py`.
+Task 92 (CRP-04) is the fourth stage of the Conversion Recovery Programme. It enforces process-level reference isolation in `scripts/private_e2e_smoke.py` (preventing reference `.gp` paths from being passed as templates to `write_gp` during conversion generation) and establishes `tests/test_real_source_oracles.py` for post-conversion reference oracle validation and falsification against known-bad mutations.
 
 ## Goal
 
-Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in `src/score2gp/pdf.py` to prevent page-boundary index conflicts and coordinate collisions.
+Enforce process-level reference isolation during PDF-to-GP generation in `scripts/private_e2e_smoke.py` and create `tests/test_real_source_oracles.py` to evaluate post-conversion output against reference `.gp` files without reference contamination during generation.
 
 ## Allowed Files
 
-- `src/score2gp/pdf.py`
-- `tests/test_pdf.py`
+- `scripts/private_e2e_smoke.py`
+- `tests/test_real_source_oracles.py`
 
 ## Non-goals
 
-- Do not modify higher-level timeline, measure assembly, or IR compilation modules.
-- Do not re-introduce 300pt outer tolerance or duration scaling hacks.
-- Do not calibrate rules to target fixture coordinates or file hashes.
+- Do not modify higher-level layout models or parsing heuristics.
+- Do not pass reference `.gp` templates into `write_gp` during PDF conversion generation.
+- Do not calibrate test assertions to hardcoded file hashes or arbitrary static coordinates.
 
 ## Acceptance
 
-- `pytest tests/test_pdf.py` passes cleanly.
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` outputs sequentially incrementing measure indices across multi-page boundaries.
+- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` executes conversion generation without receiving or discovering reference `.gp` paths as template inputs.
+- `pytest tests/test_real_source_oracles.py` passes cleanly.
 - `python3 scripts/agent_verify.py` passes with zero regression.
-
-

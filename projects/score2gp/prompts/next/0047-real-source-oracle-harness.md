@@ -1,34 +1,42 @@
-# CRP-03 — Real-Source Oracle and Harness
+# 0047 — Real-Source Oracle Harness & Process Isolation (CRP-04)
 
-Status: SKELETON — not executable.
-
-## Dependencies
-
-accepted CRP-02 testing architecture
+Status: APPROVED
 
 ## Objective
 
-Implement the generic product comparator and private-fixture-owned runner with process-level reference isolation.
+Enforce process-level reference isolation during PDF-to-GP generation in `scripts/private_e2e_smoke.py` and create `tests/test_real_source_oracles.py` to evaluate post-conversion output against reference `.gp` files without reference contamination during generation.
 
-## Fields required before promotion
+## Start
 
-- TBD_FROM_ARCHITECTURE: exact product base, module interface, invariants, and allowed files.
-- TBD_FROM_REAL_ORACLE: fixture manifest revision, source hashes, expected bar/event contract, and known-bad SHA.
-- TBD_FROM_RESEARCH: selected technology, version, license, privacy, and stop or pivot decision where relevant.
-- TBD_FROM_REVIEW: accepted predecessor PRs and unresolved risks.
-- TBD_FROM_GOVERNANCE: identity, branch, validation commands, delivery action, and exact non-goals.
+1. Branch from `origin/main` in the `score2gp` product repository.
+2. Confirm the branch name is `agy/crp-04-real-source-oracle-harness`.
+3. Read `docs/design/2026-08-09-real-source-testing-architecture.md` and `docs/design/2026-08-09-conversion-module-migration-map.md`.
+4. Verify standard tests pass.
 
-## Testing rule
+## Implementation Scope & Seam Contract
 
-Behavioural evidence must use whole real-world private fixtures or
-provenance-linked extractions from them. Synthetic or mocked musical evidence
-cannot satisfy acceptance. A skipped private suite is NOT_EVALUATED. Generation
-must not receive the reference GP path.
+Modify `scripts/private_e2e_smoke.py` and create `tests/test_real_source_oracles.py`:
+1. **Process-Level Reference Isolation**: Update `scripts/private_e2e_smoke.py` (`run_pipeline_for_input`) to ensure `gp_template` is not automatically set from `pdf_path.with_suffix(".gp")` during PDF conversion generation. Generation must run strictly without reference template inputs.
+2. **Post-Conversion Oracle Evaluation**: Add `tests/test_real_source_oracles.py` to evaluate generated `.gp` files against reference `.gp` files in a post-conversion oracle step after generation completes.
+3. **Falsification Suite**: Ensure post-conversion oracle assertions fail red against known-bad historical mutations (such as measure index reset or line Y coordinate drift).
 
-## Provisional acceptance
+## Validation Commands
 
-The harness fails all frozen known-bad revisions, reports first bar/event divergence, and treats absent private execution as NOT_EVALUATED.
+1. Run `agent_verify.py`:
+   ```bash
+   python3 scripts/agent_verify.py
+   ```
+2. Run oracle tests:
+   ```bash
+   python3 -m pytest tests/test_real_source_oracles.py
+   ```
+3. Run private smoke runner:
+   ```bash
+   python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf
+   ```
 
-The final prompt must also require a reviewer-created counterexample, full
-artifact/privacy audit, fresh no-reference conversion, first remaining
-mismatch, and an exact-head handback.
+## Deliverables
+
+- Branch `agy/crp-04-real-source-oracle-harness` pushed to `origin`.
+- Only `scripts/private_e2e_smoke.py` and `tests/test_real_source_oracles.py` created/modified.
+- Pull Request opened on GitHub.
