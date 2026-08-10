@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 96 — Recognition Adapter Seam (CRP-08)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
