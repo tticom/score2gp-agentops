@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 97 — Paired-Staff Evidence Fusion (CRP-09)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
