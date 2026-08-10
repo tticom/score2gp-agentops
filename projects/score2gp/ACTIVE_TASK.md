@@ -1,36 +1,35 @@
 # Active Task
 
-**Task**: Task 92 — Real-Source Oracle Harness & Process Isolation (CRP-04)
-**Status**: MERGED
+**Task**: Task 93 — Sidecar Bake-Off & 4/4 Triplet Discriminator (CRP-05)
+**Status**: PROMOTED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/crp-04-real-source-oracle-harness`
+**PR Branch**: `agy/crp-05-sidecar-bake-off`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0047-real-source-oracle-harness.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0048-timing-complete-sidecar-bakeoff.md`
 
 ## Context
 
-Task 91 (CRP-03) enabled page-continuous measure indexing and cumulative page offsets across score systems in `src/score2gp/pdf.py`.
-Task 92 (CRP-04) is the fourth stage of the Conversion Recovery Programme. It enforces process-level reference isolation in `scripts/private_e2e_smoke.py` (preventing reference `.gp` paths from being passed as templates to `write_gp` during conversion generation) and establishes `tests/test_real_source_oracles.py` for post-conversion reference oracle validation and falsification against known-bad mutations.
+Task 92 (CRP-04) enforced process-level reference isolation in `scripts/private_e2e_smoke.py` and established `tests/test_real_source_oracles.py`.
+Task 93 (CRP-05) is the fifth stage of the Conversion Recovery Programme. It evaluates Audiveris batch sidecar output vs Score2GP internal topology-first timing adapter on `src/score2gp/notation_omr/timeline.py` using `Lesson-6.pdf` 4/4 triplets as the mandatory discriminator.
 
 ## Goal
 
-Enforce process-level reference isolation during PDF-to-GP generation in `scripts/private_e2e_smoke.py` and create `tests/test_real_source_oracles.py` to evaluate post-conversion output against reference `.gp` files without reference contamination during generation.
+Implement `tests/test_sidecar_bakeoff.py` and refine `src/score2gp/notation_omr/timeline.py` to evaluate sidecar OMR options against `Lesson-6.pdf` 4/4 triplets with balanced measure capacities, selecting Outcome A (Score2GP internal topology-first timing adapter) or Outcome B (sidecar hybrid).
 
 ## Allowed Files
 
-- `scripts/private_e2e_smoke.py`
-- `tests/test_real_source_oracles.py`
+- `src/score2gp/notation_omr/timeline.py`
+- `tests/test_sidecar_bakeoff.py`
 
 ## Non-goals
 
-- Do not modify higher-level layout models or parsing heuristics.
-- Do not pass reference `.gp` templates into `write_gp` during PDF conversion generation.
-- Do not calibrate test assertions to hardcoded file hashes or arbitrary static coordinates.
+- Do not add unverified third-party production dependencies.
+- Do not pass reference `.gp` files to the sidecar generator process.
+- Do not introduce fixture-specific coordinate bounds or hash checks.
 
 ## Acceptance
 
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` executes conversion generation without receiving or discovering reference `.gp` paths as template inputs.
-- `pytest tests/test_real_source_oracles.py` passes cleanly.
+- `pytest tests/test_sidecar_bakeoff.py` passes cleanly and evaluates `Lesson-6.pdf` 4/4 triplet timing without dropping measure capacity.
 - `python3 scripts/agent_verify.py` passes with zero regression.
