@@ -59,6 +59,11 @@ local task state, chat, and issue comments do not count.
   `AWAITING_AGY_PUBLICATION`.
 - No author handback comment pins the current head: report
   `AWAITING_AGY_HANDBACK`; never review a chat summary.
+- A marked author handback exists but does not pin the current head: report
+  `INVALID_OR_STALE_AGY_HANDBACK` with the expected live head, observed
+  handback heads, rejected comment ID/URL, and the instruction for the author
+  to publish a corrected exact-head handback. Do not collapse this state into
+  `AWAITING_AGY_HANDBACK` or review the stale handback.
 - New head with complete finding dispositions, or no current-head trusted
   review: require `review_local_head == pr.headRefOid`, work only in the
   returned detached `review_worktree`, and invoke `review_skill` from the exact

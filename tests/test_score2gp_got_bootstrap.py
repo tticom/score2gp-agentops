@@ -7,6 +7,7 @@ import pytest
 from scripts.score2gp_got_bootstrap import (
     GotError,
     find_current_head_handback,
+    find_latest_marked_author_handback,
     find_current_head_review_summary,
     gate_review_on_handback,
     gate_review_on_publication,
@@ -357,6 +358,37 @@ def test_missing_handback_emits_terminal_wait_state() -> None:
     assert gate_review_on_handback(
         {"state": "REVIEW_CURRENT_HEAD", "current_review": None}, None
     ) == {"state": "AWAITING_AGY_HANDBACK", "current_review": None}
+
+
+def test_stale_marked_handback_reports_expected_and_observed_heads() -> None:
+    expected = "d510c68fa1b63192bca52384a718e884037960b5"
+    observed = "d510c68c2d1b0922880c85c390bcab8a8e10dfca"
+    stale = {
+        "id": 5238382950,
+        "html_url": "https://github.com/tticom/score2gp/pull/425#issuecomment-5238382950",
+        "body": f"Exact Head SHA: `{observed}`\nAWAITING_GOVERNANCE_REVIEW",
+        "user": {"login": "tticom-automation"},
+    }
+
+    candidate = find_latest_marked_author_handback(
+        [stale], author="tticom-automation"
+    )
+
+    assert candidate == stale
+    assert gate_review_on_handback(
+        {"state": "REVIEW_CURRENT_HEAD", "current_review": None},
+        None,
+        expected_head=expected,
+        rejected_handback=candidate,
+    ) == {
+        "state": "INVALID_OR_STALE_AGY_HANDBACK",
+        "current_review": None,
+        "expected_head": expected,
+        "observed_handback_heads": [observed],
+        "rejected_handback_id": 5238382950,
+        "rejected_handback_url": stale["html_url"],
+        "next_action": "Author must publish a new handback pinned to expected_head.",
+    }
 
 
 def test_handback_gate_does_not_override_other_states() -> None:

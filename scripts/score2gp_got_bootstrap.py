@@ -6,6 +6,7 @@ import argparse
 import getpass
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -226,6 +227,7 @@ HANDOFF_MARKERS = (
     "AWAITING_GOVERNANCE_REVIEW",
     "AWAITING_EXTERNAL_REVIEW",
 )
+SHA_IN_TEXT = re.compile(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])")
 
 
 def query_pr_comments(repo: str, pr_number: int) -> list[dict[str, Any]]:
@@ -265,10 +267,45 @@ def find_current_head_handback(
     return max(eligible, key=lambda comment: int(comment.get("id") or 0))
 
 
+def find_latest_marked_author_handback(
+    comments: list[dict[str, Any]], *, author: str
+) -> dict[str, Any] | None:
+    if not author:
+        return None
+    eligible = []
+    for comment in comments:
+        body = str(comment.get("body", ""))
+        login = str((comment.get("user") or {}).get("login", ""))
+        if login == author and any(marker in body for marker in HANDOFF_MARKERS):
+            eligible.append(comment)
+    if not eligible:
+        return None
+    return max(eligible, key=lambda comment: int(comment.get("id") or 0))
+
+
 def gate_review_on_handback(
-    resolved: dict[str, Any], handback: dict[str, Any] | None
+    resolved: dict[str, Any],
+    handback: dict[str, Any] | None,
+    *,
+    expected_head: str = "",
+    rejected_handback: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if resolved.get("state") == "REVIEW_CURRENT_HEAD" and handback is None:
+        if rejected_handback is not None:
+            body = str(rejected_handback.get("body", ""))
+            return {
+                "state": "INVALID_OR_STALE_AGY_HANDBACK",
+                "current_review": None,
+                "expected_head": expected_head,
+                "observed_handback_heads": SHA_IN_TEXT.findall(body),
+                "rejected_handback_id": int(rejected_handback.get("id") or 0),
+                "rejected_handback_url": str(
+                    rejected_handback.get("html_url") or ""
+                ),
+                "next_action": (
+                    "Author must publish a new handback pinned to expected_head."
+                ),
+            }
         return {"state": "AWAITING_AGY_HANDBACK", "current_review": None}
     return resolved
 
@@ -563,6 +600,7 @@ def main() -> None:
     review_skills_mode = None
     review_skills_sha = skills_sha
     author_handback = None
+    rejected_author_handback = None
     if pr is not None and str(pr.get("state", "")).upper() == "OPEN":
         review_context = query_pr_review_context(actual_repo, int(pr["number"]))
         comments = query_pr_comments(actual_repo, int(pr["number"]))
@@ -571,7 +609,16 @@ def main() -> None:
             head=str(pr.get("headRefOid", "")),
             author=review_context["author"],
         )
-        resolved = gate_review_on_handback(resolved, author_handback)
+        if author_handback is None:
+            rejected_author_handback = find_latest_marked_author_handback(
+                comments, author=review_context["author"]
+            )
+        resolved = gate_review_on_handback(
+            resolved,
+            author_handback,
+            expected_head=str(pr.get("headRefOid", "")),
+            rejected_handback=rejected_author_handback,
+        )
         review_selection = select_review_level(
             repository=actual_repo,
             changed_paths=review_context["changed_paths"],
@@ -652,6 +699,7 @@ def main() -> None:
         "review_local_head": review_local_head,
         "review_summary": review_summary,
         "author_handback": author_handback,
+        "rejected_author_handback": rejected_author_handback,
     }, indent=2))
 
 
