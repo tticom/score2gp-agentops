@@ -1,6 +1,6 @@
 # 0052 — Paired-Staff Evidence Fusion (CRP-09)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
