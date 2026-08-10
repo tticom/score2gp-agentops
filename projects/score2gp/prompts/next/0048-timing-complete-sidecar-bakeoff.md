@@ -1,6 +1,6 @@
 # 0048 — Sidecar Bake-Off & 4/4 Triplet Discriminator (CRP-05)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
