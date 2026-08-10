@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 93 — Sidecar Bake-Off & 4/4 Triplet Discriminator (CRP-05)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
