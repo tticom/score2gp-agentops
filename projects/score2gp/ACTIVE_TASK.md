@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 95 — Document Topology Module (CRP-07)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
