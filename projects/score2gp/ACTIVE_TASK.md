@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 92 — Real-Source Oracle Harness & Process Isolation (CRP-04)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
