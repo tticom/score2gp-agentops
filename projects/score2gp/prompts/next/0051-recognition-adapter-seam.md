@@ -1,6 +1,6 @@
 # 0051 — Recognition Adapter Seam (CRP-08)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
