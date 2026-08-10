@@ -1,38 +1,41 @@
 # Active Task
 
-**Task**: Task 91 — Page-Continuous Measure Indexing & Offsets (CRP-03)
-**Status**: MERGED
+**Task**: Task 92 — Real-Source Oracle and Harness (CRP-04)
+**Status**: APPROVED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
-**Repository**: tticom/score2gp
-**PR Branch**: `agy/crp-03-page-continuous-measure-indexing`
+**Authorised Role**: Architect
+**Repository**: tticom/score2gp-agentops
+**PR Branch**: `agy/crp-04-real-source-oracle-harness`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0046-m6-prevent-digit-over-merging.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0047-real-source-oracle-harness.md`
 
 ## Context
 
-Task 90 (CRP-02) topologically locked notation and TAB staves system-by-system in `src/score2gp/pdf.py`.
-Task 91 (CRP-03) is the third stage of the Conversion Recovery Programme. It passes `running_bar_index` across multi-page boundaries in `_extract_pdf_text_candidates` to prevent measure index reset on Page 2 and calculates cumulative page height coordinate offsets.
+Task 91 (CRP-03) enabled page-continuous measure indexing and cumulative offsets in PR #424 (merged).
+Task 92 (CRP-04) is the fourth stage of the Conversion Recovery Programme. It implements the reference-isolated real-source oracle harness and private-fixture runner for end-to-end PDF-to-GP conversion verification.
 
 ## Goal
 
-Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in `src/score2gp/pdf.py` to prevent page-boundary index conflicts and coordinate collisions.
+Implement the generic semantic oracle and private-fixture runner with process-level reference isolation to evaluate PDF-to-GP conversion correctness without synthetic test fallbacks or reference GP leakage.
 
 ## Allowed Files
 
-- `src/score2gp/pdf.py`
-- `tests/test_pdf.py`
+- `projects/score2gp/ACTIVE_TASK.md`
+- `projects/score2gp/prompts/next/0047-real-source-oracle-harness.md`
+- `scripts/score2gp_review_evidence_gate.py`
+- `tests/test_governance_audit.py`
 
 ## Non-goals
 
-- Do not modify higher-level timeline, measure assembly, or IR compilation modules.
-- Do not re-introduce 300pt outer tolerance or duration scaling hacks.
-- Do not calibrate rules to target fixture coordinates or file hashes.
+- Do not use synthetic or mocked musical evidence to prove conversion behaviour.
+- Do not grant the generator process access to the reference GP path.
+- Do not broad-delete legacy unit tests before replacement fixtures are verified red/green.
 
 ## Acceptance
 
-- `pytest tests/test_pdf.py` passes cleanly.
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` outputs sequentially incrementing measure indices across multi-page boundaries.
-- `python3 scripts/agent_verify.py` passes with zero regression.
+- `python3 scripts/score2gp_review_evidence_gate.py` passes all evidence gates.
+- `python3 scripts/private_e2e_smoke.py` runs non-skipped on private fixtures (`Lesson-5.pdf`, `Lesson-6.pdf`).
+- `python3 scripts/score2gp_governance_audit.py` passes with zero privacy/leakage errors.
+
 
 
