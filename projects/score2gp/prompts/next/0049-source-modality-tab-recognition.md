@@ -1,6 +1,6 @@
 # 0049 — Dual-Modality Visual TAB Digit OMR (CRP-06)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 

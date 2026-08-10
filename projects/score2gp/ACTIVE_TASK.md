@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 94 — Dual-Modality Visual TAB Digit OMR (CRP-06)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
