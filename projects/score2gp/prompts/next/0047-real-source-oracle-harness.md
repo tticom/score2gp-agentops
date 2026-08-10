@@ -1,6 +1,6 @@
 # 0047 — Real-Source Oracle Harness & Process Isolation (CRP-04)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
