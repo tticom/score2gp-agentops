@@ -1,34 +1,38 @@
-# CRP-07 — Document Topology Module
+# 0050 — Document Topology Module (CRP-07)
 
-Status: SKELETON — not executable.
-
-## Dependencies
-
-accepted CRP-01 architecture and CRP-03 oracle
+Status: APPROVED
 
 ## Objective
 
-Implement page, system, paired-staff, physical bar, and stable global measure identity behind one deep interface.
+Implement `tests/test_document_topology.py` and refine `src/score2gp/notation_omr/staff_geometry.py` to establish page, system, paired-staff, physical bar, and stable global measure identity behind a unified document topology interface.
 
-## Fields required before promotion
+## Start
 
-- TBD_FROM_ARCHITECTURE: exact product base, module interface, invariants, and allowed files.
-- TBD_FROM_REAL_ORACLE: fixture manifest revision, source hashes, expected bar/event contract, and known-bad SHA.
-- TBD_FROM_RESEARCH: selected technology, version, license, privacy, and stop or pivot decision where relevant.
-- TBD_FROM_REVIEW: accepted predecessor PRs and unresolved risks.
-- TBD_FROM_GOVERNANCE: identity, branch, validation commands, delivery action, and exact non-goals.
+1. Branch from `origin/main` in the `score2gp` product repository.
+2. Confirm the branch name is `agy/crp-07-document-topology-module`.
+3. Read `docs/design/2026-08-09-conversion-recovery-architecture.md` and `docs/design/2026-08-09-conversion-module-migration-map.md`.
+4. Verify standard tests pass.
 
-## Testing rule
+## Implementation Scope & Seam Contract
 
-Behavioural evidence must use whole real-world private fixtures or
-provenance-linked extractions from them. Synthetic or mocked musical evidence
-cannot satisfy acceptance. A skipped private suite is NOT_EVALUATED. Generation
-must not receive the reference GP path.
+Modify `src/score2gp/notation_omr/staff_geometry.py` and create `tests/test_document_topology.py`:
+1. **Document Topology Data Structures**: Add structured representations for page, system, paired-staff, physical bar, and global measure identity.
+2. **Topology Extraction Invariants**: Ensure stems and connectors are not misclassified as barlines, and barlines do not cross-snap across disconnected systems.
+3. **Reference Isolation**: Ensure document topology extraction operates without receiving reference `.gp` files.
 
-## Provisional acceptance
+## Validation Commands
 
-Two multi-page real scores prove stable topology; stems and connectors cannot become bars; no musical timing is inferred.
+1. Run `agent_verify.py`:
+   ```bash
+   python3 scripts/agent_verify.py
+   ```
+2. Run document topology tests:
+   ```bash
+   python3 -m pytest tests/test_document_topology.py
+   ```
 
-The final prompt must also require a reviewer-created counterexample, full
-artifact/privacy audit, fresh no-reference conversion, first remaining
-mismatch, and an exact-head handback.
+## Deliverables
+
+- Branch `agy/crp-07-document-topology-module` pushed to `origin`.
+- Only `src/score2gp/notation_omr/staff_geometry.py` and `tests/test_document_topology.py` created/modified.
+- Pull Request opened on GitHub.
