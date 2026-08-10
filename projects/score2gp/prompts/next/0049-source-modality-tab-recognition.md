@@ -1,34 +1,42 @@
-# CRP-06 — Source Modality and TAB Recognition
+# 0049 — Dual-Modality Visual TAB Digit OMR (CRP-06)
 
-Status: SKELETON — not executable.
-
-## Dependencies
-
-accepted CRP-03 oracle
+Status: APPROVED
 
 ## Objective
 
-Resolve embedded-text, vector, and raster evidence per page and compare recognition adapters on held-out real-source material.
+Implement `tests/test_tab_digit_recognition.py` and refine TAB candidate text merging in `src/score2gp/pdf.py` to prevent adjacent single-digit frets (e.g. `7` and `10`) from merging into impossible guitar frets (> 24) and classify fret candidates accurately.
 
-## Fields required before promotion
+## Start
 
-- TBD_FROM_ARCHITECTURE: exact product base, module interface, invariants, and allowed files.
-- TBD_FROM_REAL_ORACLE: fixture manifest revision, source hashes, expected bar/event contract, and known-bad SHA.
-- TBD_FROM_RESEARCH: selected technology, version, license, privacy, and stop or pivot decision where relevant.
-- TBD_FROM_REVIEW: accepted predecessor PRs and unresolved risks.
-- TBD_FROM_GOVERNANCE: identity, branch, validation commands, delivery action, and exact non-goals.
+1. Branch from `origin/main` in the `score2gp` product repository.
+2. Confirm the branch name is `agy/crp-06-dual-modality-tab-recognition`.
+3. Read `docs/design/2026-08-09-conversion-recovery-architecture.md` and `docs/design/2026-08-09-conversion-module-migration-map.md`.
+4. Verify standard tests pass.
 
-## Testing rule
+## Implementation Scope & Seam Contract
 
-Behavioural evidence must use whole real-world private fixtures or
-provenance-linked extractions from them. Synthetic or mocked musical evidence
-cannot satisfy acceptance. A skipped private suite is NOT_EVALUATED. Generation
-must not receive the reference GP path.
+Modify `src/score2gp/pdf.py` and create `tests/test_tab_digit_recognition.py`:
+1. **Fret Limit Validation**: In the horizontal text-merging loop of `src/score2gp/pdf.py`, validate proposed merged numeric text strings. If a proposed merge yields an integer > 24, break the merge loop and retain them as separate fret candidate tokens.
+2. **Candidate Classification**: Ensure single-digit and double-digit frets (0-24) are extracted as distinct fret candidates on notation and TAB staves.
+3. **Reference Isolation**: Ensure candidate recognition runs without receiving reference `.gp` files.
 
-## Provisional acceptance
+## Validation Commands
 
-Select adapters using confusion matrices for frets, fingering digits, labels, tempo text, and nearby numeric glyphs; no opaque training.
+1. Run `agent_verify.py`:
+   ```bash
+   python3 scripts/agent_verify.py
+   ```
+2. Run TAB digit recognition tests:
+   ```bash
+   python3 -m pytest tests/test_tab_digit_recognition.py
+   ```
+3. Run private smoke runner:
+   ```bash
+   python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf
+   ```
 
-The final prompt must also require a reviewer-created counterexample, full
-artifact/privacy audit, fresh no-reference conversion, first remaining
-mismatch, and an exact-head handback.
+## Deliverables
+
+- Branch `agy/crp-06-dual-modality-tab-recognition` pushed to `origin`.
+- Only `src/score2gp/pdf.py` and `tests/test_tab_digit_recognition.py` created/modified.
+- Pull Request opened on GitHub.
