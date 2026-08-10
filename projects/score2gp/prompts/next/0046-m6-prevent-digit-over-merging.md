@@ -1,6 +1,6 @@
 # 0046 — M6: Page-Continuous Measure Indexing & Offsets (CRP-03)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 Enable sequential measure tracking across page boundaries and compute cumulative page height coordinate offsets in `src/score2gp/pdf.py` (`_extract_pdf_text_candidates`) to prevent page-boundary index conflicts and coordinate collisions.

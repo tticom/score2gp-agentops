@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 91 — Page-Continuous Measure Indexing & Offsets (CRP-03)
-**Status**: APPROVED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
