@@ -1,34 +1,38 @@
-# CRP-08 — Recognition Adapter Seam
+# 0051 — Recognition Adapter Seam (CRP-08)
 
-Status: SKELETON — not executable.
-
-## Dependencies
-
-accepted CRP-06 decision and CRP-07 topology
+Status: APPROVED
 
 ## Objective
 
-Implement typed text, vector, and raster adapters selected by research without assigning downstream musical semantics.
+Implement `tests/test_recognition_adapters.py` and refine `src/score2gp/notation_omr/evidence.py` to provide typed text, vector, and raster candidate adapters (`CandidateAdapter`, `EvidenceRecord`, `SourceModality`) that retain source coordinates, modality, confidence, absence, ambiguity, and conflict behind one interface.
 
-## Fields required before promotion
+## Start
 
-- TBD_FROM_ARCHITECTURE: exact product base, module interface, invariants, and allowed files.
-- TBD_FROM_REAL_ORACLE: fixture manifest revision, source hashes, expected bar/event contract, and known-bad SHA.
-- TBD_FROM_RESEARCH: selected technology, version, license, privacy, and stop or pivot decision where relevant.
-- TBD_FROM_REVIEW: accepted predecessor PRs and unresolved risks.
-- TBD_FROM_GOVERNANCE: identity, branch, validation commands, delivery action, and exact non-goals.
+1. Branch from `origin/main` in the `score2gp` product repository.
+2. Confirm the branch name is `agy/crp-08-recognition-adapter-seam`.
+3. Read `docs/design/2026-08-09-conversion-recovery-architecture.md` and `docs/design/2026-08-09-conversion-module-migration-map.md`.
+4. Verify standard tests pass.
 
-## Testing rule
+## Implementation Scope & Seam Contract
 
-Behavioural evidence must use whole real-world private fixtures or
-provenance-linked extractions from them. Synthetic or mocked musical evidence
-cannot satisfy acceptance. A skipped private suite is NOT_EVALUATED. Generation
-must not receive the reference GP path.
+Modify `src/score2gp/notation_omr/evidence.py` and create `tests/test_recognition_adapters.py`:
+1. **Typed Evidence Adapters**: Implement `SourceModality` enum (`TEXT`, `VECTOR`, `RASTER`, `HYBRID`), `EvidenceRecord`, and `CandidateAdapter`.
+2. **Coordinate & Modality Preservation**: Ensure wrapped candidates preserve exact bounding boxes, modality, confidence, absence, ambiguity, and conflict metadata without assigning downstream musical semantics.
+3. **Reference Isolation**: Ensure candidate evidence wrapping operates without receiving reference `.gp` files.
 
-## Provisional acceptance
+## Validation Commands
 
-Evidence retains source coordinates, modality, confidence, absence, ambiguity, and conflict; callers use one interface.
+1. Run `agent_verify.py`:
+   ```bash
+   python3 scripts/agent_verify.py
+   ```
+2. Run recognition adapter tests:
+   ```bash
+   python3 -m pytest tests/test_recognition_adapters.py
+   ```
 
-The final prompt must also require a reviewer-created counterexample, full
-artifact/privacy audit, fresh no-reference conversion, first remaining
-mismatch, and an exact-head handback.
+## Deliverables
+
+- Branch `agy/crp-08-recognition-adapter-seam` pushed to `origin`.
+- Only `src/score2gp/notation_omr/evidence.py` and `tests/test_recognition_adapters.py` created/modified.
+- Pull Request opened on GitHub.
