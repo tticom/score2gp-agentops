@@ -1,6 +1,6 @@
 # 0050 — Document Topology Module (CRP-07)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
