@@ -43,11 +43,10 @@ the same head. Reviews from all other accounts are ignored.
   otherwise stop. A remote branch without one exact PR is unexplained state.
 - Open PR with current-head `CHANGES_REQUESTED`: execute
   `address-current-pr-review.md` using the live review head and findings.
-- Open PR with a newer author head: require a handback comment pinning that
-  head and dispositioning every finding, then report
-  `AWAITING_GOVERNANCE_REVIEW`.
-- Open PR without a current-head review: verify the evidence contract and
-  pinned handback, then report `AWAITING_GOVERNANCE_REVIEW`.
+- Open PR without a current-head author handback comment: report
+  `PUBLISH_AGY_HANDBACK`. Reconstruct, publish, and read back the exact-head author handback receipt before entering governance review.
+- Open PR with exact-head author handback comment and without formal review:
+  report `AWAITING_GOVERNANCE_REVIEW`.
 - Open PR with current-head `APPROVED`: report `READY_FOR_HUMAN_MERGE` and
   stop. Never merge.
 - Conflicting checks, comments, reviews, or threads: report the exact conflict.

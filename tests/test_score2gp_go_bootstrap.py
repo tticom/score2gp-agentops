@@ -295,11 +295,36 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
     pr_head_sha = run_git(local_prod, ["rev-parse", "HEAD"])
     run_git(local_prod, ["checkout", "main"])
 
-    def mock_gh_runner(repo: str, branch: str) -> dict[str, Any]:
+    def mock_gh_runner_no_handback(repo: str, branch: str) -> dict[str, Any]:
         return {
             "number": 391,
             "state": "OPEN",
             "headRefOid": pr_head_sha,
+        }
+
+    res_no_handback = run_go_bootstrap(
+        agentops_path=local_ops,
+        product_path=local_prod,
+        _skip_identity_check=True,
+        _allow_custom_slug=True,
+        _gh_runner=mock_gh_runner_no_handback,
+    )
+    assert res_no_handback["state"] == "PUBLISH_AGY_HANDBACK"
+    assert res_no_handback["pr_number"] == 391
+    assert res_no_handback["output_sha"] == pr_head_sha
+    assert res_no_handback["next_action"]["command"] == "publish_handback"
+
+    def mock_gh_runner_with_handback(repo: str, branch: str) -> dict[str, Any]:
+        return {
+            "number": 391,
+            "state": "OPEN",
+            "headRefOid": pr_head_sha,
+            "comments": [
+                {
+                    "user": {"login": "tticom-automation"},
+                    "body": f"Exact Head SHA: `{pr_head_sha}`\nAWAITING_GOVERNANCE_REVIEW",
+                }
+            ],
         }
 
     res = run_go_bootstrap(
@@ -307,7 +332,7 @@ def test_case_7_exact_pr_already_exists_mocked(temp_git_repos: dict[str, Path]) 
         product_path=local_prod,
         _skip_identity_check=True,
         _allow_custom_slug=True,
-        _gh_runner=mock_gh_runner,
+        _gh_runner=mock_gh_runner_with_handback,
     )
     assert res["state"] == "AWAITING_GOVERNANCE_REVIEW"
     assert res["pr_number"] == 391

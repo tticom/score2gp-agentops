@@ -40,7 +40,7 @@ def test_agy_project_skill_forbids_manual_state_reconstruction() -> None:
     assert "Do not manually query GitHub" in text
     assert "A status-only response is a dispatcher failure" in " ".join(text.split())
     assert "MERGED_AWAITING_GOVERNANCE_PROMOTION" in text
-    assert "Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize work" in text
+    assert "Only `EXECUTE_PROMPT`, `ADDRESS_CURRENT_PR_REVIEW`, and `PUBLISH_AGY_HANDBACK` authorize work" in text
     assert GOT_COMMAND in text
     assert "`REVIEW_CURRENT_HEAD`" in text
     assert "`PROMOTE_MERGED_TASK`" in text

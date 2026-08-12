@@ -23,7 +23,7 @@ On `ADDRESS_CURRENT_PR_REVIEW`, execute
 the returned review ID, commit ID, and body. A status-only response is a
 dispatcher failure. Stop on helper failure or missing review data.
 
-Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize work.
+Only `EXECUTE_PROMPT`, `ADDRESS_CURRENT_PR_REVIEW`, and `PUBLISH_AGY_HANDBACK` authorize work.
 `MERGED_AWAITING_GOVERNANCE_PROMOTION` is a terminal automation state: report
 it and stop without rerunning tests, re-verifying the merge, summarizing the
 completed task, creating a promotion, or taking any product action. All other
