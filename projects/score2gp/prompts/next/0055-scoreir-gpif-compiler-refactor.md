@@ -1,6 +1,6 @@
 # 0055 — Unified ScoreIR / GPIF Compiler Refactor & Binary Assembly Seam (CRP-12)
 
-Status: APPROVED
+Status: MERGED
 
 ## Objective
 
