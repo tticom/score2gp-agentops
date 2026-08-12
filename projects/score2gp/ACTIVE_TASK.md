@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 99 — Biomechanical Fretboard Position Optimizer & TAB Token Ownership (CRP-11)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
