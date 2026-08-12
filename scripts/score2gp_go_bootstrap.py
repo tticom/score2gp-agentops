@@ -183,7 +183,7 @@ def query_github_pr_state(declared_repo: str, pr_branch: str) -> dict[str, Any] 
                 "--head", pr_branch,
                 "--state", "all",
                 "--limit", "100",
-                "--json", "number,state,headRefOid",
+                "--json", "number,state,headRefOid,author",
             ],
             capture_output=True, text=True
         )
@@ -229,6 +229,19 @@ def run_go_bootstrap(
     _allow_custom_slug: bool = False,
     _gh_runner: Any = None,
 ) -> dict[str, Any]:
+    try:
+        from scripts.score2gp_got_bootstrap import (
+            find_current_head_handback,
+            find_latest_marked_author_handback,
+            query_pr_comments,
+        )
+    except ModuleNotFoundError:
+        from score2gp_got_bootstrap import (
+            find_current_head_handback,
+            find_latest_marked_author_handback,
+            query_pr_comments,
+        )
+
     agentops_path = Path(agentops_path).resolve()
     product_path = Path(product_path).resolve()
 
@@ -367,7 +380,10 @@ def run_go_bootstrap(
     pr_state = None
     pr_head_sha = None
     pr_number = None
+    pr_author = assigned_identity
+    pr_comments: list[dict[str, Any]] = []
     current_review = None
+    effective_repo = declared_repo
 
     if _gh_runner is not None:
         try:
@@ -376,6 +392,8 @@ def run_go_bootstrap(
                 pr_state = pr_info.get("state")
                 pr_head_sha = pr_info.get("headRefOid")
                 pr_number = pr_info.get("number")
+                pr_author = str((pr_info.get("author") or {}).get("login", "")) or assigned_identity
+                pr_comments = [c for c in pr_info.get("comments", []) if isinstance(c, dict)]
                 current_review = resolve_current_head_review(
                     pr_info.get("reviews", []), pr_head_sha, TRUSTED_REVIEWERS
                 ) if pr_head_sha else None
@@ -393,12 +411,17 @@ def run_go_bootstrap(
             pr_number = pr_info.get("number")
             pr_state = pr_info.get("state")
             pr_head_sha = pr_info.get("headRefOid")
+            pr_author = str((pr_info.get("author") or {}).get("login", "")) or assigned_identity
             if pr_number and pr_head_sha:
                 current_review = resolve_current_head_review(
                     query_reviews(effective_repo, int(pr_number)),
                     pr_head_sha,
                     TRUSTED_REVIEWERS,
                 )
+                try:
+                    pr_comments = query_pr_comments(effective_repo, int(pr_number))
+                except Exception:
+                    pr_comments = []
 
     # A merged PR is historical evidence, not a branch-reconciliation target.
     # The task branch may have been deleted, or a local copy may legitimately
@@ -535,6 +558,9 @@ def run_go_bootstrap(
                 )
 
     # Phase 7: Machine-Actionable Dispatch Decision
+    author_handback = None
+    rejected_author_handback = None
+
     if pr_state == "MERGED":
         state = resolve_merged_task_state(task_status)
     elif pr_state == "CLOSED":
@@ -546,7 +572,16 @@ def run_go_bootstrap(
         elif verdict == "APPROVED":
             state = "READY_FOR_HUMAN_MERGE"
         else:
-            state = "AWAITING_GOVERNANCE_REVIEW"
+            author_handback = find_current_head_handback(
+                pr_comments, head=selected_sha, author=pr_author
+            )
+            if author_handback is not None:
+                state = "AWAITING_GOVERNANCE_REVIEW"
+            else:
+                rejected_author_handback = find_latest_marked_author_handback(
+                    pr_comments, author=pr_author
+                )
+                state = "PUBLISH_AGY_HANDBACK"
     else:
         if task_status in EXECUTABLE_TASK_STATUSES:
             state = "EXECUTE_PROMPT"
@@ -574,8 +609,18 @@ def run_go_bootstrap(
         "selected_branch": selected_branch,
         "pr_number": pr_number,
         "current_review": current_review,
+        "author_handback": author_handback,
     }
-    if state == "MERGED_AWAITING_GOVERNANCE_PROMOTION":
+    if state == "PUBLISH_AGY_HANDBACK":
+        result["rejected_author_handback"] = rejected_author_handback
+        result["next_action"] = {
+            "command": "publish_handback",
+            "expected_head": selected_sha,
+            "repo": effective_repo if 'effective_repo' in locals() else declared_repo,
+            "pr_number": pr_number,
+            "action": "Reconstruct, publish, and read back the exact-head author handback receipt.",
+        }
+    elif state == "MERGED_AWAITING_GOVERNANCE_PROMOTION":
         expected_state = (
             "PROMOTE_RESOLVED_TASK"
             if task_status.upper() == "RESOLVED"

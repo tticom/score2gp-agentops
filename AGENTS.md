@@ -23,8 +23,9 @@ bypass the router by calling the other role's helper. Treat its JSON as
 authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
-formal review ID, commit ID, and body. Fail closed if the helper fails.
-Only `EXECUTE_PROMPT` and `ADDRESS_CURRENT_PR_REVIEW` authorize task actions.
+formal review ID, commit ID, and body. `PUBLISH_AGY_HANDBACK` means execute
+`scripts/score2gp_publish_handback.py` (or the returned `next_action`) to reconstruct, publish, and read back the exact-head author handback receipt. Fail closed if the helper fails.
+Only `EXECUTE_PROMPT`, `ADDRESS_CURRENT_PR_REVIEW`, and `PUBLISH_AGY_HANDBACK` authorize task actions.
 For `MERGED_AWAITING_GOVERNANCE_PROMOTION`, report the state and stop without
 rerunning, re-verifying, or summarizing the completed task. Also report the
 returned `next_action`: governance must run `got`, which dispatches

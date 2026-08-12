@@ -257,7 +257,7 @@ def find_current_head_handback(
         body = str(comment.get("body", ""))
         login = str((comment.get("user") or {}).get("login", ""))
         if (
-            login == author
+            (login == author or (author == "tticom-automation" and login == "tticom"))
             and head in body
             and any(marker in body for marker in HANDOFF_MARKERS)
         ):
@@ -276,7 +276,10 @@ def find_latest_marked_author_handback(
     for comment in comments:
         body = str(comment.get("body", ""))
         login = str((comment.get("user") or {}).get("login", ""))
-        if login == author and any(marker in body for marker in HANDOFF_MARKERS):
+        if (
+            (login == author or (author == "tticom-automation" and login == "tticom"))
+            and any(marker in body for marker in HANDOFF_MARKERS)
+        ):
             eligible.append(comment)
     if not eligible:
         return None
