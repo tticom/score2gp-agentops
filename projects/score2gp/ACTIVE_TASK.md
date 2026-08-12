@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 98 — Musical Timeline Replacement (CRP-10)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
