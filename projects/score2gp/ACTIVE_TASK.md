@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 100 — Unified ScoreIR / GPIF Compiler Refactor & Binary Assembly Seam (CRP-12)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
