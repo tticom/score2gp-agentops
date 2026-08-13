@@ -75,10 +75,11 @@ local task state, chat, and issue comments do not count.
   changed paths, active authority, risk markers, and earlier-head reviews:
   - `code-review` / BASIC only for genuinely low-risk documentation;
   - `hard-review` for code, tests, fixtures, executable scripts, domain data,
-    generated artifacts, or empirical claims;
-  - `devils-advocate-review` for AgentOps/control-plane changes,
-    architecture/research, conversion correctness, or any re-review after a
-    trusted review on an earlier head.
+    generated artifacts, empirical claims, AgentOps/control-plane changes, or
+    governance/architecture research;
+  - `devils-advocate-review` for production code changes involving
+    architecture, conversion correctness, or any re-review after a
+    trusted review on an earlier head. (Never applies to governance changes).
   A task declaration or current maintainer request may escalate this level but
   may never weaken it. `real review` means `devils-advocate-review`.
   The dispatcher also returns `review_publisher_path` from the same immutable
