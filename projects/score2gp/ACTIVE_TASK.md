@@ -1,37 +1,35 @@
 # Active Task
 
-**Task**: Task 102 — Port and Harmonize Barline Detection & Geometry Cleanup (CRP-01)
-**Status**: MERGED
-**Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Task**: Task 103 — Remediation 01: Governance Assessment on Review Skills Failure
+**Status**: PROMOTED
+**Assigned Identity**: tticom-codex
+**Authorised Role**: Reviewer / Governance
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/crp-01-barline-detection-harmonization`
+**PR Branch**: `agy/remediation-01-governance-assessment`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0044-m6-port-and-harmonize-barline-detection.md`
+**Original Prompt**: `projects/score2gp/prompts/next/remediation-01-governance-assessment.md`
 
 ## Context
 
-Task 101 completed the architecture review and migration mapping. CRP-01 is the first unblocked implementation task on the migration map.
+The Devil's Advocate review on `main` HEAD discovered that recent implementations from CRP-10, CRP-11, and CRP-12 introduced severe architectural regressions and silent data corruption fallbacks despite a "green" test suite. The governance loop and specifically the `devils-advocate-review` skill is supposed to prevent this from happening. 
 
 ## Goal
 
-Port valid barline detection thresholds from PR 418 into `src/score2gp/pdf.py`, revert the `outer_tolerance = 300.0` geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.
+Perform a governance assessment on why the `devils-advocate-review` skill failed to catch these P1 issues during the review of CRP-10, 11, and 12. 
+Identify gaps in the current review prompts, test execution rules, and evidence verification mechanisms. 
+Propose concrete amendments to `projects/score2gp/REVIEW_RULES.md` and the `devils-advocate-review` skill to prevent silent fallbacks and mock-only evidence from ever passing a review again.
 
 ## Allowed Files
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_staff_notation_diagnostics.py`
-- `tests/test_pdf_geometry_candidate_extractor.py`
-- `tests/test_pdf.py`
+- `projects/score2gp/REVIEW_RULES.md`
+- `.agents/skills/devils-advocate-review/SKILL.md` (or equivalent review skill prompt)
+- `.agents/skills/score2gp-project-director/SKILL.md`
 
 ## Non-goals
 
-- Do not implement page-continuous measure indexing (handled in CRP-03).
-- Do not lock 5-line notation barlines to 6-line TAB barlines (handled in CRP-02).
+- Do not fix the product codebase regressions in this task; this is strictly a governance control plane amendment.
 
 ## Acceptance
 
-- `pytest tests/test_pdf_geometry_candidate_extractor.py` and `pytest tests/test_pdf.py` pass cleanly.
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf` increases extracted notation bar boxes on `Lesson-5.pdf` from 31 (on main) to 41 across 12 systems without triggering 300pt snapping hacks.
-- Held-out real-source probe on `fixtures/private/Lesson-6.pdf` increases extracted notation bar boxes from 13 (on main) to 40 across 10 systems without snapping hacks.
-- `python3 scripts/agent_verify.py` passes with zero regression.
+- A root-cause analysis artifact explaining how the review process failed.
+- Specific proposed updates to governance review rules.
