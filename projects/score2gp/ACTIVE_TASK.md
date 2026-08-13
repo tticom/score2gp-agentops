@@ -1,37 +1,27 @@
 # Active Task
 
-**Task**: Task 103 — Remediation 01: Governance Assessment on Review Skills Failure
-**Status**: MERGED
+**Task**: Task 104 — Remediation 02: Research Unowned Notes / Hand Position
+**Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Governance Author / Researcher
-**Repository**: tticom/score2gp-agentops
-**PR Branch**: `agy/remediation-01-governance-assessment`
+**Authorised Role**: Developer
+**Repository**: tticom/score2gp
+**PR Branch**: `feat/remediation-02-unowned-notes-research`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/remediation-01-governance-assessment.md`
+**Original Prompt**: `projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md`
 
 ## Context
 
-The Devil's Advocate review on `main` HEAD discovered that recent implementations from CRP-10, CRP-11, and CRP-12 introduced severe architectural regressions and silent data corruption fallbacks despite a "green" test suite. The governance loop and specifically the `devils-advocate-review` skill is supposed to prevent this from happening. 
+The `ScoreIRCompiler` currently fails on "unowned notes", and CRP-12 papered over this by silently injecting a fake `(string=1, fret=0)` note, producing musically corrupt output. A system that simply fails on unowned notes is useless; we must understand and fix what is *causing* notes to be unowned in the first place.
+
+Additionally, the `BiomechanicalPositionOptimizer` assumes sequential hand jumps, but musicians play chords as single hand shapes, and some musicians move around the fretboard more than others. We need to determine if recording explicit hand positions is actually necessary or if we should rely solely on the explicit TAB fret/string evidence.
 
 ## Goal
 
-Perform a governance assessment on why the `devils-advocate-review` skill failed to catch these P1 issues during the review of CRP-10, 11, and 12. 
-Identify gaps in the current review prompts, test execution rules, and evidence verification mechanisms. 
-Propose concrete amendments to `projects/score2gp/REVIEW_RULES.md` and the `devils-advocate-review` skill to prevent silent fallbacks and mock-only evidence from ever passing a review again.
-
-## Allowed Files
-
-- `projects/score2gp/REVIEW_RULES.md`
-- `projects/score2gp/reports/2026-08-13-review-skills-failure-assessment.md`
-
-## Non-goals
-
-- Do not fix the product codebase regressions in this task; this is strictly a governance control plane amendment.
+1. **Fix Unowned Notes Bug**: Trace the lifecycle of a note from OMR evidence through the compiler to identify why notes are arriving at the compiler without valid TAB string/fret ownership. Fix the bug at its source (likely in the fusion or extraction layer) so that the compiler does not receive unowned notes, and remove the synthetic `(string=1, fret=0)` injection fallback.
+2. **Research Hand Positions**: Conduct research and document a design decision on whether it is strictly necessary to infer and record physical hand positions, or if we can rely entirely on the provided explicit TAB data.
 
 ## Acceptance
 
-- A root-cause analysis artifact explaining how the review process failed.
-- Specific proposed updates to governance review rules.
-- Proposed reusable `devils-advocate-review` skill changes are documented for
-  a separate `agy-skills` task and PR; this task must not edit another
-  repository implicitly.
+- The root cause of unowned notes is identified and fixed upstream.
+- The `ScoreIRCompiler` strictly refuses synthetic generation and throws a clear, actionable error if it ever receives an unowned note.
+- An architectural decision record (ADR) or research note answering whether recording hand positions is necessary, taking into account varying musician styles and chord shapes.
