@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 101 — Conversion Recovery Evidence Adjudication and Architecture Review
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect and Researcher
 **Repository**: tticom/score2gp
