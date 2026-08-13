@@ -8,6 +8,9 @@ The reviewer/architect agent must act first as a **sceptical reviewer**, not as 
 
 - **Default Stance**: Sceptical. Assume the implementation has introduced subtle regressions, silent coordinate bypasses, or brittle heuristics until verified otherwise.
 - **Passing Tests Are Insufficient**: A PR with 100% green passing tests can still be wrong. The tests might assert implementation copies rather than exercising the production path.
+- **Skipped Tests Are NOT Passes**: A skipped test (e.g., due to missing private fixtures) is `NOT_EVALUATED` and can never be treated as a pass. A PR relying on skipped tests must be blocked.
+- **Mocks Are Not Evidence**: Mock-only test suites cannot prove integration behaviour. Real-world private fixtures must be used for semantic validation.
+- **No Silent Fallbacks**: Components claiming strict constraints must fail-closed with exceptions. Silent data injection (e.g., `padding_rest`, dummy `string=1, fret=0` notes) or silent truncation completely invalidates the implementation.
 - **Diagnostics Are Insufficient**: A PR with more diagnostics can still be wrong. Scaffolding is not correctness.
 - **GP File Existence Is Insufficient**: A PR that successfully writes GP files can still be wrong. File existence is not conversion success.
 - **Local Metric Improvement Is Insufficient**: A PR that improves one private metric while worsening or invalidating other benchmarks can still be wrong.
@@ -150,9 +153,9 @@ final ScoreIR/GPIF output, not merely that a package exists. Fail-closed
 behavior requires an input that triggers rejection and an assertion on the
 specific rejection category.
 
-Successful execution, file existence, parseability, generic exception checks,
+Successful execution, file existence, non-zero file size, parseability, generic exception checks,
 and checks for `object at 0x` are adjacent signals. They cannot prove path
-sanitization or semantic correctness. A claim/oracle scope mismatch blocks
+sanitization or semantic correctness. Checks for mere file existence or `size > 0` are banned as proof of semantic correctness. A claim/oracle scope mismatch blocks
 approval.
 
 The default working verdict is `needs changes`. The burden of proof belongs to
