@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 103 — Remediation 01: Governance Assessment on Review Skills Failure
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Governance Author / Researcher
 **Repository**: tticom/score2gp-agentops
