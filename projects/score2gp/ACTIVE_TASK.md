@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 102 — Port and Harmonize Barline Detection & Geometry Cleanup (CRP-01)
-**Status**: PROMOTED
+**Status**: MERGED
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
