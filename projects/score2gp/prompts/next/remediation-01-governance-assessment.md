@@ -1,9 +1,9 @@
 # Remediation 01 — Governance Assessment on Review Skills Failure
 
-Status: SKELETON
+Status: APPROVED
 
 ## Role
-tticom-codex (Reviewer / Governance)
+tticom-automation (Governance Author / Researcher)
 
 ## Context
 The Devil's Advocate review on `main` HEAD (`7de1d0b`) discovered that recent implementations from CRP-10, CRP-11, and CRP-12 introduced severe architectural regressions and silent data corruption fallbacks despite a "green" test suite. The governance loop and specifically the `devils-advocate-review` skill is supposed to prevent this from happening. 
@@ -19,6 +19,17 @@ Perform a governance assessment on why the `devils-advocate-review` skill failed
 Identify gaps in the current review prompts, test execution rules, and evidence verification mechanisms. 
 Propose concrete amendments to `projects/score2gp/REVIEW_RULES.md` and the `devils-advocate-review` skill to prevent silent fallbacks and mock-only evidence from ever passing a review again.
 
+This task is authored in `tticom/score2gp-agentops`. Amend Score2GP's project
+review rules and publish the assessment report here. Specify reusable
+`devils-advocate-review` changes as a follow-up proposal only; changing the
+shared skill requires a separate authorised task and PR in `agy-skills`.
+
+## Allowed Files
+- `projects/score2gp/REVIEW_RULES.md`
+- `projects/score2gp/reports/2026-08-13-review-skills-failure-assessment.md`
+
 ## Acceptance
 - A root-cause analysis artifact explaining how the review process failed.
 - Specific proposed updates to governance review rules.
+- A bounded follow-up specification for reusable review-skill changes, without
+  cross-repository edits in this task.

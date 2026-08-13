@@ -2,9 +2,9 @@
 
 **Task**: Task 103 — Remediation 01: Governance Assessment on Review Skills Failure
 **Status**: PROMOTED
-**Assigned Identity**: tticom-codex
-**Authorised Role**: Reviewer / Governance
-**Repository**: tticom/score2gp
+**Assigned Identity**: tticom-automation
+**Authorised Role**: Governance Author / Researcher
+**Repository**: tticom/score2gp-agentops
 **PR Branch**: `agy/remediation-01-governance-assessment`
 **Pull Request**: `none`
 **Original Prompt**: `projects/score2gp/prompts/next/remediation-01-governance-assessment.md`
@@ -22,8 +22,7 @@ Propose concrete amendments to `projects/score2gp/REVIEW_RULES.md` and the `devi
 ## Allowed Files
 
 - `projects/score2gp/REVIEW_RULES.md`
-- `.agents/skills/devils-advocate-review/SKILL.md` (or equivalent review skill prompt)
-- `.agents/skills/score2gp-project-director/SKILL.md`
+- `projects/score2gp/reports/2026-08-13-review-skills-failure-assessment.md`
 
 ## Non-goals
 
@@ -33,3 +32,6 @@ Propose concrete amendments to `projects/score2gp/REVIEW_RULES.md` and the `devi
 
 - A root-cause analysis artifact explaining how the review process failed.
 - Specific proposed updates to governance review rules.
+- Proposed reusable `devils-advocate-review` skill changes are documented for
+  a separate `agy-skills` task and PR; this task must not edit another
+  repository implicitly.
