@@ -1,37 +1,35 @@
 # Active Task
 
-**Task**: Task 100 — Unified ScoreIR / GPIF Compiler Refactor & Binary Assembly Seam (CRP-12)
-**Status**: MERGED
+**Task**: Task 101 — Conversion Recovery Evidence Adjudication and Architecture Review
+**Status**: PROMOTED
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Authorised Role**: Architect and Researcher
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/crp-12-scoreir-gpif-compiler-refactor`
+**PR Branch**: `agy/conversion-recovery-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/0055-scoreir-gpif-compiler-refactor.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md`
 
 ## Context
 
-Task 99 (CRP-11) implemented biomechanical position optimization and fret token ownership in `src/score2gp/notation_omr/position_optimizer.py`.
-Task 100 (CRP-12) is the twelfth stage of the Conversion Recovery Programme. It refactors the ScoreIR and GPIF compilation pipeline to compile locked timelines, tuplet durations, and fretboard position assignments into valid `.gp` binary outputs.
+The master diagnosis concludes that Score2GP can either refuse real inputs or write musically corrupt output while a large synthetic test suite remains green. Several source reports conflict, and six related PRs are still open. Product main is not identical to any proposed workaround branch.
 
 ## Goal
 
-Implement `tests/test_scoreir_gpif_compiler_refactor.py` and refine `src/score2gp/scoreir_compiler.py` and `src/score2gp/gpif_builder.py` to compile OMR evidence into valid ScoreIR and GPIF structures.
+Produce a full, evidence-backed recovery architecture and migration decision that adjudicates every material contradiction, traces the current call graph, defines deep target modules, identifies preservation and research needs, defines a real-source-only testing architecture, and selects bounded downstream research and implementation slices.
 
 ## Allowed Files
 
-- `src/score2gp/scoreir_compiler.py`
-- `src/score2gp/gpif_builder.py`
-- `tests/test_scoreir_gpif_compiler_refactor.py`
+- `docs/design/2026-08-09-conversion-recovery-architecture.md`
+- `docs/design/2026-08-09-real-source-testing-architecture.md`
+- `docs/design/2026-08-09-conversion-module-migration-map.md`
 
 ## Non-goals
 
-- Do not introduce synthetic measures or unevidenced note events.
-- Do not pass reference `.gp` files to the compiler.
-- Do not bypass timing or capacity validation during compilation.
+- No source, test, fixture, dependency, workflow, schema, or generated artifact may be changed.
 
 ## Acceptance
 
-- `pytest tests/test_scoreir_gpif_compiler_refactor.py` passes cleanly and verifies ScoreIR/GPIF compilation and binary assembly invariants.
-- `python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-6.pdf` produces valid `.gp` output binaries.
-- `python3 scripts/agent_verify.py` passes with zero regression.
+- Every non-obvious claim has exact repository or primary-source support.
+- Every material report contradiction is resolved or explicitly blocks a task.
+- The migration map contains an implementation-ready first-prompt specification.
+- Product verification and artifact audit pass with docs-only changes.
