@@ -1,27 +1,24 @@
 # Active Task
 
-**Task**: Task 104 — Remediation 02: Research Unowned Notes / Hand Position
+**Task**: Task 105 — Conversion Recovery Architecture Review (CRP-00 & CRP-01)
 **Status**: PROMOTED
-**Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Assigned Identity**: tticom-codex
+**Authorised Role**: Architect
 **Repository**: tticom/score2gp
-**PR Branch**: `feat/remediation-02-unowned-notes-research`
+**PR Branch**: `agy/conversion-recovery-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md`
+**Original Prompt**: `projects/score2gp/prompts/next/0043-conversion-recovery-architecture-review.md`
 
 ## Context
 
-The `ScoreIRCompiler` currently fails on "unowned notes", and CRP-12 papered over this by silently injecting a fake `(string=1, fret=0)` note, producing musically corrupt output. A system that simply fails on unowned notes is useless; we must understand and fix what is *causing* notes to be unowned in the first place.
-
-Additionally, the `BiomechanicalPositionOptimizer` assumes sequential hand jumps, but musicians play chords as single hand shapes, and some musicians move around the fretboard more than others. We need to determine if recording explicit hand positions is actually necessary or if we should rely solely on the explicit TAB fret/string evidence.
+The master diagnosis concludes that Score2GP can either refuse real inputs or write musically corrupt output while a large synthetic test suite remains green. Several source reports conflict, and six related PRs are still open. Product main is not identical to any proposed workaround branch.
 
 ## Goal
 
-1. **Fix Unowned Notes Bug**: Trace the lifecycle of a note from OMR evidence through the compiler to identify why notes are arriving at the compiler without valid TAB string/fret ownership. Fix the bug at its source (likely in the fusion or extraction layer) so that the compiler does not receive unowned notes, and remove the synthetic `(string=1, fret=0)` injection fallback.
-2. **Research Hand Positions**: Conduct research and document a design decision on whether it is strictly necessary to infer and record physical hand positions, or if we can rely entirely on the provided explicit TAB data.
+Produce a full, evidence-backed recovery architecture and migration decision that adjudicates every material contradiction, traces the current conversion call graph, defines deep target modules, and identifies a real-source-only testing architecture.
 
 ## Acceptance
 
-- The root cause of unowned notes is identified and fixed upstream.
-- The `ScoreIRCompiler` strictly refuses synthetic generation and throws a clear, actionable error if it ever receives an unowned note.
-- An architectural decision record (ADR) or research note answering whether recording hand positions is necessary, taking into account varying musician styles and chord shapes.
+- Every non-obvious claim has exact repository or primary-source support.
+- Every material report contradiction is resolved or explicitly blocks a task.
+- The migration map contains an implementation-ready first-prompt specification.

@@ -2874,3 +2874,26 @@ Prompt skeletons:
 - prompts `0050–0056` in the conversion-recovery series.
 
 No skeleton is executable until all TBD_FROM fields are replaced from accepted upstream evidence and it is separately promoted to `ACTIVE_TASK.md`.
+
+---
+
+## Task 105 — Conversion Recovery Architecture Review (CRP-00 & CRP-01)
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+agy/conversion-recovery-architecture
+
+PR title:
+docs(design): conversion recovery architecture and PR disposition
+
+Purpose:
+Execute prompt 0043 to adjudicate conflicting reports, disposition open PRs, trace the current architecture, and design the target migration map for real-source conversion recovery.
+
+Likely product files:
+- docs/design/2026-08-09-conversion-recovery-architecture.md
+- docs/design/2026-08-09-real-source-testing-architecture.md
+- docs/design/2026-08-09-conversion-module-migration-map.md
+
