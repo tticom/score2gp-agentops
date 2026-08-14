@@ -5,8 +5,8 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp
-**PR Branch**: `agy/remediation-03-chord-recognition-architecture`
-**Pull Request**: `none`
+**PR Branch**: `agy/remediation-03-chord-recognition-architecture-v2`
+**Pull Request**: `439`
 **Original Prompt**: `projects/score2gp/prompts/next/remediation-03-chord-recognition-fix.md`
 
 ## Context
