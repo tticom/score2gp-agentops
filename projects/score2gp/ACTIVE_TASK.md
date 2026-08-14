@@ -1,6 +1,6 @@
 # Active Task
 
-**Task**: Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
+**Task**: Task 106 — Remediation 03: Chord Recognition Implementation
 **Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
@@ -10,20 +10,15 @@
 **Original Prompt**: `projects/score2gp/prompts/next/remediation-03-chord-recognition-fix.md`
 
 ## Context
-The `TopologicallyLockedBarTimeline` from CRP-10 currently fails to correctly recognize chords. Instead of enforcing true capacity invariants, it silently truncates overlapping same-voice notes and pads misaligned measures with synthetic `padding_rest` data. This indicates that the system still cannot accurately recognize chords and is applying partition hacks to force the output into a valid state. 
-
-Because we do not want to rely on an inferred implementation that might introduce new destructive hacks, we must first design the proper deterministic chord grouping algorithm.
+The architecture for proper chord recognition and capacity validation has been defined in an ADR. The `TopologicallyLockedBarTimeline` currently uses destructive partition hacks that mask OMR alignment errors.
 
 ## Goal
-Conduct architectural research on how to implement proper chord recognition in `TopologicallyLockedBarTimeline` without relying on silent truncation or synthetic `padding_rest` injection.
-
-1. Investigate how `TopologicallyLockedBarTimeline` currently processes overlapping notes.
-2. Determine how true OMR evidence represents simultaneous notes.
-3. Design a deterministic algorithm for grouping simultaneous notes into chords without relying on `padding_rest` or truncation.
-4. Document the design in an Architectural Decision Record (ADR).
-5. Outline the concrete implementation steps in a downstream prompt for the Developer.
+Implement the deterministic chord grouping algorithm and strict capacity validation as defined in the ADR and prompt.
 
 ## Acceptance
-- An ADR is published detailing the deterministic chord grouping algorithm based on real OMR evidence.
-- A concrete, non-skeleton implementation prompt is prepared for the Developer role.
-- No product code is modified during this architectural phase.
+- The `TopologicallyLockedBarTimeline` preserves OMR evidence natively and groups identical chords.
+- Unequal durations at the same start tick are rejected.
+- Rest/note collisions at the same start tick are rejected.
+- No synthetic `padding_rest` events are injected; short measures trigger `invalid = True`.
+- `musicxml_generator.py` refuses to generate XML for invalid measures.
+- Existing tests are updated and pass.
