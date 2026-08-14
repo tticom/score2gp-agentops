@@ -2874,3 +2874,25 @@ Prompt skeletons:
 - prompts `0050–0056` in the conversion-recovery series.
 
 No skeleton is executable until all TBD_FROM fields are replaced from accepted upstream evidence and it is separately promoted to `ACTIVE_TASK.md`.
+
+---
+
+## Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
+
+Status: ACTIVE
+
+Owning repo: score2gp
+
+Branch:
+agy/remediation-03-chord-recognition-architecture
+
+PR title:
+docs(design): chord recognition architecture and capacity hacks fix
+
+Purpose:
+Conduct architectural research on how to implement proper chord recognition in `TopologicallyLockedBarTimeline` without relying on silent truncation or synthetic `padding_rest` injection. Publish an ADR and prepare a concrete implementation prompt for the developer.
+
+Likely product files:
+- docs/design/2026-08-14-chord-recognition-architecture.md
+
+
