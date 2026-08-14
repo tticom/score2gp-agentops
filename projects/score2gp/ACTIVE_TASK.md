@@ -5,8 +5,8 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Governance Author / Researcher
 **Repository**: tticom/score2gp-agentops
-**PR Branch**: 
-**Pull Request**: 
+**PR Branch**: feat/remediation-01-governance-assessment
+**Pull Request**: 563
 **Original Prompt**: \projects/score2gp/prompts/next/remediation-01-governance-assessment.md\
 
 ## Context
