@@ -1,22 +1,22 @@
-# Remediation 03 — Chord Recognition Architecture and Capacity Hacks Fix
+# Remediation 03 — Chord Recognition Implementation
 
-Status: READY_FOR_GOVERNANCE_PROMOTION
+Status: ACTIVE
 
 ## Context
-The `TopologicallyLockedBarTimeline` from CRP-10 currently fails to correctly recognize chords. Instead of enforcing true capacity invariants, it silently truncates overlapping same-voice notes and pads misaligned measures with synthetic `padding_rest` data. This indicates that the system still cannot accurately recognize chords and is applying partition hacks to force the output into a valid state. 
-
-Because we do not want to rely on an inferred implementation that might introduce new destructive hacks, we must first design the proper deterministic chord grouping algorithm.
+The architecture for proper chord recognition and capacity validation has been defined in `docs/design/2026-08-14-chord-recognition-architecture-v2.md`. The `TopologicallyLockedBarTimeline` currently uses destructive partition hacks (silent duration truncation and `padding_rest` injection) that mask OMR alignment errors.
 
 ## Goal
-Conduct architectural research on how to implement proper chord recognition in `TopologicallyLockedBarTimeline` without relying on silent truncation or synthetic `padding_rest` injection.
+Implement the deterministic chord grouping algorithm and strict capacity validation as defined in the ADR.
 
-1. Investigate how `TopologicallyLockedBarTimeline` currently processes overlapping notes.
-2. Determine how true OMR evidence represents simultaneous notes.
-3. Design a deterministic algorithm for grouping simultaneous notes into chords without relying on `padding_rest` or truncation.
-4. Document the design in an Architectural Decision Record (ADR).
-5. Outline the concrete implementation steps in a downstream prompt for the Developer.
+1. **Remove Hacks**: Remove the nested loops in `TopologicallyLockedBarTimeline` that dynamically shrink `duration_ticks` when overlapping with `start_tick`. Also remove the logic that injects `padding_rest` when the cursor falls short of the measure duration.
+2. **Strict Chord Equivalence**: Group candidates into a chord if and only if they share the exact same `voice`, `start_tick`, and `duration_ticks`. 
+3. **Invalidate on Polyphony/Conflict**: If notes share a `start_tick` and `voice` but have unequal `duration_ticks`, the timeline must explicitly refuse to process them as a single-voice chord. Set `invalid = True` on the timeline object and leave the `events` ledger unaltered.
+4. **Invalidate on Capacity Mismatch**: If the final cursor position does not exactly equal `D_measure`, or if there is an explicit overlap between distinct time slices, set `invalid = True`.
+5. **Consumer Refusal**: Update downstream consumers (such as `musicxml_generator.py`) to explicitly refuse to compile invalid measures by throwing a capacity mismatch error rather than silently repairing them.
 
 ## Acceptance
-- An ADR is published detailing the deterministic chord grouping algorithm based on real OMR evidence.
-- A concrete, non-skeleton implementation prompt is prepared for the Developer role.
-- No product code is modified during this architectural phase.
+- The `TopologicallyLockedBarTimeline` preserves OMR evidence natively and groups identical chords.
+- Unequal durations at the same start tick are rejected and trigger `invalid = True`.
+- No synthetic `padding_rest` events are injected; short measures trigger `invalid = True`.
+- `musicxml_generator.py` refuses to generate XML for invalid measures.
+- Existing tests (e.g. `test_musical_timeline_replacement.py`) are updated to expect `invalid = True` instead of padding/truncation, and new tests prove strict chord behavior.
