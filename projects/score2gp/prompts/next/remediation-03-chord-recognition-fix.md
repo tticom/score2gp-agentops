@@ -10,7 +10,7 @@ Implement the deterministic chord grouping algorithm and strict capacity validat
 
 1. **Remove Hacks**: Remove the nested loops in `TopologicallyLockedBarTimeline` that dynamically shrink `duration_ticks` when overlapping with `start_tick`. Also remove the logic that injects `padding_rest` when the cursor falls short of the measure duration.
 2. **Strict Chord Equivalence**: Group candidates into a chord if and only if they share the exact same `voice`, `start_tick`, and `duration_ticks`. 
-3. **Invalidate on Polyphony/Conflict**: If notes share a `start_tick` and `voice` but have unequal `duration_ticks`, the timeline must explicitly refuse to process them as a single-voice chord. Set `invalid = True` on the timeline object and leave the `events` ledger unaltered.
+3. **Invalidate on Polyphony/Conflict**: If notes share a `start_tick` and `voice` but have unequal `duration_ticks` or mismatched `is_rest` types (e.g. a note and a rest), the timeline must explicitly refuse to process them as a single-voice chord. Set `invalid = True` on the timeline object and leave the `events` ledger unaltered.
 4. **Invalidate on Capacity Mismatch**: If the final cursor position does not exactly equal `D_measure`, or if there is an explicit overlap between distinct time slices, set `invalid = True`.
 5. **Consumer Refusal**: Update downstream consumers (such as `musicxml_generator.py`) to explicitly refuse to compile invalid measures by throwing a capacity mismatch error rather than silently repairing them.
 
