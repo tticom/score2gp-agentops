@@ -1,24 +1,21 @@
 # Active Task
 
-**Task**: Task 106 — Remediation 03: Chord Recognition Implementation
-**Status**: PR_OPEN
+**Task**: Task 107 — Remediation 01: Governance Assessment on Review Skills Failure
+**Status**: IN_PROGRESS
 **Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
-**Repository**: tticom/score2gp
-**PR Branch**: feat/remediation-03-chord-recognition
-**Pull Request**: 440
-**Original Prompt**: `projects/score2gp/prompts/next/remediation-03-chord-recognition-fix.md`
+**Authorised Role**: Governance Author / Researcher
+**Repository**: tticom/score2gp-agentops
+**PR Branch**: 
+**Pull Request**: 
+**Original Prompt**: \projects/score2gp/prompts/next/remediation-01-governance-assessment.md\
 
 ## Context
-The architecture for proper chord recognition and capacity validation has been defined in an ADR. The `TopologicallyLockedBarTimeline` currently uses destructive partition hacks that mask OMR alignment errors.
+The Devil's Advocate review discovered that recent implementations from CRP-10, CRP-11, and CRP-12 introduced severe architectural regressions and silent data corruption fallbacks despite a 'green' test suite. The governance loop and specifically the \devils-advocate-review\ skill is supposed to prevent this.
 
 ## Goal
-Implement the deterministic chord grouping algorithm and strict capacity validation as defined in the ADR and prompt.
+Perform a governance assessment on why the \devils-advocate-review\ skill failed. Propose concrete amendments to \projects/score2gp/REVIEW_RULES.md\ and the \devils-advocate-review\ skill.
 
 ## Acceptance
-- The `TopologicallyLockedBarTimeline` preserves OMR evidence natively and groups identical chords.
-- Unequal durations at the same start tick are rejected.
-- Rest/note collisions at the same start tick are rejected.
-- No synthetic `padding_rest` events are injected; short measures trigger `invalid = True`.
-- `musicxml_generator.py` refuses to generate XML for invalid measures.
-- Existing tests are updated and pass.
+- A root-cause analysis artifact explaining how the review process failed.
+- Specific proposed updates to governance review rules.
+- A bounded follow-up specification for reusable review-skill changes.
