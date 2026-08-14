@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
-**Status**: ACTIVE
+**Status**: IN_PROGRESS
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
