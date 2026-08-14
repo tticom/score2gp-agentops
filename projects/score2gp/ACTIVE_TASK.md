@@ -1,27 +1,29 @@
 # Active Task
 
-**Task**: Task 104 — Remediation 02: Research Unowned Notes / Hand Position
+**Task**: Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
 **Status**: PROMOTED
-**Assigned Identity**: tticom-automation
-**Authorised Role**: Developer
+**Assigned Identity**: tticom-codex
+**Authorised Role**: Architect
 **Repository**: tticom/score2gp
-**PR Branch**: `feat/remediation-02-unowned-notes-research`
+**PR Branch**: `agy/remediation-03-chord-recognition-architecture`
 **Pull Request**: `none`
-**Original Prompt**: `projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md`
+**Original Prompt**: `projects/score2gp/prompts/next/remediation-03-chord-recognition-fix.md`
 
 ## Context
+The `TopologicallyLockedBarTimeline` from CRP-10 currently fails to correctly recognize chords. Instead of enforcing true capacity invariants, it silently truncates overlapping same-voice notes and pads misaligned measures with synthetic `padding_rest` data. This indicates that the system still cannot accurately recognize chords and is applying partition hacks to force the output into a valid state. 
 
-The `ScoreIRCompiler` currently fails on "unowned notes", and CRP-12 papered over this by silently injecting a fake `(string=1, fret=0)` note, producing musically corrupt output. A system that simply fails on unowned notes is useless; we must understand and fix what is *causing* notes to be unowned in the first place.
-
-Additionally, the `BiomechanicalPositionOptimizer` assumes sequential hand jumps, but musicians play chords as single hand shapes, and some musicians move around the fretboard more than others. We need to determine if recording explicit hand positions is actually necessary or if we should rely solely on the explicit TAB fret/string evidence.
+Because we do not want to rely on an inferred implementation that might introduce new destructive hacks, we must first design the proper deterministic chord grouping algorithm.
 
 ## Goal
+Conduct architectural research on how to implement proper chord recognition in `TopologicallyLockedBarTimeline` without relying on silent truncation or synthetic `padding_rest` injection.
 
-1. **Fix Unowned Notes Bug**: Trace the lifecycle of a note from OMR evidence through the compiler to identify why notes are arriving at the compiler without valid TAB string/fret ownership. Fix the bug at its source (likely in the fusion or extraction layer) so that the compiler does not receive unowned notes, and remove the synthetic `(string=1, fret=0)` injection fallback.
-2. **Research Hand Positions**: Conduct research and document a design decision on whether it is strictly necessary to infer and record physical hand positions, or if we can rely entirely on the provided explicit TAB data.
+1. Investigate how `TopologicallyLockedBarTimeline` currently processes overlapping notes.
+2. Determine how true OMR evidence represents simultaneous notes.
+3. Design a deterministic algorithm for grouping simultaneous notes into chords without relying on `padding_rest` or truncation.
+4. Document the design in an Architectural Decision Record (ADR).
+5. Outline the concrete implementation steps in a downstream prompt for the Developer.
 
 ## Acceptance
-
-- The root cause of unowned notes is identified and fixed upstream.
-- The `ScoreIRCompiler` strictly refuses synthetic generation and throws a clear, actionable error if it ever receives an unowned note.
-- An architectural decision record (ADR) or research note answering whether recording hand positions is necessary, taking into account varying musician styles and chord shapes.
+- An ADR is published detailing the deterministic chord grouping algorithm based on real OMR evidence.
+- A concrete, non-skeleton implementation prompt is prepared for the Developer role.
+- No product code is modified during this architectural phase.
