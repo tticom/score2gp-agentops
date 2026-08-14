@@ -1,12 +1,12 @@
 # Active Task
 
 **Task**: Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
-**Status**: IN_PROGRESS
+**Status**: PR_OPEN
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Developer
 **Repository**: tticom/score2gp
-**PR Branch**: `none`
-**Pull Request**: `none`
+**PR Branch**: feat/remediation-03-chord-recognition
+**Pull Request**: 440
 **Original Prompt**: `projects/score2gp/prompts/next/remediation-03-chord-recognition-fix.md`
 
 ## Context
