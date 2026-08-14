@@ -2,7 +2,7 @@
 
 **Task**: Task 105 — Remediation 03: Chord Recognition Architecture and Capacity Hacks Fix
 **Status**: PROMOTED
-**Assigned Identity**: tticom-codex
+**Assigned Identity**: tticom-automation
 **Authorised Role**: Architect
 **Repository**: tticom/score2gp
 **PR Branch**: `agy/remediation-03-chord-recognition-architecture`
