@@ -1,6 +1,6 @@
 # Remediation 02 — Unowned Notes Bug Fix & Hand Position Research
 
-Status: SKELETON
+Status: ACTIVE
 
 ## Context
 The `ScoreIRCompiler` currently fails on "unowned notes", and CRP-12 papered over this by silently injecting a fake `(string=1, fret=0)` note, producing musically corrupt output. A system that simply fails on unowned notes is useless; we must understand and fix what is *causing* notes to be unowned in the first place.
