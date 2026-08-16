@@ -5,9 +5,9 @@
 **Assigned Identity**: tticom-automation
 **Authorised Role**: Author
 **Repository**: tticom/score2gp
-**PR Branch**: feat/remediation-02-unowned-notes
-**Pull Request**: TBD
-**Original Prompt**: \projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md\
+**PR Branch**: `feat/remediation-02-unowned-notes`
+**Pull Request**: 441
+**Original Prompt**: `projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md`
 
 ## Context
 The `ScoreIRCompiler` currently fails on "unowned notes", and CRP-12 papered over this by silently injecting a fake `(string=1, fret=0)` note, producing musically corrupt output. A system that simply fails on unowned notes is useless; we must understand and fix what is *causing* notes to be unowned in the first place.

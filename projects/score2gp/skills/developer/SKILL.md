@@ -12,6 +12,12 @@ The Developer must not widen scope, substitute a different architecture, tune be
 
 ## Mandatory inputs before implementation
 
+When Orca supplies a `score2gp_bounded_worker` assignment, it is the complete
+execution authority. Validate it against fresh live state before writing. Do
+not read queues to select work, promote a successor, reinterpret an incident,
+change role, create another worker, or merge. Return control to Orca after the
+completion contract is satisfied.
+
 Before making changes, the Developer must identify and report:
 - active task source;
 - exact requirement;
@@ -25,6 +31,10 @@ Before making changes, the Developer must identify and report:
 - files likely to change;
 - validation commands (rely on `scripts/agent_verify.py` as primary validation runner);
 - stop conditions.
+
+The assignment's `allowed_paths`, expected head SHA, allowed actions, forbidden
+actions, evidence list, and completion contract are mandatory inputs and may
+not be widened by this skill.
 
 If any mandatory input is missing or contradictory, the Developer must stop and report.
 Developers must start execution by running `python scripts/agent_verify.py` to establish the baseline status, and must stop immediately if `scripts/artifact_audit.py` fails (indicating dirty tracking boundary).

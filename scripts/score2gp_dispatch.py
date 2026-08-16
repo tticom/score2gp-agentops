@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Identity-aware Score2GP continuation dispatcher.
+"""Score2GP continuation dispatcher with Orca and legacy compatibility modes.
 
-The human command word is deliberately not authoritative. The isolated Linux
-worker identity selects the only role-specific bootstrap it may execute.
+Orca mode consumes a deterministic live snapshot and emits a bounded assignment.
+Legacy mode retains Linux-user routing during migration only.
 """
 from __future__ import annotations
 
 import argparse
 import getpass
+import json
 import os
 import subprocess
 import sys
@@ -60,7 +61,69 @@ def main() -> None:
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)
     parser.add_argument("--review-level")
+    parser.add_argument("--orca-role", choices=("implementation", "reviewer", "governance"))
+    parser.add_argument("--live", type=Path)
+    parser.add_argument("--github-login")
+    parser.add_argument("--legacy", action="store_true")
     args = parser.parse_args()
+
+    if args.orca_role:
+        if args.legacy:
+            raise DispatchError("--orca-role and --legacy are mutually exclusive")
+        if args.live is None or not args.github_login:
+            raise DispatchError("Orca dispatch requires --live and --github-login")
+        try:
+            from scripts.score2gp_orca_control import (
+                RuntimeIdentity,
+                ControlError,
+                authenticated_github_login,
+                build_assignment,
+                git_head,
+                load_json,
+                resolve_state,
+                validate_legacy_alignment,
+            )
+        except ModuleNotFoundError:
+            from score2gp_orca_control import (
+                RuntimeIdentity,
+                ControlError,
+                authenticated_github_login,
+                build_assignment,
+                git_head,
+                load_json,
+                resolve_state,
+                validate_legacy_alignment,
+            )
+        agentops = Path(args.agentops).resolve()
+        authority = load_json(agentops / "projects/score2gp/ORCHESTRATION_STATE.json")
+        validate_legacy_alignment(
+            authority,
+            (agentops / "projects/score2gp/ACTIVE_TASK.md").read_text(encoding="utf-8"),
+        )
+        live = load_json(args.live)
+        resolved = resolve_state(authority, live)
+        if resolved.get("dispatch_role") != args.orca_role:
+            raise DispatchError(
+                f"resolver requires role {resolved.get('dispatch_role') or '<none>'}, "
+                f"not {args.orca_role}; state={resolved['state']}"
+            )
+        login = authenticated_github_login()
+        if args.github_login != login:
+            raise DispatchError(
+                f"expected GitHub login {args.github_login}, authenticated as {login}"
+            )
+        try:
+            assignment = build_assignment(
+                authority,
+                live,
+                resolved,
+                RuntimeIdentity(getpass.getuser(), login),
+                git_head(agentops),
+            )
+        except ControlError as error:
+            raise DispatchError(str(error)) from error
+        print(json.dumps(assignment, indent=2, sort_keys=True))
+        return
 
     linux_user = getpass.getuser()
     if (args.review_repo is None) != (args.review_pr is None):

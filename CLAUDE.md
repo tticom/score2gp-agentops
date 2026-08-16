@@ -1,5 +1,14 @@
 # Score2GP executable command entrypoints
 
+## Orca-managed workers
+
+When Orca supplies a `score2gp_bounded_worker` assignment, validate and execute
+that assignment only. Do not run the legacy dispatcher, select another task,
+interpret incident history, change role, or merge. Return the exact-head
+handback to Orca, which must capture fresh state before any next dispatch.
+
+The commands below are compatibility entrypoints for direct non-Orca runs.
+
 For any request to continue, advance, run the next command, `go`, `got`, or
 `next`, the first task action must be:
 
