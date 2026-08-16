@@ -1,3 +1,8 @@
+"""Tests for the Orca control plane and state reducer.
+
+Rationale for synthetic/mocked tests:
+This test suite verifies the state resolution, validation, and merge gate logic of the Orca control plane (non-domain infrastructure). Since it relies on querying the GitHub API via the `gh` command-line utility, running real integration tests against GitHub during test execution would require active network access, API tokens with repository access, and live PR mutations. To ensure deterministic, offline, and fast test execution, the GitHub API calls and CLI executions are synthetically mocked. Real-world end-to-end integration and GitHub API schema checks are shadow-tested via actual manual runs and Orca supervisor pilot execution.
+"""
 from copy import deepcopy
 
 import pytest
@@ -7,6 +12,7 @@ from scripts.score2gp_orca_control import (
     RuntimeIdentity,
     build_assignment,
     capture_live_state,
+    current_head_review,
     resolve_state,
     validate_assignment,
     validate_legacy_alignment,
@@ -168,7 +174,7 @@ def test_snapshot_normalizes_github_facts(monkeypatch) -> None:
             "reviews": [{"author": {"login": "reviewer"}, "state": "CHANGES_REQUESTED", "commit": {"oid": "a" * 40}}],
             "statusCheckRollup": [{"name": "test", "conclusion": "SUCCESS"}],
         },
-        {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [{"isResolved": False}, {"isResolved": True}]}}}}},
+        {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [{"isResolved": False}, {"isResolved": True}], "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}},
         [{"id": 7, "enforcement": "active"}],
         {"id": 7, "current_user_can_bypass": "never"},
     ])
@@ -219,3 +225,20 @@ def test_merge_gate_fails_closed(mutation, failure: str) -> None:
     facts = deepcopy(merge_ready())
     mutation(facts)
     assert failure in verify_merge_gate(authority(), facts)["failures"]
+
+
+def test_multiple_reviews_by_same_author_resolves_latest() -> None:
+    # If the same author first requests changes and then approves the head, state is APPROVED
+    reviews = [
+        {"author": "reviewer-a", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40},
+        {"author": "reviewer-a", "state": "APPROVED", "head_sha": "a" * 40},
+    ]
+    assert current_head_review(live(reviews)["pull_request"]) == "APPROVED"
+
+    # If they approve first and then request changes, it should resolve to CHANGES_REQUESTED
+    reviews_reversed = [
+        {"author": "reviewer-a", "state": "APPROVED", "head_sha": "a" * 40},
+        {"author": "reviewer-a", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40},
+    ]
+    assert current_head_review(live(reviews_reversed)["pull_request"]) == "CHANGES_REQUESTED"
+

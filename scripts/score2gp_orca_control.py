@@ -77,15 +77,31 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
         conclusion = check.get("conclusion") or check.get("state")
         if name:
             checks.append({"name": str(name), "conclusion": str(conclusion or "")})
-    threads = run_json([
-        "gh", "api", "graphql", "-f",
-        "query=query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}",
-        "-F", f"owner={repository.split('/', 1)[0]}",
-        "-F", f"name={repository.split('/', 1)[1]}",
-        "-F", f"number={pull_request}",
-    ])
-    nodes = threads["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
-    rulesets = run_json(["gh", "api", f"repos/{repository}/rulesets"])
+    
+    nodes = []
+    cursor = None
+    has_next = True
+    owner = repository.split('/', 1)[0]
+    name_repo = repository.split('/', 1)[1]
+    while has_next:
+        cursor_args = ["-F", f"cursor={cursor}"] if cursor else []
+        query_str = "query($owner:String!,$name:String!,$number:Int!,$cursor:String){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100,after:$cursor){nodes{isResolved}pageInfo{hasNextPage endCursor}}}}}"
+        threads = run_json([
+            "gh", "api", "graphql", "-f", f"query={query_str}",
+            "-F", f"owner={owner}",
+            "-F", f"name={name_repo}",
+            "-F", f"number={pull_request}",
+            *cursor_args,
+        ])
+        pr_data = threads["data"]["repository"]["pullRequest"]
+        if not pr_data:
+            break
+        nodes.extend(pr_data["reviewThreads"]["nodes"])
+        page_info = pr_data["reviewThreads"]["pageInfo"]
+        has_next = bool(page_info.get("hasNextPage"))
+        cursor = page_info.get("endCursor")
+
+    rulesets = run_json(["gh", "api", "--paginate", f"repos/{repository}/rulesets"])
     active_rulesets = [item for item in rulesets if item.get("enforcement") == "active"]
     rule_details = [
         run_json(["gh", "api", f"repos/{repository}/rulesets/{item['id']}"])
@@ -116,6 +132,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
                 for detail in rule_details
             ),
         },
+        "admin_bypass": False,
     }
 
 
@@ -185,11 +202,14 @@ def active_incidents(authority: dict[str, Any]) -> list[str]:
 
 def current_head_review(pr: dict[str, Any]) -> str:
     head = str(pr.get("head_sha", ""))
-    verdicts = [
-        str(review.get("state", "")).upper()
-        for review in pr.get("reviews", [])
-        if str(review.get("head_sha", "")) == head
-    ]
+    latest_by_author: dict[str, str] = {}
+    for review in pr.get("reviews", []):
+        if str(review.get("head_sha", "")) == head:
+            author = review.get("author")
+            state = str(review.get("state", "")).upper()
+            if author:
+                latest_by_author[author] = state
+    verdicts = list(latest_by_author.values())
     if "CHANGES_REQUESTED" in verdicts:
         return "CHANGES_REQUESTED"
     if "APPROVED" in verdicts:
