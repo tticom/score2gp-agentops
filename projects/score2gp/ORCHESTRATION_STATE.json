@@ -3,32 +3,29 @@
   "project": "score2gp",
   "authority_revision": 1,
   "task": {
-    "id": "108",
-    "title": "Remediation 02: Unowned Notes Bug Fix & Hand Position Research",
-    "status": "RUNNING",
+    "id": "109",
+    "title": "Remediation 05: Intuitive Human-Focused Error Reporting",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
-    "branch": "feat/remediation-02-unowned-notes",
-    "pull_request": 441,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md",
+    "branch": "feat/remediation-05-human-error-reporting",
+    "pull_request": null,
+    "owner_role": "supervisor",
+    "prompt": "projects/score2gp/prompts/next/remediation-05-human-error-reporting.md",
     "allowed_paths": [
-      "src/score2gp/notation_omr/timeline.py",
+      "src/score2gp/cli.py",
+      "src/score2gp/errors.py",
       "src/score2gp/scoreir_compiler.py",
-      "tests/test_musical_timeline_replacement.py",
-      "tests/test_sidecar_bakeoff.py"
+      "tests/test_errors.py",
+      "tests/test_cli.py"
     ],
     "acceptance": [
-      "Identify and repair the upstream cause of unowned notes.",
-      "The compiler refuses every unowned note with an actionable error.",
-      "Provide exact-head real-source evidence and a negative unowned-note control.",
-      "Resolve every blocking review finding without weakening or skipping tests."
+      "The conversion pipeline no longer fails silently or with cryptic tracebacks.",
+      "Errors produce a concise, musician-friendly report.",
+      "Error reports pinpoint the exact location (e.g., page, measure, staff, note) of the failure in the original document."
     ],
     "required_evidence": [
       "focused_tests",
       "full_test_suite",
-      "real_source_acceptance",
-      "negative_control",
-      "exact_head_handback",
       "adversarial_review"
     ]
   },
