@@ -76,7 +76,7 @@ def live(reviews=None) -> dict:
             "checks": [{"name": "test", "conclusion": "SUCCESS"}],
             "unresolved_threads": 0,
         },
-        "protection": {"active_rulesets": 1},
+        "protection": {"active_rulesets": 1, "current_user_can_bypass": False},
     }
 
 
@@ -169,13 +169,15 @@ def test_snapshot_normalizes_github_facts(monkeypatch) -> None:
             "statusCheckRollup": [{"name": "test", "conclusion": "SUCCESS"}],
         },
         {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [{"isResolved": False}, {"isResolved": True}]}}}}},
-        [{"enforcement": "active"}],
+        [{"id": 7, "enforcement": "active"}],
+        {"id": 7, "current_user_can_bypass": "never"},
     ])
     monkeypatch.setattr("scripts.score2gp_orca_control.run_json", lambda command: next(responses))
     snapshot = capture_live_state("tticom/score2gp", 441)
     assert snapshot["pull_request"]["unresolved_threads"] == 1
     assert snapshot["pull_request"]["reviews"][0]["head_sha"] == "a" * 40
     assert snapshot["protection"]["active_rulesets"] == 1
+    assert snapshot["protection"]["current_user_can_bypass"] is False
 
 
 def merge_ready() -> dict:
@@ -210,6 +212,7 @@ def test_stale_reviewed_sha_blocks_merge() -> None:
         (lambda x: x["pull_request"].update(unresolved_threads=1), "unresolved_review_threads"),
         (lambda x: x.update(merge_controller_login="worker"), "merge_controller_identity_not_configured"),
         (lambda x: x.update(admin_bypass=True), "admin_bypass_forbidden"),
+        (lambda x: x["protection"].update(current_user_can_bypass=True), "merge_controller_can_bypass_ruleset"),
     ],
 )
 def test_merge_gate_fails_closed(mutation, failure: str) -> None:

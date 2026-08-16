@@ -12,6 +12,7 @@ import getpass
 import json
 import re
 import subprocess
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -86,7 +87,17 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
     nodes = threads["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
     rulesets = run_json(["gh", "api", f"repos/{repository}/rulesets"])
     active_rulesets = [item for item in rulesets if item.get("enforcement") == "active"]
+    rule_details = [
+        run_json(["gh", "api", f"repos/{repository}/rulesets/{item['id']}"])
+        for item in active_rulesets
+    ]
     return {
+        "snapshot": {
+            "schema_version": 1,
+            "collector_version": 1,
+            "captured_at": datetime.now(timezone.utc).isoformat(),
+            "repository": repository,
+        },
         "pull_request": {
             "number": raw["number"],
             "state": raw["state"],
@@ -98,7 +109,13 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
             "checks": checks,
             "unresolved_threads": sum(not bool(node.get("isResolved")) for node in nodes),
         },
-        "protection": {"active_rulesets": len(active_rulesets)},
+        "protection": {
+            "active_rulesets": len(active_rulesets),
+            "current_user_can_bypass": any(
+                detail.get("current_user_can_bypass") not in {None, "never"}
+                for detail in rule_details
+            ),
+        },
     }
 
 
@@ -356,6 +373,8 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
         failures.append("admin_bypass_forbidden")
     if int(live.get("protection", {}).get("active_rulesets", 0)) < 1:
         failures.append("active_main_ruleset_missing")
+    if bool(live.get("protection", {}).get("current_user_can_bypass", False)):
+        failures.append("merge_controller_can_bypass_ruleset")
     return {
         "schema_version": 1,
         "decision": "ALLOW" if not failures else "DENY",

@@ -94,6 +94,26 @@ editing or review authority and must never use admin bypass.
 8. Run independent review/governance as returned by the resolver.
 9. Run `merge-check` immediately before integration. V1 is dry-run only.
 
+Example implementation dispatch after Orca has selected the implementation
+credential profile:
+
+```bash
+GH_CONFIG_DIR=<implementation-credential-dir> \
+python3 scripts/score2gp_dispatch.py \
+  --agentops . --product ../score2gp \
+  --orca-role implementation \
+  --live <ignored-live-json> \
+  --github-login tticom-automation --json
+```
+
+`--github-login` is an expected value, not a role claim: the dispatcher queries
+`gh api user` and rejects a mismatch. The AgentOps worktree must be clean, so
+the emitted `agentops_sha` always identifies the exact committed authority.
+
+For `got`, use the same dispatcher with the role returned by `resolve`:
+`reviewer` under the reviewer credential or `governance` under the governance
+credential. A caller cannot request a different role from the one resolved.
+
 Orca may parallelize read-only investigation when assignments do not overlap.
 Only one implementation owner may write a task branch. Reviewer worktrees are
 detached at the exact PR head and remain read-only.

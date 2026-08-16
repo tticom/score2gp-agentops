@@ -20,6 +20,9 @@ review its own work, interpret incident prose, or merge.
 5. Create exactly one writable worktree for the returned implementation owner,
    or a detached read-only worktree for a reviewer.
 6. Generate the bounded assignment through `score2gp_dispatch.py --orca-role`.
+   Set `GH_CONFIG_DIR` (or the equivalent Orca secret binding) to the scoped
+   credential for that role. The authenticated login must match the policy;
+   command-line text cannot claim an identity.
 7. Give the worker only that assignment, its referenced prompt, and its
    worktree. Do not give it queue-selection or continuation authority.
 8. Collect the exact head, validation receipts, evidence classifications, and
