@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "project": "score2gp",
+  "authority_revision": 1,
+  "task": {
+    "id": "108",
+    "title": "Remediation 02: Unowned Notes Bug Fix & Hand Position Research",
+    "status": "RUNNING",
+    "repository": "tticom/score2gp",
+    "branch": "feat/remediation-02-unowned-notes",
+    "pull_request": 441,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md",
+    "allowed_paths": [
+      "src/score2gp/notation_omr/timeline.py",
+      "src/score2gp/scoreir_compiler.py",
+      "tests/test_musical_timeline_replacement.py",
+      "tests/test_sidecar_bakeoff.py"
+    ],
+    "acceptance": [
+      "Identify and repair the upstream cause of unowned notes.",
+      "The compiler refuses every unowned note with an actionable error.",
+      "Provide exact-head real-source evidence and a negative unowned-note control.",
+      "Resolve every blocking review finding without weakening or skipping tests."
+    ],
+    "required_evidence": [
+      "focused_tests",
+      "full_test_suite",
+      "real_source_acceptance",
+      "negative_control",
+      "exact_head_handback",
+      "adversarial_review"
+    ]
+  },
+  "incidents": [
+    {
+      "id": "unauthorized-merge-2026-07-20",
+      "status": "RESOLVED",
+      "opened_by": "projects/score2gp/reports/2026-07-20-unauthorized-agy-merge-incident.md",
+      "resolved_by": "projects/score2gp/reports/2026-07-20-fs02-resumption-verification.md"
+    },
+    {
+      "id": "prohibited-merge-attempt-2026-07-21",
+      "status": "RESOLVED",
+      "opened_by": "projects/score2gp/reports/2026-07-21-fs03c-prohibited-merge-attempt-incident.md",
+      "resolved_by": "projects/score2gp/reports/2026-07-21-credential-boundary-reactivation.md"
+    }
+  ],
+  "roles": {
+    "implementation": {
+      "github_logins": ["tticom-automation"],
+      "allowed_actions": ["edit", "test", "commit", "push_task_branch", "publish_handback"],
+      "forbidden_actions": ["review", "approve", "merge", "governance_edit"]
+    },
+    "reviewer": {
+      "github_logins": ["tticom-codex", "tticomgov-code"],
+      "allowed_actions": ["inspect", "test", "publish_review"],
+      "forbidden_actions": ["edit", "commit", "push", "merge"]
+    },
+    "governance": {
+      "github_logins": ["tticomgov-code", "tticom"],
+      "allowed_actions": ["governance_edit", "publish_governance_review", "promote_task"],
+      "forbidden_actions": ["product_edit", "merge"]
+    },
+    "supervisor": {
+      "github_logins": ["tticom"],
+      "allowed_actions": ["resolve_state", "create_worktree", "dispatch", "collect_evidence"],
+      "forbidden_actions": ["implement_product", "approve_own_work", "merge"]
+    },
+    "merge_controller": {
+      "github_logins": [],
+      "allowed_actions": ["verify_merge_gate", "merge_exact_head"],
+      "forbidden_actions": ["edit", "review", "approve", "bypass"]
+    }
+  },
+  "merge_policy": {
+    "required_checks": ["test"],
+    "minimum_approvals": 2,
+    "require_governance_go": true,
+    "require_reviewed_head": true,
+    "require_resolved_threads": true,
+    "allow_admin_bypass": false
+  }
+}

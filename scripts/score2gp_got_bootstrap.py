@@ -106,8 +106,7 @@ def select_review_level(
     context = " ".join((task, authorised_role, title, *normalized_paths)).lower()
 
     if repository == "tticom/score2gp-agentops":
-        # Governance repository changes do not use devils-advocate (production only)
-        escalate("hard", "governance/control-plane repository change")
+        escalate("devils-advocate", "governance/control-plane repository change")
     if not normalized_paths:
         escalate("hard", "empty or unavailable changed-path inventory")
 
@@ -125,7 +124,7 @@ def select_review_level(
         if repository == "tticom/score2gp":
             escalate("devils-advocate", "architecture, research, or authority translation")
         else:
-            escalate("hard", "architecture, research, or authority translation")
+            escalate("devils-advocate", "architecture, research, or authority translation")
 
     high_risk_markers = (
         "conversion",
