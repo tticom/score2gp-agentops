@@ -1,0 +1,23 @@
+name: Governance control plane
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-control-plane:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pytest
+      - run: python -m json.tool projects/score2gp/ORCHESTRATION_STATE.json > /dev/null
+      - run: python -m py_compile scripts/score2gp_orca_control.py scripts/score2gp_dispatch.py
+      - run: python -m pytest -q
+      - run: git diff --check

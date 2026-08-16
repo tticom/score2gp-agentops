@@ -2,6 +2,20 @@
 
 This file is the governance control policy for agentic work on `score2gp`.
 
+## Orca orchestration boundary
+
+For an Orca-managed run, `ORCHESTRATION_STATE.json` is the machine-readable
+task and incident authority and `scripts/score2gp_orca_control.py` is the sole
+operational state reducer. Orca owns sequencing, worktrees, role dispatch, and
+handoffs. A worker receives a bounded assignment and must not perform the
+autonomous continuation, queue selection, blocker-pivot, task promotion, role
+transition, or merge activities described elsewhere in this legacy policy.
+
+The legacy clauses remain applicable only to a direct compatibility `go/got`
+run without an Orca assignment. They must not be combined with Orca mode.
+Neither Orca prompts nor worker interpretation may override a deterministic
+`BLOCKED` or merge `DENY` result.
+
 Agents must not treat task lists, backlog files, research notes, handoffs, or unchecked checklist items as permission to execute.
 
 The normal executable task source is:

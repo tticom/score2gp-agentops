@@ -6,7 +6,9 @@ from scripts.score2gp_orca_control import (
     ControlError,
     RuntimeIdentity,
     build_assignment,
+    capture_live_state,
     resolve_state,
+    validate_assignment,
     validate_legacy_alignment,
     verify_merge_gate,
 )
@@ -73,7 +75,8 @@ def live(reviews=None) -> dict:
             "reviews": reviews or [],
             "checks": [{"name": "test", "conclusion": "SUCCESS"}],
             "unresolved_threads": 0,
-        }
+        },
+        "protection": {"active_rulesets": 1},
     }
 
 
@@ -140,6 +143,39 @@ def test_wrong_identity_cannot_claim_worker_role() -> None:
     resolved = resolve_state(config, live())
     with pytest.raises(ControlError, match="not authorised"):
         build_assignment(config, live(), resolved, RuntimeIdentity("tticom", "governor"), "b" * 40)
+
+
+def test_assignment_validation_rejects_changed_head() -> None:
+    config = authority()
+    facts = live([{"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}])
+    identity = RuntimeIdentity("tticom", "worker")
+    assignment = build_assignment(config, facts, resolve_state(config, facts), identity, "b" * 40)
+    changed = deepcopy(facts)
+    changed["pull_request"]["head_sha"] = "c" * 40
+    with pytest.raises(ControlError, match="stale"):
+        validate_assignment(config, changed, assignment, identity, "b" * 40)
+
+
+def test_snapshot_normalizes_github_facts(monkeypatch) -> None:
+    responses = iter([
+        {
+            "number": 441,
+            "state": "OPEN",
+            "headRefName": "feat/task-108",
+            "headRefOid": "a" * 40,
+            "baseRefName": "main",
+            "author": {"login": "worker"},
+            "reviews": [{"author": {"login": "reviewer"}, "state": "CHANGES_REQUESTED", "commit": {"oid": "a" * 40}}],
+            "statusCheckRollup": [{"name": "test", "conclusion": "SUCCESS"}],
+        },
+        {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [{"isResolved": False}, {"isResolved": True}]}}}}},
+        [{"enforcement": "active"}],
+    ])
+    monkeypatch.setattr("scripts.score2gp_orca_control.run_json", lambda command: next(responses))
+    snapshot = capture_live_state("tticom/score2gp", 441)
+    assert snapshot["pull_request"]["unresolved_threads"] == 1
+    assert snapshot["pull_request"]["reviews"][0]["head_sha"] == "a" * 40
+    assert snapshot["protection"]["active_rulesets"] == 1
 
 
 def merge_ready() -> dict:

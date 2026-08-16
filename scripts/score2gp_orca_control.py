@@ -47,6 +47,61 @@ def load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def run_json(command: list[str]) -> Any:
+    completed = subprocess.run(command, capture_output=True, text=True)
+    if completed.returncode:
+        raise ControlError(completed.stderr.strip() or f"command failed: {' '.join(command)}")
+    try:
+        return json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise ControlError(f"invalid JSON from {' '.join(command)}") from error
+
+
+def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
+    """Capture normalized GitHub facts under the caller's scoped credential."""
+    raw = run_json([
+        "gh", "pr", "view", str(pull_request), "--repo", repository, "--json",
+        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup",
+    ])
+    reviews = []
+    for review in raw.get("reviews", []):
+        reviews.append({
+            "author": str((review.get("author") or {}).get("login", "")),
+            "state": str(review.get("state", "")),
+            "head_sha": str((review.get("commit") or {}).get("oid", "")),
+        })
+    checks = []
+    for check in raw.get("statusCheckRollup", []):
+        name = check.get("name") or check.get("context")
+        conclusion = check.get("conclusion") or check.get("state")
+        if name:
+            checks.append({"name": str(name), "conclusion": str(conclusion or "")})
+    threads = run_json([
+        "gh", "api", "graphql", "-f",
+        "query=query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}",
+        "-F", f"owner={repository.split('/', 1)[0]}",
+        "-F", f"name={repository.split('/', 1)[1]}",
+        "-F", f"number={pull_request}",
+    ])
+    nodes = threads["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
+    rulesets = run_json(["gh", "api", f"repos/{repository}/rulesets"])
+    active_rulesets = [item for item in rulesets if item.get("enforcement") == "active"]
+    return {
+        "pull_request": {
+            "number": raw["number"],
+            "state": raw["state"],
+            "head_branch": raw["headRefName"],
+            "head_sha": raw["headRefOid"],
+            "base_branch": raw["baseRefName"],
+            "author": str((raw.get("author") or {}).get("login", "")),
+            "reviews": reviews,
+            "checks": checks,
+            "unresolved_threads": sum(not bool(node.get("isResolved")) for node in nodes),
+        },
+        "protection": {"active_rulesets": len(active_rulesets)},
+    }
+
+
 def validate_authority(authority: dict[str, Any]) -> None:
     if authority.get("schema_version") != 1:
         raise ControlError("unsupported authority schema_version")
@@ -240,6 +295,26 @@ def build_assignment(
     }
 
 
+def validate_assignment(
+    authority: dict[str, Any],
+    live: dict[str, Any],
+    assignment: dict[str, Any],
+    identity: RuntimeIdentity,
+    agentops_sha: str,
+) -> None:
+    assigned_head = str(assignment.get("work", {}).get("expected_head_sha", ""))
+    live_head = str(live.get("pull_request", {}).get("head_sha", ""))
+    if assigned_head != live_head:
+        raise ControlError("assignment is stale: expected PR head no longer matches live head")
+    assigned_sha = str(assignment.get("authority", {}).get("agentops_sha", ""))
+    if assigned_sha != agentops_sha:
+        raise ControlError("assignment is stale: AgentOps authority revision changed")
+    resolved = resolve_state(authority, live)
+    expected = build_assignment(authority, live, resolved, identity, agentops_sha)
+    if assignment != expected:
+        raise ControlError("assignment is stale or does not match current authority/live state")
+
+
 def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
     validate_authority(authority)
     blockers = active_incidents(authority)
@@ -279,6 +354,8 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
         failures.append("merge_controller_identity_not_configured")
     if bool(live.get("admin_bypass", False)):
         failures.append("admin_bypass_forbidden")
+    if int(live.get("protection", {}).get("active_rulesets", 0)) < 1:
+        failures.append("active_main_ruleset_missing")
     return {
         "schema_version": 1,
         "decision": "ALLOW" if not failures else "DENY",
@@ -291,6 +368,11 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
 
 
 def git_head(root: Path) -> str:
+    dirty = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True
+    )
+    if dirty.returncode or dirty.stdout.strip():
+        raise ControlError("AgentOps authority worktree must be clean before dispatch")
     completed = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True
     )
@@ -299,13 +381,35 @@ def git_head(root: Path) -> str:
     return completed.stdout.strip()
 
 
+def authenticated_github_login() -> str:
+    completed = subprocess.run(
+        ["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True
+    )
+    if completed.returncode:
+        raise ControlError(completed.stderr.strip() or "cannot verify GitHub identity")
+    login = completed.stdout.strip()
+    if not login:
+        raise ControlError("GitHub identity is empty")
+    return login
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("resolve", "assign", "merge-check"))
+    parser.add_argument("command", choices=("snapshot", "resolve", "assign", "validate", "merge-check"))
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
-    parser.add_argument("--live", type=Path, required=True, help="Live-state JSON captured by the supervisor")
+    parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
+    parser.add_argument("--assignment", type=Path)
+    parser.add_argument("--repository")
+    parser.add_argument("--pull-request", type=int)
     parser.add_argument("--github-login", default="")
     args = parser.parse_args()
+    if args.command == "snapshot":
+        if not args.repository or args.pull_request is None:
+            raise ControlError("snapshot requires --repository and --pull-request")
+        print(json.dumps(capture_live_state(args.repository, args.pull_request), indent=2, sort_keys=True))
+        return
+    if args.live is None:
+        raise ControlError(f"{args.command} requires --live")
     authority = load_json(args.authority)
     live = load_json(args.live)
     active_task_path = args.authority.parent / "ACTIVE_TASK.md"
@@ -314,8 +418,22 @@ def main() -> None:
     if args.command == "resolve":
         output = resolved
     elif args.command == "assign":
-        identity = RuntimeIdentity(getpass.getuser(), args.github_login)
+        login = authenticated_github_login()
+        if args.github_login and args.github_login != login:
+            raise ControlError(f"expected GitHub login {args.github_login}, authenticated as {login}")
+        identity = RuntimeIdentity(getpass.getuser(), login)
         output = build_assignment(authority, live, resolved, identity, git_head(Path.cwd()))
+    elif args.command == "validate":
+        if args.assignment is None:
+            raise ControlError("validate requires --assignment")
+        login = authenticated_github_login()
+        if args.github_login and args.github_login != login:
+            raise ControlError(f"expected GitHub login {args.github_login}, authenticated as {login}")
+        identity = RuntimeIdentity(getpass.getuser(), login)
+        validate_assignment(
+            authority, live, load_json(args.assignment), identity, git_head(Path.cwd())
+        )
+        output = {"ok": True, "state": resolved["state"], "assignment_valid": True}
     else:
         output = verify_merge_gate(authority, live)
     print(json.dumps(output, indent=2, sort_keys=True))
