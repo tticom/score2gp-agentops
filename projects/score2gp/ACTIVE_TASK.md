@@ -6,7 +6,7 @@
 **Authorised Role**: Author
 **Repository**: tticom/score2gp
 **PR Branch**: feat/remediation-02-unowned-notes
-**Pull Request**: TBD
+**Pull Request**: https://github.com/tticom/score2gp/pull/441
 **Original Prompt**: \projects/score2gp/prompts/next/remediation-02-unowned-notes-research.md\
 
 ## Context
