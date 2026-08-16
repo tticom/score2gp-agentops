@@ -28,3 +28,8 @@ This document records the architectural decisions governing agent workflows and 
 - **Status**: **Approved**
 - **Decision**: Private lesson PDFs and GP oracle files must remain strictly private and outside version control. They guide local human-verified diagnosis but must never be committed to either repository.
 - **Reason**: Respects intellectual property boundaries, prevents data leakage, and preserves repository hygiene.
+
+## ADR-006: Forbid Biomechanical Position Inference
+- **Status**: **Approved (2026-08-13)**
+- **Decision**: The system must not attempt to infer biomechanical hand positions (e.g. sequential finger stretches or jumps) when string/fret data is missing. It must rely strictly on explicit TAB evidence provided by the OMR. Notes lacking explicit fretboard ownership must be explicitly dropped or result in a clear error.
+- **Reason**: Musicians play chords as unified hand shapes, and stylistic variations exist across different players (e.g. preferring jumps vs. stretches). Inferring physical positions without explicit notation leads to musically corrupt outputs and silent failures (such as the previous synthetic `(string=1, fret=0)` injections). Relying strictly on the TAB provides a deterministic, faithful representation of the score.
