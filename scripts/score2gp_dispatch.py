@@ -75,6 +75,7 @@ def main() -> None:
         try:
             from scripts.score2gp_orca_control import (
                 RuntimeIdentity,
+                ControlError,
                 authenticated_github_login,
                 build_assignment,
                 git_head,
@@ -85,6 +86,7 @@ def main() -> None:
         except ModuleNotFoundError:
             from score2gp_orca_control import (
                 RuntimeIdentity,
+                ControlError,
                 authenticated_github_login,
                 build_assignment,
                 git_head,
@@ -110,13 +112,16 @@ def main() -> None:
             raise DispatchError(
                 f"expected GitHub login {args.github_login}, authenticated as {login}"
             )
-        assignment = build_assignment(
-            authority,
-            live,
-            resolved,
-            RuntimeIdentity(getpass.getuser(), login),
-            git_head(agentops),
-        )
+        try:
+            assignment = build_assignment(
+                authority,
+                live,
+                resolved,
+                RuntimeIdentity(getpass.getuser(), login),
+                git_head(agentops),
+            )
+        except ControlError as error:
+            raise DispatchError(str(error)) from error
         print(json.dumps(assignment, indent=2, sort_keys=True))
         return
 
