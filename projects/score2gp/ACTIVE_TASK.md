@@ -1,7 +1,7 @@
 # Active Task
 
 **Task**: Task 109 — Remediation 05: Intuitive Human-Focused Error Reporting
-**Status**: PROMOTED
+**Status**: READY_FOR_HUMAN_MERGE
 **Assigned Identity**: tticom
 **Authorised Role**: Supervisor
 **Repository**: tticom/score2gp
