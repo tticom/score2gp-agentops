@@ -5,7 +5,7 @@
   "task": {
     "id": "109",
     "title": "Remediation 05: Intuitive Human-Focused Error Reporting",
-    "status": "READY_FOR_HUMAN_MERGE",
+    "status": "MERGED",
     "repository": "tticom/score2gp",
     "branch": "feat/remediation-05-human-error-reporting",
     "pull_request": 442,
