@@ -35,6 +35,8 @@ Developer:
 - Must implement only the assigned task.
 - Must not carry unrelated previous task files unless the PR is explicitly stacked.
 - Must not invent data to satisfy tests.
+- Must not hallucinate or simulate command outputs. All claims of success must be backed by actual executed CLI commands.
+- Must treat any test failure, script failure, or validation warning as a hard stop. No soft bypassing is permitted.
 - Must run required tests and write tests to cover all new system code.
 - Must report changed files, commands, results, branch base, dependency PRs, and limitations.
 - **Branch check, switch, and creation workflow**:
