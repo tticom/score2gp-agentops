@@ -37,7 +37,6 @@ Developer:
 - Must not invent data to satisfy tests.
 - Must not hallucinate or simulate command outputs. All claims of success must be backed by actual executed CLI commands.
 - Must treat any test failure, script failure, or validation warning as a hard stop. No soft bypassing is permitted.
-- **Real-World Evaluation Loop**: You must evaluate your changes against actual real-world PDFs (e.g. `Lesson-5.pdf`, `Lesson-6.pdf`, `Lesson-7.pdf`) rather than relying solely on synthetic unit tests. You must provide empirical evidence of this evaluation (e.g. bar box counts, eliminated warnings, `diagnostics.json` logs) in the PR body.
 - Must run required tests and write tests to cover all new system code.
 - Must report changed files, commands, results, branch base, dependency PRs, and limitations.
 - **Branch check, switch, and creation workflow**:
@@ -63,3 +62,11 @@ Integrator:
 - Must manage branch bases, stacked PRs, duplicate PRs, conflicts, PR bodies, and cleanup.
 - Must never merge to main.
 - Must not modify product logic unless explicitly instructed.
+
+## Real-World Evaluation Loop
+
+To ensure the project drives toward successful `.gp` file production rather than just passing synthetic tests, every implementation task MUST:
+1. Run the conversion pipeline against real-world private fixtures (`Lesson-5.pdf`, `Lesson-6.pdf`, `Lesson-7.pdf`).
+2. Read the resulting `warnings.json` and `diagnostics.json` logs.
+3. Prove that the specific roadblock (e.g., missing bar boxes, layout gating refusals) was measurably eliminated without introducing regressions.
+4. Generate a targeted Investigation Report on the *next* roadblock if the `.gp` file still fails to generate, so we always have a clear, log-driven roadmap.
