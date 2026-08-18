@@ -12,13 +12,22 @@ def run_cmd(args):
     except Exception:
         return ""
 
+def redact_sensitive_data(text):
+    import re
+    # Redact paths
+    text = re.sub(r'/[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)+', '[REDACTED]', text)
+    # Redact credentials/tokens/emails (key=value, key: value, emails)
+    text = re.sub(r'([a-zA-Z0-9_-]*(?:token|password|secret|key|cred|auth|email)[a-zA-Z0-9_-]*\s*[:=]\s*(?:Bearer\s+)?)[^\s]+', r'\g<1>[REDACTED]', text, flags=re.IGNORECASE)
+    text = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[REDACTED]', text)
+    return text
+
 def summarize_report(raw_text):
     lines = raw_text.split('\n')
     sanitized = ["*Sanitized Verification Report*"]
     sanitized.append("Raw stdout and stderr have been redacted to prevent leakage of private paths.")
     for line in lines:
         if line.startswith("#") or "PASS" in line.upper() or "FAIL" in line.upper() or "WARNING" in line.upper():
-            sanitized_line = re.sub(r'/[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)+', '[REDACTED]', line)
+            sanitized_line = redact_sensitive_data(line)
             sanitized.append(sanitized_line)
     return "\n".join(sanitized)
 
@@ -78,7 +87,8 @@ def main():
     else:
         lines.append("🔴 **FAIL**: Repository hygiene checks failed. The following tracked files violate privacy policy:")
         lines.append("```text")
-        lines.append(audit_res.stdout.strip() if audit_res.stdout.strip() else audit_res.stderr.strip())
+        raw_audit = audit_res.stdout.strip() if audit_res.stdout.strip() else audit_res.stderr.strip()
+        lines.append(redact_sensitive_data(raw_audit))
         lines.append("```")
     lines.append("")
 
