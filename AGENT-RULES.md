@@ -37,6 +37,7 @@ Developer:
 - Must not invent data to satisfy tests.
 - Must not hallucinate or simulate command outputs. All claims of success must be backed by actual executed CLI commands.
 - Must treat any test failure, script failure, or validation warning as a hard stop. No soft bypassing is permitted.
+- **Real-World Evaluation Loop**: You must evaluate your changes against actual real-world PDFs (e.g. `Lesson-5.pdf`, `Lesson-6.pdf`, `Lesson-7.pdf`) rather than relying solely on synthetic unit tests. You must provide empirical evidence of this evaluation (e.g. bar box counts, eliminated warnings, `diagnostics.json` logs) in the PR body.
 - Must run required tests and write tests to cover all new system code.
 - Must report changed files, commands, results, branch base, dependency PRs, and limitations.
 - **Branch check, switch, and creation workflow**:

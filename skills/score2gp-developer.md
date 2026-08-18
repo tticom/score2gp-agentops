@@ -11,9 +11,10 @@ Do exactly what the provided Task Context asks, and absolutely nothing more. If 
 2. **Pre-flight & Automation Checks**: Run `python scripts/agent_verify.py` to establish the baseline and verify repository hygiene. Stop immediately if `scripts/artifact_audit.py` fails.
 3. **Draft Implementation**: Write the required code, keeping changes as isolated and minimal as possible.
 4. **Targeted Validation**: Run the verification script (`python scripts/agent_verify.py`) to validate changes.
-5. **Codex Pre-Flight Check**: Run the same automated hygiene, artifact, and verification checks used by the Codex Reviewer before committing.
-6. **Hygiene Checks**: Ensure you have not emitted or committed private artifacts, debug dumps, or logs.
-7. **Commit and PR**: Commit the changes. Run `python scripts/pr_body.py` to automatically generate the PR description from verification logs. The Developer must rely *entirely* on this script for the PR body and is forbidden from manually editing the PR description to gloss over failures.
+5. **Real-World Evaluation Loop**: Evaluate your code against actual real-world PDFs (e.g. `Lesson-5.pdf`, `Lesson-6.pdf`, `Lesson-7.pdf`) rather than just synthetic unit tests, and collect empirical evidence of this evaluation.
+6. **Codex Pre-Flight Check**: Run the same automated hygiene, artifact, and verification checks used by the Codex Reviewer before committing.
+7. **Hygiene Checks**: Ensure you have not emitted or committed private artifacts, debug dumps, or logs.
+8. **Commit and PR**: Commit the changes. Run `python scripts/pr_body.py` to automatically generate the PR description from verification logs. The Developer must rely *entirely* on this script for the PR body and is forbidden from manually editing the PR description to gloss over failures.
 
 ## Developer Constraints & Safety Rules
 - **No Scope Creep**: Do not implement features, recognisers, or semantics unless explicitly authorised by the task.
