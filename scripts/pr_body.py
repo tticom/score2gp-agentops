@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import re
 import subprocess
 import sys
 
@@ -17,7 +18,8 @@ def summarize_report(raw_text):
     sanitized.append("Raw stdout and stderr have been redacted to prevent leakage of private paths.")
     for line in lines:
         if line.startswith("#") or "PASS" in line.upper() or "FAIL" in line.upper() or "WARNING" in line.upper():
-            sanitized.append(line)
+            sanitized_line = re.sub(r'/[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)+', '[REDACTED]', line)
+            sanitized.append(sanitized_line)
     return "\n".join(sanitized)
 
 def main():
