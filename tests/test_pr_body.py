@@ -38,3 +38,18 @@ WARNING: Authorization: Bearer secret-session-token
         self.assertNotIn("secret-session", sanitized)
         self.assertNotIn("private@example.test", sanitized)
 
+
+    def test_credential_redaction_multiword_and_json(self):
+        from scripts.pr_body import summarize_report
+        raw_text = """PASS: "password": "my secret phrase with spaces"
+FAIL: Authorization: Basic cGFzc3dvcmQ=
+WARNING: api_token = sk-private-123456 and more stuff
+# user-email: private@example.test"""
+        sanitized = summarize_report(raw_text)
+        self.assertIn("PASS: \"password\": [REDACTED]", sanitized)
+        self.assertIn("FAIL: Authorization: Basic [REDACTED]", sanitized)
+        self.assertIn("WARNING: api_token = [REDACTED]", sanitized)
+        self.assertIn("# user-email: [REDACTED]", sanitized)
+        self.assertNotIn("my secret phrase", sanitized)
+        self.assertNotIn("cGFzc3dvcmQ=", sanitized)
+        self.assertNotIn("more stuff", sanitized)

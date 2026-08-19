@@ -17,7 +17,7 @@ def redact_sensitive_data(text):
     # Redact paths
     text = re.sub(r'/[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)+', '[REDACTED]', text)
     # Redact credentials/tokens/emails (key=value, key: value, emails)
-    text = re.sub(r'([a-zA-Z0-9_-]*(?:token|password|secret|key|cred|auth|email)[a-zA-Z0-9_-]*\s*[:=]\s*(?:Bearer\s+)?)[^\s]+', r'\g<1>[REDACTED]', text, flags=re.IGNORECASE)
+    text = re.sub(r'([a-zA-Z0-9_-]*(?:token|password|secret|key|cred|auth|email)[a-zA-Z0-9_-]*\s*[\"=:]+\s*(?:Bearer\s+|Basic\s+)?).*', r'\g<1>[REDACTED]', text, flags=re.IGNORECASE)
     text = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[REDACTED]', text)
     return text
 
