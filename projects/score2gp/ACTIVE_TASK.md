@@ -1,53 +1,37 @@
 # Active Task
 
-**Task**: Programme transition to native PDF-to-GP
+<!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Status**: COMPLETED
+**Task**: AUT-01 — Consolidate the autonomous development loop
 
-**Assigned Identity**: tticom-codex
-
-**Authorised Role**: Architect/governance
+**Status**: IN_PROGRESS
 
 **Repository**: tticom/score2gp-agentops
 
-**Plan**: `projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md`
+**PR Branch**: `codex/autonomous-development-loop`
 
-## Completed transition
+**Pull Request**: TBD
 
-The obsolete active plan and completed task pointers have been archived. The
-native PDF-to-GP and Audiveris retirement programme is now the active planning
-direction. No product implementation task is currently approved.
+**Owner Role**: architect
 
-## Next candidate: NPG-00
+## Objective
 
-Governance should promote NPG-00A through NPG-00D as separately bounded work:
+Make ORCHESTRATION_STATE.json the sole machine authority and expose one deterministic, idempotent advance(live_state) decision interface while retaining explicit compatibility adapters.
 
-1. Pin a clean current product baseline and inventory PDF, native recognition,
-   Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, and
-   documentation paths.
-2. Restore and adjudicate the Lesson 5 source PDF against the supplied JSON,
-   MusicXML, and GP package using a private, field-level evidence manifest.
-3. Record supported Guitar Pro blank-package behavior and approve versioned
-   Score2GP defaults without claiming an immutable Guitar Pro instrument
-   default.
-4. Approve canonical terminology, supported input classes, target Guitar Pro
-   versions, text/geometry correction posture, capability matrix, and
-   measurable cutover thresholds.
+## Allowed paths
 
-## Non-goals
+- `projects/score2gp/ACTIVE_TASK.md`
+- `projects/score2gp/AGENT_CONTROL.md`
+- `projects/score2gp/ORCHESTRATION_STATE.json`
+- `scripts/score2gp_governance_audit.py`
+- `scripts/score2gp_orca_control.py`
+- `scripts/score2gp_orchestrator.py`
+- `tests/test_score2gp_orca_control.py`
+- `tests/test_score2gp_orchestrator.py`
 
-- No product implementation or Audiveris deletion.
-- No copying private score content into either public repository.
-- No treating historical reports, generated sidecars, or GP files as
-  unquestionable generation truth.
-- No declaring a generated ZIP/XML package a valid conversion without musical
-  and application-level evidence.
+## Validation commands
 
-## Authorization boundary
-
-Before execution, governance must pin the exact baseline SHA, identity,
-allowed paths, validation commands, evidence handling, stop conditions, and
-independent reviewer. This completed transition does not authorize NPG-00
-execution or product changes.
-
-Completed active tasks are archived under `projects/score2gp/archive/`.
+- `../score2gp/.venv/bin/python -m pytest -q tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_score2gp_dispatch.py`
+- `../score2gp/.venv/bin/python -m pytest -q tests`
+- `python3 scripts/score2gp_governance_audit.py`
+- `git diff --check origin/main...HEAD`

@@ -4,27 +4,51 @@ This file is the governance control policy for agentic work on `score2gp`.
 
 ## Orca orchestration boundary
 
-For an Orca-managed run, `ORCHESTRATION_STATE.json` is the machine-readable
-task and incident authority and `scripts/score2gp_orca_control.py` is the sole
-operational state reducer. Orca owns sequencing, worktrees, role dispatch, and
-handoffs. A worker receives a bounded assignment and must not perform the
-autonomous continuation, queue selection, blocker-pivot, task promotion, role
-transition, or merge activities described elsewhere in this legacy policy.
+`ORCHESTRATION_STATE.json` is the sole machine-readable task and incident
+authority. `ACTIVE_TASK.md` is a generated human view and must never be edited
+as an independent authority. Governance audit rejects drift between them.
+
+`scripts/score2gp_orchestrator.py` exposes the deep decision interface:
+
+```python
+decision = advance(authority, live_state)
+```
+
+The interface is side-effect-free and idempotent. It returns exactly one of:
+
+- `EXECUTE_ASSIGNMENT`
+- `REMEDIATE_CURRENT_PR`
+- `AWAIT_REVIEW`
+- `AWAIT_HUMAN_MERGE`
+- `REQUEST_MUSICAL_ADJUDICATION`
+- `PROPOSE_NEXT_TASK`
+- `BLOCKED`
+
+`scripts/score2gp_orca_control.py advance` is the command-line adapter. Other
+Orca resolver commands and direct `go/got` routing are compatibility adapters
+during migration; they must not introduce a second authority or contradict an
+`advance` decision.
+
+Orca owns sequencing, isolated worktrees, role dispatch, validation receipts,
+and handoffs. A worker receives one bounded assignment and must not select a
+next task, change scope, change role, approve its own work, or merge.
 
 The legacy clauses remain applicable only to a direct compatibility `go/got`
 run without an Orca assignment. They must not be combined with Orca mode.
 Neither Orca prompts nor worker interpretation may override a deterministic
 `BLOCKED` or merge `DENY` result.
 
-Agents must not treat task lists, backlog files, research notes, handoffs, or unchecked checklist items as permission to execute.
+Agents must not treat `ACTIVE_TASK.md`, `NEXT.md`, task lists, backlog files,
+research notes, reports, handoffs, or unchecked checklist items as permission
+to execute. They are views, inputs, or compatibility pointers only. An
+executable assignment must resolve from `ORCHESTRATION_STATE.json` and current
+live state.
 
-The normal executable task source is:
-
-`projects/score2gp/ACTIVE_TASK.md`
-
-The Agy Fast Delivery Lane below is the explicit exception: its executable task source is the versioned prompt selected by `projects/score2gp/prompts/NEXT.md`.
-
-If `ACTIVE_TASK.md` says `NO_ACTIVE_TASK_APPROVED`, the agent must stop after preflight and report.
+Human authority is required only for material scope approval, genuinely
+ambiguous musical/source adjudication, and merge. Task execution, validation,
+review dispatch, remediation routing, and next-task proposal are autonomous
+within the versioned authority contract. `PROPOSE_NEXT_TASK` never authorizes
+execution of that proposal.
 
 ## Mandatory Startup Protocol
 
