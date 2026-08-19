@@ -12,7 +12,7 @@ At the very start of any conversation session, the agent MUST:
 1. Tier B (compressed loop) is the default workflow loop for low-risk, bounded fixture and product tasks. Tier A (full loop) is required only for architecture uncertainty, private benchmark claims, broad behavior changes, policy exceptions, or failed review.
 2. Approved fixture inputs include tracked public fixtures and the sibling repository `score2gp-private-fixtures`. Agents may inspect and run diagnostics against both when the active task allows fixture or corpus work.
 3. Do not copy raw private PDFs, GP files, MXL/MusicXML files, screenshots, overlays, logs, or generated conversion artifacts into unrelated Git commits. Private fixture files should remain in their approved repository or local workspace unless an active task explicitly allows otherwise.
-4. Use sanitized evidence only: counts, statuses, warning categories, command names, and artifact paths. Leverage product automation scripts (`scripts/agent_verify.py`, `scripts/agent_status.py`, `scripts/pr_body.py`, and `scripts/artifact_audit.py`) to gather status and generate reports rather than copy/pasting raw CLI outputs.
+4. Adhere to the **Sanitized Evidence Schema** defined below. Use sanitized evidence only: counts, statuses, warning categories, command names, and artifact paths. Do not copy/paste raw CLI outputs.
 5. Do not claim full PDF-to-GP conversion works unless proven by reproducible tests.
 6. Prefer public fixtures for automated tests.
 7. Do not let multiple agents edit the same source worktree.
@@ -35,6 +35,8 @@ Developer:
 - Must implement only the assigned task.
 - Must not carry unrelated previous task files unless the PR is explicitly stacked.
 - Must not invent data to satisfy tests.
+- Must not hallucinate or simulate command outputs. All claims of success must be backed by actual executed CLI commands.
+- Must treat any test failure, script failure, or validation warning as a hard stop. No soft bypassing is permitted.
 - Must run required tests and write tests to cover all new system code.
 - Must report changed files, commands, results, branch base, dependency PRs, and limitations.
 - **Branch check, switch, and creation workflow**:
@@ -60,3 +62,20 @@ Integrator:
 - Must manage branch bases, stacked PRs, duplicate PRs, conflicts, PR bodies, and cleanup.
 - Must never merge to main.
 - Must not modify product logic unless explicitly instructed.
+
+## Evidence and Logging Policy
+
+To prevent the leakage of private paths and sensitive data, agents MUST adhere to the **Sanitized Evidence Schema**:
+1. **No Exact Raw Logs**: Agents MUST NOT include raw stdout, stderr, or exact validation logs in PR bodies, author handbacks, or summaries.
+2. **Sanitized Evidence Only**: Agents MUST summarize findings using counts, statuses, warning categories, command names, and public/relative artifact paths.
+3. Use product automation scripts (`scripts/agent_verify.py`, `scripts/agent_status.py`, `scripts/pr_body.py`, and `scripts/artifact_audit.py`) to gather status and generate reports rather than copy/pasting raw CLI outputs.
+
+## Real-World Evaluation Loop
+
+To ensure the project drives toward successful `.gp` file production rather than just passing synthetic tests, for **product tasks whose approved task authority explicitly grants the relevant fixtures**, the agent MUST:
+1. Run the conversion pipeline against the granted real-world private fixtures (e.g., `Lesson-5.pdf`, `Lesson-6.pdf`, `Lesson-7.pdf`).
+2. Read the resulting `warnings.json` and `diagnostics.json` logs.
+3. Prove that the specific roadblock (e.g., missing bar boxes, layout gating refusals) was measurably eliminated without introducing regressions.
+4. Generate a targeted Investigation Report on the *next* roadblock if the `.gp` file still fails to generate, so we always have a clear, log-driven roadmap.
+
+Note: The Real-World Evaluation Loop DOES NOT apply to governance tasks (e.g., `score2gp-agentops`) or product tasks lacking explicit fixture grants.
