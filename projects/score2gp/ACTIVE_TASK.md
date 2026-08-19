@@ -1,25 +1,53 @@
 # Active Task
 
-**Task**: Task 109 — Remediation 05: Intuitive Human-Focused Error Reporting
-**Status**: MERGED
-**Assigned Identity**: tticom
-**Authorised Role**: Supervisor
-**Repository**: tticom/score2gp
-**PR Branch**: `feat/remediation-05-human-error-reporting`
-**Pull Request**: null
-**Original Prompt**: `projects/score2gp/prompts/next/remediation-05-human-error-reporting.md`
+**Task**: Programme transition to native PDF-to-GP
 
-## Context
-When the system encounters conversion failures or unowned notes, it must not silently skip or favour failure, nor should it simply print stack traces. The system needs to accurately and intuitively report what went wrong. The report must be tied directly to the exact element in the document that caused the error (not just the document as a whole). The assumption is that the end user (a musician) is not computer literate and will not read a long technical document. Therefore, the report must be intuitive and as short as possible to convey the issue.
+**Status**: COMPLETED
 
-## Goal
-Design and implement a human-focused error reporting system. When an error occurs (such as an unowned note, a capacity violation, or unrecognized chord), the system must generate a report that:
-1. Clearly ties the error to the specific musical element and location in the original score.
-2. Is intuitive and easily understood by a non-technical musician.
-3. Is as short as possible while still conveying the necessary information.
-*Note: This may require first generating a computer-literate technical report that is then processed into the final user-facing report.*
+**Assigned Identity**: tticom-codex
 
-## Acceptance
-- The conversion pipeline no longer fails silently or with cryptic tracebacks.
-- Errors produce a concise, musician-friendly report.
-- Error reports pinpoint the exact location (e.g., page, measure, staff, note) of the failure in the original document.
+**Authorised Role**: Architect/governance
+
+**Repository**: tticom/score2gp-agentops
+
+**Plan**: `projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md`
+
+## Completed transition
+
+The obsolete active plan and completed task pointers have been archived. The
+native PDF-to-GP and Audiveris retirement programme is now the active planning
+direction. No product implementation task is currently approved.
+
+## Next candidate: NPG-00
+
+Governance should promote NPG-00A through NPG-00D as separately bounded work:
+
+1. Pin a clean current product baseline and inventory PDF, native recognition,
+   Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, and
+   documentation paths.
+2. Restore and adjudicate the Lesson 5 source PDF against the supplied JSON,
+   MusicXML, and GP package using a private, field-level evidence manifest.
+3. Record supported Guitar Pro blank-package behavior and approve versioned
+   Score2GP defaults without claiming an immutable Guitar Pro instrument
+   default.
+4. Approve canonical terminology, supported input classes, target Guitar Pro
+   versions, text/geometry correction posture, capability matrix, and
+   measurable cutover thresholds.
+
+## Non-goals
+
+- No product implementation or Audiveris deletion.
+- No copying private score content into either public repository.
+- No treating historical reports, generated sidecars, or GP files as
+  unquestionable generation truth.
+- No declaring a generated ZIP/XML package a valid conversion without musical
+  and application-level evidence.
+
+## Authorization boundary
+
+Before execution, governance must pin the exact baseline SHA, identity,
+allowed paths, validation commands, evidence handling, stop conditions, and
+independent reviewer. This completed transition does not authorize NPG-00
+execution or product changes.
+
+Completed active tasks are archived under `projects/score2gp/archive/`.
