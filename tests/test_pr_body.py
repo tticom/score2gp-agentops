@@ -1,55 +1,120 @@
 import unittest
-from scripts.pr_body import summarize_report
+from scripts.pr_body import summarize_report, redact_sensitive_data
+import scripts.pr_body
+from unittest.mock import patch
+import subprocess
+import io
+import sys
 
 class TestPrBody(unittest.TestCase):
-    def test_summarize_report(self):
-        raw_text = """# Verification Report /some/secret/path/to/hide.txt
-Some raw log output: /private/path/to/my_secret_file.pdf
-PASS: Test 1 /home/tticom/workspace/repo/file.py:12
-FAIL: Test 2 /opt/app/bin/start
-WARNING: Something might be wrong /var/log/syslog
-More raw logs with stderr output...
+    def test_summarize_report_emits_only_status_counts(self):
+        raw_text = """PASS: Cookie: session_id=super-secret
+FAIL: Authorization: Bearer token-value
+WARNING: /private/Lesson-5.pdf
+# heading containing private@example.test
 """
-        sanitized = summarize_report(raw_text)
-        self.assertIn("Sanitized Verification Report", sanitized)
-        self.assertIn("# Verification Report [REDACTED]", sanitized)
-        self.assertIn("PASS: Test 1 [REDACTED]:12", sanitized)
-        self.assertIn("FAIL: Test 2 [REDACTED]", sanitized)
-        self.assertIn("WARNING: Something might be wrong [REDACTED]", sanitized)
-        self.assertNotIn("/private/path", sanitized)
-        self.assertNotIn("/some/secret/path", sanitized)
-        self.assertNotIn("/home/tticom", sanitized)
-        self.assertNotIn("/opt/app", sanitized)
-        self.assertNotIn("/var/log", sanitized)
-        self.assertNotIn("stderr output", sanitized)
 
-    def test_credential_redaction(self):
-        raw_text = """PASS: api_token=sk-private-123456
-FAIL: db_password=correct-horse-battery-staple
-WARNING: Authorization: Bearer secret-session-token
-# user-email=private@example.test"""
         sanitized = summarize_report(raw_text)
-        self.assertIn("PASS: api_token=[REDACTED]", sanitized)
-        self.assertIn("FAIL: db_password=[REDACTED]", sanitized)
-        self.assertIn("WARNING: Authorization: Bearer [REDACTED]", sanitized)
-        self.assertIn("# user-email=[REDACTED]", sanitized)
-        self.assertNotIn("sk-private", sanitized)
-        self.assertNotIn("correct-horse", sanitized)
-        self.assertNotIn("secret-session", sanitized)
+
+        self.assertIn("PASS: 1 reported", sanitized)
+        self.assertIn("FAIL: 1 reported", sanitized)
+        self.assertIn("WARNING: 1 reported", sanitized)
+
+        self.assertNotIn("super-secret", sanitized)
+        self.assertNotIn("token-value", sanitized)
+        self.assertNotIn("/private/", sanitized)
         self.assertNotIn("private@example.test", sanitized)
+        self.assertNotIn("Cookie:", sanitized)
+        self.assertNotIn("Authorization:", sanitized)
+
+    @patch("scripts.pr_body.run_cmd")
+    @patch("scripts.pr_body.subprocess.run")
+    def test_audit_failure_omits_raw_output(self, mock_run, mock_run_cmd):
+        # Mock git commands to not fail
+        mock_run_cmd.return_value = "file.txt"
+        
+        mock_run.side_effect = lambda cmd, **kwargs: subprocess.CompletedProcess(
+            args=cmd, 
+            returncode=1 if "scripts/artifact_audit.py" in cmd else 0, 
+            stdout="Fake audit stdout with /private/Lesson-5.pdf and token=secret123",
+            stderr="Fake audit stderr"
+        )
+        
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        
+        try:
+            with patch('sys.argv', ['pr_body.py']):
+                scripts.pr_body.main()
+        finally:
+            sys.stdout = sys.__stdout__
+            
+        body = captured_output.getvalue()
+        
+        self.assertNotIn("Fake audit stdout", body)
+        self.assertNotIn("/private/", body)
+        self.assertNotIn("secret123", body)
+        self.assertIn("Raw audit output is intentionally omitted; inspect it only in the local workspace.", body)
 
 
-    def test_credential_redaction_multiword_and_json(self):
-        from scripts.pr_body import summarize_report
-        raw_text = """PASS: "password": "my secret phrase with spaces"
-FAIL: Authorization: Basic cGFzc3dvcmQ=
-WARNING: api_token = sk-private-123456 and more stuff
-# user-email: private@example.test"""
-        sanitized = summarize_report(raw_text)
-        self.assertIn("PASS: \"password\": [REDACTED]", sanitized)
-        self.assertIn("FAIL: Authorization: Basic [REDACTED]", sanitized)
-        self.assertIn("WARNING: api_token = [REDACTED]", sanitized)
-        self.assertIn("# user-email: [REDACTED]", sanitized)
-        self.assertNotIn("my secret phrase", sanitized)
-        self.assertNotIn("cGFzc3dvcmQ=", sanitized)
-        self.assertNotIn("more stuff", sanitized)
+    @patch("scripts.pr_body.run_cmd")
+    @patch("scripts.pr_body.subprocess.run")
+    @patch("scripts.pr_body.os.path.exists")
+    @patch("builtins.open")
+    def test_oserror_omits_raw_exception(self, mock_open, mock_exists, mock_run, mock_run_cmd):
+        mock_run_cmd.return_value = "file.txt"
+        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+        mock_exists.return_value = True
+        mock_open.side_effect = OSError("Secret permission denied: /private/keys")
+        
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        
+        try:
+            with patch('sys.argv', ['pr_body.py']):
+                scripts.pr_body.main()
+        finally:
+            sys.stdout = sys.__stdout__
+            
+        body = captured_output.getvalue()
+        
+        self.assertNotIn("Secret permission denied", body)
+        self.assertNotIn("/private/keys", body)
+        self.assertIn("Error reading verification report: I/O error occurred.", body)
+
+
+    def test_summarize_report_avoids_false_positives(self):
+        raw_text = """COMPASS: this should not count
+FAILING: this should count as FAIL? No, FAIL: or FAIL 
+# heading
+"""
+        sanitized = scripts.pr_body.summarize_report(raw_text)
+        self.assertNotIn("PASS", sanitized)
+        self.assertNotIn("FAIL", sanitized)
+
+
+    def test_summarize_report_parses_real_report_format(self):
+        raw_text = """# Score2GP Verification Report
+
+**Overall Status**: 🔴 FAIL
+**Timestamp**: 2026-08-19 05:59:19
+
+| Verification Step | Status | Exit Code | Time |
+| :--- | :--- | :--- | :--- |
+| Run pytest | 🟢 PASS | 0 | 51.81s |
+| Export schemas | 🟢 PASS | 0 | 0.33s |
+| Validate IR on tiny_score | 🟢 PASS | 0 | 0.26s |
+| Artifact audit | 🟢 PASS | 0 | 0.04s |
+| Git PR range check diff | 🔴 FAIL | 2 | 0.01s |
+| Random step | 🟡 WARNING | 0 | 0.01s |
+
+## Step Details
+- **Status**: PASS
+"""
+        sanitized = scripts.pr_body.summarize_report(raw_text)
+        self.assertIn("PASS: 4 reported", sanitized)
+        self.assertIn("FAIL: 1 reported", sanitized)
+        self.assertIn("WARNING: 1 reported", sanitized)
+
+if __name__ == "__main__":
+    unittest.main()

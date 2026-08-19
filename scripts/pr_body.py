@@ -22,13 +22,35 @@ def redact_sensitive_data(text):
     return text
 
 def summarize_report(raw_text):
-    lines = raw_text.split('\n')
-    sanitized = ["*Sanitized Verification Report*"]
-    sanitized.append("Raw stdout and stderr have been redacted to prevent leakage of private paths.")
-    for line in lines:
-        if line.startswith("#") or "PASS" in line.upper() or "FAIL" in line.upper() or "WARNING" in line.upper():
-            sanitized_line = redact_sensitive_data(line)
-            sanitized.append(sanitized_line)
+    sanitized = [
+        "*Sanitized Verification Report*",
+        "Raw stdout and stderr are omitted to prevent disclosure of private data.",
+    ]
+
+    counts = {"PASS": 0, "FAIL": 0, "WARNING": 0}
+    has_table = any(line.startswith("|") and len(line.split("|")) >= 3 for line in raw_text.splitlines())
+    for line in raw_text.splitlines():
+        status_target = None
+        if line.startswith("|") and len(line.split("|")) >= 3:
+            parts = [p.strip() for p in line.split("|")]
+            status_target = parts[2].upper()
+        elif not has_table and line.startswith("- **Status**:"):
+            status_target = line.split(":", 1)[1].upper()
+        elif not has_table and (line.startswith("PASS:") or line.startswith("FAIL:") or line.startswith("WARNING:")):
+            status_target = line.upper()
+
+        if status_target:
+            if "PASS" in status_target:
+                counts["PASS"] += 1
+            elif "FAIL" in status_target:
+                counts["FAIL"] += 1
+            elif "WARNING" in status_target:
+                counts["WARNING"] += 1
+
+    for status in ("PASS", "FAIL", "WARNING"):
+        if counts[status]:
+            sanitized.append(f"{status}: {counts[status]} reported")
+
     return "\n".join(sanitized)
 
 def main():
@@ -52,8 +74,8 @@ def main():
             with open(verify_md_path, "r", encoding="utf-8") as f:
                 raw_report = f.read().strip()
                 verify_report = summarize_report(raw_report)
-        except Exception as e:
-            verify_report = f"Error reading verification report: {e}"
+        except OSError:
+            verify_report = "Error reading verification report: I/O error occurred."
     else:
         verify_report = "*No verification report found. Run python scripts/agent_verify.py first.*"
 
@@ -86,10 +108,9 @@ def main():
         lines.append("🟢 **PASS**: Repository hygiene checks succeeded. No private fixtures or generated artifacts are tracked.")
     else:
         lines.append("🔴 **FAIL**: Repository hygiene checks failed. The following tracked files violate privacy policy:")
-        lines.append("```text")
-        raw_audit = audit_res.stdout.strip() if audit_res.stdout.strip() else audit_res.stderr.strip()
-        lines.append(redact_sensitive_data(raw_audit))
-        lines.append("```")
+        lines.append(
+            "Raw audit output is intentionally omitted; inspect it only in the local workspace."
+        )
     lines.append("")
 
     lines.append("## Known Limitations")
