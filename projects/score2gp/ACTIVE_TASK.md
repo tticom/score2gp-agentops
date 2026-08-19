@@ -10,7 +10,7 @@
 
 **PR Branch**: `codex/autonomous-development-loop`
 
-**Pull Request**: TBD
+**Pull Request**: 573
 
 **Owner Role**: architect
 

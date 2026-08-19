@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "codex/autonomous-development-loop",
-    "pull_request": null,
+    "pull_request": 573,
     "owner_role": "architect",
     "prompt": null,
     "allowed_paths": [
