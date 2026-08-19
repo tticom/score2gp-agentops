@@ -1,33 +1,56 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 1,
+  "authority_revision": 2,
   "task": {
-    "id": "109",
-    "title": "Remediation 05: Intuitive Human-Focused Error Reporting",
-    "status": "MERGED",
-    "repository": "tticom/score2gp",
-    "branch": "feat/remediation-05-human-error-reporting",
-    "pull_request": 442,
-    "owner_role": "supervisor",
-    "prompt": "projects/score2gp/prompts/next/remediation-05-human-error-reporting.md",
+    "id": "AUT-01",
+    "title": "Consolidate the autonomous development loop",
+    "objective": "Make ORCHESTRATION_STATE.json the sole machine authority and expose one deterministic, idempotent advance(live_state) decision interface while retaining explicit compatibility adapters.",
+    "status": "RUNNING",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "codex/autonomous-development-loop",
+    "pull_request": 573,
+    "owner_role": "architect",
+    "prompt": null,
     "allowed_paths": [
-      "src/score2gp/cli.py",
-      "src/score2gp/errors.py",
-      "src/score2gp/scoreir_compiler.py",
-      "tests/test_errors.py",
-      "tests/test_cli.py"
+      "projects/score2gp/ACTIVE_TASK.md",
+      "projects/score2gp/AGENT_CONTROL.md",
+      "projects/score2gp/ORCHESTRATION_STATE.json",
+      "scripts/score2gp_governance_audit.py",
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_orchestrator.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py"
     ],
     "acceptance": [
-      "The conversion pipeline no longer fails silently or with cryptic tracebacks.",
-      "Errors produce a concise, musician-friendly report.",
-      "Error reports pinpoint the exact location (e.g., page, measure, staff, note) of the failure in the original document."
+      "One side-effect-free advance interface returns only the approved operational actions.",
+      "Repeating an unchanged live state produces the same decision and no side effects.",
+      "ACTIVE_TASK.md is a generated view and drift from machine authority fails governance audit.",
+      "Legacy Orca resolver behavior remains covered by compatibility tests."
     ],
     "required_evidence": [
       "focused_tests",
-      "full_test_suite",
-      "adversarial_review"
-    ]
+      "full_governance_tests",
+      "governance_audit",
+      "independent_review"
+    ],
+    "validation_commands": [
+      "../score2gp/.venv/bin/python -m pytest -q tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_score2gp_dispatch.py",
+      "../score2gp/.venv/bin/python -m pytest -q tests",
+      "python3 scripts/score2gp_governance_audit.py",
+      "git diff --check origin/main...HEAD"
+    ],
+    "dependencies": [
+      "score2gp-agentops#572"
+    ],
+    "stop_conditions": [
+      "authority_schema_ambiguous",
+      "legacy_behavior_regression",
+      "reviewer_independence_unavailable"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
   },
   "incidents": [
     {
@@ -48,6 +71,11 @@
       "github_logins": ["tticom-automation"],
       "allowed_actions": ["edit", "test", "commit", "push_task_branch", "publish_handback"],
       "forbidden_actions": ["review", "approve", "merge", "governance_edit"]
+    },
+    "architect": {
+      "github_logins": ["tticom-codex"],
+      "allowed_actions": ["governance_edit", "test", "commit", "push_task_branch", "publish_handback"],
+      "forbidden_actions": ["review_own_work", "approve_own_work", "merge", "product_edit"]
     },
     "reviewer": {
       "github_logins": ["tticom-codex", "tticomgov-code"],

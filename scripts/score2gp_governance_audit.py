@@ -6,6 +6,11 @@ import subprocess
 import sys
 
 try:
+    from scripts.score2gp_orchestrator import load_authority, render_active_task
+except ModuleNotFoundError:
+    from score2gp_orchestrator import load_authority, render_active_task
+
+try:
     from scripts.score2gp_task_status import (
         EXECUTABLE_TASK_STATUSES,
         KNOWN_TASK_STATUSES,
@@ -151,6 +156,20 @@ def main():
             content = f.read()
 
         status, repository, branch_name = parse_active_task_state(content)
+
+        authority_path = "projects/score2gp/ORCHESTRATION_STATE.json"
+        generated_marker = "Generated from ORCHESTRATION_STATE.json; do not edit directly."
+        if generated_marker in content and os.path.exists(authority_path):
+            try:
+                authority = load_authority(authority_path)
+                if authority.get("schema_version") == 2:
+                    generated = render_active_task(authority)
+                    if content != generated:
+                        violations.append(
+                            "ACTIVE_TASK.md diverges from generated ORCHESTRATION_STATE.json view."
+                        )
+            except Exception as error:
+                violations.append(f"Cannot validate orchestration authority: {error}")
 
         if not status:
             violations.append("ACTIVE_TASK.md has no parseable status.")

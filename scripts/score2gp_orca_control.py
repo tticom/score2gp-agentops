@@ -17,6 +17,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.score2gp_orchestrator import advance as advance_orchestration
+except ModuleNotFoundError:
+    from score2gp_orchestrator import advance as advance_orchestration
+
 STATES = {
     "BLOCKED",
     "READY",
@@ -137,7 +142,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
 
 
 def validate_authority(authority: dict[str, Any]) -> None:
-    if authority.get("schema_version") != 1:
+    if authority.get("schema_version") not in {1, 2}:
         raise ControlError("unsupported authority schema_version")
     task = authority.get("task")
     if not isinstance(task, dict):
@@ -434,7 +439,10 @@ def authenticated_github_login() -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("snapshot", "resolve", "assign", "validate", "merge-check"))
+    parser.add_argument(
+        "command",
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check"),
+    )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
     parser.add_argument("--assignment", type=Path)
@@ -451,6 +459,9 @@ def main() -> None:
         raise ControlError(f"{args.command} requires --live")
     authority = load_json(args.authority)
     live = load_json(args.live)
+    if args.command == "advance":
+        print(json.dumps(advance_orchestration(authority, live), indent=2, sort_keys=True))
+        return
     active_task_path = args.authority.parent / "ACTIVE_TASK.md"
     validate_legacy_alignment(authority, active_task_path.read_text(encoding="utf-8"))
     resolved = resolve_state(authority, live)

@@ -4,6 +4,10 @@ Rationale for synthetic/mocked tests:
 This test suite verifies the state resolution, validation, and merge gate logic of the Orca control plane (non-domain infrastructure). Since it relies on querying the GitHub API via the `gh` command-line utility, running real integration tests against GitHub during test execution would require active network access, API tokens with repository access, and live PR mutations. To ensure deterministic, offline, and fast test execution, the GitHub API calls and CLI executions are synthetically mocked. Real-world end-to-end integration and GitHub API schema checks are shadow-tested via actual manual runs and Orca supervisor pilot execution.
 """
 from copy import deepcopy
+import json
+from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -242,3 +246,39 @@ def test_multiple_reviews_by_same_author_resolves_latest() -> None:
     ]
     assert current_head_review(live(reviews_reversed)["pull_request"]) == "CHANGES_REQUESTED"
 
+
+def test_advance_cli_uses_schema_v2_authority_without_legacy_pointer(
+    tmp_path: Path,
+) -> None:
+    config = authority()
+    config["schema_version"] = 2
+    config["task"].update(
+        objective="Apply the bounded repair.",
+        base_branch="main",
+        validation_commands=["python3 -m pytest"],
+        dependencies=[],
+        stop_conditions=[],
+        reviewer_role="reviewer",
+        delivery_action="pull_request",
+    )
+    authority_path = tmp_path / "authority.json"
+    live_path = tmp_path / "live.json"
+    authority_path.write_text(json.dumps(config), encoding="utf-8")
+    live_path.write_text(json.dumps(live()), encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/score2gp_orca_control.py",
+            "advance",
+            "--authority",
+            str(authority_path),
+            "--live",
+            str(live_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert json.loads(completed.stdout)["action"] == "AWAIT_REVIEW"
