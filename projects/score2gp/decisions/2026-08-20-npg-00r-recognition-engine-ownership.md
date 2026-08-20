@@ -27,16 +27,16 @@ The Architect has independently verified the automation claims on the clean `ori
 - **Captured Output Artifact:** Transcript logged in `projects/score2gp/runs/2026-08-20-npg-00r-automation-handoff.md`
 - **Threshold Failure:** Audiveris failed the requirement for floating barlines, collapsing all 43 measures into 1.
 
-### Third-Party Object Disconfirmation Ledger
+### Third-Party Object Disconfirmation Ledger (Unproven Claims)
 - **Myriad PDFtoMusic Pro (v1.7.5)**:
   - **License/Terms:** Commercial, Proprietary (Source: https://www.myriad-online.com/en/products/pdftomusicpro.htm EULA). The EULA strictly prohibits headless API integration and redistribution as a dependency in an open-source tool.
-  - **Comparison Threshold:** Fails the deployment and open-source licensing thresholds.
+  - **Comparison Threshold:** Fails the deployment and open-source licensing thresholds. *(Note: This claim is based on website documentation and remains unproven at runtime. However, it precludes open-source integration.)*
 - **Oemer (v0.1.2)**:
   - **License/Terms:** MIT License (Source: https://github.com/BreezeWhite/oemer).
-  - **Comparison Threshold:** Oemer is a machine-learning model explicitly trained on scanned historical sheet music (raster), not modern born-digital vector paths. It completely lacks vector layout heuristics, failing the vector-based geometric extraction threshold.
+  - **Comparison Threshold:** Oemer is a machine-learning model explicitly trained on scanned historical sheet music (raster). *(Note: Its lack of vector layout heuristics is an unproven architectural claim based on its readme, but it falls outside the strictly vector-based geometric extraction requirement.)*
 
 ## Decision
-Based on the explicit Score2GP requirement for layout resilience (floating barlines, differing bars per row) and the licensing/deployment incompatibility of commercial 3rd-party objects:
+Based on the explicit Score2GP requirement for layout resilience (floating barlines, differing bars per row), and because Owned Native Extraction is the only viable path currently proven (as Audiveris definitively fails and third-party claims remain unproven or deployment-incompatible):
 1. **Owned Native Extraction**: Score2GP will build and own a native vector-based extraction layer instead of consuming an external OMR object.
 2. **Audiveris Retirement**: Audiveris is conditionally recommended for retirement. *Note: Per NPG-00R bounds, Audiveris deletion and actual product implementation are strictly deferred to subsequent gated implementation tasks.*
 
@@ -48,7 +48,7 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Observable Outputs:** Extracted `TabCandidate` objects split logically by the floating barline X-coordinates.
 - **Refusal/Partial-Output Behavior:** If a floating line thickness matches a repeat marker but lacks dots, it must emit a diagnostic warning and degrade to a standard barline, never crashing the parser.
 - **Allowed Paths:** `src/score2gp/pdf_geometry.py`, `src/score2gp/pdf_tab_bar_assembler.py`
-- **Validation Commands:** `python -m pytest tests/test_pdf.py`
+- **Validation Commands:** `python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py`
 - **Negative Controls:** Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.
 - **Promotion Dependency:** NPG-00R
 
@@ -57,7 +57,7 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Observable Outputs:** Rhythm durations attached to `TabCandidate` events.
 - **Refusal/Partial-Output Behavior:** If stems are present but noteheads are absent, the parser must refuse to extract rhythm for that chord and emit `MissingRhythmGeometry`.
 - **Allowed Paths:** `src/score2gp/pdf_geometry_candidate_extraction.py`
-- **Validation Commands:** `python -m pytest tests/test_geometry.py`
+- **Validation Commands:** `python -m pytest tests/test_pdf_geometry_candidate_extraction.py`
 - **Negative Controls:** Must not infer standard rhythm if the PDF is tablature-only (must rely exclusively on TAB stems).
 - **Promotion Dependency:** NPG-03B
 
@@ -66,6 +66,6 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Observable Outputs:** `Section` and `Repeat` tags injected into the IR timeline.
 - **Refusal/Partial-Output Behavior:** Unrecognized bold text above the staff must be classified as standard lyrics, not a structural section.
 - **Allowed Paths:** `src/score2gp/pdf_geometry_candidates.py`
-- **Validation Commands:** `python -m pytest tests/test_timeline.py`
+- **Validation Commands:** `python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py`
 - **Negative Controls:** Must not inject a `Section` if the Y-offset heuristic exceeds the configured sensible default threshold (e.g. 50 points).
 - **Promotion Dependency:** NPG-04C
