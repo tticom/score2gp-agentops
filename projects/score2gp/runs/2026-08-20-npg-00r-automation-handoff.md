@@ -38,7 +38,7 @@ As noted by human supervision, exposing heuristic thresholds requires that we de
 *End of Handoff Evidence. Awaiting Architect Decision on engine ownership and bounded successor task sequence.*
 
 ### Automation Evidence Transcript
-- **Command Executed:** `python3 -m score2gp.cli generate-sidecar --pdf ../score2gp-private-fixtures/fixtures/private/Lesson-5.pdf --out Lesson-5-test.xml`
+- **Command Executed:** `.venv/bin/python -m score2gp.cli generate-sidecar --pdf ../score2gp-private-fixtures/fixtures/private/Lesson-5.pdf --out Lesson-5-test.xml`
 - **Transcript Output:**
   ```text
   Running OMR recognition on ../score2gp-private-fixtures/fixtures/private/Lesson-5.pdf...
