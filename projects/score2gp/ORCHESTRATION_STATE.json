@@ -20,7 +20,8 @@
       "The report pins clean current product, governance, and skills revisions.",
       "Every executable native PDF, Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, environment, CI, and documentation path is inventoried.",
       "Executable Audiveris and Java routes are separated from historical fixture and report references.",
-      "No product behavior or private artifact is changed or copied."
+      "No product behavior or private artifact is changed or copied.",
+      "Deliver only the bounded baseline report."
     ],
     "validation_commands": [
       "python3 scripts/score2gp_governance_audit.py",
@@ -59,7 +60,8 @@
       "The Automation handoff is recorded as reported evidence with exact provenance, hashes, commands, claims, limitations, and unresolved questions; private inputs remain local and sanitized.",
       "The Architect independently compares Audiveris and credible third-party or owned alternatives against explicit Score2GP requirements, licensing, deployment, object/API boundary, fidelity, privacy, reproducibility, maintenance, and exit criteria.",
       "The decision record selects third-party, owned, or hybrid ownership, records rejected alternatives and disconfirming evidence, and states what remains unproven.",
-      "The resulting requirements delta is traceable to the programme plan and yields a bounded successor task sequence; no product implementation or Audiveris deletion is authorized by this task."
+      "The resulting requirements delta is traceable to the programme plan and yields a bounded successor task sequence; no product implementation or Audiveris deletion is authorized by this task.",
+      "Automation handoff \u2014 evidence only: preserve source commit, runtime/tool versions, commands, hashes, observed claims, limitations, and unresolved questions; sanitize private content; mark claims reported or unproven until independently checked. Automation must not choose architecture, alter requirements, or author the Architect decision."
     ],
     "validation_commands": [
       "python3 scripts/score2gp_governance_audit.py",
@@ -96,42 +98,115 @@
   ],
   "roles": {
     "implementation": {
-      "github_logins": ["tticom-automation"],
-      "allowed_actions": ["edit", "test", "commit", "push_task_branch", "publish_handback"],
-      "forbidden_actions": ["review", "approve", "merge", "governance_edit"]
+      "github_logins": [
+        "tticom-automation"
+      ],
+      "allowed_actions": [
+        "edit",
+        "test",
+        "commit",
+        "push_task_branch",
+        "publish_handback"
+      ],
+      "forbidden_actions": [
+        "review",
+        "approve",
+        "merge",
+        "governance_edit"
+      ]
     },
     "architect": {
-      "github_logins": ["tticom-codex"],
-      "allowed_actions": ["governance_edit", "test", "commit", "push_task_branch", "publish_handback"],
-      "forbidden_actions": ["review_own_work", "approve_own_work", "merge", "product_edit"]
+      "github_logins": [
+        "tticom-codex"
+      ],
+      "allowed_actions": [
+        "governance_edit",
+        "test",
+        "commit",
+        "push_task_branch",
+        "publish_handback"
+      ],
+      "forbidden_actions": [
+        "review_own_work",
+        "approve_own_work",
+        "merge",
+        "product_edit"
+      ]
     },
     "reviewer": {
-      "github_logins": ["tticom-codex", "tticomgov-code"],
-      "allowed_actions": ["inspect", "test", "publish_review"],
-      "forbidden_actions": ["edit", "commit", "push", "merge"]
+      "github_logins": [
+        "tticom-codex",
+        "tticomgov-code"
+      ],
+      "allowed_actions": [
+        "inspect",
+        "test",
+        "publish_review"
+      ],
+      "forbidden_actions": [
+        "edit",
+        "commit",
+        "push",
+        "merge"
+      ]
     },
     "governance": {
-      "github_logins": ["tticomgov-code", "tticom"],
-      "allowed_actions": ["governance_edit", "publish_governance_review", "promote_task"],
-      "forbidden_actions": ["product_edit", "merge"]
+      "github_logins": [
+        "tticomgov-code",
+        "tticom"
+      ],
+      "allowed_actions": [
+        "governance_edit",
+        "publish_governance_review",
+        "promote_task"
+      ],
+      "forbidden_actions": [
+        "product_edit",
+        "merge"
+      ]
     },
     "supervisor": {
-      "github_logins": ["tticom"],
-      "allowed_actions": ["resolve_state", "create_worktree", "dispatch", "collect_evidence"],
-      "forbidden_actions": ["implement_product", "approve_own_work", "merge"]
+      "github_logins": [
+        "tticom"
+      ],
+      "allowed_actions": [
+        "resolve_state",
+        "create_worktree",
+        "dispatch",
+        "collect_evidence"
+      ],
+      "forbidden_actions": [
+        "implement_product",
+        "approve_own_work",
+        "merge"
+      ]
     },
     "merge_controller": {
       "github_logins": [],
-      "allowed_actions": ["verify_merge_gate", "merge_exact_head"],
-      "forbidden_actions": ["edit", "review", "approve", "bypass"]
+      "allowed_actions": [
+        "verify_merge_gate",
+        "merge_exact_head"
+      ],
+      "forbidden_actions": [
+        "edit",
+        "review",
+        "approve",
+        "bypass"
+      ]
     }
   },
   "merge_policy": {
-    "required_checks": ["test"],
+    "required_checks": [
+      "test"
+    ],
     "minimum_approvals": 2,
     "require_governance_go": true,
     "require_reviewed_head": true,
     "require_resolved_threads": true,
     "allow_admin_bypass": false
-  }
+  },
+  "global_invariants": [
+    "Maximum-effort invariant: continue collecting safe partial evidence and diagnostics instead of failing on the first recoverable defect, while preserving invalid or ambiguous status. Never emit a valid-success claim or package from structurally invalid input. Genuine safety or integrity contradictions remain fail-closed.",
+    "Task-behavior contract: Every implementation task must state input class, observable output, refusal or partial-result behavior, allowed paths, validation commands, negative controls, provenance requirements, and successor gate. Agents execute only the promoted task and may not widen scope, choose successors, change roles, approve, or merge."
+  ]
 }
