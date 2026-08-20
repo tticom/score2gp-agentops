@@ -1,69 +1,26 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 3,
+  "authority_revision": 4,
   "task": {
-    "id": "AUT-01",
-    "title": "Consolidate the autonomous development loop",
-    "objective": "Make ORCHESTRATION_STATE.json the sole machine authority and expose one deterministic, idempotent advance(live_state) decision interface while retaining explicit compatibility adapters.",
-    "status": "MERGED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "branch": "codex/autonomous-development-loop",
-    "pull_request": 573,
-    "owner_role": "architect",
-    "prompt": null,
-    "allowed_paths": [
-      "projects/score2gp/ACTIVE_TASK.md",
-      "projects/score2gp/AGENT_CONTROL.md",
-      "projects/score2gp/ORCHESTRATION_STATE.json",
-      "scripts/score2gp_governance_audit.py",
-      "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_orchestrator.py",
-      "tests/test_score2gp_orca_control.py",
-      "tests/test_score2gp_orchestrator.py"
-    ],
-    "acceptance": [
-      "One side-effect-free advance interface returns only the approved operational actions.",
-      "Repeating an unchanged live state produces the same decision and no side effects.",
-      "ACTIVE_TASK.md is a generated view and drift from machine authority fails governance audit.",
-      "Legacy Orca resolver behavior remains covered by compatibility tests."
-    ],
-    "required_evidence": [
-      "focused_tests",
-      "full_governance_tests",
-      "governance_audit",
-      "independent_review"
-    ],
-    "validation_commands": [
-      "../score2gp/.venv/bin/python -m pytest -q tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_score2gp_dispatch.py",
-      "../score2gp/.venv/bin/python -m pytest -q tests",
-      "python3 scripts/score2gp_governance_audit.py",
-      "git diff --check origin/main...HEAD"
-    ],
-    "dependencies": [
-      "score2gp-agentops#572"
-    ],
-    "stop_conditions": [
-      "authority_schema_ambiguous",
-      "legacy_behavior_regression",
-      "reviewer_independence_unavailable"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "NPG-00A",
     "title": "Pin the native PDF-to-GP baseline and dependency inventory",
-    "status": "PROPOSED",
     "objective": "Pin clean current product, governance, and skills revisions and inventory every native PDF, Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, environment, CI, and documentation path without changing product behavior.",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "codex/npg-00a-baseline-inventory",
+    "pull_request": null,
     "owner_role": "architect",
-    "reviewer_role": "reviewer",
+    "prompt": null,
     "allowed_paths": [
       "projects/score2gp/reports/2026-08-19-npg-00a-baseline-and-dependency-inventory.md"
+    ],
+    "acceptance": [
+      "The report pins clean current product, governance, and skills revisions.",
+      "Every executable native PDF, Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, environment, CI, and documentation path is inventoried.",
+      "Executable Audiveris and Java routes are separated from historical fixture and report references.",
+      "No product behavior or private artifact is changed or copied."
     ],
     "validation_commands": [
       "python3 scripts/score2gp_governance_audit.py",
@@ -79,10 +36,10 @@
       "private_artifact_copy_required",
       "inventory_requires_product_behavior_change"
     ],
-    "delivery_action": "pull_request",
-    "requires_human_scope_approval": true,
-    "may_execute": false
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
   },
+  "next_task_proposal": null,
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",

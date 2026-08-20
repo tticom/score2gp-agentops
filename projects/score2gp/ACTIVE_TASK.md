@@ -2,36 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: AUT-01 — Consolidate the autonomous development loop
+**Task**: NPG-00A — Pin the native PDF-to-GP baseline and dependency inventory
 
-**Status**: MERGED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `codex/autonomous-development-loop`
+**PR Branch**: `codex/npg-00a-baseline-inventory`
 
-**Pull Request**: 573
+**Pull Request**: TBD
 
 **Owner Role**: architect
 
 ## Objective
 
-Make ORCHESTRATION_STATE.json the sole machine authority and expose one deterministic, idempotent advance(live_state) decision interface while retaining explicit compatibility adapters.
+Pin clean current product, governance, and skills revisions and inventory every native PDF, Audiveris, MusicXML, canonical-score, GPIF, package, test, dependency, environment, CI, and documentation path without changing product behavior.
 
 ## Allowed paths
 
-- `projects/score2gp/ACTIVE_TASK.md`
-- `projects/score2gp/AGENT_CONTROL.md`
-- `projects/score2gp/ORCHESTRATION_STATE.json`
-- `scripts/score2gp_governance_audit.py`
-- `scripts/score2gp_orca_control.py`
-- `scripts/score2gp_orchestrator.py`
-- `tests/test_score2gp_orca_control.py`
-- `tests/test_score2gp_orchestrator.py`
+- `projects/score2gp/reports/2026-08-19-npg-00a-baseline-and-dependency-inventory.md`
 
 ## Validation commands
 
-- `../score2gp/.venv/bin/python -m pytest -q tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_score2gp_dispatch.py`
-- `../score2gp/.venv/bin/python -m pytest -q tests`
 - `python3 scripts/score2gp_governance_audit.py`
 - `git diff --check origin/main...HEAD`
