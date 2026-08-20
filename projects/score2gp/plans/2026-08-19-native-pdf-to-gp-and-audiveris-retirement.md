@@ -258,6 +258,9 @@ page](https://support.guitar-pro.com/hc/en-us/articles/5018404823069-GP8-Guitar-
 | Meter | 4/4 | Only under the approved missing-meter policy |
 | Tempo | 120 BPM | Playback default; never source-derived |
 | Key | Neutral C major/A minor signature | Only when no key evidence exists |
+| Chord Proximity Threshold | TBD (needs empirical testing) | Max X-coordinate distance before notes are consecutive vs chord |
+| Stroke Thickness Threshold | TBD (needs empirical testing) | Mathematical separation of standard barline vs repeat bounding line |
+| Section Marker Y-Offset | TBD (needs empirical testing) | Vertical distance above staff classifying bold text as section marker vs lyrics |
 
 Governance must approve the final table after real blank-package inspection and
 corpus analysis. Defaults affecting musical meaning must be visible in the
@@ -714,12 +717,12 @@ create the exact prompt, baseline, allowlist, commands, and reviewer identity.
 | NPG-02A | Specify `SourceEvidenceIR` identities, locations, confidence classes, alternatives, relationships, and schema version | 00D | Round-trip schema tests; unknown/ambiguous/unsupported are not collapsed into missing |
 | NPG-02B | Adapt current PDF text, TAB, geometry, and native notation outcomes to the evidence facade | 02A | Characterization parity plus source-to-evidence trace; text retains semantic candidates beyond fret tokens; no GPIF or resolution policy enters recognizers |
 | NPG-03A | Produce page/system/staff/track topology and pair notation/TAB staves | 02B | Multi-system/multi-track, orphan-staff, false-pairing, and ambiguous-pairing fixtures with overlays |
-| NPG-03B | Produce observed/rejected/inferred/repaired barline candidates and a global measure grid, with causal failure classification and correction candidates | 03A | Stem/bracket negatives, fragmented/missing geometry repair cases, system-edge cases, multi-staff alignment, deterministic ordering, and Lesson 5 private overlay; fixtures prove repair is bounded and does not widen tolerances globally |
+| NPG-03B | Produce observed/rejected/inferred/repaired barline candidates and a global measure grid, with causal failure classification and correction candidates. Include layout resilience for irregular rows and floating barlines. | 03A | Stem/bracket negatives, fragmented/missing geometry repair cases, system-edge cases, multi-staff alignment, deterministic ordering, and Lesson 5 private overlay; fixtures prove repair is bounded and does not widen tolerances globally |
 | NPG-03C | Extract track labels, instrument candidates, string count, tuning, capo/partial capo, and explicit fretboard constraints | 03A, 01C | Acoustic/electric/bass/capo/partial-capo/missing/conflict matrix; no six-line-TAB-to-acoustic shortcut |
 | NPG-04A | Replace fixed 4/4/3840 capacity with one rational meter utility and characterize legacy behavior | 01C | 4/4, 12/8, cut time, pickups, meter changes, exact/non-exact TPQ tests; repository search finds no unapproved capacity literal |
 | NPG-04B | Add explicit canonical master measures, track bars, voices, beats, rhythms, and a v0.1 adapter | 04A | Monophonic compatibility, two voices, chords, rests, empty voice slots, deterministic IDs, and declared adapter loss report |
-| NPG-04C | Implement rhythm hypotheses and a bounded measure/voice solver for stems, beams, flags, rests, dots, and tuplets | 02B, 03B, 04B | Exact fill/non-overlap properties, runner-up ambiguity, search-limit refusal, and no silent layout-density success |
-| NPG-04D | Add repeat barlines, endings, tempo/meter/key changes, and navigation relationships | 03B, 04C | Hand-authored semantic fixtures and malformed-cycle/refusal cases |
+| NPG-04C | Implement rhythm hypotheses and a bounded measure/voice solver for stems, beams, flags, rests, dots, and tuplets. Must include geometric rhythm extraction from standard staff to synchronize with TAB. | 02B, 03B, 04B | Exact fill/non-overlap properties, runner-up ambiguity, search-limit refusal, and no silent layout-density success |
+| NPG-04D | Add repeat barlines, endings, tempo/meter/key changes, and navigation relationships using vector-based structural signaling (e.g. stroke thickness for barlines, precise text coordinates). | 03B, 04C | Hand-authored semantic fixtures and malformed-cycle/refusal cases |
 | NPG-05A | Separate staff/written/concert/MIDI pitch and implement clef/key/accidental/transposition state | 04B | Guitar octave, bass, accidental carry/reset, key change, and MusicXML semantic round-trip tests |
 | NPG-05B | Reconcile TAB positions and pitch; add capo-aware, chord-aware bounded fingering solver for missing positions | 03C, 05A | Source TAB wins, capo equation holds, no same-string chord collision, maximum-fret and low-margin ambiguity cases |
 | NPG-05C | Attach chord symbols, lyrics, dynamics, articulations, ornaments, and supported guitar techniques | 04C, 05B | Capability table maps every recognized feature to exact preservation, declared degradation, or refusal |
