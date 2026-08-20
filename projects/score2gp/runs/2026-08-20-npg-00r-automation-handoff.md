@@ -5,7 +5,7 @@
 **Role**: Automation/Developer Handoff to Architect
 
 ## 1. Audiveris Suitability & Structural Failures
-During recent execution of `note-candidate-recognition` and `generate-sidecar` on instructional private fixtures (specifically `Lesson-5.pdf`), the Audiveris OMR engine demonstrated catastrophic structural failure:
+During recent execution (commit: dea02687eb1cd02da7baf138a0c3db1b07a786a7, tool: Audiveris v5.3) of `note-candidate-recognition` and `generate-sidecar` on instructional private fixtures (specifically `Lesson-5.pdf`), the Audiveris OMR engine demonstrated catastrophic structural failure:
 - **Floating Barlines**: Audiveris failed to recognize vertical barlines that did not perfectly enclose the 5-line staff bounding boxes (a common instructional format).
 - **Measure Collapsing**: As a result of missing barlines, it collapsed all 43 measures into a single giant "Measure 1".
 - **Capacity Mismatch Crash**: The strict validation layer subsequently crashed because Measure 1 vastly exceeded standard beat capacity.
@@ -15,12 +15,12 @@ During recent execution of `note-candidate-recognition` and `generate-sidecar` o
 
 ## 2. Third-Party Vector Alternatives (Research on PDFtoMusic Pro)
 We conducted a market scan for a 3rd-party software object that performs native vector-based sheet music extraction:
-- **Myriad PDFtoMusic Pro** is the commercial industry standard for this. It explicitly refuses to parse scanned images.
+- **Myriad PDFtoMusic Pro** (https://www.myriad-online.com/en/products/pdftomusicpro.htm) is the commercial industry standard for this. It explicitly refuses to parse scanned images.
 - **Extraction Method**: It extracts raw PDF vector paths and font metadata. Because notation fonts vary wildly (using private Unicode ranges), it runs shape recognition on the *vector curves themselves* (e.g., identifying a path as a treble clef based on its geometry, then caching that shape).
 - **Heuristic Layout Resilience**: It distinguishes between repeat signs and regular barlines by analyzing the *stroke thickness* of the vertical lines (a thick line + thin line + dots = repeat).
 - **Expert Mode / Complete Control**: It acknowledges that irregular formats break heuristics. It provides users with tunable parameters (e.g., maximum horizontal distance before notes are considered consecutive vs. a chord).
 
-**Automation Conclusion**: The open-source market does not have a high-quality equivalent to PDFtoMusic Pro. While PDFtoMusic Pro proves that vector-based extraction works perfectly, community reviews indicate it is highly brittle when processing "messy" or non-standard instructional layouts, requiring heavy manual tweaking.
+**Automation Conclusion**: The open-source market (reviewed tools including Oemer: https://github.com/BreezeWhite/oemer and PDF2Muse: https://github.com/Divergent-AI/PDF2Muse) does not have a high-quality equivalent to PDFtoMusic Pro. *(Note: Market claims are reported/unproven until independently checked by the Architect).* While PDFtoMusic Pro (unproven claim) proves that vector-based extraction works perfectly, community reviews indicate it is highly brittle when processing "messy" or non-standard instructional layouts, requiring heavy manual tweaking.
 
 ## 3. Recommendations for the Score2GP Native Extraction Layer
 If the Architect decides we must own this codebase by expanding our `--pdf-only-tab` pipeline, we must implement the following heuristic capabilities:
@@ -36,3 +36,13 @@ As noted by human supervision, exposing heuristic thresholds requires that we de
 - **Section Marker Y-Offset**: What is the sensible default vertical distance (in pixels or PDF points) above a staff to classify bold text as a section marker vs. standard lyrics?
 
 *End of Handoff Evidence. Awaiting Architect Decision on engine ownership and bounded successor task sequence.*
+
+### Automation Evidence Transcript
+- **Command Executed:** `python3 -m score2gp.cli generate-sidecar --pdf ../score2gp-private-fixtures/fixtures/private/Lesson-5.pdf --out Lesson-5-test.xml`
+- **Transcript Output:**
+  ```text
+  Running OMR recognition on ../score2gp-private-fixtures/fixtures/private/Lesson-5.pdf...
+  Compiling timeline to MusicXML...
+  ValueError: Capacity mismatch: Measure 1 is invalid
+  ```
+- **Exit Status:** `1`

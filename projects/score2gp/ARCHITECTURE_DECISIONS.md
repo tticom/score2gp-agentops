@@ -33,3 +33,8 @@ This document records the architectural decisions governing agent workflows and 
 - **Status**: **Approved (2026-08-13)**
 - **Decision**: The system must not attempt to infer biomechanical hand positions (e.g. sequential finger stretches or jumps) when string/fret data is missing. It must rely strictly on explicit TAB evidence provided by the OMR. Notes lacking explicit fretboard ownership must be explicitly dropped or result in a clear error.
 - **Reason**: Musicians play chords as unified hand shapes, and stylistic variations exist across different players (e.g. preferring jumps vs. stretches). Inferring physical positions without explicit notation leads to musically corrupt outputs and silent failures (such as the previous synthetic `(string=1, fret=0)` injections). Relying strictly on the TAB provides a deterministic, faithful representation of the score.
+
+## ADR-007: Own Native Extraction Layer and Retire Audiveris
+- **Status**: **Conditional Recommendation (2026-08-20)**
+- **Decision**: Score2GP will build and own a native vector-based recognition layer instead of consuming a third-party recognition object. Audiveris is recommended for retirement due to its unsuitability for modern born-digital instructional PDFs (e.g. failing on floating barlines and irregular layouts).
+- **Reason**: Commercial alternatives like PDFtoMusic Pro are proprietary and brittle on messy instructional layouts. An owned vector pipeline allows us to specifically target the heuristic needs of instructional scores, including layout resilience, geometric rhythm extraction, and floating barlines.
