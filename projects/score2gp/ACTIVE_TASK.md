@@ -4,7 +4,7 @@
 
 **Task**: NPG-03B — Floating Barline Geometry Isolation
 
-**Status**: PENDING
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
