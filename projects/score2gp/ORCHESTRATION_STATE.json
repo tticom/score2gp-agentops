@@ -3,45 +3,36 @@
   "project": "score2gp",
   "authority_revision": 6,
   "task": {
-    "id": "NPG-00R",
-    "title": "Decide recognition-engine ownership and Audiveris suitability",
-    "objective": "Use the Automation evidence handoff plus independent Architect research to decide whether Score2GP should consume a suitable third-party recognition object, build and own the required recognition layer, or adopt a bounded hybrid; convert the decision into explicit system requirements and a sequenced task boundary without implementing product behavior.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
+    "id": "NPG-03B",
+    "title": "Floating Barline Geometry Isolation",
+    "objective": "Implement floating barline geometry isolation as defined in the NPG-00R ADR.",
+    "status": "PENDING",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "codex/npg-00r-architect-decision",
+    "branch": "feat/npg-03b-floating-barline",
     "pull_request": null,
-    "owner_role": "architect",
-    "prompt": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/npg-03b-floating-barline-geometry-isolation.md",
     "allowed_paths": [
-      "projects/score2gp/runs/2026-08-20-npg-00r-automation-handoff.md",
-      "projects/score2gp/decisions/2026-08-20-npg-00r-recognition-engine-ownership.md",
-      "projects/score2gp/ARCHITECTURE_DECISIONS.md",
-      "projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md"
+      "src/score2gp/pdf_geometry.py",
+      "src/score2gp/pdf_tab_bar_assembler.py"
     ],
     "acceptance": [
-      "The Automation handoff is recorded as reported evidence with exact provenance, hashes, commands, claims, limitations, and unresolved questions; private inputs remain local and sanitized.",
-      "The Architect independently compares Audiveris and credible third-party or owned alternatives against explicit Score2GP requirements, licensing, deployment, object/API boundary, fidelity, privacy, reproducibility, maintenance, and exit criteria.",
-      "The decision record selects third-party, owned, or hybrid ownership, records rejected alternatives and disconfirming evidence, and states what remains unproven.",
-      "The resulting requirements delta is traceable to the programme plan and yields a bounded successor task sequence; no product implementation or Audiveris deletion is authorized by this task.",
-      "Automation handoff is evidence only: it cannot choose architecture, alter requirements, or author the Architect decision.",
-      "Maximum-effort behavior continues safe partial evidence and diagnostics while preserving invalid or ambiguous status; structurally invalid input never produces a valid-success claim or package; safety and integrity contradictions fail closed.",
-      "Every successor task states input classes, observable outputs, partial/refusal behavior, allowed paths, validation commands, negative controls, provenance, and promotion dependency."
+      "Input Class: PDF pages containing floating vertical barlines that do not perfectly intersect the staff bounds (e.g., instructional formats).",
+      "Observable Outputs: Extracted TabCandidate objects split logically by the floating barline X-coordinates.",
+      "Refusal/Partial-Output Behavior: If a floating line thickness matches a repeat marker but lacks dots, it must emit a diagnostic warning and degrade to a standard barline, never crashing the parser.",
+      "Negative Controls: Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.",
+      "Promotion Dependency: NPG-00R",
+      "Provenance: Tied directly to the Floating Barlines structural failure evidence documented in runs/2026-08-20-npg-00r-automation-handoff.md."
     ],
     "validation_commands": [
-      "python3 scripts/score2gp_governance_audit.py",
-      "git diff --check origin/main...HEAD"
+      ".venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py"
     ],
     "dependencies": [
-      "score2gp-agentops#575",
-      "NPG-00A",
-      "automation-audiveris-suitability-handoff"
+      "NPG-00R"
     ],
     "stop_conditions": [
-      "automation_handoff_missing_or_unproven",
-      "third_party_license_or_terms_unverifiable",
-      "candidate_object_boundary_not_demonstrable",
-      "decision_requires_product_implementation_or_private_artifact_commit"
+      "floating_barline_crashes_parser"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"

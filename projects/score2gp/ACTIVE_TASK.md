@@ -2,30 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-00R — Decide recognition-engine ownership and Audiveris suitability
+**Task**: NPG-03B — Floating Barline Geometry Isolation
 
-**Status**: PROMOTED
+**Status**: PENDING
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `codex/npg-00r-architect-decision`
+**PR Branch**: `feat/npg-03b-floating-barline`
 
 **Pull Request**: TBD
 
-**Owner Role**: architect
+**Owner Role**: implementation
 
 ## Objective
 
-Use the Automation evidence handoff plus independent Architect research to decide whether Score2GP should consume a suitable third-party recognition object, build and own the required recognition layer, or adopt a bounded hybrid; convert the decision into explicit system requirements and a sequenced task boundary without implementing product behavior.
+Implement floating barline geometry isolation as defined in the NPG-00R ADR.
 
 ## Allowed paths
 
-- `projects/score2gp/runs/2026-08-20-npg-00r-automation-handoff.md`
-- `projects/score2gp/decisions/2026-08-20-npg-00r-recognition-engine-ownership.md`
-- `projects/score2gp/ARCHITECTURE_DECISIONS.md`
-- `projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md`
+- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/pdf_tab_bar_assembler.py`
 
 ## Validation commands
 
-- `python3 scripts/score2gp_governance_audit.py`
-- `git diff --check origin/main...HEAD`
+- `.venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py`
