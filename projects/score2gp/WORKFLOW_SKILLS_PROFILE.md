@@ -40,7 +40,7 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 ### Independent Codex reviewer
 
 - OS user/home: `tticom-codex` / `/home/tticom-codex`
-- GitHub and Git name: `tticom-codex`
+- GitHub and Git name: `tticom-codex` (and `tticom-automation` when authoring Architect decisions)
 - Git email: `tticom-codex@users.noreply.github.com`
 - Workspace prefix: `/home/tticom-codex/work/score2gp-workspace`
 - During review may publish only formal reviews, inline review comments, and

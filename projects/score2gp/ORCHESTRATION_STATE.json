@@ -63,38 +63,108 @@
   ],
   "roles": {
     "implementation": {
-      "github_logins": ["tticom-automation"],
-      "allowed_actions": ["edit", "test", "commit", "push_task_branch", "publish_handback"],
-      "forbidden_actions": ["review", "approve", "merge", "governance_edit"]
+      "github_logins": [
+        "tticom-automation"
+      ],
+      "allowed_actions": [
+        "edit",
+        "test",
+        "commit",
+        "push_task_branch",
+        "publish_handback"
+      ],
+      "forbidden_actions": [
+        "review",
+        "approve",
+        "merge",
+        "governance_edit"
+      ]
     },
     "architect": {
-      "github_logins": ["tticom-codex"],
-      "allowed_actions": ["governance_edit", "test", "commit", "push_task_branch", "publish_handback"],
-      "forbidden_actions": ["review_own_work", "approve_own_work", "merge", "product_edit"]
+      "github_logins": [
+        "tticom-codex",
+        "tticom-automation"
+      ],
+      "allowed_actions": [
+        "governance_edit",
+        "test",
+        "commit",
+        "push_task_branch",
+        "publish_handback"
+      ],
+      "forbidden_actions": [
+        "review_own_work",
+        "approve_own_work",
+        "merge",
+        "product_edit"
+      ]
     },
     "reviewer": {
-      "github_logins": ["tticom-codex", "tticomgov-code"],
-      "allowed_actions": ["inspect", "test", "publish_review"],
-      "forbidden_actions": ["edit", "commit", "push", "merge"]
+      "github_logins": [
+        "tticom-codex",
+        "tticomgov-code"
+      ],
+      "allowed_actions": [
+        "inspect",
+        "test",
+        "publish_review"
+      ],
+      "forbidden_actions": [
+        "edit",
+        "commit",
+        "push",
+        "merge"
+      ]
     },
     "governance": {
-      "github_logins": ["tticomgov-code", "tticom"],
-      "allowed_actions": ["governance_edit", "publish_governance_review", "promote_task"],
-      "forbidden_actions": ["product_edit", "merge"]
+      "github_logins": [
+        "tticomgov-code",
+        "tticom"
+      ],
+      "allowed_actions": [
+        "governance_edit",
+        "publish_governance_review",
+        "promote_task"
+      ],
+      "forbidden_actions": [
+        "product_edit",
+        "merge"
+      ]
     },
     "supervisor": {
-      "github_logins": ["tticom"],
-      "allowed_actions": ["resolve_state", "create_worktree", "dispatch", "collect_evidence"],
-      "forbidden_actions": ["implement_product", "approve_own_work", "merge"]
+      "github_logins": [
+        "tticom"
+      ],
+      "allowed_actions": [
+        "resolve_state",
+        "create_worktree",
+        "dispatch",
+        "collect_evidence"
+      ],
+      "forbidden_actions": [
+        "implement_product",
+        "approve_own_work",
+        "merge"
+      ]
     },
     "merge_controller": {
       "github_logins": [],
-      "allowed_actions": ["verify_merge_gate", "merge_exact_head"],
-      "forbidden_actions": ["edit", "review", "approve", "bypass"]
+      "allowed_actions": [
+        "verify_merge_gate",
+        "merge_exact_head"
+      ],
+      "forbidden_actions": [
+        "edit",
+        "review",
+        "approve",
+        "bypass"
+      ]
     }
   },
   "merge_policy": {
-    "required_checks": ["test"],
+    "required_checks": [
+      "test"
+    ],
     "minimum_approvals": 2,
     "require_governance_go": true,
     "require_reviewed_head": true,
