@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 4,
+  "authority_revision": 5,
   "task": {
     "id": "NPG-00A",
     "title": "Pin the native PDF-to-GP baseline and dependency inventory",
@@ -39,7 +39,47 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "NPG-00R",
+    "title": "Decide recognition-engine ownership and Audiveris suitability",
+    "status": "PROPOSED",
+    "objective": "Use the Automation evidence handoff plus independent Architect research to decide whether Score2GP should consume a suitable third-party recognition object, build and own the required recognition layer, or adopt a bounded hybrid; convert the decision into explicit system requirements and a sequenced task boundary without implementing product behavior.",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "codex/npg-00r-recognition-engine-ownership",
+    "owner_role": "architect",
+    "reviewer_role": "reviewer",
+    "allowed_paths": [
+      "projects/score2gp/runs/2026-08-20-npg-00r-automation-handoff.md",
+      "projects/score2gp/decisions/2026-08-20-npg-00r-recognition-engine-ownership.md",
+      "projects/score2gp/ARCHITECTURE_DECISIONS.md",
+      "projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md"
+    ],
+    "acceptance": [
+      "The Automation handoff is recorded as reported evidence with exact provenance, hashes, commands, claims, limitations, and unresolved questions; private inputs remain local and sanitized.",
+      "The Architect independently compares Audiveris and credible third-party or owned alternatives against explicit Score2GP requirements, licensing, deployment, object/API boundary, fidelity, privacy, reproducibility, maintenance, and exit criteria.",
+      "The decision record selects third-party, owned, or hybrid ownership, records rejected alternatives and disconfirming evidence, and states what remains unproven.",
+      "The resulting requirements delta is traceable to the programme plan and yields a bounded successor task sequence; no product implementation or Audiveris deletion is authorized by this task."
+    ],
+    "validation_commands": [
+      "python3 scripts/score2gp_governance_audit.py",
+      "git diff --check origin/main...HEAD"
+    ],
+    "dependencies": [
+      "score2gp-agentops#575",
+      "NPG-00A",
+      "automation-audiveris-suitability-handoff"
+    ],
+    "stop_conditions": [
+      "automation_handoff_missing_or_unproven",
+      "third_party_license_or_terms_unverifiable",
+      "candidate_object_boundary_not_demonstrable",
+      "decision_requires_product_implementation_or_private_artifact_commit"
+    ],
+    "delivery_action": "pull_request",
+    "requires_human_scope_approval": true,
+    "may_execute": false
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
