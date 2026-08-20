@@ -35,6 +35,14 @@ The Architect has independently verified the automation claims on the clean `ori
   - **License/Terms:** MIT License (Source: https://github.com/BreezeWhite/oemer).
   - **Comparison Threshold:** Oemer is a machine-learning model explicitly trained on scanned historical sheet music (raster). *(Note: Its lack of vector layout heuristics is an unproven architectural claim based on its readme, but it falls outside the strictly vector-based geometric extraction requirement.)*
 
+#### Unresolved Alternative Constraints (Bounded Follow-Up)
+Because the above claims remain unproven without empirical runtime validation, the following dimensions are explicitly recorded as **unresolved** for any future 3rd-party object evaluation:
+- **Privacy:** Can the third-party object process private/licensed PDFs fully offline without telemetry/server dependency? (Unresolved)
+- **API/Object Boundary:** Does the object supply a stable, semantic intermediate representation (like MusicXML), or merely a black-box final format? (Unresolved)
+- **Maintenance:** Who bears the burden of patching upstream geometric heuristic failures? (Unresolved)
+- **Reproducibility:** Can all downstream environments bit-for-bit reproduce the identical extraction output without version skew? (Unresolved)
+- **Exit Criteria:** A future evaluation task must definitively answer these questions before re-opening the engine ownership decision.
+
 ## Decision
 Based on the explicit Score2GP requirement for layout resilience (floating barlines, differing bars per row), and because a provisional Owned Native Extraction is the only path currently proven viable (as Audiveris definitively fails and third-party claims remain unproven or deployment-incompatible):
 1. **Provisional Owned Native Extraction**: Score2GP will provisionally build and own a native vector-based extraction layer. Because the third-party disconfirmation claims remain unproven at runtime, this decision is provisional and subject to a bounded comparison if an open-source, vector-based candidate is successfully demonstrated in the future.
@@ -51,6 +59,7 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Validation Commands:** `.venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py`
 - **Negative Controls:** Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.
 - **Promotion Dependency:** NPG-00R
+- **Provenance:** Tied directly to the `Floating Barlines` structural failure evidence documented in `runs/2026-08-20-npg-00r-automation-handoff.md`.
 
 ### NPG-04C: Geometric Rhythm Extraction
 - **Input Class:** Standard staff vector strokes containing stems, beams, and noteheads.
@@ -60,6 +69,7 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Validation Commands:** `.venv/bin/python -m pytest tests/test_pdf_geometry_candidate_extraction.py`
 - **Negative Controls:** Must not infer standard rhythm if the PDF is tablature-only (must rely exclusively on TAB stems).
 - **Promotion Dependency:** NPG-03B
+- **Provenance:** Derived from the `Geometric Rhythm Extraction` requirement in `runs/2026-08-20-npg-00r-automation-handoff.md`.
 
 ### NPG-04D: Vector-Based Structural Signaling
 - **Input Class:** PDFs with textual section markers (e.g., "Chorus") and thick/thin vector repeat signs.
@@ -69,3 +79,4 @@ The native extraction layer must implement the following successor tasks. Each t
 - **Validation Commands:** `.venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py`
 - **Negative Controls:** Must not inject a `Section` if the Y-offset heuristic exceeds the configured sensible default threshold (e.g. 50 points).
 - **Promotion Dependency:** NPG-04C
+- **Provenance:** Derived from the `Vector-Based Structural Signaling` requirement in `runs/2026-08-20-npg-00r-automation-handoff.md`.
