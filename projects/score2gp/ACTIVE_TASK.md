@@ -4,7 +4,7 @@
 
 **Task**: AUT-01 — Consolidate the autonomous development loop
 
-**Status**: IN_PROGRESS
+**Status**: MERGED
 
 **Repository**: tticom/score2gp-agentops
 
