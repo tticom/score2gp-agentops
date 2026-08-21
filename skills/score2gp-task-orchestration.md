@@ -14,8 +14,8 @@ Never trust self-reports. Verify live repository state, changed files, commits, 
 4. Generate a bounded agent prompt.
 5. Developer implements one task on one branch using standard Tier B (compressed loop) default.
 6. PR is opened.
-7. Reviewer performs conformance review (utilizing `scripts/agent_verify.py` report).
-8. Human merges only after review passes.
+7. Explicitly dispatch `devils-advocate-review` for the exact implementation PR head. The Devil's-Advocate Reviewer performs conformance and readiness review, starts from `CANNOT_VERIFY`, attacks the strongest false-success modes, and publishes the formal verdict.
+8. Human merges only after the exact-head `devils-advocate-review` passes. A `code-review` or `hard-review` approval without the explicit Devil's-Advocate verdict is insufficient for the implementation loop.
 9. Governance records completion in run records and promotes the next smallest safe task from `APPROVED_TASK_QUEUE.md` to `ACTIVE_TASK.md` when the repo is clean.
 10. Repeat.
 
