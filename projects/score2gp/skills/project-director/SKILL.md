@@ -52,14 +52,14 @@ Verify live state. Do not trust previous agent summaries unless the repositories
 2. Read `projects/score2gp/ACTIVE_TASK.md`.
 3. Execute the active task using its authorised role.
 4. If the task is Architect/governance work, complete the document/review and prepare any resulting governance PR for external merge.
-5. If the task is Developer/product work, complete the product PR, then perform the required governance review and external-merge handoff.
+5. If the task is Developer/product work, complete the product PR, explicitly dispatch `devils-advocate-review` against its exact live head, then perform the required governance review and external-merge handoff. Do not treat a generic Reviewer or hard-review verdict as a substitute for the implementation-loop gate.
 6. After an external maintainer merges the required PRs, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
 7. Stop only when a real stop condition is met and no credible pivot or continuation exists.
 
 When the active task opts into
 `programmes/2026-07-18-unattended-consecutive-loop-protocol.md`, run the full
-Developer -> independent Reviewer -> Developer rework loop -> external-merge
-handoff cycle. A failed review is a rework or pivot event, not a request for
+Developer -> explicit `devils-advocate-review` -> Developer rework loop ->
+explicit `devils-advocate-review` -> external-merge handoff cycle. A failed review is a rework or pivot event, not a request for
 routine maintainer direction. Agy never performs the merge or a governance
 promotion that depends on it.
 

@@ -76,6 +76,10 @@ other identity's workspace.
    - `devils-advocate-review` for governance/control-plane changes,
      architecture/research, conversion correctness, or any re-review after a
      trusted review on an earlier head
+The development loop must explicitly invoke the returned `devils-advocate-review`
+skill for every implementation PR and every rework head before readiness or
+merge handoff. Dispatcher-selected BASIC or HARD review remains valid for
+governance-only PRs under the existing policy.
 3. Score2GP project overlay:
    - `projects/score2gp/REVIEW_RULES.md`
    - `projects/score2gp/PR_REVIEW_TEMPLATE.md`

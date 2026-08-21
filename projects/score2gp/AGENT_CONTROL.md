@@ -347,7 +347,7 @@ This is the default loop for low-risk tasks, including:
 - Clean public test suites, no private benchmark claims, and no unresolved Codex threads.
 - **Compression Rules**:
   - The requirement packet includes acceptance and readiness criteria up front.
-  - One combined Reviewer performs implementation conformance review and PR readiness review in a single pass.
+  - One combined Devil's-Advocate Reviewer performs implementation conformance review and PR readiness review in a single pass for implementation PRs. The dispatch must explicitly invoke `devils-advocate-review`; a generic `code-review` or `hard-review` verdict alone does not satisfy the development loop.
   - One approved task normally produces exactly one product PR.
   - Governance completion records should be bundled with the next Orchestrator decision in `ACTIVE_TASK.md` or updated as direct run records, rather than requiring standalone governance PRs for routine completion bookkeeping.
   - Merge operators still perform the final guarded merge check.
@@ -357,7 +357,7 @@ Required only when a task involves:
 - Uncertain architecture or new recognition strategies.
 - Product behaviour changes or database schema modifications.
 - Policy exceptions, failed reviews, or unapproved external-corpus/sensitive benchmark data claims.
-- **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> Reviewer Conformance Review -> PR Readiness Review -> Merge.
+- **Process**: Must follow separate sequential stages: Requirement -> Architect Research -> Reviewer Architecture Verification -> Developer Implementation -> explicit `devils-advocate-review` Conformance Review -> explicit `devils-advocate-review` PR Readiness Review -> Merge.
 
 ### Verification and Report Automation
 Agents must execute and rely on product-level automation tools instead of copying raw logs:
