@@ -33,7 +33,7 @@
       "NPG-04C"
     ],
     "stop_conditions": [
-      "missing_rhythm_geometry_crashes_parser"
+      "malformed_structural_cycle_crashes_parser"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
