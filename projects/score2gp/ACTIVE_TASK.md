@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-03B — Floating Barline Geometry Isolation
+**Task**: NPG-04C — Geometric Rhythm Extraction
 
-**Status**: PROMOTED
+**Status**: PENDING
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/npg-03b-floating-barline`
+**PR Branch**: `feat/npg-04c-geometric-rhythm-extraction`
 
 **Pull Request**: TBD
 
@@ -16,13 +16,12 @@
 
 ## Objective
 
-Implement floating barline geometry isolation as defined in the NPG-00R ADR.
+Implement geometric rhythm extraction as defined in the NPG-00R ADR.
 
 ## Allowed paths
 
-- `src/score2gp/pdf_geometry.py`
-- `src/score2gp/pdf_tab_bar_assembler.py`
+- `src/score2gp/pdf_geometry_candidate_extraction.py`
 
 ## Validation commands
 
-- `.venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py`
+- `.venv/bin/python -m pytest tests/test_pdf_geometry_candidate_extraction.py`
