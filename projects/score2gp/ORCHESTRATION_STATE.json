@@ -3,32 +3,34 @@
   "project": "score2gp",
   "authority_revision": 6,
   "task": {
-    "id": "NPG-04C",
-    "title": "Geometric Rhythm Extraction",
-    "objective": "Implement geometric rhythm extraction as defined in the NPG-00R ADR.",
+    "id": "NPG-04D",
+    "title": "Structural Signaling",
+    "objective": "Add repeat barlines, endings, tempo/meter/key changes, and navigation relationships using vector-based structural signaling.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/npg-04c-geometric-rhythm-extraction",
+    "branch": "feat/npg-04d-structural-signaling",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/npg-04c-geometric-rhythm-extraction.md",
+    "prompt": "projects/score2gp/prompts/next/npg-04d-structural-signaling.md",
     "allowed_paths": [
-      "src/score2gp/pdf_geometry_candidate_extraction.py"
+      "src/score2gp/pdf_structural_skeleton_diagnostics.py",
+      "src/score2gp/pdf_tab_bar_assembler.py"
     ],
     "acceptance": [
-      "Input Class: Standard staff vector strokes containing stems, beams, and noteheads.",
-      "Observable Outputs: Rhythm durations attached to TabCandidate events.",
-      "Refusal/Partial-Output Behavior: If stems are present but noteheads are absent, the parser must refuse to extract rhythm for that chord and emit MissingRhythmGeometry.",
-      "Negative Controls: Must not infer standard rhythm if the PDF is tablature-only (must rely exclusively on TAB stems).",
-      "Promotion Dependency: NPG-03B",
-      "Provenance: Derived from the Geometric Rhythm Extraction requirement in runs/2026-08-20-npg-00r-automation-handoff.md."
+      "Input Class: Standard staff and tablature vector strokes, barlines, and text annotations.",
+      "Observable Outputs: Structural semantics attached to measures (e.g. repeat counts, alternate endings, tempo markers, key signatures).",
+      "Refusal/Partial-Output Behavior: If navigational elements form a malformed cycle, refuse with MalformedStructuralCycle.",
+      "Negative Controls: Must not invent repeats or endings not explicitly present in the document.",
+      "Promotion Dependency: NPG-03B, NPG-04C",
+      "Provenance: Derived from the Structural Signaling requirement in projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md."
     ],
     "validation_commands": [
-      ".venv/bin/python -m pytest tests/test_pdf_geometry_candidate_extraction.py"
+      ".venv/bin/python -m pytest tests/test_pdf_structural_skeleton_diagnostics.py"
     ],
     "dependencies": [
-      "NPG-03B"
+      "NPG-03B",
+      "NPG-04C"
     ],
     "stop_conditions": [
       "missing_rhythm_geometry_crashes_parser"
