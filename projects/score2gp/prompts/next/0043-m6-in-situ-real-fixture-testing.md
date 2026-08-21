@@ -1,6 +1,6 @@
 # 0043 - M6: In-Situ Real-Fixture Testing Integration & Fallback Cleanup
 
-Status: SKELETON — blocked pending conversion-recovery architecture and the private test contract. This prompt is not executable.
+Status: SKELETON — blocked until conversion-recovery architecture and the private test contract are approved. This prompt is not executable.
 
 ## Objective
 Enforce the ban on synthetic mock-point tests by introducing an in-situ test suite running against real-world private fixtures (`Lesson-5.pdf` and `Lesson-6.pdf`). Remove the hacky snapping tolerances and fallback synthesis paths to ensure true note-for-note conversion correctness.
