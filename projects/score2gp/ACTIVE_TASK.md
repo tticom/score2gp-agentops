@@ -4,7 +4,7 @@
 
 **Task**: NPG-04C — Geometric Rhythm Extraction
 
-**Status**: PENDING
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
