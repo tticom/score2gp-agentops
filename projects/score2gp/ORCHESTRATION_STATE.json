@@ -6,7 +6,7 @@
     "id": "NPG-04C",
     "title": "Geometric Rhythm Extraction",
     "objective": "Implement geometric rhythm extraction as defined in the NPG-00R ADR.",
-    "status": "PROMOTED",
+    "status": "READY",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/npg-04c-geometric-rhythm-extraction",
