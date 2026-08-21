@@ -1,14 +1,14 @@
-# NPG-04D: Structural Signaling
+# NPG-04D: Vector-Based Structural Signaling
 
 ## Objective
-Add repeat barlines, endings, tempo/meter/key changes, and navigation relationships using vector-based structural signaling (e.g., stroke thickness for barlines, precise text coordinates).
+Vector-Based Structural Signaling
 
 ## Contract
-- **Input Class:** Standard staff and tablature vector strokes, barlines, and text annotations.
-- **Observable Outputs:** Structural semantics attached to measures (e.g. repeat counts, alternate endings, tempo markers, key signatures).
-- **Refusal/Partial-Output Behavior:** If navigational elements form a malformed cycle, refuse with `MalformedStructuralCycle`.
-- **Allowed Paths:** `src/score2gp/pdf_structural_skeleton_diagnostics.py`, `src/score2gp/pdf_tab_bar_assembler.py`
-- **Validation Commands:** `.venv/bin/python -m pytest tests/test_pdf_structural_skeleton_diagnostics.py`
-- **Negative Controls:** Must not invent repeats or endings not explicitly present in the document.
-- **Promotion Dependency:** NPG-03B, NPG-04C
-- **Provenance:** Derived from the Structural Signaling requirement in `projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md`.
+- **Input Class:** PDFs with textual section markers (e.g., "Chorus") and thick/thin vector repeat signs.
+- **Observable Outputs:** `Section` and `Repeat` tags injected into the IR timeline.
+- **Refusal/Partial-Output Behavior:** Unrecognized bold text above the staff must be classified as standard lyrics, not a structural section.
+- **Allowed Paths:** `src/score2gp/pdf_geometry_candidates.py`
+- **Validation Commands:** `.venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py`
+- **Negative Controls:** Must not inject a `Section` if the Y-offset heuristic exceeds the configured sensible default threshold (e.g. 50 points).
+- **Promotion Dependency:** NPG-04C
+- **Provenance:** Derived from the `Vector-Based Structural Signaling` requirement in `runs/2026-08-20-npg-00r-automation-handoff.md`.
