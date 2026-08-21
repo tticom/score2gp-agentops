@@ -4,7 +4,7 @@
   "authority_revision": 6,
   "task": {
     "id": "NPG-04D",
-    "title": "Structural Signaling",
+    "title": "Vector-Based Structural Signaling",
     "objective": "Vector-Based Structural Signaling",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
