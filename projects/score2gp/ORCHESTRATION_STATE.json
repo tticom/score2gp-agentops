@@ -3,36 +3,35 @@
   "project": "score2gp",
   "authority_revision": 6,
   "task": {
-    "id": "NPG-03B",
-    "title": "Floating Barline Geometry Isolation",
-    "objective": "Implement floating barline geometry isolation as defined in the NPG-00R ADR.",
+    "id": "NPG-04C",
+    "title": "Geometric Rhythm Extraction",
+    "objective": "Implement geometric rhythm extraction as defined in the NPG-00R ADR.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/npg-03b-floating-barline",
+    "branch": "feat/npg-04c-geometric-rhythm-extraction",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/npg-03b-floating-barline-geometry-isolation.md",
+    "prompt": "projects/score2gp/prompts/next/npg-04c-geometric-rhythm-extraction.md",
     "allowed_paths": [
-      "src/score2gp/pdf_geometry.py",
-      "src/score2gp/pdf_tab_bar_assembler.py"
+      "src/score2gp/pdf_geometry_candidate_extraction.py"
     ],
     "acceptance": [
-      "Input Class: PDF pages containing floating vertical barlines that do not perfectly intersect the staff bounds (e.g., instructional formats).",
-      "Observable Outputs: Extracted TabCandidate objects split logically by the floating barline X-coordinates.",
-      "Refusal/Partial-Output Behavior: If a floating line thickness matches a repeat marker but lacks dots, it must emit a diagnostic warning and degrade to a standard barline, never crashing the parser.",
-      "Negative Controls: Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.",
-      "Promotion Dependency: NPG-00R",
-      "Provenance: Tied directly to the Floating Barlines structural failure evidence documented in runs/2026-08-20-npg-00r-automation-handoff.md."
+      "Input Class: Standard staff vector strokes containing stems, beams, and noteheads.",
+      "Observable Outputs: Rhythm durations attached to TabCandidate events.",
+      "Refusal/Partial-Output Behavior: If stems are present but noteheads are absent, the parser must refuse to extract rhythm for that chord and emit MissingRhythmGeometry.",
+      "Negative Controls: Must not infer standard rhythm if the PDF is tablature-only (must rely exclusively on TAB stems).",
+      "Promotion Dependency: NPG-03B",
+      "Provenance: Derived from the Geometric Rhythm Extraction requirement in runs/2026-08-20-npg-00r-automation-handoff.md."
     ],
     "validation_commands": [
-      ".venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py"
+      ".venv/bin/python -m pytest tests/test_pdf_geometry_candidate_extraction.py"
     ],
     "dependencies": [
-      "NPG-00R"
+      "NPG-03B"
     ],
     "stop_conditions": [
-      "floating_barline_crashes_parser"
+      "missing_rhythm_geometry_crashes_parser"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
