@@ -6,7 +6,7 @@
     "id": "NPG-03B",
     "title": "Floating Barline Geometry Isolation",
     "objective": "Floating Barline Geometry Isolation",
-    "status": "ACTIVE",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/npg-03b-floating-barlines",

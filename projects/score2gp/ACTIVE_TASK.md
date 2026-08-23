@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-04D — Vector-Based Structural Signaling
+**Task**: NPG-03B — Floating Barline Geometry Isolation
 
-**Status**: MERGED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/npg-04d-structural-signaling`
+**PR Branch**: `feat/npg-03b-floating-barlines`
 
 **Pull Request**: TBD
 
@@ -16,12 +16,13 @@
 
 ## Objective
 
-Vector-Based Structural Signaling
+Floating Barline Geometry Isolation
 
 ## Allowed paths
 
-- `src/score2gp/pdf_geometry_candidates.py`
+- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/pdf_tab_bar_assembler.py`
 
 ## Validation commands
 
-- `.venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py`
+- `.venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py`
