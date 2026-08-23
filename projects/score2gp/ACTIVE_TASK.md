@@ -4,7 +4,7 @@
 
 **Task**: NPG-04D — Vector-Based Structural Signaling
 
-**Status**: PROMOTED
+**Status**: MERGED
 
 **Repository**: tticom/score2gp
 
