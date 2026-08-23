@@ -6,7 +6,7 @@
     "id": "NPG-04D",
     "title": "Vector-Based Structural Signaling",
     "objective": "Vector-Based Structural Signaling",
-    "status": "PROMOTED",
+    "status": "MERGED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/npg-04d-structural-signaling",
@@ -36,7 +36,42 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "NPG-03B",
+    "title": "Floating Barline Geometry Isolation",
+    "objective": "Floating Barline Geometry Isolation",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "branch": "feat/npg-03b-floating-barlines",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/npg-03b-floating-barline-geometry-isolation.md",
+    "allowed_paths": [
+      "src/score2gp/pdf_geometry.py",
+      "src/score2gp/pdf_tab_bar_assembler.py"
+    ],
+    "acceptance": [
+      "Input Class: PDF pages containing floating vertical barlines that do not perfectly intersect the staff bounds.",
+      "Observable Outputs: Extracted TabCandidate objects split logically by the floating barline X-coordinates.",
+      "Refusal/Partial-Output Behavior: If a floating line thickness matches a repeat marker but lacks dots, it must emit a diagnostic warning and degrade to a standard barline, never crashing the parser.",
+      "Negative Controls: Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.",
+      "Promotion Dependency: NPG-00R",
+      "Provenance: Tied directly to the Floating Barlines structural failure evidence documented in runs/2026-08-20-npg-00r-automation-handoff.md."
+    ],
+    "validation_commands": [
+      ".venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py"
+    ],
+    "dependencies": [
+      "NPG-00R",
+      "NPG-04D"
+    ],
+    "stop_conditions": [
+      "measure_exceeds_beat_capacity"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
