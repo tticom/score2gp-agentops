@@ -37,37 +37,36 @@
     "delivery_action": "pull_request"
   },
   "next_task_proposal": {
-    "id": "NPG-03B",
-    "title": "Floating Barline Geometry Isolation",
-    "objective": "Floating Barline Geometry Isolation",
+    "id": "NPG-05",
+    "title": "Layout Resilience & Irregular Rows",
+    "objective": "Implement layout resilience for irregular rows.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/npg-03b-floating-barlines",
+    "branch": "feat/npg-05-layout-resilience",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/npg-03b-floating-barline-geometry-isolation.md",
+    "prompt": "projects/score2gp/prompts/next/npg-05-layout-resilience.md",
     "allowed_paths": [
-      "src/score2gp/pdf_geometry.py",
-      "src/score2gp/pdf_tab_bar_assembler.py"
+      "src/score2gp/pdf_tab_bar_assembler.py",
+      "src/score2gp/pdf_staff_tab_timing_aligner.py"
     ],
     "acceptance": [
-      "Input Class: PDF pages containing floating vertical barlines that do not perfectly intersect the staff bounds.",
-      "Observable Outputs: Extracted TabCandidate objects split logically by the floating barline X-coordinates.",
-      "Refusal/Partial-Output Behavior: If a floating line thickness matches a repeat marker but lacks dots, it must emit a diagnostic warning and degrade to a standard barline, never crashing the parser.",
-      "Negative Controls: Must not emit a valid-success package if a floating barline creates a measure exceeding beat capacity.",
-      "Promotion Dependency: NPG-00R",
-      "Provenance: Tied directly to the Floating Barlines structural failure evidence documented in runs/2026-08-20-npg-00r-automation-handoff.md."
+      "Input Class: PDF pages containing varying numbers of bars per row.",
+      "Observable Outputs: Accurately grouped TabCandidates across irregular staves without crashing.",
+      "Refusal/Partial-Output Behavior: Emit IrregularStaffBoundsWarning on severely truncated staves.",
+      "Negative Controls: Must not force regular bucket distribution if evidence implies irregular groupings.",
+      "Promotion Dependency: NPG-04D",
+      "Provenance: Derived from runs/2026-08-20-npg-00r-automation-handoff.md."
     ],
     "validation_commands": [
-      ".venv/bin/python -m pytest tests/test_pdf_geometry.py tests/test_pdf_tab_bar_assembler.py"
+      ".venv/bin/python -m pytest tests/test_pdf_tab_bar_assembler.py tests/test_pdf_staff_tab_timing_aligner_alignment.py"
     ],
     "dependencies": [
-      "NPG-00R",
       "NPG-04D"
     ],
     "stop_conditions": [
-      "measure_exceeds_beat_capacity"
+      "IrregularStaffBoundsWarning"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
