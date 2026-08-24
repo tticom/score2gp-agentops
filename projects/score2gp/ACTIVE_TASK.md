@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-04D — Vector-Based Structural Signaling
+**Task**: BENCH-01 — Major Triads Lesson 3 Benchmark
 
-**Status**: MERGED
+**Status**: ACTIVE
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/npg-04d-structural-signaling`
+**PR Branch**: `chore/bench-01-major-triads`
 
 **Pull Request**: TBD
 
@@ -16,12 +16,12 @@
 
 ## Objective
 
-Vector-Based Structural Signaling
+Execute the Major Triads Lesson 3 private benchmark to verify the end-to-end PDF-to-GP conversion pipeline on pristine, digital-native vector geometry.
 
 ## Allowed paths
 
-- `src/score2gp/pdf_geometry_candidates.py`
+- `reports/major-triads-benchmark-results.md`
 
 ## Validation commands
 
-- `.venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py`
+None

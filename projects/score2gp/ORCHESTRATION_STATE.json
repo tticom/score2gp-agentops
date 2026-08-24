@@ -1,76 +1,37 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 6,
+  "authority_revision": 7,
   "task": {
-    "id": "NPG-04D",
-    "title": "Vector-Based Structural Signaling",
-    "objective": "Vector-Based Structural Signaling",
-    "status": "MERGED",
+    "id": "BENCH-01",
+    "title": "Major Triads Lesson 3 Benchmark",
+    "objective": "Execute the Major Triads Lesson 3 private benchmark to verify the end-to-end PDF-to-GP conversion pipeline on pristine, digital-native vector geometry.",
+    "status": "ACTIVE",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/npg-04d-structural-signaling",
+    "branch": "chore/bench-01-major-triads",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/npg-04d-structural-signaling.md",
+    "prompt": "projects/score2gp/MAJOR_TRIADS_BENCHMARK.md",
     "allowed_paths": [
-      "src/score2gp/pdf_geometry_candidates.py"
+      "reports/major-triads-benchmark-results.md"
     ],
     "acceptance": [
-      "Input Class: PDFs with textual section markers (e.g., \"Chorus\") and thick/thin vector repeat signs.",
-      "Observable Outputs: Section and Repeat tags injected into the IR timeline.",
-      "Refusal/Partial-Output Behavior: Unrecognized bold text above the staff must be classified as standard lyrics, not a structural section.",
-      "Negative Controls: Must not inject a Section if the Y-offset heuristic exceeds the configured sensible default threshold (e.g. 50 points).",
-      "Promotion Dependency: NPG-04C",
-      "Provenance: Derived from the Vector-Based Structural Signaling requirement in runs/2026-08-20-npg-00r-automation-handoff.md."
+      "Collect and document Extraction & Layout Geometry Metrics.",
+      "Collect and document Strict Build-IR Status.",
+      "Collect and document Semantic Round-Trip Metrics."
     ],
-    "validation_commands": [
-      ".venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py"
-    ],
+    "validation_commands": [],
     "dependencies": [
-      "NPG-04C"
+      "NPG-05"
     ],
     "stop_conditions": [
-      "unrecognized_bold_text_crashes_parser"
+      "strict_build_ir_failed"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": {
-    "id": "NPG-05",
-    "title": "Layout Resilience & Irregular Rows",
-    "objective": "Implement layout resilience for irregular rows.",
-    "status": "PROPOSED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "branch": "feat/npg-05-layout-resilience",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/npg-05-layout-resilience.md",
-    "allowed_paths": [
-      "src/score2gp/pdf_tab_bar_assembler.py",
-      "src/score2gp/pdf_staff_tab_timing_aligner.py"
-    ],
-    "acceptance": [
-      "Input Class: PDF pages containing varying numbers of bars per row.",
-      "Observable Outputs: Accurately grouped TabCandidates across irregular staves without crashing.",
-      "Refusal/Partial-Output Behavior: Emit IrregularStaffBoundsWarning on severely truncated staves.",
-      "Negative Controls: Must not force regular bucket distribution if evidence implies irregular groupings.",
-      "Promotion Dependency: NPG-04D",
-      "Provenance: Derived from runs/2026-08-20-npg-00r-automation-handoff.md."
-    ],
-    "validation_commands": [
-      ".venv/bin/python -m pytest tests/test_pdf_tab_bar_assembler.py tests/test_pdf_staff_tab_timing_aligner_alignment.py"
-    ],
-    "dependencies": [
-      "NPG-04D"
-    ],
-    "stop_conditions": [
-      "IrregularStaffBoundsWarning"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
+  "next_task_proposal": null,
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -194,5 +155,41 @@
     "require_reviewed_head": true,
     "require_resolved_threads": true,
     "allow_admin_bypass": false
-  }
+  },
+  "completed_tasks": [
+    {
+      "id": "NPG-04D",
+      "title": "Vector-Based Structural Signaling",
+      "objective": "Vector-Based Structural Signaling",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/npg-04d-structural-signaling",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/npg-04d-structural-signaling.md",
+      "allowed_paths": [
+        "src/score2gp/pdf_geometry_candidates.py"
+      ],
+      "acceptance": [
+        "Input Class: PDFs with textual section markers (e.g., \"Chorus\") and thick/thin vector repeat signs.",
+        "Observable Outputs: Section and Repeat tags injected into the IR timeline.",
+        "Refusal/Partial-Output Behavior: Unrecognized bold text above the staff must be classified as standard lyrics, not a structural section.",
+        "Negative Controls: Must not inject a Section if the Y-offset heuristic exceeds the configured sensible default threshold (e.g. 50 points).",
+        "Promotion Dependency: NPG-04C",
+        "Provenance: Derived from the Vector-Based Structural Signaling requirement in runs/2026-08-20-npg-00r-automation-handoff.md."
+      ],
+      "validation_commands": [
+        ".venv/bin/python -m pytest tests/test_timeline_repeats.py tests/test_pdf_geometry_candidates.py"
+      ],
+      "dependencies": [
+        "NPG-04C"
+      ],
+      "stop_conditions": [
+        "unrecognized_bold_text_crashes_parser"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    }
+  ]
 }
