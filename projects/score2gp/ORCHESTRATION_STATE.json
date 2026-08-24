@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 7,
+  "authority_revision": 8,
   "task": {
     "id": "BENCH-01",
     "title": "Major Triads Lesson 3 Benchmark",
@@ -31,7 +31,34 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "ORC-01",
+    "title": "Repository Hygiene & Cleanup",
+    "objective": "Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "chore/orc-01-repo-cleanup",
+    "pull_request": null,
+    "owner_role": "supervisor",
+    "prompt": "projects/score2gp/prompts/next/orc-01-repo-cleanup.md",
+    "allowed_paths": [
+      "*"
+    ],
+    "acceptance": [
+      "Delete obsolete TASKS.md files and old prompt recordings.",
+      "Establish a consistent method of recording tasks, actions, tests, and outcomes."
+    ],
+    "validation_commands": [],
+    "dependencies": [
+      "BENCH-01"
+    ],
+    "stop_conditions": [
+      "validation_tests_fail_from_missing_files"
+    ],
+    "reviewer_role": "governance",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
