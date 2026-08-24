@@ -2,26 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: BENCH-01 — Major Triads Lesson 3 Benchmark
+**Task**: ORC-01 — Repository Hygiene & Cleanup
 
-**Status**: ACTIVE
+**Status**: IN_PROGRESS
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `chore/bench-01-major-triads`
+**PR Branch**: `chore/orc-01-repo-cleanup`
 
 **Pull Request**: TBD
 
-**Owner Role**: implementation
+**Owner Role**: supervisor
 
 ## Objective
 
-Execute the Major Triads Lesson 3 private benchmark to verify the end-to-end PDF-to-GP conversion pipeline on pristine, digital-native vector geometry.
+Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.
 
 ## Allowed paths
 
-- `reports/major-triads-benchmark-results.md`
+- `*`
 
 ## Validation commands
 
-None
+- `git diff --check`
+- `python3 scripts/score2gp_governance_audit.py`

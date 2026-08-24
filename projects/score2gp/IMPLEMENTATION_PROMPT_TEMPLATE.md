@@ -40,7 +40,7 @@ Reviewer/architect agents must use this template to construct the next implement
 - **Phase 1: Research & Isolated Defect Isolation**: Locate the mechanical failure and reproduce it using a public synthetic test.
 - **Phase 2: Local Code Adjustment**: Adjust local coordinate heuristics, tolerance weights, or logic in a safe, geometry-driven manner.
 - **Phase 3: Coherent Verification**: Regenerate a fresh, reconciled artifact suite in a unique work subdirectory.
-- **Phase 4: Handoff & Branch Synchronization**: Complete TASKS.md and HANDOFF.md, commit, and push.
+- **Phase 4: Handoff & Branch Synchronization**: Complete PR body templates, commit, and push.
 
 ---
 

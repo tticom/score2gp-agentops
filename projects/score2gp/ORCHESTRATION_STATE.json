@@ -1,41 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 8,
+  "authority_revision": 10,
   "task": {
-    "id": "BENCH-01",
-    "title": "Major Triads Lesson 3 Benchmark",
-    "objective": "Execute the Major Triads Lesson 3 private benchmark to verify the end-to-end PDF-to-GP conversion pipeline on pristine, digital-native vector geometry.",
-    "status": "ACTIVE",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "branch": "chore/bench-01-major-triads",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/MAJOR_TRIADS_BENCHMARK.md",
-    "allowed_paths": [
-      "reports/major-triads-benchmark-results.md"
-    ],
-    "acceptance": [
-      "Collect and document Extraction & Layout Geometry Metrics.",
-      "Collect and document Strict Build-IR Status.",
-      "Collect and document Semantic Round-Trip Metrics."
-    ],
-    "validation_commands": [],
-    "dependencies": [
-      "NPG-05"
-    ],
-    "stop_conditions": [
-      "strict_build_ir_failed"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "ORC-01",
     "title": "Repository Hygiene & Cleanup",
     "objective": "Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.",
-    "status": "PROPOSED",
+    "status": "IN_PROGRESS",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "chore/orc-01-repo-cleanup",
@@ -49,7 +20,10 @@
       "Delete obsolete TASKS.md files and old prompt recordings.",
       "Establish a consistent method of recording tasks, actions, tests, and outcomes."
     ],
-    "validation_commands": [],
+    "validation_commands": [
+      "git diff --check",
+      "python3 scripts/score2gp_governance_audit.py"
+    ],
     "dependencies": [
       "BENCH-01"
     ],
@@ -59,6 +33,7 @@
     "reviewer_role": "governance",
     "delivery_action": "pull_request"
   },
+  "next_task_proposal": null,
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -214,6 +189,35 @@
       ],
       "stop_conditions": [
         "unrecognized_bold_text_crashes_parser"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "BENCH-01",
+      "title": "Major Triads Lesson 3 Benchmark",
+      "objective": "Execute the Major Triads Lesson 3 private benchmark to verify the end-to-end PDF-to-GP conversion pipeline on pristine, digital-native vector geometry.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "chore/bench-01-major-triads",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/MAJOR_TRIADS_BENCHMARK.md",
+      "allowed_paths": [
+        "reports/major-triads-benchmark-results.md"
+      ],
+      "acceptance": [
+        "Collect and document Extraction & Layout Geometry Metrics.",
+        "Collect and document Strict Build-IR Status.",
+        "Collect and document Semantic Round-Trip Metrics."
+      ],
+      "validation_commands": [],
+      "dependencies": [
+        "NPG-05"
+      ],
+      "stop_conditions": [
+        "strict_build_ir_failed"
       ],
       "reviewer_role": "reviewer",
       "delivery_action": "pull_request"
