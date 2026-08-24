@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: ORC-01 — Repository Hygiene & Cleanup
+**Task**: ORC-02 — Agent Isolation & Control-Plane Cutover
 
 **Status**: IN_PROGRESS
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `chore/orc-01-repo-cleanup`
+**PR Branch**: `chore/orc-02-agent-isolation`
 
 **Pull Request**: TBD
 
-**Owner Role**: supervisor
+**Owner Role**: implementation
 
 ## Objective
 
-Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.
+Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to formally retire legacy `go` and `got` commands.
 
 ## Allowed paths
 
@@ -25,4 +25,3 @@ Clean up the score2gp and agentops repositories by removing redundant files and 
 ## Validation commands
 
 - `git diff --check`
-- `python3 scripts/score2gp_governance_audit.py`

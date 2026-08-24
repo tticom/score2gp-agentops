@@ -1,34 +1,33 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 10,
+  "authority_revision": 11,
   "task": {
-    "id": "ORC-01",
-    "title": "Repository Hygiene & Cleanup",
-    "objective": "Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.",
+    "id": "ORC-02",
+    "title": "Agent Isolation & Control-Plane Cutover",
+    "objective": "Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to formally retire legacy `go` and `got` commands.",
     "status": "IN_PROGRESS",
-    "repository": "tticom/score2gp-agentops",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "chore/orc-01-repo-cleanup",
+    "branch": "chore/orc-02-agent-isolation",
     "pull_request": null,
-    "owner_role": "supervisor",
-    "prompt": "projects/score2gp/prompts/next/orc-01-repo-cleanup.md",
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/orc-02-agent-isolation.md",
     "allowed_paths": [
       "*"
     ],
     "acceptance": [
-      "Delete obsolete TASKS.md files and old prompt recordings.",
-      "Establish a consistent method of recording tasks, actions, tests, and outcomes."
+      "Migration of any remaining `.agents/`, `agy/`, or agentic config files from `score2gp` to `score2gp-agentops`.",
+      "Removal/retirement of legacy `go` and `got` bootstraps per step 4 of `ORCA_WORKFLOW.md`."
     ],
     "validation_commands": [
-      "git diff --check",
-      "python3 scripts/score2gp_governance_audit.py"
+      "git diff --check"
     ],
     "dependencies": [
-      "BENCH-01"
+      "ORC-01"
     ],
     "stop_conditions": [
-      "validation_tests_fail_from_missing_files"
+      "control_plane_resolver_broken"
     ],
     "reviewer_role": "governance",
     "delivery_action": "pull_request"
@@ -220,6 +219,37 @@
         "strict_build_ir_failed"
       ],
       "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "ORC-01",
+      "title": "Repository Hygiene & Cleanup",
+      "objective": "Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "chore/orc-01-repo-cleanup",
+      "pull_request": null,
+      "owner_role": "supervisor",
+      "prompt": "projects/score2gp/prompts/next/orc-01-repo-cleanup.md",
+      "allowed_paths": [
+        "*"
+      ],
+      "acceptance": [
+        "Delete obsolete TASKS.md files and old prompt recordings.",
+        "Establish a consistent method of recording tasks, actions, tests, and outcomes."
+      ],
+      "validation_commands": [
+        "git diff --check",
+        "python3 scripts/score2gp_governance_audit.py"
+      ],
+      "dependencies": [
+        "BENCH-01"
+      ],
+      "stop_conditions": [
+        "validation_tests_fail_from_missing_files"
+      ],
+      "reviewer_role": "governance",
       "delivery_action": "pull_request"
     }
   ]
