@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 9,
+  "authority_revision": 10,
   "task": {
     "id": "ORC-01",
     "title": "Repository Hygiene & Cleanup",
     "objective": "Clean up the score2gp and agentops repositories by removing redundant files and establishing a consistent method of recording tasks, actions, tests, and outcomes.",
-    "status": "ACTIVE",
+    "status": "IN_PROGRESS",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "chore/orc-01-repo-cleanup",
@@ -20,7 +20,10 @@
       "Delete obsolete TASKS.md files and old prompt recordings.",
       "Establish a consistent method of recording tasks, actions, tests, and outcomes."
     ],
-    "validation_commands": [],
+    "validation_commands": [
+      "git diff --check",
+      "python3 scripts/score2gp_governance_audit.py"
+    ],
     "dependencies": [
       "BENCH-01"
     ],

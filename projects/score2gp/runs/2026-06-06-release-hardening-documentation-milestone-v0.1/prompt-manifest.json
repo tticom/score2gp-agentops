@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-06-release-hardening-documentation-milestone-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-release-hardening-docs-v0.1.md",
+      "description": "Create product documentation for release contract and sidecar workflow v0.1."
+    }
+  ],
+  "operative_prompt_index": 1
+}

@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-05-fret-refinement-tolerances-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-revision-instructions.md",
+      "description": "Approval with implementation guardrails and revision instructions for fret digit-merge heuristics and narrow font tolerances."
+    }
+  ],
+  "operative_prompt_index": 1
+}

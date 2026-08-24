@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-06-ascii-alignment-sidecar-hash-validation-v0.1",
+  "prompts": [
+    {
+      "index": 1,
+      "file": "prompts/001-ascii-alignment-sidecar-hash-validation-v0.1.md",
+      "description": "Harden the ASCII alignment sidecar gate by validating SHA-256 source hashes of PDF and MusicXML files, mapping stale hashes to exit code 4, and refusing hashless sidecars."
+    }
+  ],
+  "operative_prompt_index": 1
+}

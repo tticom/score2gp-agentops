@@ -1,0 +1,29 @@
+{
+  "run_id": "2026-05-31-guitar-pitch-validation",
+  "product_repo": "tticom/score2gp",
+  "agentops_repo": "tticom/score2gp-agentops",
+  "product_branch": "agent/pdf-to-gp-smoke-v1/developer",
+  "agentops_branch": "agent/pdf-to-gp-smoke-v1/tpo",
+  "operative_prompt_id": "002",
+  "prompts": [
+    {
+      "id": "001",
+      "file": "prompts/001-implementation-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": ""
+    },
+    {
+      "id": "002",
+      "file": "prompts/002-test-specificity-prompt.md",
+      "source": "human",
+      "target_agent": "antigravity",
+      "status": "executed",
+      "supersedes": null,
+      "notes": "Added narrow specific stave display tests using standard guitar domain knowledge."
+    }
+  ],
+  "result_record": "RUN.md"
+}

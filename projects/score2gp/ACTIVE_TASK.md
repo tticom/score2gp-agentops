@@ -4,7 +4,7 @@
 
 **Task**: ORC-01 — Repository Hygiene & Cleanup
 
-**Status**: ACTIVE
+**Status**: IN_PROGRESS
 
 **Repository**: tticom/score2gp-agentops
 
@@ -24,4 +24,5 @@ Clean up the score2gp and agentops repositories by removing redundant files and 
 
 ## Validation commands
 
-None
+- `git diff --check`
+- `python3 scripts/score2gp_governance_audit.py`
