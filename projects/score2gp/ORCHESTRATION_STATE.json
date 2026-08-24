@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 10,
+  "authority_revision": 11,
   "task": {
     "id": "ORC-01",
     "title": "Repository Hygiene & Cleanup",
@@ -33,7 +33,44 @@
     "reviewer_role": "governance",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "ORC-02",
+    "title": "Repository Boundary Cleanup: Remove Claude-Specific and Legacy Artifacts",
+    "objective": "Isolate repository responsibilities by keeping production-targeted code in score2gp, agent governance/workflow/operations in score2gp-agentops, and AGY-focused skills in agy-skills without Claude-only or obsolete legacy artifacts.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "codex/orc-02-repository-boundary-cleanup",
+    "pull_request": null,
+    "owner_role": "supervisor",
+    "prompt": "projects/score2gp/prompts/next/orc-02-repository-boundary-cleanup.md",
+    "allowed_paths": [
+      "*"
+    ],
+    "acceptance": [
+      "Inventory Claude-only, harness-specific, and obsolete legacy artifacts in score2gp, score2gp-agentops, and agy-skills before deleting anything.",
+      "Keep score2gp limited to production code, tests, schemas, fixtures, and product documentation; move governance/workflow/operations artifacts to score2gp-agentops where they are still needed.",
+      "Make score2gp-agentops the sole home for agent governance, workflow, orchestration, operational records, and task evidence.",
+      "Make agy-skills AGY-focused and remove Claude-only artifacts while preserving only explicitly justified harness-neutral compatibility material.",
+      "Preserve durable evidence and update every surviving reference when an artifact is removed or relocated.",
+      "Add repository-boundary checks that fail if removed active artifacts are reintroduced or if cross-repository pointers become stale."
+    ],
+    "validation_commands": [
+      "git diff --check",
+      "python3 scripts/score2gp_governance_audit.py",
+      "python3 -m pytest -q"
+    ],
+    "dependencies": [
+      "ORC-01"
+    ],
+    "stop_conditions": [
+      "active_workflow_reference_would_become_stale",
+      "durable_evidence_would_be_deleted_without_auditable_migration",
+      "production_source_or_tests_would_be_moved_without_explicit_authority"
+    ],
+    "reviewer_role": "governance",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
