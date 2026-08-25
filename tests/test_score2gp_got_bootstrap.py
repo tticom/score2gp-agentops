@@ -220,16 +220,42 @@ def test_code_or_test_change_selects_hard_review() -> None:
     assert "code, test, fixture, or executable-script change" in selected["reasons"]
 
 
+def test_governance_state_promotion_selects_basic_review() -> None:
+    selected = select_review_level(
+        repository="tticom/score2gp-agentops",
+        changed_paths=[
+            "projects/score2gp/ACTIVE_TASK.md",
+            "projects/score2gp/ORCHESTRATION_STATE.json",
+            "projects/score2gp/prompts/next/orc-02-agent-isolation.md",
+        ],
+        task="Promote ORC-02",
+        authorised_role="Governor",
+        title="chore: promote ORC-02 to active task",
+        live_head="b" * 40,
+    )
+    assert selected == {
+        "level": "basic",
+        "skill": "code-review",
+        "reasons": ["governance state/prompt promotion"],
+    }
+
+
+def test_agentops_executable_change_remains_devils_advocate() -> None:
+    selected = select_review_level(
+        repository="tticom/score2gp-agentops",
+        changed_paths=["scripts/score2gp_got_bootstrap.py"],
+        task="Change review routing",
+        authorised_role="Governance",
+        title="fix: route reviews by change risk",
+        live_head="b" * 40,
+    )
+    assert selected["level"] == "devils-advocate"
+    assert "governance/control-plane repository change" in selected["reasons"]
+
+
 @pytest.mark.parametrize(
     ("repository", "paths", "task", "role", "reason"),
     [
-        (
-            "tticom/score2gp-agentops",
-            ["projects/score2gp/ACTIVE_TASK.md"],
-            "Promote task",
-            "Governor",
-            "governance/control-plane repository change",
-        ),
         (
             "tticom/score2gp",
             ["docs/design/conversion-architecture.md"],
