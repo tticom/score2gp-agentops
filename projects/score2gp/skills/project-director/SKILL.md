@@ -35,7 +35,7 @@ cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
-tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
+tail -n 260 projects/score2gp/PLANNING_DATA.md
 python3 scripts/score2gp_governance_audit.py
 
 cd /home/tticom-automation/work/score2gp-workspace/score2gp
@@ -75,39 +75,6 @@ Do not stop because the next task changes:
 After an external maintainer merges a PR and `ACTIVE_TASK.md` names another
 approved task, immediately continue.
 
-## Completion audit
-
-Before ending after a successful task, perform a continuation audit:
-
-1. Inspect `ACTIVE_TASK.md`, `APPROVED_TASK_QUEUE.md`, recent reports, recent reviews, and current blockers.
-2. If an approved next task exists and prerequisites are satisfied, execute it.
-3. If no approved next task exists, identify the smallest credible continuation that remains inside the current product direction.
-4. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping.
-5. Create a governance PR to record the continuation and make it active.
-6. Set `NO_ACTIVE_TASK_APPROVED` only when the audit proves no credible safe continuation exists.
-
-Review reports must include this continuation audit.
-
-## Blocker pivot audit
-
-When a task hits a blocker, do not default to stopping.
-
-Perform a bounded pivot audit:
-
-1. Identify the blocker precisely.
-2. Decide whether a credible unblocker exists within current project direction.
-3. Convert the unblocker into the smallest research, fixture, test, reporting, or feature task.
-4. If safe, create a governance PR that records the blocker and promotes the pivot task.
-5. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference.
-
-Examples:
-
-- missing fixtures -> generate the smallest deterministic fixture set;
-- insufficient evidence -> run a bounded corpus audit;
-- unsafe classifier scope -> add fail-closed tests or schema/reporting guards;
-- stale branch/PR state -> perform branch hygiene;
-- missing visual detector -> implement pure structured-input engine and document visual detection as deferred.
-
 ## Choosing "what is best"
 
 When several continuations are possible, rank them in this order:
@@ -128,7 +95,6 @@ The Project Director may:
 
 - inspect both repos;
 - create governance docs, reviews, and active-task updates;
-- promote approved or evidence-backed tasks;
 - write Antigravity prompts;
 - prepare clean governance/product PRs for external merge and record the exact
   head SHA, validation, risks, and blocked dependent task;

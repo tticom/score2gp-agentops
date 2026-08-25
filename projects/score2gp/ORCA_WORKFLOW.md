@@ -27,7 +27,7 @@ The current system mixes four different concerns:
   protected-branch rules, task prompts, and role skills.
 - Orchestration: autonomous-continuation, blocker-pivot, role-transition, and
   queue-promotion rules in `AGENT_CONTROL.md`, project-director skills,
-  `ACTIVE_TASK.md`, `APPROVED_TASK_QUEUE.md`, and `go/got` prompts.
+  `ACTIVE_TASK.md`, `PLANNING_DATA.md`, and `go/got` prompts.
 - Identity enforcement: Linux user/home checks, per-user clones and GitHub CLI
   stores, Git author checks, dispatcher role selection, GitHub permissions, and
   rulesets.

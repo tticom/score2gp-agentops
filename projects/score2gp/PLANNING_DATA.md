@@ -59,7 +59,7 @@ Record the exact product baseline after PR #203 so later agents have a durable r
 
 Allowed governance files:
 - projects/score2gp/reviews/2026-06-08-post-schema-snapshot-product-baseline.md
-- projects/score2gp/APPROVED_TASK_QUEUE.md
+- projects/score2gp/PLANNING_DATA.md
 - projects/score2gp/ACTIVE_TASK.md
 
 Product repo access:
@@ -1092,7 +1092,7 @@ Prerequisites:
 
 Allowed governance files:
 - projects/score2gp/reviews/2026-06-08-geometry-candidate-layer-review.md
-- projects/score2gp/APPROVED_TASK_QUEUE.md
+- projects/score2gp/PLANNING_DATA.md
 - projects/score2gp/ACTIVE_TASK.md
 
 Product access:
@@ -1195,7 +1195,7 @@ Purpose:
 Update the control-plane queue after Task 33/34, based on evidence.
 
 Allowed governance files:
-- projects/score2gp/APPROVED_TASK_QUEUE.md
+- projects/score2gp/PLANNING_DATA.md
 - projects/score2gp/ACTIVE_TASK.md
 - projects/score2gp/reviews/*.md
 
