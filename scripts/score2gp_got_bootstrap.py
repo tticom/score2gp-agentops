@@ -80,6 +80,25 @@ def _declared_review_level(value: str | None) -> str | None:
     return aliases[normalized]
 
 
+def _is_governance_state_only_change(repository: str, paths: list[str]) -> bool:
+    """Return whether a PR only promotes governance state and its task prompt."""
+    if repository != "tticom/score2gp-agentops" or not paths:
+        return False
+    for path in paths:
+        normalized = path.strip().lower()
+        if normalized in {
+            "projects/score2gp/active_task.md",
+            "projects/score2gp/orchestration_state.json",
+        }:
+            continue
+        if normalized.startswith("projects/score2gp/prompts/next/") and normalized.endswith(
+            ".md"
+        ):
+            continue
+        return False
+    return True
+
+
 def select_review_level(
     *,
     repository: str,
@@ -104,8 +123,11 @@ def select_review_level(
 
     normalized_paths = [path.strip().lower() for path in changed_paths if path.strip()]
     context = " ".join((task, authorised_role, title, *normalized_paths)).lower()
+    governance_state_only = _is_governance_state_only_change(
+        repository, normalized_paths
+    )
 
-    if repository == "tticom/score2gp-agentops":
+    if repository == "tticom/score2gp-agentops" and not governance_state_only:
         escalate("devils-advocate", "governance/control-plane repository change")
     if not normalized_paths:
         escalate("hard", "empty or unavailable changed-path inventory")
@@ -120,7 +142,10 @@ def select_review_level(
         "skills_lock.md",
         "workflow_skills_profile.md",
     )
-    if any(marker in context for marker in architecture_markers):
+    if (
+        any(marker in context for marker in architecture_markers)
+        and not governance_state_only
+    ):
         if repository == "tticom/score2gp":
             escalate("devils-advocate", "architecture, research, or authority translation")
         else:
@@ -148,9 +173,15 @@ def select_review_level(
         escalate("devils-advocate", "high-risk conversion or evidence claim")
 
     domain_prefixes = ("src/", "tests/", "fixtures/", "scripts/")
-    if any(path.startswith(domain_prefixes) for path in normalized_paths):
+    if (
+        any(path.startswith(domain_prefixes) for path in normalized_paths)
+        and not governance_state_only
+    ):
         escalate("hard", "code, test, fixture, or executable-script change")
-    if any(not path.endswith((".md", ".txt", ".rst")) for path in normalized_paths):
+    if (
+        any(not path.endswith((".md", ".txt", ".rst")) for path in normalized_paths)
+        and not governance_state_only
+    ):
         escalate("hard", "non-documentation change")
 
     trusted = set(TRUSTED_REVIEWERS)
@@ -165,6 +196,9 @@ def select_review_level(
     declared = _declared_review_level(declared_level)
     if declared is not None and REVIEW_LEVEL_RANK[declared] > REVIEW_LEVEL_RANK[level]:
         escalate(declared, f"ACTIVE_TASK declared minimum review level {declared}")
+
+    if governance_state_only and not reasons:
+        reasons.append("governance state/prompt promotion")
 
     return {
         "level": level,
