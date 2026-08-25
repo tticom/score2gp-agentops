@@ -32,4 +32,4 @@ The required architectural report `projects/score2gp/research/2026-07-08-single-
 **Required Fixes / Next Steps:**
 1. The Architect must actually perform `Req-101` and define the single-prompt autonomous loop.
 2. Developer implementation (`Req-103`) is explicitly **blocked** until the architecture report is produced and verified.
-3. As this path is blocked, the Orchestrator should pivot to the next independent task in the `APPROVED_TASK_QUEUE.md` to maintain momentum.
+3. As this path is blocked, the Orchestrator should pivot to the next independent task in the `PLANNING_DATA.md` to maintain momentum.

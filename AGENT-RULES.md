@@ -4,7 +4,7 @@
 
 At the very start of any conversation session, the agent MUST:
 1. Run `python3 scripts/score2gp_got_bootstrap.py --product ../score2gp --agentops .` (specifying paths as needed) to reconstruct the workspace state across both repositories.
-2. Use the output of `score2gp_bootstrap.py` as a mandatory startup summary. Note that bootstrap is not the sole authority for merge, review, or readiness decisions; agents must still verify task-specific live state before reviews, merges, PR readiness, or product/governance changes.
+2. Use the output of `score2gp_got_bootstrap.py` as a mandatory startup summary. Note that bootstrap is not the sole authority for merge, review, or readiness decisions; agents must still verify task-specific live state before reviews, merges, PR readiness, or product/governance changes.
 3. Read the role-specific skill files (e.g. `skills/score2gp-task-orchestration.md`, `skills/score2gp-developer.md`, `skills/score2gp-pr-hard-review.md`) to guide behavior. Do not start work if the bootstrap script output recommends a `stop` action.
 
 ## Global rules

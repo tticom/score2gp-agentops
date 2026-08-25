@@ -131,7 +131,7 @@ graph TD
    - *Validation*: Verify tasks 28-32 and 36.
 10. **Req-117 (Task 35)**: `governance/post-geometry-candidate-backlog-refresh` (Ready, Tier B, Orchestrator)
     - *Evidence Basis*: Keeps control-plane up-to-date after major architecture gate.
-    - *Validation*: `APPROVED_TASK_QUEUE.md` reflects accurate state.
+    - *Validation*: `PLANNING_DATA.md` reflects accurate state.
 11. **Req-111 (Task 34)**: `pdf/semantic-boundary-research-proposal` (Architect-first, Tier A, Architect)
     - *Evidence Basis*: Needs concrete evidence on how to safely proceed into standard-staff interpretation.
     - *Validation*: Produced documentation identifying the first safe semantic task.

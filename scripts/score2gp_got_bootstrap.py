@@ -24,7 +24,9 @@ def fail_closed(reason: str) -> None:
 
 def sync_main(cwd: Path, name: str) -> None:
     try:
-        subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True, text=True, check=True)
+        res = subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True, text=True, check=True)
+        if res.stdout.strip():
+            fail_closed(f"{name} repository is dirty. Commit or stash changes before dispatching.")
         subprocess.run(["git", "fetch", "origin", "main"], cwd=cwd, capture_output=True, text=True, check=True)
     except Exception as e:
         fail_closed(f"Failed to sync {name}: {e}")

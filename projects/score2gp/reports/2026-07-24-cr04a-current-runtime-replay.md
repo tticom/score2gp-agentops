@@ -45,4 +45,4 @@ On current product `origin/main`, `Lesson-5.pdf` conversion fails closed at stag
 
 1. **`DEFECT_NOT_REPRODUCED`**: The false 1920-tick half rest defect does not manifest in current product `origin/main`. The conversion pipeline fails closed prior to `build_ir` due to `pdf_only_tab_grouping_unsafe`.
 2. **No Code Mutation**: No product code changes are authorized or required for obsolete defect suppression.
-3. **Queue Advancement**: Task `CR-04A` is complete. The project advances to candidate tasks in `APPROVED_TASK_QUEUE.md` for PDF candidate grouping refinement when authorized.
+3. **Queue Advancement**: Task `CR-04A` is complete. The project advances to candidate tasks in `PLANNING_DATA.md` for PDF candidate grouping refinement when authorized.

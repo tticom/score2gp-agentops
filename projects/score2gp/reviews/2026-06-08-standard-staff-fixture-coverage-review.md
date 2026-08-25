@@ -8,7 +8,7 @@
 > It must not be used to authorize semantic interpretation work. A corrected coverage review is required after Task 4 is merged and verified on product main.
 
 ## Context
-Tasks 1–4 from `APPROVED_TASK_QUEUE.md` established a set of purely geometric standard-staff fixtures designed to test staff geometry parsing without introducing musical semantics. The objective of this review is to determine whether the fixture coverage and the exposed diagnostic schema (`PdfStaffNotationGeometryDiagnostics`) are sufficient to support the next product implementation stage.
+Tasks 1–4 from `PLANNING_DATA.md` established a set of purely geometric standard-staff fixtures designed to test staff geometry parsing without introducing musical semantics. The objective of this review is to determine whether the fixture coverage and the exposed diagnostic schema (`PdfStaffNotationGeometryDiagnostics`) are sufficient to support the next product implementation stage.
 
 ## Executed Commands and Test Results
 To validate coverage, the following tests were run on the accumulated branch containing the Tasks 1-4 fixtures:

@@ -4,7 +4,7 @@
 **Reviewer:** Antigravity
 
 ## Context
-This is the corrected fixture coverage review for Tasks 1–4 from `APPROVED_TASK_QUEUE.md`. The previous review (#84) was merged prematurely before Task 4 was fully merged to product `main`. This review inspects the correct, merged state of `main` after PR #201 (Task 4) and previous tasks.
+This is the corrected fixture coverage review for Tasks 1–4 from `PLANNING_DATA.md`. The previous review (#84) was merged prematurely before Task 4 was fully merged to product `main`. This review inspects the correct, merged state of `main` after PR #201 (Task 4) and previous tasks.
 
 ## Evidence
 - **Product repo inspected:** `score2gp`

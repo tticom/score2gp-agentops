@@ -72,7 +72,7 @@ timeline
 
 ## Task Queue Management & Promotion Protocol
 
-Each task will be queued in `projects/score2gp/APPROVED_TASK_QUEUE.md` and activated sequentially via `ACTIVE_TASK.md`. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:
+Each task will be queued in `projects/score2gp/PLANNING_DATA.md` and activated sequentially via `ACTIVE_TASK.md`. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:
 
 ```bash
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json

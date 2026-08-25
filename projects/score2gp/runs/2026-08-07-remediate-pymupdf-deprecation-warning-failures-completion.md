@@ -27,4 +27,4 @@ None.
 
 ## Next Authority & Promotion
 
-Reread the backlog in `APPROVED_TASK_QUEUE.md` to select the next authorized step.
+Reread the backlog in `PLANNING_DATA.md` to select the next authorized step.

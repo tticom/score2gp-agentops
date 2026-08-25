@@ -25,7 +25,7 @@ Governance baseline:
 
 - `score2gp-agentops` main at `c1a29841 docs(governance): authorise Req-110 geometry candidate layer review (#259)`.
 - Active task: `projects/score2gp/ACTIVE_TASK.md`, Req-110 / Task 33.
-- Backlog references: `projects/score2gp/APPROVED_TASK_QUEUE.md`, Tasks 33-35.
+- Backlog references: `projects/score2gp/PLANNING_DATA.md`, Tasks 33-35.
 
 Product files inspected:
 
