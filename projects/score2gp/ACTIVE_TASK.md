@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: ORC-02 — Agent Isolation & Control-Plane Cutover
+**Task**: CRP-01 — Port and Harmonize Barline Detection & Geometry Cleanup
 
 **Status**: IN_PROGRESS
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `chore/orc-02-agent-isolation`
+**PR Branch**: `feat/crp-01-barline-detection`
 
 **Pull Request**: TBD
 
@@ -16,13 +16,14 @@
 
 ## Objective
 
-Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to convert legacy `go` and `got` commands into thin compatibility wrappers around the shared resolver.
+Port valid barline detection thresholds from PR 418 into src/score2gp/pdf.py, revert the outer_tolerance = 300.0 geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.
 
 ## Allowed paths
 
-- `*`
+- `src/score2gp/pdf.py`
+- `tests/test_pdf.py`
+- `tests/test_pdf_geometry_candidate_extractor.py`
 
 ## Validation commands
 
-- `git diff --check`
-- `python3 -m pytest tests/test_score2gp_orca_control.py`
+- `python3 -m pytest tests/test_pdf_geometry_candidate_extractor.py tests/test_pdf.py`
