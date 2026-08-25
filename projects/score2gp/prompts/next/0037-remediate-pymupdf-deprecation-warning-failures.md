@@ -19,7 +19,7 @@ No other product files in `src/` may be edited in this task.
 
 1. Work only in the canonical Ubuntu WSL repositories below `/home/tticom-automation/work/score2gp-workspace`.
 2. Prove GitHub CLI and local Git identity are `tticom-automation`.
-3. Read `projects/score2gp/AGENT_CONTROL.md`, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/next/0037-remediate-pymupdf-deprecation-warning-failures.md`, `APPROVED_TASK_QUEUE.md`, and product repository `AGENTS.md`.
+3. Read `projects/score2gp/AGENT_CONTROL.md`, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/next/0037-remediate-pymupdf-deprecation-warning-failures.md`, `PLANNING_DATA.md`, and product repository `AGENTS.md`.
 4. Require clean governance and product worktrees.
 5. Create product branch `agy/fix-pymupdf-deprecation-warning` in `tticom/score2gp`.
 6. Run `python scripts/agent_verify.py` in `score2gp` before making code modifications.

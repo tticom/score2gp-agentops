@@ -2,7 +2,7 @@
 
 ## Objective
 
-Implement bounded Developer task `FS-01` in `tticom/score2gp`, as authorized by the approved queue in `APPROVED_TASK_QUEUE.md` and programme contract `projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md`.
+Implement bounded Developer task `FS-01` in `tticom/score2gp`, as authorized by the approved queue in `PLANNING_DATA.md` and programme contract `projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md`.
 
 Add commandable, private-safe runtime provenance recording for corpus conversion runs. Record product git SHA, working tree clean/dirty status, resolved executable and import paths, exact command invocation, input classification, sidecar path/hash/provenance, output/report paths, exit status, refusal codes, and sanitized structural counts.
 
@@ -19,7 +19,7 @@ No other product files in `src/` or `tests/` may be edited in this task.
 
 1. Work only in the canonical Ubuntu WSL repositories below `/home/tticom-automation/work/score2gp-workspace`.
 2. Prove GitHub CLI and local Git identity are `tticom-automation`.
-3. Read `projects/score2gp/AGENT_CONTROL.md`, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/next/0036-fs01-runtime-provenance-baseline.md`, `APPROVED_TASK_QUEUE.md`, and product repository `AGENTS.md`.
+3. Read `projects/score2gp/AGENT_CONTROL.md`, `projects/score2gp/ACTIVE_TASK.md`, `projects/score2gp/prompts/next/0036-fs01-runtime-provenance-baseline.md`, `PLANNING_DATA.md`, and product repository `AGENTS.md`.
 4. Require clean governance and product worktrees.
 5. Create product branch `agy/fs01-runtime-provenance-baseline` in `tticom/score2gp`.
 6. Run `python scripts/agent_verify.py` in `score2gp` before making code modifications.

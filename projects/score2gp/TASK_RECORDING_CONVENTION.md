@@ -7,7 +7,7 @@ All pending tasks and backlog items must be recorded in the machine-readable Orc
 
 - **Authority:** `projects/score2gp/ORCHESTRATION_STATE.json`
 - **View:** `projects/score2gp/ACTIVE_TASK.md` (Auto-generated from JSON; never edited manually).
-- **Backlog:** Tasks awaiting execution are formally defined in `projects/score2gp/APPROVED_TASK_QUEUE.md` or as `next_task_proposal` in the JSON.
+- **Backlog:** Tasks awaiting execution are formally defined in `projects/score2gp/PLANNING_DATA.md` or as `next_task_proposal` in the JSON.
 
 Do **not** create ad-hoc `TASKS.md` files or sub-folder backlogs.
 

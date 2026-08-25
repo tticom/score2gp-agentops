@@ -38,7 +38,7 @@ cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
-tail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md
+tail -n 260 projects/score2gp/PLANNING_DATA.md
 python3 scripts/score2gp_governance_audit.py
 
 cd /home/tticom-automation/work/score2gp-workspace/score2gp

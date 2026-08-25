@@ -11,7 +11,7 @@
         },
         {
           "title": "Mandatory Startup",
-          "content": "At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\n\nRun the equivalent of:\ncd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops\ngit status --short --branch\ngit fetch --all --prune\nsed -n '1,220p' projects/score2gp/ACTIVE_TASK.md\ntail -n 260 projects/score2gp/APPROVED_TASK_QUEUE.md\npython3 scripts/score2gp_governance_audit.py\n\ncd /home/tticom-automation/work/score2gp-workspace/score2gp\ngit status --short --branch\ngit fetch --all --prune\ngit log --oneline --decorate --max-count=8"
+          "content": "At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\n\nRun the equivalent of:\ncd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops\ngit status --short --branch\ngit fetch --all --prune\nsed -n '1,220p' projects/score2gp/ACTIVE_TASK.md\ntail -n 260 projects/score2gp/PLANNING_DATA.md\npython3 scripts/score2gp_governance_audit.py\n\ncd /home/tticom-automation/work/score2gp-workspace/score2gp\ngit status --short --branch\ngit fetch --all --prune\ngit log --oneline --decorate --max-count=8"
         },
         {
           "title": "Operating Loop",
@@ -19,7 +19,7 @@
         },
         {
           "title": "Continuation and Pivot Audits",
-          "content": "Before ending after a successful task, inspect ACTIVE_TASK.md, APPROVED_TASK_QUEUE.md, recent reports, recent reviews, and current blockers. If an approved next task exists and prerequisites are satisfied, execute it. If no approved next task exists, identify the smallest credible continuation still inside the current product direction. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping. Create a governance PR to record the continuation and make it active when safe.\n\nWhen a task hits a blocker, do not default to stopping. Identify the blocker precisely, decide whether a credible unblocker exists, convert that unblocker into the smallest research, fixture, test, reporting, or feature task, and continue on the appropriate branch. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference."
+          "content": "Before ending after a successful task, inspect ACTIVE_TASK.md, PLANNING_DATA.md, recent reports, recent reviews, and current blockers. If an approved next task exists and prerequisites are satisfied, execute it. If no approved next task exists, identify the smallest credible continuation still inside the current product direction. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping. Create a governance PR to record the continuation and make it active when safe.\n\nWhen a task hits a blocker, do not default to stopping. Identify the blocker precisely, decide whether a credible unblocker exists, convert that unblocker into the smallest research, fixture, test, reporting, or feature task, and continue on the appropriate branch. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference."
         },
         {
           "title": "Choosing What Is Best",

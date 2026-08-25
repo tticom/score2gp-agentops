@@ -7,18 +7,6 @@ import json
 import subprocess
 from typing import Any, Callable, Sequence
 
-try:
-    from scripts.score2gp_got_bootstrap import (
-        find_current_head_handback,
-        find_latest_marked_author_handback,
-        query_pr_comments,
-    )
-except ModuleNotFoundError:  # Direct execution
-    from score2gp_got_bootstrap import (
-        find_current_head_handback,
-        find_latest_marked_author_handback,
-        query_pr_comments,
-    )
 
 
 class HandbackPublishError(RuntimeError):
@@ -56,6 +44,70 @@ def query_comments_with_runner(
     return [comment for comment in payload if isinstance(comment, dict)]
 
 
+
+HANDOFF_MARKERS = {
+    "AWAITING_CODE_REVIEW",
+    "AWAITING_CODEX_REVIEW",
+    "AWAITING_GOVERNANCE_REVIEW",
+    "AWAITING_AGY_HANDBACK",
+}
+
+def query_pr_comments(repo: str, pr_number: int) -> list[dict]:
+    import subprocess
+    import json
+    result = subprocess.run(
+        ["gh", "api", f"repos/{repo}/issues/{pr_number}/comments?per_page=100"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode:
+        raise HandbackPublishError(result.stderr.strip() or "PR handback-comment query failed")
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise HandbackPublishError("invalid PR handback-comment JSON") from error
+    if not isinstance(payload, list):
+        raise HandbackPublishError("PR handback-comment query must return a list")
+    return [comment for comment in payload if isinstance(comment, dict)]
+
+
+def find_current_head_handback(
+    comments: list[dict], *, head: str, author: str
+) -> dict | None:
+    if len(head) != 40 or not author:
+        return None
+    eligible = []
+    for comment in comments:
+        body = str(comment.get("body", ""))
+        login = str((comment.get("user") or {}).get("login", ""))
+        if (
+            (login == author or (author == "tticom-automation" and login == "tticom"))
+            and head in body
+            and any(marker in body for marker in HANDOFF_MARKERS)
+        ):
+            eligible.append(comment)
+    if not eligible:
+        return None
+    return max(eligible, key=lambda comment: int(comment.get("id") or 0))
+
+
+def find_latest_marked_author_handback(
+    comments: list[dict], *, author: str
+) -> dict | None:
+    if not author:
+        return None
+    eligible = []
+    for comment in comments:
+        body = str(comment.get("body", ""))
+        login = str((comment.get("user") or {}).get("login", ""))
+        if (
+            (login == author or (author == "tticom-automation" and login == "tticom"))
+            and any(marker in body for marker in HANDOFF_MARKERS)
+        ):
+            eligible.append(comment)
+    if not eligible:
+        return None
+    return max(eligible, key=lambda comment: int(comment.get("id") or 0))
 def publish_author_handback(
     *,
     repo: str,

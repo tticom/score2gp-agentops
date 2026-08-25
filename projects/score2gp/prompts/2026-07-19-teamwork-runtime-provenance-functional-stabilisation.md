@@ -17,7 +17,7 @@ dependent work until an external maintainer has merged it.
 - Private fixture directory:
   `/home/tticom/work/score2gp-workspace/score2gp-private-fixtures/fixtures/private`
 - Read, in order: `AGENT_CONTROL.md`, `AGENT_PR_READINESS.md`,
-  `ACTIVE_TASK.md`, `APPROVED_TASK_QUEUE.md`, and
+  `ACTIVE_TASK.md`, `PLANNING_DATA.md`, and
   `programmes/2026-07-19-runtime-provenance-functional-stabilisation.md`.
 
 Before any write, prove the automation identity:

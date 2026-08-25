@@ -4,10 +4,10 @@
   "baseline_failure_expectation": "Without correct ACTIVE_TASK.md task promotion, the router defaults to the stale COMPLETED/BLOCKED task 418.",
   "claims": [
     {
-      "claim": "Task 88 is successfully promoted as the active task in ACTIVE_TASK.md and APPROVED_TASK_QUEUE.md.",
+      "claim": "Task 88 is successfully promoted as the active task in ACTIVE_TASK.md and PLANNING_DATA.md.",
       "status": "verified",
       "production_path": "projects/score2gp/ACTIVE_TASK.md",
-      "evidence_path": "projects/score2gp/APPROVED_TASK_QUEUE.md",
+      "evidence_path": "projects/score2gp/PLANNING_DATA.md",
       "false_success_mutation": "ACTIVE_TASK.md status is changed to PR_OPEN with already merged branch agy/m5-corpus-generalisation-and-report.",
       "failure_oracle": "score2gp_governance_audit.py reports active task status is stale because branch is already MERGED.",
       "disproof_attempt": "Check audit output on baseline and mutated active task file.",
@@ -58,13 +58,13 @@
       "author_test_only": false,
       "production_path": false,
       "head_sha": "a61bfbf72c6d74036d034e64ff5df82e585281ad",
-      "command": "grep -c \"Task 88\" projects/score2gp/APPROVED_TASK_QUEUE.md",
-      "input": "APPROVED_TASK_QUEUE.md file contents",
+      "command": "grep -c \"Task 88\" projects/score2gp/PLANNING_DATA.md",
+      "input": "PLANNING_DATA.md file contents",
       "false_success_mutation": "None (grep check)",
       "observed_output": "2\n",
       "exit_code": 0,
       "output_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
-      "invariant": "Task 88 occurs in the APPROVED_TASK_QUEUE.md file.",
+      "invariant": "Task 88 occurs in the PLANNING_DATA.md file.",
       "result": "exposed"
     }
   ],
