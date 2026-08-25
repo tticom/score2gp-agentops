@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 12,
+  "authority_revision": 13,
   "task": {
     "id": "ORC-02",
     "title": "Agent Isolation & Control-Plane Cutover",
-    "objective": "Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to formally retire legacy `go` and `got` commands.",
+    "objective": "Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to convert legacy `go` and `got` commands into thin compatibility wrappers around the shared resolver.",
     "status": "IN_PROGRESS",
     "repository": "tticom/score2gp",
     "base_branch": "main",

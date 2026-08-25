@@ -1,7 +1,7 @@
 # ORC-02: Agent Isolation & Control-Plane Cutover
 
 ## Objective
-Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to formally retire legacy `go` and `got` commands.
+Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to convert legacy `go` and `got` commands into thin compatibility wrappers around the shared resolver.
 
 ## Contract
 - **Input Class:** score2gp and score2gp-agentops repositories.
