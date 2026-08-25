@@ -1,36 +1,38 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 12,
+  "authority_revision": 13,
   "task": {
-    "id": "ORC-02",
-    "title": "Agent Isolation & Control-Plane Cutover",
-    "objective": "Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to convert legacy `go` and `got` commands into thin compatibility wrappers around the shared resolver.",
+    "id": "CRP-01",
+    "title": "Port and Harmonize Barline Detection & Geometry Cleanup",
+    "objective": "Port valid barline detection thresholds from PR 418 into src/score2gp/pdf.py, revert the outer_tolerance = 300.0 geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.",
     "status": "IN_PROGRESS",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "chore/orc-02-agent-isolation",
+    "branch": "feat/crp-01-barline-detection",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/orc-02-agent-isolation.md",
+    "prompt": "../score2gp-agentops/projects/score2gp/prompts/next/0044-m6-port-and-harmonize-barline-detection.md",
     "allowed_paths": [
-      "*"
+      "src/score2gp/pdf.py",
+      "tests/test_pdf.py",
+      "tests/test_pdf_geometry_candidate_extractor.py"
     ],
     "acceptance": [
-      "Migration of any remaining `.agents/`, `agy/`, or agentic config files from `score2gp` to `score2gp-agentops`.",
-      "Convert legacy `go` and `got` into thin compatibility wrappers around the shared resolver per step 4 of `ORCA_WORKFLOW.md`."
+      "pytest tests/test_pdf_geometry_candidate_extractor.py and pytest tests/test_pdf.py pass cleanly.",
+      "python3 scripts/private_e2e_smoke.py --pdf fixtures/private/Lesson-5.pdf increases extracted notation bar boxes on Lesson-5.pdf from 31 (on main) to 41 across 12 systems without triggering 300pt snapping hacks.",
+      "Held-out real-source probe on fixtures/private/Lesson-6.pdf increases extracted notation bar boxes from 13 (on main) to 40 across 10 systems without snapping hacks."
     ],
     "validation_commands": [
-      "git diff --check",
-      "python3 -m pytest tests/test_score2gp_orca_control.py"
+      "python3 -m pytest tests/test_pdf_geometry_candidate_extractor.py tests/test_pdf.py"
     ],
     "dependencies": [
-      "ORC-01"
+      "ORC-02"
     ],
     "stop_conditions": [
-      "control_plane_resolver_broken"
+      "private_e2e_smoke_fails"
     ],
-    "reviewer_role": "governance",
+    "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
   "next_task_proposal": {
@@ -286,6 +288,37 @@
       ],
       "stop_conditions": [
         "validation_tests_fail_from_missing_files"
+      ],
+      "reviewer_role": "governance",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "ORC-02",
+      "title": "Agent Isolation & Control-Plane Cutover",
+      "objective": "Isolate all agent instructions to the agentops repository, leaving the score2gp repository completely free of agentic governance files. Execute the state cutover to convert legacy `go` and `got` commands into thin compatibility wrappers around the shared resolver.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "chore/orc-02-agent-isolation",
+      "pull_request": 602,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/orc-02-agent-isolation.md",
+      "allowed_paths": [
+        "*"
+      ],
+      "acceptance": [
+        "Migration of any remaining `.agents/`, `agy/`, or agentic config files from `score2gp` to `score2gp-agentops`.",
+        "Convert legacy `go` and `got` into thin compatibility wrappers around the shared resolver per step 4 of `ORCA_WORKFLOW.md`."
+      ],
+      "validation_commands": [
+        "git diff --check",
+        "python3 -m pytest tests/test_score2gp_orca_control.py"
+      ],
+      "dependencies": [
+        "ORC-01"
+      ],
+      "stop_conditions": [
+        "control_plane_resolver_broken"
       ],
       "reviewer_role": "governance",
       "delivery_action": "pull_request"
