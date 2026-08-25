@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 11,
+  "authority_revision": 12,
   "task": {
     "id": "ORC-02",
     "title": "Agent Isolation & Control-Plane Cutover",
@@ -18,10 +18,11 @@
     ],
     "acceptance": [
       "Migration of any remaining `.agents/`, `agy/`, or agentic config files from `score2gp` to `score2gp-agentops`.",
-      "Removal/retirement of legacy `go` and `got` bootstraps per step 4 of `ORCA_WORKFLOW.md`."
+      "Convert legacy `go` and `got` into thin compatibility wrappers around the shared resolver per step 4 of `ORCA_WORKFLOW.md`."
     ],
     "validation_commands": [
-      "git diff --check"
+      "git diff --check",
+      "python3 -m pytest tests/test_score2gp_orca_control.py"
     ],
     "dependencies": [
       "ORC-01"

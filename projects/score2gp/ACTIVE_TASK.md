@@ -25,3 +25,4 @@ Isolate all agent instructions to the agentops repository, leaving the score2gp 
 ## Validation commands
 
 - `git diff --check`
+- `python3 -m pytest tests/test_score2gp_orca_control.py`
