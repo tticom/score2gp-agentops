@@ -120,3 +120,23 @@ def test_publish_raises_if_head_mismatch() -> None:
             expected_head=expected_head,
             runner=mock_runner,
         )
+
+def test_cli_subprocess_missing_args_fails() -> None:
+    result = subprocess.run(
+        ["python3", "scripts/score2gp_publish_handback.py"],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "the following arguments are required" in result.stderr
+
+def test_cli_subprocess_invalid_json_returns_gracefully() -> None:
+    # Test that the CLI itself can be imported and executed without NameError
+    result = subprocess.run(
+        ["python3", "scripts/score2gp_publish_handback.py", "--repo", "nonexistent/repo", "--pr", "1", "--head", "a" * 40],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    # The actual gh command will fail, but it shouldn't be a NameError
+    assert "NameError" not in result.stderr

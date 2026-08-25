@@ -40,7 +40,7 @@ def main() -> None:
 
     agentops = Path(args.agentops).resolve()
     product = Path(args.product).resolve()
-    
+
     sync_main(agentops, "agentops")
     sync_main(product, "product")
 
@@ -48,17 +48,17 @@ def main() -> None:
     authority_path = agentops / "projects/score2gp/ORCHESTRATION_STATE.json"
     if not authority_path.exists():
         fail_closed(f"Missing authority: {authority_path}")
-        
+
     with open(authority_path, encoding="utf-8") as f:
         auth = json.load(f)
-        
+
     task = auth.get("task", {})
     repo = task.get("repository")
     pr = task.get("pull_request")
-    
+
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         live_file = f.name
-        
+
     try:
         if repo and pr:
             res = subprocess.run(
@@ -88,7 +88,7 @@ def main() -> None:
         ]
         if args.json:
             cmd.append("--json")
-            
+
         res = subprocess.run(cmd, cwd=agentops)
         sys.exit(res.returncode)
     finally:

@@ -43,7 +43,7 @@ def main() -> None:
 
     agentops = Path(args.agentops).resolve()
     product = Path(args.product).resolve()
-    
+
     sync_main(agentops, "agentops")
     sync_main(product, "product")
 
@@ -51,22 +51,22 @@ def main() -> None:
     authority_path = agentops / "projects/score2gp/ORCHESTRATION_STATE.json"
     if not authority_path.exists():
         fail_closed(f"Missing authority: {authority_path}")
-        
+
     with open(authority_path, encoding="utf-8") as f:
         auth = json.load(f)
-        
+
     task = auth.get("task", {})
     repo = task.get("repository")
     pr = task.get("pull_request")
-    
+
     # If explicit review args passed, use them instead of the active task
     if args.review_repo and args.review_pr:
         repo = args.review_repo
         pr = args.review_pr
-    
+
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         live_file = f.name
-        
+
     try:
         if repo and pr:
             res = subprocess.run(
@@ -88,7 +88,7 @@ def main() -> None:
         )
         if res.returncode != 0:
             fail_closed(f"Resolve failed: {res.stderr.strip()}")
-            
+
         resolved = json.loads(res.stdout)
         role = resolved.get("dispatch_role")
         if not role:
@@ -115,7 +115,7 @@ def main() -> None:
             cmd.extend(["--review-level", args.review_level])
         if args.json:
             cmd.append("--json")
-            
+
         res = subprocess.run(cmd, cwd=agentops)
         sys.exit(res.returncode)
     finally:
