@@ -5,7 +5,7 @@ import os
 def setup_clean_repo(tmp_path):
     repo_path = tmp_path / "repo"
     repo_path.mkdir()
-    subprocess.run(["git", "init"], cwd=repo_path, check=True)
+    subprocess.run(["git", "init", "--initial-branch=main"], cwd=repo_path, check=True)
     subprocess.run(["git", "commit", "--allow-empty", "-m", "init"], cwd=repo_path, check=True)
 
     origin_path = tmp_path / "origin"
