@@ -1,5 +1,7 @@
 # NPG-04C: Geometric Rhythm Extraction
 
+Status: SUPERSEDED by REC-10 and REC-12 — historical prompt, not executable
+
 ## Objective
 Implement geometric rhythm extraction as defined in the ADR NPG-00R.
 

@@ -4,13 +4,13 @@
 
 **Task**: CRP-01 — Port and Harmonize Barline Detection & Geometry Cleanup
 
-**Status**: IN_PROGRESS
+**Status**: MERGED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/crp-01-barline-detection`
+**PR Branch**: `agy/crp-01-barline-detection-harmonization-2`
 
-**Pull Request**: TBD
+**Pull Request**: 454
 
 **Owner Role**: implementation
 

@@ -2769,7 +2769,7 @@ testing and sidecar decisions, and produce the dependency-ordered migration.
 
 ## Task 89 — Port and Harmonize Barline Detection & Geometry Cleanup (CRP-01)
 
-Status: ACTIVE
+Status: DONE — merged through product PR #454
 
 Owning repo: score2gp
 
@@ -2794,7 +2794,7 @@ Acceptance:
 
 ## Task 90 — Topologically Locked System Barlines (CRP-02)
 
-Status: BLOCKED
+Status: SUPERSEDED by REC-06 and REC-07
 
 Blocked by:
 Task 89 (`CRP-01`).
@@ -2812,7 +2812,7 @@ Its executable prompt requires a later governance promotion.
 
 ## Task 91 — Page-Continuous Measure Indexing (CRP-03)
 
-Status: BLOCKED
+Status: SUPERSEDED by REC-06 and REC-08
 
 Blocked by:
 Task 90 (`CRP-02`).
@@ -2830,7 +2830,7 @@ Prompts:
 
 ## Task 92 — Real-Source Oracle and Harness (CRP-04)
 
-Status: BLOCKED
+Status: SUPERSEDED by REC-01
 
 Blocked by:
 Task 91 (`CRP-03`).
@@ -2846,7 +2846,7 @@ Prompts:
 
 ## Task 93 — Sidecar and Recognition Research
 
-Status: BLOCKED
+Status: SUPERSEDED by REC-03 through REC-05 and REC-14
 
 Blocked by:
 Task 92 (`CRP-04`).
@@ -2862,7 +2862,7 @@ Prompts:
 
 ## Task 94 — Conversion Module Migration Series
 
-Status: BLOCKED
+Status: SUPERSEDED by REC-02 through REC-14
 
 Blocked by:
 Tasks 88–93 and separately reviewed prompt completion.
@@ -2874,6 +2874,10 @@ Prompt skeletons:
 - prompts `0050–0056` in the conversion-recovery series.
 
 No skeleton is executable until all TBD_FROM fields are replaced from accepted upstream evidence and it is separately promoted to `ACTIVE_TASK.md`.
+
+The superseding dependency-ordered task list and prompt skeletons are recorded in
+`projects/score2gp/tasks/2026-08-27-recognition-architecture-backlog.md`. Older
+prompt files remain as historical evidence but must not be promoted.
 
 ---
 
@@ -2894,5 +2898,3 @@ Conduct architectural research on how to implement proper chord recognition in `
 
 Likely product files:
 - docs/design/2026-08-14-chord-recognition-architecture.md
-
-
