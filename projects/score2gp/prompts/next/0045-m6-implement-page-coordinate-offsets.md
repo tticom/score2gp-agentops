@@ -1,6 +1,6 @@
 # 0045 — M6: Topologically Locked System Barlines (CRP-02)
 
-Status: APPROVED
+Status: SUPERSEDED by REC-06 and REC-08 — historical prompt, not executable
 
 ## Objective
 Topologically lock 5-line notation barlines to 6-line TAB barlines system-by-system in `src/score2gp/pdf.py` before event extraction, closing the remaining 2-bar gap (41 -> 43 bars on `Lesson-5.pdf`) and ensuring system barlines do not bleed across system or page boundaries.
@@ -29,4 +29,3 @@ Modify only `src/score2gp/pdf.py` and test files `tests/test_pdf_geometry_candid
 ## Deliverables
 - Branch `agy/crp-02-topologically-locked-system-barlines` pushed to `origin`.
 - Pull Request opened on GitHub.
-

@@ -1,5 +1,7 @@
 # NPG-03B: Floating Barline Geometry Isolation
 
+Status: SUPERSEDED by REC-07 — historical prompt, not executable
+
 ## Objective
 Implement floating barline geometry isolation as defined in the ADR NPG-00R.
 

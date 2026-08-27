@@ -1,6 +1,6 @@
 # CRP-14/15 — Legacy Removal and Corpus Acceptance
 
-Status: SKELETON — not executable.
+Status: SUPERSEDED by REC-14 — historical prompt, not executable.
 
 ## Dependencies
 

@@ -1,6 +1,6 @@
 # CRP-04 — Real-Source Test-Suite Migration
 
-Status: SKELETON — not executable.
+Status: SUPERSEDED by REC-01 — historical prompt, not executable.
 
 ## Dependencies
 
