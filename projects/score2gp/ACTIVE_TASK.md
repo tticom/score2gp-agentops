@@ -2,28 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CRP-01 — Port and Harmonize Barline Detection & Geometry Cleanup
+**Task**: REC-00 — Recognition Domain Contract and Supersession Ledger
 
-**Status**: MERGED
+**Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `agy/crp-01-barline-detection-harmonization-2`
+**PR Branch**: `codex/rec-00-recognition-domain-contract`
 
-**Pull Request**: 454
+**Pull Request**: TBD
 
-**Owner Role**: implementation
+**Owner Role**: architect
 
 ## Objective
 
-Port valid barline detection thresholds from PR 418 into src/score2gp/pdf.py, revert the outer_tolerance = 300.0 geometry snapping hack, and enforce staff-relative barline height bounds without mutating higher-level layout models.
+Define the canonical recognition vocabulary, stage invariants, failure taxonomy, and auditable mapping from superseded geometry-first tasks into the topology-first recognition programme without changing product behaviour.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `tests/test_pdf.py`
-- `tests/test_pdf_geometry_candidate_extractor.py`
+- `projects/score2gp/CONTEXT.md`
+- `projects/score2gp/decisions/recognition-architecture-v1.md`
+- `projects/score2gp/tasks/2026-08-27-recognition-architecture-backlog.md`
 
 ## Validation commands
 
-- `python3 -m pytest tests/test_pdf_geometry_candidate_extractor.py tests/test_pdf.py`
+- `git diff --check`
+- `python3 scripts/score2gp_governance_audit.py`
+- `python3 -m pytest -q tests/test_score2gp_orchestrator.py tests/test_governance_audit.py`

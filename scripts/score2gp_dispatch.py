@@ -61,7 +61,7 @@ def main() -> None:
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)
     parser.add_argument("--review-level")
-    parser.add_argument("--orca-role", choices=("implementation", "reviewer", "governance"))
+    parser.add_argument("--orca-role", choices=("implementation", "reviewer", "governance", "architect"))
     parser.add_argument("--live", type=Path)
     parser.add_argument("--github-login")
     parser.add_argument("--legacy", action="store_true")

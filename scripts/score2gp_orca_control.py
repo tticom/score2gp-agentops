@@ -25,6 +25,8 @@ except ModuleNotFoundError:
 STATES = {
     "BLOCKED",
     "READY",
+    "PROMOTED",
+    "APPROVED",
     "RUNNING",
     "REVIEW_REQUIRED",
     "GOVERNANCE_REQUIRED",
@@ -180,6 +182,8 @@ def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) 
     legacy_status = fields.get("status", "").upper()
     compatible_statuses = {
         "READY": {"APPROVED", "PROMOTED"},
+        "PROMOTED": {"PROMOTED"},
+        "APPROVED": {"APPROVED"},
         "RUNNING": {"IN_PROGRESS", "PR_OPEN"},
         "BLOCKED": {"BLOCKED"},
         "COMPLETE": {"COMPLETED", "MERGED", "RESOLVED"},
