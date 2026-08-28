@@ -10,7 +10,7 @@ This glossary defines the canonical vocabulary for the Score2GP Recognition laye
 - **Invariants:** Observation contracts MUST NOT contain any musical assignments, staff associations, or duration semantics. They are purely physical properties of the document.
 
 ### 2. Hypothesis
-- **Meaning:** A provisional interpretation of one or more Observations (e.g., a line might be a stem or a barline, a text string might be a fret number). 
+- **Meaning:** A provisional interpretation of one or more Observations (e.g., a line might be a stem or a barline, a text string might be a fret number).
 - **Stage Ownership:** Stage 2 (Hypothesis Generation / Token Evidence).
 - **Invariants:** Hypotheses preserve alternatives and conflicts. A hypothesis never asserts final musical truth and must carry its explicit provenance.
 
@@ -26,7 +26,7 @@ This glossary defines the canonical vocabulary for the Score2GP Recognition laye
 
 ### 5. Measure Boundary
 - **Meaning:** The resolved, logical encapsulation of musical time based on Physical Divisions, staff spans, and system alignment.
-- **Stage Ownership:** Stage 4 (Measure Topology) & Stage 5 (Page-Continuous Topology).
+- **Stage Ownership:** Stage 4 (Measure Topology) (consumed by Stage 5 Page-Continuous Topology).
 - **Invariants:** Must cover fragmented, floating, double, and repeat-adjacent cases. Defines the strict boundaries within which events are grouped.
 
 ### 6. Recognition Graph
