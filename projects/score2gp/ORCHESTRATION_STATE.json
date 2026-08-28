@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-01-layered-semantic-oracle",
-    "pull_request": null,
+    "pull_request": -1,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/rec-01-layered-semantic-oracle.md",
     "allowed_paths": [
@@ -169,7 +169,7 @@
       "repository": "tticom/score2gp",
       "base_branch": "main",
       "branch": "feat/npg-04d-structural-signaling",
-      "pull_request": null,
+      "pull_request": -1,
       "owner_role": "implementation",
       "prompt": "projects/score2gp/prompts/next/npg-04d-structural-signaling.md",
       "allowed_paths": [
@@ -203,7 +203,7 @@
       "repository": "tticom/score2gp",
       "base_branch": "main",
       "branch": "chore/bench-01-major-triads",
-      "pull_request": null,
+      "pull_request": -1,
       "owner_role": "implementation",
       "prompt": "projects/score2gp/MAJOR_TRIADS_BENCHMARK.md",
       "allowed_paths": [
@@ -232,7 +232,7 @@
       "repository": "tticom/score2gp-agentops",
       "base_branch": "main",
       "branch": "chore/orc-01-repo-cleanup",
-      "pull_request": null,
+      "pull_request": -1,
       "owner_role": "supervisor",
       "prompt": "projects/score2gp/prompts/next/orc-01-repo-cleanup.md",
       "allowed_paths": [
