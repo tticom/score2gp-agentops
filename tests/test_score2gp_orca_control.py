@@ -100,6 +100,20 @@ def test_active_incident_blocks_resolution_and_dispatch() -> None:
         build_assignment(config, live(), resolved, RuntimeIdentity("tticom", "worker"), "b" * 40)
 
 
+
+def test_promoted_legacy_active_task_alignment_passes() -> None:
+    text = """# Active Task
+**Task**: 108 — Bounded repair
+**Status**: PROMOTED
+**Repository**: tticom/score2gp
+**PR Branch**: `feat/task-108`
+**Pull Request**: 441
+"""
+    auth = authority()
+    auth["task"]["status"] = "PROMOTED"
+    validate_legacy_alignment(auth, text)
+
+
 def test_legacy_active_task_divergence_fails_closed() -> None:
     text = """# Active Task
 **Task**: Task 999 — Wrong task
