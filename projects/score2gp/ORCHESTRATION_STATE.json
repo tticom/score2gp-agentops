@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 15,
+  "authority_revision": 17,
   "task": {
     "id": "REC-00",
     "title": "Recognition Domain Contract and Supersession Ledger",
@@ -40,7 +40,39 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "REC-01",
+    "title": "Layered Semantic Oracle",
+    "objective": "Build a reference-isolated, read-only oracle reporting first divergence at topology, TAB-token, ownership, onset, rhythm, measure and score layers.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "branch": "feat/rec-01-layered-semantic-oracle",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/rec-01-layered-semantic-oracle.md",
+    "allowed_paths": [
+      "tests/test_oracle.py",
+      "scripts/oracle.py"
+    ],
+    "acceptance": [
+      "Lesson 5 and Lesson 6 are validation inputs, never generation inputs.",
+      "Aggregate counts cannot yield a pass when ordered events differ.",
+      "Corpus absence cannot satisfy productive acceptance.",
+      "At least two historical destructive behaviours are detected."
+    ],
+    "validation_commands": [
+      "python3 -m pytest tests/test_oracle.py"
+    ],
+    "dependencies": [
+      "REC-00"
+    ],
+    "stop_conditions": [
+      "reference_data_leaks_to_generation"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -321,6 +353,30 @@
       "stop_conditions": [
         "private_e2e_smoke_fails"
       ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "CRP-02",
+      "title": "Topologically Locked System Barlines",
+      "objective": "Implement the true CRP-02 specification to lock 5-line notation barlines to 6-line TAB barlines system-by-system before event extraction for fragmented staff recovery.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "fix/crp-02-system-barlines",
+      "pull_request": 455,
+      "owner_role": "implementation",
+      "prompt": "",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_geometry.py"
+      ],
+      "acceptance": [],
+      "validation_commands": [],
+      "dependencies": [
+        "CRP-01"
+      ],
+      "stop_conditions": [],
       "reviewer_role": "reviewer",
       "delivery_action": "pull_request"
     }
