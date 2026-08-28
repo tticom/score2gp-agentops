@@ -2,30 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REC-00 — Recognition Domain Contract and Supersession Ledger
+**Task**: REC-01 — Layered Semantic Oracle
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `codex/rec-00-recognition-domain-contract`
+**PR Branch**: `feat/rec-01-layered-semantic-oracle`
 
 **Pull Request**: TBD
 
-**Owner Role**: architect
+**Owner Role**: implementation
 
 ## Objective
 
-Define the canonical recognition vocabulary, stage invariants, failure taxonomy, and auditable mapping from superseded geometry-first tasks into the topology-first recognition programme without changing product behaviour.
+Build a reference-isolated, read-only oracle reporting first divergence at topology, TAB-token, ownership, onset, rhythm, measure and score layers.
 
 ## Allowed paths
 
-- `projects/score2gp/CONTEXT.md`
-- `projects/score2gp/decisions/recognition-architecture-v1.md`
-- `projects/score2gp/tasks/2026-08-27-recognition-architecture-backlog.md`
+- `tests/test_oracle.py`
+- `scripts/oracle.py`
 
 ## Validation commands
 
-- `git diff --check`
-- `python3 scripts/score2gp_governance_audit.py`
-- `python3 -m pytest -q tests/test_score2gp_orchestrator.py tests/test_governance_audit.py`
+- `python3 -m pytest tests/test_oracle.py`
