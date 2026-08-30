@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 19,
+  "authority_revision": 20,
   "task": {
     "id": "REC-00A",
     "title": "Agent Workspace Cleanup Skill",
     "objective": "Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.",
-    "status": "PROMOTED",
+    "status": "MERGED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "codex/prepare-rec02-and-workspace-cleanup",
@@ -38,7 +38,39 @@
     "reviewer_role": "governance",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "REC-02",
+    "title": "Recognition Contract Schemas",
+    "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "branch": "feat/rec-02-recognition-contract-schemas",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
+    "allowed_paths": [
+      "TBD_FROM_PROMOTED_PROMPT"
+    ],
+    "acceptance": [
+      "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
+      "Graph relations reference existing stable node IDs.",
+      "Invalid or cross-version payloads fail closed with useful diagnostics."
+    ],
+    "validation_commands": [
+      "TBD_FROM_PROMOTED_PROMPT"
+    ],
+    "dependencies": [
+      "REC-00",
+      "REC-01"
+    ],
+    "stop_conditions": [
+      "runtime_recognition_or_export_behaviour_changes",
+      "schema_contract_leaks_inference_or_compiler_semantics"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -164,6 +196,79 @@
     "allow_admin_bypass": false
   },
   "completed_tasks": [
+    {
+      "id": "REC-01",
+      "title": "Layered Semantic Oracle",
+      "objective": "Build a reference-isolated, read-only oracle reporting first divergence at topology, TAB-token, ownership, onset, rhythm, measure and score layers.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-01-layered-semantic-oracle",
+      "pull_request": 456,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-01-layered-semantic-oracle.md",
+      "allowed_paths": [
+        "tests/test_oracle.py",
+        "scripts/oracle.py"
+      ],
+      "acceptance": [
+        "Lesson 5 and Lesson 6 are validation inputs, never generation inputs.",
+        "Aggregate counts cannot yield a pass when ordered events differ.",
+        "Corpus absence cannot satisfy productive acceptance.",
+        "At least two historical destructive behaviours are detected."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/test_oracle.py"
+      ],
+      "dependencies": [
+        "REC-00"
+      ],
+      "stop_conditions": [
+        "reference_data_leaks_to_generation"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "merge_commit": "42afb6d231fb5c399c2e3aef2ed3d3bcdcdb5609",
+      "head_sha": "fd5a8b41074a6f15e77bbe13aa38f27d282a4d7e"
+    },
+    {
+      "id": "REC-00A",
+      "title": "Agent Workspace Cleanup Skill",
+      "objective": "Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "codex/prepare-rec02-and-workspace-cleanup",
+      "pull_request": 609,
+      "owner_role": "architect",
+      "prompt": "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
+      "allowed_paths": [
+        "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
+        "projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md"
+      ],
+      "acceptance": [
+        "A dry-run inventory is deterministic and identity-aware.",
+        "A known stale review worktree is removable while its branch/ref remains.",
+        "A dirty worktree is preserved and reported, not silently removed.",
+        "The cleanup receipt is sufficient to explain and reproduce the decision."
+      ],
+      "validation_commands": [
+        "python3 scripts/score2gp_governance_audit.py",
+        "git diff --check",
+        "dry-run inventory against all three agent environments"
+      ],
+      "dependencies": [
+        "REC-01"
+      ],
+      "stop_conditions": [
+        "active_or_dirty_work_would_be_deleted",
+        "canonical_repository_or_branch_identity_is_ambiguous"
+      ],
+      "reviewer_role": "governance",
+      "delivery_action": "pull_request",
+      "merge_commit": "65a0bffc46227e80b0bfcdfbc26ae67e763f2fd7",
+      "head_sha": "62632bc9e94ccc33ce55f19c6d0c2f5380d0fa37"
+    },
     {
       "id": "NPG-04D",
       "title": "Vector-Based Structural Signaling",
