@@ -50,7 +50,8 @@
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
     "allowed_paths": [
-      "TBD_FROM_PROMOTED_PROMPT"
+      "src/score2gp/recognition/schemas.py",
+      "tests/recognition/test_schemas.py"
     ],
     "acceptance": [
       "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
@@ -58,7 +59,7 @@
       "Invalid or cross-version payloads fail closed with useful diagnostics."
     ],
     "validation_commands": [
-      "TBD_FROM_PROMOTED_PROMPT"
+      "python3 -m pytest tests/recognition/test_schemas.py"
     ],
     "dependencies": [
       "REC-00",
