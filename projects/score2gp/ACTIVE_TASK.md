@@ -4,7 +4,7 @@
 
 **Task**: REC-00A — Agent Workspace Cleanup Skill
 
-**Status**: PROMOTED
+**Status**: MERGED
 
 **Repository**: tticom/score2gp-agentops
 
