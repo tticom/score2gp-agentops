@@ -29,3 +29,6 @@ recognition or export behaviour.
 Promoted prompt must name exact schema files, tests, regeneration command,
 artifact audit and full relevant type checks.
 
+- Schema files: `src/score2gp/recognition/schemas.py`
+- Tests: `tests/recognition/test_schemas.py`
+- Validation command: `python3 -m pytest tests/recognition/test_schemas.py`

@@ -187,6 +187,8 @@ def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) 
         "RUNNING": {"IN_PROGRESS", "PR_OPEN"},
         "BLOCKED": {"BLOCKED"},
         "COMPLETE": {"COMPLETED", "MERGED", "RESOLVED"},
+        "MERGED": {"MERGED"},
+        "RESOLVED": {"RESOLVED"},
     }
     checks = {
         "task": str(task["id"]) in fields.get("task", ""),
