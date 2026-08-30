@@ -121,6 +121,18 @@ def test_merged_task_proposes_next_task_without_executing_it() -> None:
     assert decision["may_execute_next_task"] is False
 
 
+def test_merged_task_awaits_review_for_matching_promotion_pr() -> None:
+    config = authority("MERGED")
+    config["next_task_proposal"] = {
+        "id": "REC-02", "status": "PROPOSED", "repository": "tticom/score2gp-agentops",
+    }
+    facts = live()
+    facts["snapshot"]["repository"] = "tticom/score2gp-agentops"
+    facts["pull_request"]["head_branch"] = "gov/promote-rec-02"
+    decision = advance(config, facts)
+    assert decision["action"] == "AWAIT_REVIEW"
+
+
 def test_incident_blocks_all_progress() -> None:
     config = authority()
     config["incidents"] = [{"id": "incident-1", "status": "BLOCKING"}]

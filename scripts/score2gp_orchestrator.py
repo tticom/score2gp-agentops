@@ -72,6 +72,31 @@ def advance(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str, 
     if declared == "BLOCKED":
         return _decision(authority, live_state, "BLOCKED", "task_declared_blocked")
     if declared in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
+        pull_request = live_state.get("pull_request")
+        snapshot = live_state.get("snapshot") or {}
+        proposal = authority.get("next_task_proposal")
+        is_promotion = (
+            isinstance(pull_request, dict)
+            and str(pull_request.get("state", "")).upper() == "OPEN"
+            and isinstance(proposal, dict)
+            and str(proposal.get("status", "")).upper() == "PROPOSED"
+            and snapshot.get("repository") == proposal.get("repository")
+            and str(pull_request.get("head_branch", ""))
+            == f"gov/promote-{str(proposal.get('id', '')).lower()}"
+        )
+        is_repair = (
+            isinstance(pull_request, dict)
+            and str(pull_request.get("state", "")).upper() == "OPEN"
+            and snapshot.get("repository") == "tticom/score2gp-agentops"
+            and live_state.get("control_plane_repair") is True
+        )
+        if is_promotion or is_repair:
+            review = _current_head_review(pull_request)
+            if review == "CHANGES_REQUESTED":
+                return _decision(authority, live_state, "REMEDIATE_CURRENT_PR", "current_head_changes_requested")
+            if review == "NONE":
+                return _decision(authority, live_state, "AWAIT_REVIEW", "current_head_requires_review")
+            return _decision(authority, live_state, "AWAIT_HUMAN_MERGE", "current_head_review_approved")
         return _decision(
             authority,
             live_state,
