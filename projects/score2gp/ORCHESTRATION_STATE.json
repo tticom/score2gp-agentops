@@ -1,48 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 20,
+  "authority_revision": 21,
   "task": {
-    "id": "REC-00A",
-    "title": "Agent Workspace Cleanup Skill",
-    "objective": "Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.",
-    "status": "MERGED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "branch": "codex/prepare-rec02-and-workspace-cleanup",
-    "pull_request": 609,
-    "owner_role": "architect",
-    "prompt": "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
-    "allowed_paths": [
-      "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
-      "projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md"
-    ],
-    "acceptance": [
-      "A dry-run inventory is deterministic and identity-aware.",
-      "A known stale review worktree is removable while its branch/ref remains.",
-      "A dirty worktree is preserved and reported, not silently removed.",
-      "The cleanup receipt is sufficient to explain and reproduce the decision."
-    ],
-    "validation_commands": [
-      "python3 scripts/score2gp_governance_audit.py",
-      "git diff --check",
-      "dry-run inventory against all three agent environments"
-    ],
-    "dependencies": [
-      "REC-01"
-    ],
-    "stop_conditions": [
-      "active_or_dirty_work_would_be_deleted",
-      "canonical_repository_or_branch_identity_is_ambiguous"
-    ],
-    "reviewer_role": "governance",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "REC-02",
     "title": "Recognition Contract Schemas",
     "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-02-recognition-contract-schemas",
@@ -72,6 +36,7 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
+  "next_task_proposal": null,
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -488,6 +453,42 @@
         "proposal_requires_product_code_change"
       ],
       "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "REC-00A",
+      "title": "Agent Workspace Cleanup Skill",
+      "objective": "Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "codex/prepare-rec02-and-workspace-cleanup",
+      "pull_request": 609,
+      "owner_role": "architect",
+      "prompt": "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
+      "allowed_paths": [
+        "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
+        "projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md"
+      ],
+      "acceptance": [
+        "A dry-run inventory is deterministic and identity-aware.",
+        "A known stale review worktree is removable while its branch/ref remains.",
+        "A dirty worktree is preserved and reported, not silently removed.",
+        "The cleanup receipt is sufficient to explain and reproduce the decision."
+      ],
+      "validation_commands": [
+        "python3 scripts/score2gp_governance_audit.py",
+        "git diff --check",
+        "dry-run inventory against all three agent environments"
+      ],
+      "dependencies": [
+        "REC-01"
+      ],
+      "stop_conditions": [
+        "active_or_dirty_work_would_be_deleted",
+        "canonical_repository_or_branch_identity_is_ambiguous"
+      ],
+      "reviewer_role": "governance",
       "delivery_action": "pull_request"
     }
   ]
