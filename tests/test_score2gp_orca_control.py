@@ -321,7 +321,7 @@ def test_completed_task_allows_scoped_control_plane_bootstrap_review() -> None:
 def test_promotion_branch_matching_ignores_identifier_hyphens() -> None:
     config = authority()
     config["task"]["status"] = "MERGED"
-    config["next_task_proposal"] = {"id": "REC-02", "status": "PROPOSED", "repository": "tticom/score2gp-agentops"}
+    config["next_task_proposal"] = {"id": "REC-02", "status": "PROPOSED", "repository": "tticom/score2gp"}
     facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "pull_request": {"number": 612, "state": "OPEN", "head_branch": "gov/promote-rec02", "head_sha": "a" * 40, "reviews": []}}
     assert resolve_state(config, facts)["state"] == "REVIEW_REQUIRED"
 

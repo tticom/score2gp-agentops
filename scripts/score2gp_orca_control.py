@@ -239,7 +239,7 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     proposal = authority.get("next_task_proposal")
     if not isinstance(proposal, dict) or str(proposal.get("status", "")).upper() != "PROPOSED":
         return None
-    if snapshot.get("repository") != proposal.get("repository"):
+    if snapshot.get("repository") != "tticom/score2gp-agentops":
         return None
     branch = str(pr.get("head_branch", ""))
     actual_promotion_id = branch.removeprefix("gov/promote-").replace("-", "")
