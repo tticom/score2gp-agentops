@@ -2,27 +2,29 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REC-01 — Layered Semantic Oracle
+**Task**: REC-00A — Agent Workspace Cleanup Skill
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/rec-01-layered-semantic-oracle`
+**PR Branch**: `codex/prepare-rec02-and-workspace-cleanup`
 
-**Pull Request**: TBD
+**Pull Request**: 609
 
-**Owner Role**: implementation
+**Owner Role**: architect
 
 ## Objective
 
-Build a reference-isolated, read-only oracle reporting first divergence at topology, TAB-token, ownership, onset, rhythm, measure and score layers.
+Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.
 
 ## Allowed paths
 
-- `tests/test_oracle.py`
-- `scripts/oracle.py`
+- `projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md`
+- `projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md`
 
 ## Validation commands
 
-- `python3 -m pytest tests/test_oracle.py`
+- `python3 scripts/score2gp_governance_audit.py`
+- `git diff --check`
+- `dry-run inventory against all three agent environments`
