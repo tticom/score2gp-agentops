@@ -1,6 +1,6 @@
 # Agent Workspace Cleanup Skill
 
-Status: PROPOSED — not executable authority.
+Status: PROMOTED — executable authority is recorded in `ORCHESTRATION_STATE.json`.
 Repository: `score2gp-agentops`
 Depends on: current REC-01 cycle completion.
 

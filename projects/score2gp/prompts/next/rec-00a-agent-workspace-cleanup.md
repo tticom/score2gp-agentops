@@ -1,6 +1,6 @@
 # REC-00A — Agent Workspace Cleanup Skill
 
-Status: PROPOSED — governance task; do not execute until promoted.
+Status: PROMOTED — current governance task.
 Role: Architect / Governance
 Repository: `score2gp-agentops`
 
