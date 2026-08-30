@@ -316,3 +316,19 @@ def test_completed_task_allows_scoped_control_plane_bootstrap_review() -> None:
     assignment = build_assignment(config, facts, resolved, RuntimeIdentity("tticom", "reviewer"), "b" * 40)
     assert assignment["work"]["pull_request"] == 613
     assert assignment["work"]["branch"] == "fix/control-plane-repair"
+
+
+def test_promotion_branch_matching_ignores_identifier_hyphens() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["next_task_proposal"] = {"id": "REC-02", "status": "PROPOSED", "repository": "tticom/score2gp-agentops"}
+    facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "pull_request": {"number": 612, "state": "OPEN", "head_branch": "gov/promote-rec02", "head_sha": "a" * 40, "reviews": []}}
+    assert resolve_state(config, facts)["state"] == "REVIEW_REQUIRED"
+
+
+def test_control_plane_bootstrap_always_uses_independent_reviewer_role() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["task"]["reviewer_role"] = "governance"
+    facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "control_plane_repair": True, "pull_request": {"number": 613, "state": "OPEN", "head_branch": "fix/control-plane-repair", "head_sha": "a" * 40, "reviews": []}}
+    assert resolve_state(config, facts)["dispatch_role"] == "reviewer"
