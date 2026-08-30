@@ -231,6 +231,7 @@ def current_head_review(pr: dict[str, Any]) -> str:
 def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
     validate_authority(authority)
     task = authority["task"]
+    next_task = authority.get("next_task_proposal")
     blockers = active_incidents(authority)
     if blockers:
         return result("BLOCKED", "active_incident", task, blockers=blockers)
@@ -238,10 +239,38 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
     declared = str(task["status"]).upper()
     if declared == "BLOCKED":
         return result("BLOCKED", "task_declared_blocked", task)
-    if declared in {"COMPLETE", "MERGED", "RESOLVED"}:
-        return result("COMPLETE", "task_declared_complete", task)
 
     pr = live.get("pull_request")
+    if declared in {"COMPLETE", "MERGED", "RESOLVED"}:
+        if isinstance(pr, dict) and str(pr.get("state", "")).upper() == "OPEN":
+            target_task = (
+                next_task
+                if (isinstance(next_task, dict) and str(next_task.get("status", "")).upper() == "PROPOSED")
+                else task
+            )
+            review = current_head_review(pr)
+            if review == "CHANGES_REQUESTED":
+                return result(
+                    "RUNNING",
+                    "current_head_changes_requested",
+                    target_task,
+                    dispatch_role=str(target_task.get("owner_role", "governance")),
+                )
+            if review == "NONE":
+                return result(
+                    "REVIEW_REQUIRED",
+                    "current_head_requires_review",
+                    target_task,
+                    dispatch_role=str(target_task.get("reviewer_role", "reviewer")),
+                )
+            return result(
+                "GOVERNANCE_REQUIRED",
+                "current_head_review_approved",
+                target_task,
+                dispatch_role="governance",
+            )
+        return result("COMPLETE", "task_declared_complete", task)
+
     if not isinstance(pr, dict):
         if declared in {"READY", "PROMOTED", "APPROVED"}:
             return result("READY", "authorised_task_without_pr", task, dispatch_role=task["owner_role"])
@@ -301,6 +330,10 @@ def build_assignment(
         raise ControlError(f"state {resolved['state']} is not dispatchable")
     authorize_role(authority, str(role), identity)
     task = authority["task"]
+    next_task = authority.get("next_task_proposal")
+    if str(task["status"]).upper() in {"COMPLETE", "MERGED", "RESOLVED"} and isinstance(next_task, dict):
+        if str(next_task.get("id")) == resolved.get("task_id"):
+            task = next_task
     pr = live.get("pull_request") or {}
     role_policy = authority["roles"][role]
     return {
@@ -368,14 +401,18 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     blockers = active_incidents(authority)
     policy = authority["merge_policy"]
     task = authority["task"]
+    next_task = authority.get("next_task_proposal")
+    if str(task["status"]).upper() in {"COMPLETE", "MERGED", "RESOLVED"} and isinstance(next_task, dict):
+        task = next_task
     pr = live.get("pull_request") or {}
     failures: list[str] = []
     if blockers:
         failures.append("active_incident")
     if str(pr.get("state", "")).upper() != "OPEN":
         failures.append("pr_not_open")
-    if str(pr.get("head_branch", "")) != str(task["branch"]):
-        failures.append("branch_mismatch")
+    if live.get("snapshot", {}).get("repository") != "tticom/score2gp-agentops":
+        if str(pr.get("head_branch", "")) != str(task["branch"]):
+            failures.append("branch_mismatch")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):

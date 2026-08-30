@@ -296,3 +296,48 @@ def test_advance_cli_uses_schema_v2_authority_without_legacy_pointer(
 
     assert completed.returncode == 0, completed.stderr
     assert json.loads(completed.stdout)["action"] == "AWAIT_REVIEW"
+
+
+def test_completed_task_with_open_promotion_pr_resolves_review() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["task"]["pull_request"] = 440
+    config["next_task_proposal"] = {
+        "id": "109",
+        "title": "Next feature",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp-agentops",
+        "branch": "feat/task-109",
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "prompt": "prompt.md",
+        "allowed_paths": ["src/b.py"],
+        "acceptance": ["prove feature"],
+    }
+    promotion_live = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 612,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec02",
+            "head_sha": "a" * 40,
+            "reviews": [],
+            "checks": [{"name": "test", "conclusion": "SUCCESS"}],
+            "unresolved_threads": 0,
+        },
+        "protection": {"active_rulesets": 1, "current_user_can_bypass": False},
+    }
+    resolved = resolve_state(config, promotion_live)
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+    assert resolved["task_id"] == "109"
+
+    assignment = build_assignment(
+        config,
+        promotion_live,
+        resolved,
+        RuntimeIdentity("tticom", "reviewer"),
+        "b" * 40,
+    )
+    assert assignment["authority"]["task_id"] == "109"
+    assert assignment["work"]["allowed_paths"] == ["src/b.py"]

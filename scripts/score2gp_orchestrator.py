@@ -72,6 +72,14 @@ def advance(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str, 
     if declared == "BLOCKED":
         return _decision(authority, live_state, "BLOCKED", "task_declared_blocked")
     if declared in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
+        pull_request = live_state.get("pull_request")
+        if isinstance(pull_request, dict) and str(pull_request.get("state", "")).upper() == "OPEN":
+            review = _current_head_review(pull_request)
+            if review == "CHANGES_REQUESTED":
+                return _decision(authority, live_state, "REMEDIATE_CURRENT_PR", "current_head_changes_requested")
+            if review == "NONE":
+                return _decision(authority, live_state, "AWAIT_REVIEW", "current_head_requires_review")
+            return _decision(authority, live_state, "AWAIT_HUMAN_MERGE", "current_head_review_approved")
         return _decision(
             authority,
             live_state,
