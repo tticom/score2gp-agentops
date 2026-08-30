@@ -239,9 +239,12 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     proposal = authority.get("next_task_proposal")
     if not isinstance(proposal, dict) or str(proposal.get("status", "")).upper() != "PROPOSED":
         return None
-    if snapshot.get("repository") != proposal.get("repository"):
+    if snapshot.get("repository") != "tticom/score2gp-agentops":
         return None
-    if str(pr.get("head_branch", "")) != f"gov/promote-{str(proposal.get('id', '')).lower()}":
+    branch = str(pr.get("head_branch", ""))
+    actual_promotion_id = branch.removeprefix("gov/promote-").replace("-", "")
+    expected_promotion_id = str(proposal.get("id", "")).lower().replace("-", "")
+    if not branch.startswith("gov/promote-") or actual_promotion_id != expected_promotion_id:
         return None
     return deepcopy(proposal)
 
@@ -264,7 +267,8 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
             if review == "CHANGES_REQUESTED":
                 return result("RUNNING", "current_head_changes_requested", target, dispatch_role=target.get("owner_role", "governance"))
             if review == "NONE":
-                return result("REVIEW_REQUIRED", "current_head_requires_review", target, dispatch_role=target.get("reviewer_role", "reviewer"))
+                role = "reviewer" if live.get("control_plane_repair") is True else target.get("reviewer_role", "reviewer")
+                return result("REVIEW_REQUIRED", "current_head_requires_review", target, dispatch_role=role)
             return result("GOVERNANCE_REQUIRED", "current_head_review_approved", target, dispatch_role="governance")
         return result("COMPLETE", "task_declared_complete", task)
 
