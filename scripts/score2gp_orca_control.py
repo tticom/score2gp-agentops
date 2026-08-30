@@ -12,6 +12,7 @@ import getpass
 import json
 import re
 import subprocess
+from copy import deepcopy
 from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
@@ -228,6 +229,23 @@ def current_head_review(pr: dict[str, Any]) -> str:
     return "NONE"
 
 
+def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any] | None:
+    pr = live.get("pull_request")
+    snapshot = live.get("snapshot") or {}
+    if not isinstance(pr, dict) or str(pr.get("state", "")).upper() != "OPEN":
+        return None
+    if snapshot.get("repository") == "tticom/score2gp-agentops" and live.get("control_plane_repair") is True:
+        return deepcopy(authority["task"])
+    proposal = authority.get("next_task_proposal")
+    if not isinstance(proposal, dict) or str(proposal.get("status", "")).upper() != "PROPOSED":
+        return None
+    if snapshot.get("repository") != proposal.get("repository"):
+        return None
+    if str(pr.get("head_branch", "")) != f"gov/promote-{str(proposal.get('id', '')).lower()}":
+        return None
+    return deepcopy(proposal)
+
+
 def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
     validate_authority(authority)
     task = authority["task"]
@@ -238,10 +256,18 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
     declared = str(task["status"]).upper()
     if declared == "BLOCKED":
         return result("BLOCKED", "task_declared_blocked", task)
+    pr = live.get("pull_request")
     if declared in {"COMPLETE", "MERGED", "RESOLVED"}:
+        target = _completed_review_target(authority, live)
+        if target is not None:
+            review = current_head_review(pr)
+            if review == "CHANGES_REQUESTED":
+                return result("RUNNING", "current_head_changes_requested", target, dispatch_role=target.get("owner_role", "governance"))
+            if review == "NONE":
+                return result("REVIEW_REQUIRED", "current_head_requires_review", target, dispatch_role=target.get("reviewer_role", "reviewer"))
+            return result("GOVERNANCE_REQUIRED", "current_head_review_approved", target, dispatch_role="governance")
         return result("COMPLETE", "task_declared_complete", task)
 
-    pr = live.get("pull_request")
     if not isinstance(pr, dict):
         if declared in {"READY", "PROMOTED", "APPROVED"}:
             return result("READY", "authorised_task_without_pr", task, dispatch_role=task["owner_role"])
@@ -301,6 +327,13 @@ def build_assignment(
         raise ControlError(f"state {resolved['state']} is not dispatchable")
     authorize_role(authority, str(role), identity)
     task = authority["task"]
+    if str(task["status"]).upper() in {"COMPLETE", "MERGED", "RESOLVED"}:
+        target = _completed_review_target(authority, live)
+        if target is not None and str(target.get("id")) == resolved.get("task_id"):
+            task = target
+            task["repository"] = str((live.get("snapshot") or {}).get("repository", task["repository"]))
+            task["branch"] = str((live.get("pull_request") or {}).get("head_branch", task["branch"]))
+            task["pull_request"] = (live.get("pull_request") or {}).get("number")
     pr = live.get("pull_request") or {}
     role_policy = authority["roles"][role]
     return {
@@ -368,6 +401,10 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     blockers = active_incidents(authority)
     policy = authority["merge_policy"]
     task = authority["task"]
+    if str(task["status"]).upper() in {"COMPLETE", "MERGED", "RESOLVED"}:
+        target = _completed_review_target(authority, live)
+        if target is not None:
+            task = target
     pr = live.get("pull_request") or {}
     failures: list[str] = []
     if blockers:

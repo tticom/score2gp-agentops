@@ -296,3 +296,23 @@ def test_advance_cli_uses_schema_v2_authority_without_legacy_pointer(
 
     assert completed.returncode == 0, completed.stderr
     assert json.loads(completed.stdout)["action"] == "AWAIT_REVIEW"
+
+
+def test_completed_task_rejects_unrelated_open_pr() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["next_task_proposal"] = {"id": "109", "status": "PROPOSED", "repository": "tticom/score2gp-agentops", "branch": "feat/task-109"}
+    facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "pull_request": {"number": 613, "state": "OPEN", "head_branch": "fix/unrelated", "head_sha": "a" * 40, "reviews": []}}
+    assert resolve_state(config, facts)["state"] == "COMPLETE"
+
+
+def test_completed_task_allows_scoped_control_plane_bootstrap_review() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "control_plane_repair": True, "pull_request": {"number": 613, "state": "OPEN", "head_branch": "fix/control-plane-repair", "head_sha": "a" * 40, "reviews": []}}
+    resolved = resolve_state(config, facts)
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+    assignment = build_assignment(config, facts, resolved, RuntimeIdentity("tticom", "reviewer"), "b" * 40)
+    assert assignment["work"]["pull_request"] == 613
+    assert assignment["work"]["branch"] == "fix/control-plane-repair"

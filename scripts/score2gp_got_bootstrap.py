@@ -13,6 +13,13 @@ import sys
 import tempfile
 from pathlib import Path
 
+CONTROL_PLANE_REPAIR_PATHS = {
+    "scripts/score2gp_orca_control.py",
+    "scripts/score2gp_orchestrator.py",
+    "tests/test_score2gp_orca_control.py",
+    "tests/test_score2gp_orchestrator.py",
+}
+
 
 def fail_closed(reason: str) -> None:
     if "--json" in sys.argv:
@@ -30,6 +37,18 @@ def sync_main(cwd: Path, name: str) -> None:
         subprocess.run(["git", "fetch", "origin", "main"], cwd=cwd, capture_output=True, text=True, check=True)
     except Exception as e:
         fail_closed(f"Failed to sync {name}: {e}")
+
+
+def classify_control_plane_repair(repo: str, number: int) -> bool:
+    """Allow bootstrap only for an exact, control-plane-only PR."""
+    if repo != "tticom/score2gp-agentops":
+        return False
+    result = subprocess.run(
+        ["gh", "pr", "view", str(number), "--repo", repo, "--json", "files"],
+        capture_output=True, text=True, check=True,
+    )
+    files = {item.get("path") for item in json.loads(result.stdout).get("files", [])}
+    return bool(files) and files.issubset(CONTROL_PLANE_REPAIR_PATHS)
 
 
 def main() -> None:
@@ -78,7 +97,10 @@ def main() -> None:
             if res.returncode != 0:
                 fail_closed(f"Snapshot failed: {res.stderr.strip()}")
             with open(live_file, "w") as f:
-                f.write(res.stdout)
+                live = json.loads(res.stdout)
+                if args.review_repo and args.review_pr and classify_control_plane_repair(repo, pr):
+                    live["control_plane_repair"] = True
+                json.dump(live, f)
         else:
             with open(live_file, "w") as f:
                 f.write("{}")
