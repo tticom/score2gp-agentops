@@ -1,0 +1,247 @@
+[
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-421-8ba201b2b001",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-422-63fd935657a8",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-422-b77dffc2835e",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-423-d21d316ec904",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-424-ab100eb0b0c2",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-425-d510c68fa1b6",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-426-20a41ffd2f93",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-427-fbfc02589463",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-428-726982c0b112",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-429-174df1a19952",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-430-9cd28dc12c54",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-431-bd78775bfb9c",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-432-b67cfe62d6bd",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-433-e93aec283760",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-436-b832603276c8",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-436-c045af201604",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-437-5d51462284e0",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-440-076ea73aca93",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-440-eeeecc6e12c1",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-440-f0c84e861862",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-441-6fd4d5724aff",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-441-ad59aaeaffa0",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-441-c65dc7cc4dcb",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-441-d03f432ba492",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-444-0f2c85b0ea95",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-444-52257c6a2267",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-444-5ea4b32f7275",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-449-323219b2b439",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-449-37cc3a0966ec",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-449-473468123b4b",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-449-c1629c5d5f52",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-450-2ead98458e88",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-450-4cb76c283f35",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-450-7f7316a9509b",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-450-ca61696ec913",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-451-297fc16f186d",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-451-37e2cbbe5597",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-451-8f633edce17d",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-451-c1c8bdbb14b7",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-review-pr-453-fee08a7dda32",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-550-33f307d0c0aa",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-571-525533dc56d4",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-571-8875fc9c4600",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-584-8358aa8e56d7",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-593-32c2305de8ce",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "preserved",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-598-fb00a7d0e715",
+    "reason": "dirty worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-601-3caeb85d91fe",
+    "reason": "clean stale review worktree"
+  },
+  {
+    "action": "removed_worktree",
+    "path": "/home/tticom-gov/work/score2gp-workspace/score2gp-agentops-review-pr-602-46978c4c5a9d",
+    "reason": "clean stale review worktree"
+  }
+]
