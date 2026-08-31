@@ -68,12 +68,15 @@ a fix or process improvement in the reviewed repository.
 only in a separate operation after a current explicit instruction from
 `tticom` naming the exact repository, PR number, and reviewed full head SHA.
 
-## Publication
+## Publication & Mandatory PR Commenting
 
-Use the guarded publisher from the pinned `code-review` skill. It must pin the
-formal review and inline comments to the exact live head and always create or
-update the marked PR summary for the selected level. A chat verdict, committed
-review report, task-state edit, or PR-body rewrite is not a review publication.
+Reviewers MUST explicitly post their formal decision, inline findings, and summary comments directly to the GitHub Pull Request. A review is incomplete if findings or decisions are only reported in conversation chat or local files.
+
+1. **Formal Review Verdict**: Submit an exact-head review using GitHub CLI (`gh pr review --approve`, `gh pr review --request-changes`, or `scripts/score2gp_publish_review.py`) pinned to the exact live head.
+2. **Inline Comments**: Attach line-level review comments to specific changed files and hunks where issues are identified.
+3. **PR Thread Summary Comment**: Post or update the structured summary comment on the PR thread (via `gh pr comment`) containing the review level, verdict, finding ledger, and executed validation commands.
+
+A chat verdict, committed review report, task-state edit, or PR-body rewrite is not a review publication.
 
 Before returning, re-query GitHub and prove the formal review, inline findings
 when present, and mandatory summary exist on the reviewed head. Re-prove local

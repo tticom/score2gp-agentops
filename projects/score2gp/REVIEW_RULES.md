@@ -163,3 +163,16 @@ the approval case, claim by claim. Approval evidence must be pinned to the exact
 head, link every claim to named probes, include both a deliberate mutation and
 a final-artifact oracle, and record output hashes and exit codes. Helper-only
 proof plus an unrelated successful CLI run is explicitly insufficient.
+
+---
+
+## 9. Mandatory PR Thread Publication & Commenting
+
+Reviewer agents MUST explicitly publish their formal review decision and findings directly to the GitHub Pull Request.
+
+- **Chat-Only / Local-File-Only Reviews Forbidden**: Presenting a review exclusively within the assistant chat or saving it to a local scratch file is strictly forbidden as a completed review action.
+- **Direct GitHub PR Publication Required**: For every review, the reviewer MUST:
+  1. Submit the formal review decision (`APPROVE` or `CHANGES_REQUESTED`) via `gh pr review` or `scripts/score2gp_publish_review.py` against the pinned live head;
+  2. Post line-level comments on specific changed hunks where issues or risks are identified;
+  3. Post or update a structured summary comment on the PR conversation thread (via `gh pr comment`) detailing findings, validation commands run, and verdict rationale.
+- **Verification Gate**: The reviewer must verify via `gh pr view` or GitHub API that the formal review and comments are live and visible on the PR before concluding the review operation.

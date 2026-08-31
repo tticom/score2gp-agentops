@@ -25,3 +25,7 @@ Whenever any agent creates or opens a Pull Request (via `gh pr create`, CLI scri
    - Every code modification MUST be verified by **both** an in-situ integration test (running against a real private fixture PDF, e.g., `Lesson-5.pdf` or `Lesson-6.pdf`) and an isolated unit test (using small public/synthetic inputs *if and only if* doing so adds isolated coverage value).
    - In-situ integration tests that require private fixtures MUST use a graceful skip mechanism (e.g., `@pytest.mark.skipif`) when the private fixtures repository is not present. This ensures that the public unit tests still run successfully in public GitHub Actions without access to private files.
    - Purely synthetic/mocked tests are banned from being the *sole* validation instrument. All code must prove fitness for purpose on real inputs.
+
+6. **Mandatory GitHub PR Publication for Reviews**:
+   - Every agent acting in a reviewer capacity MUST explicitly publish their formal review verdict (`APPROVED` or `CHANGES_REQUESTED`), line-level review comments, and summary decision directly to the GitHub PR thread via GitHub CLI (`gh pr review`, `gh pr comment`) or designated publication scripts.
+   - Outputting reviews solely into the assistant chat or scratch files is strictly prohibited. The reviewer must confirm via `gh pr view` that the review and comments are live on the pull request.

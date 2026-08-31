@@ -111,3 +111,12 @@ new second-order counterexample targeting the repair.
 
 ## 9. Next Required Evidence
 - [Define exactly what evidence is required to advance this PR or the next branch]
+
+---
+
+## 10. Mandatory PR Thread Publication
+
+- **Formal Exact-Head Review Submitted (`gh pr review`)?**: `yes` / `no`
+- **Inline Hunk Comments Added on GitHub PR?**: `yes` / `no` / `none found`
+- **Review Decision & Summary Comment Posted on PR Thread (`gh pr comment`)?**: `yes` / `no`
+- *Note: Reviews must be submitted directly to the GitHub PR thread. Outputting exclusively to chat or scratch files is invalid.*
