@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 21,
+  "authority_revision": 22,
   "task": {
     "id": "REC-02",
     "title": "Recognition Contract Schemas",
@@ -39,7 +39,41 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "REC-03",
+    "title": "Canonical Vector and Text Observations",
+    "objective": "Implement the vector/text evidence adapter and reconstruct canonical strokes, glyphs and text spans without assigning musical meaning.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "branch": "feat/rec-03-vector-text-observations",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/rec-03-vector-text-observations.md",
+    "allowed_paths": [
+      "src/score2gp/recognition/observations.py",
+      "tests/recognition/test_observations.py",
+      "src/score2gp/pdf.py"
+    ],
+    "acceptance": [
+      "Fragmented and repeated drawing operations have provenance-preserving output.",
+      "No output field asserts staff, barline, string, measure, duration, pitch or event.",
+      "Private real-source probes show deterministic output at the exact revision."
+    ],
+    "validation_commands": [
+      "python3 -m pytest tests/recognition/test_observations.py",
+      "python3 -m mypy src/score2gp/recognition/observations.py tests/recognition/test_observations.py"
+    ],
+    "dependencies": [
+      "REC-02"
+    ],
+    "stop_conditions": [
+      "output_fields_assert_musical_semantics",
+      "legacy_compatibility_broken"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
