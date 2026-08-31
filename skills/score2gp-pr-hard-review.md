@@ -68,12 +68,15 @@ a fix or process improvement in the reviewed repository.
 only in a separate operation after a current explicit instruction from
 `tticom` naming the exact repository, PR number, and reviewed full head SHA.
 
-## Publication
+## Publication & Mandatory PR Commenting
 
-Use the guarded publisher from the pinned `code-review` skill. It must pin the
-formal review and inline comments to the exact live head and always create or
-update the marked PR summary for the selected level. A chat verdict, committed
-review report, task-state edit, or PR-body rewrite is not a review publication.
+Reviewers MUST publish their formal decision, inline findings, and summary comments directly to the GitHub Pull Request using the guarded publisher from the pinned `code-review` skill (`scripts/score2gp_publish_review.py` or `skills/engineering/code-review/scripts/publish_review.py`). A review is incomplete if findings or decisions are only reported in conversation chat or local files.
+
+1. **Guarded Exact-Head Publication**: Always publish through the guarded publisher, which validates inline-comment payloads, binds the formal review to the exact live head, and creates or updates the mandatory marked summary comment on the PR thread as a single atomic operation.
+2. **Inline Comments**: Provide line-level review comments for specific changed files and hunks where issues are identified via the publisher's inline comment payload.
+3. **Mandatory Marked Summary**: Ensure the marked summary comment containing review level, verdict, finding ledger, and executed validation commands is created or updated on the PR.
+
+Unbound raw CLI invocations that bypass exact-head binding, summary marker generation, or post-publication validation are strictly prohibited. A chat verdict, committed review report, task-state edit, or PR-body rewrite is not a review publication.
 
 Before returning, re-query GitHub and prove the formal review, inline findings
 when present, and mandatory summary exist on the reviewed head. Re-prove local

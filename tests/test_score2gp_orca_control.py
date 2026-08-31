@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from typing import Any
 
 import pytest
 
@@ -167,6 +168,20 @@ def test_wrong_identity_cannot_claim_worker_role() -> None:
     resolved = resolve_state(config, live())
     with pytest.raises(ControlError, match="not authorised"):
         build_assignment(config, live(), resolved, RuntimeIdentity("tticom", "governor"), "b" * 40)
+
+
+def test_missing_authorised_pull_request_fails_closed() -> None:
+    config = authority()
+    config["task"]["pull_request"] = None
+
+    resolved = resolve_state(config, live())
+
+    assert resolved == {
+        "schema_version": 1,
+        "state": "BLOCKED",
+        "reason": "active_task_missing_pull_request",
+        "task_id": "108",
+    }
 
 
 def test_assignment_validation_rejects_changed_head() -> None:
@@ -332,3 +347,37 @@ def test_control_plane_bootstrap_always_uses_independent_reviewer_role() -> None
     config["task"]["reviewer_role"] = "governance"
     facts = {"snapshot": {"repository": "tticom/score2gp-agentops"}, "control_plane_repair": True, "pull_request": {"number": 613, "state": "OPEN", "head_branch": "fix/control-plane-repair", "head_sha": "a" * 40, "reviews": []}}
     assert resolve_state(config, facts)["dispatch_role"] == "reviewer"
+
+
+@pytest.mark.parametrize("invalid_pr,expected_reason", [
+    (None, "active_task_missing_pull_request"),
+    ("", "active_task_invalid_pull_request"),
+    ("not-a-number", "active_task_invalid_pull_request"),
+    (441.9, "active_task_invalid_pull_request"),
+    ("441.9", "active_task_invalid_pull_request"),
+    (True, "active_task_invalid_pull_request"),
+    (False, "active_task_invalid_pull_request"),
+    (0, "active_task_invalid_pull_request"),
+    (-1, "active_task_invalid_pull_request"),
+    ([], "active_task_invalid_pull_request"),
+    ({}, "active_task_invalid_pull_request"),
+])
+def test_resolve_state_handles_missing_or_invalid_authority_pull_request(
+    invalid_pr: Any, expected_reason: str
+) -> None:
+    config = authority()
+    config["task"]["status"] = "RUNNING"
+    config["task"]["pull_request"] = invalid_pr
+    facts = live()
+    res = resolve_state(config, facts)
+    assert res["state"] == "BLOCKED"
+    assert res["reason"] == expected_reason
+
+
+def test_resolve_state_handles_string_integer_pull_request() -> None:
+    config = authority()
+    config["task"]["status"] = "RUNNING"
+    config["task"]["pull_request"] = "441"
+    facts = live()
+    res = resolve_state(config, facts)
+    assert res["state"] == "REVIEW_REQUIRED"

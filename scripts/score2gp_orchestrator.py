@@ -316,9 +316,28 @@ def _active_incidents(authority: dict[str, Any]) -> list[str]:
     ]
 
 
+def _parse_strict_positive_int(val: Any) -> int | None:
+    if val is None or isinstance(val, bool):
+        return None
+    if isinstance(val, int):
+        return val if val > 0 else None
+    if isinstance(val, str) and val.isdigit():
+        parsed = int(val)
+        return parsed if parsed > 0 else None
+    return None
+
+
 def _pr_mismatch(task: dict[str, Any], pull_request: dict[str, Any]) -> str | None:
     expected_number = task.get("pull_request")
-    if expected_number is not None and int(pull_request.get("number", -1)) != int(expected_number):
+    if expected_number is None:
+        return "active_task_missing_pull_request"
+    expected_int = _parse_strict_positive_int(expected_number)
+    if expected_int is None:
+        return "active_task_invalid_pull_request"
+    live_int = _parse_strict_positive_int(pull_request.get("number"))
+    if live_int is None:
+        return "live_pr_invalid_number"
+    if live_int != expected_int:
         return "live_pr_does_not_match_authority"
     if str(pull_request.get("head_branch", "")) != str(task["branch"]):
         return "live_branch_does_not_match_authority"
