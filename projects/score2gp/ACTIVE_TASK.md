@@ -2,29 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REC-00A — Agent Workspace Cleanup Skill
+**Task**: REC-02 — Recognition Contract Schemas
 
-**Status**: MERGED
+**Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `codex/prepare-rec02-and-workspace-cleanup`
+**PR Branch**: `feat/rec-02-recognition-contract-schemas`
 
-**Pull Request**: 609
+**Pull Request**: TBD
 
-**Owner Role**: architect
+**Owner Role**: implementation
 
 ## Objective
 
-Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.
+Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.
 
 ## Allowed paths
 
-- `projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md`
-- `projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md`
+- `src/score2gp/recognition/schemas.py`
+- `tests/recognition/test_schemas.py`
 
 ## Validation commands
 
-- `python3 scripts/score2gp_governance_audit.py`
-- `git diff --check`
-- `dry-run inventory against all three agent environments`
+- `python3 -m pytest tests/recognition/test_schemas.py`
+- `python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py`
+- `python3 scripts/artifact_audit.py`
+- `python3 scripts/regenerate_recognition_schemas.py`
