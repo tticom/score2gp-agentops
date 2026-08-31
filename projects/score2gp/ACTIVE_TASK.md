@@ -26,3 +26,6 @@ Create versioned, frozen contracts for DocumentObservations, DocumentTopology, R
 ## Validation commands
 
 - `python3 -m pytest tests/recognition/test_schemas.py`
+- `python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py`
+- `python3 scripts/artifact_audit.py`
+- `python3 scripts/regenerate_recognition_schemas.py`

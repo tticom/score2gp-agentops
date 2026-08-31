@@ -23,7 +23,10 @@
       "Invalid or cross-version payloads fail closed with useful diagnostics."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_schemas.py"
+      "python3 -m pytest tests/recognition/test_schemas.py",
+      "python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py",
+      "python3 scripts/artifact_audit.py",
+      "python3 scripts/regenerate_recognition_schemas.py"
     ],
     "dependencies": [
       "REC-00",
