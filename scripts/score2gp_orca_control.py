@@ -277,7 +277,10 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
             return result("READY", "authorised_task_without_pr", task, dispatch_role=task["owner_role"])
         return result("RUNNING", "authorised_task_not_published", task, dispatch_role=task["owner_role"])
 
-    if int(pr.get("number", -1)) != int(task.get("pull_request", -2)):
+    authorised_pr = task.get("pull_request")
+    if authorised_pr is None:
+        return result("BLOCKED", "active_task_missing_pull_request", task)
+    if int(pr.get("number", -1)) != int(authorised_pr):
         return result("BLOCKED", "live_pr_does_not_match_authority", task)
     if str(pr.get("head_branch", "")) != str(task["branch"]):
         return result("BLOCKED", "live_branch_does_not_match_authority", task)

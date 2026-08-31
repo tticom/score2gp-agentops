@@ -169,6 +169,20 @@ def test_wrong_identity_cannot_claim_worker_role() -> None:
         build_assignment(config, live(), resolved, RuntimeIdentity("tticom", "governor"), "b" * 40)
 
 
+def test_missing_authorised_pull_request_fails_closed() -> None:
+    config = authority()
+    config["task"]["pull_request"] = None
+
+    resolved = resolve_state(config, live())
+
+    assert resolved == {
+        "schema_version": 1,
+        "state": "BLOCKED",
+        "reason": "active_task_missing_pull_request",
+        "task_id": "108",
+    }
+
+
 def test_assignment_validation_rejects_changed_head() -> None:
     config = authority()
     facts = live([{"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}])
