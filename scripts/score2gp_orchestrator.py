@@ -318,8 +318,14 @@ def _active_incidents(authority: dict[str, Any]) -> list[str]:
 
 def _pr_mismatch(task: dict[str, Any], pull_request: dict[str, Any]) -> str | None:
     expected_number = task.get("pull_request")
-    if expected_number is not None and int(pull_request.get("number", -1)) != int(expected_number):
-        return "live_pr_does_not_match_authority"
+    if expected_number is not None:
+        try:
+            expected_int = int(expected_number)
+            live_int = int(pull_request.get("number", -1))
+            if live_int != expected_int:
+                return "live_pr_does_not_match_authority"
+        except (ValueError, TypeError):
+            return "live_pr_invalid_number"
     if str(pull_request.get("head_branch", "")) != str(task["branch"]):
         return "live_branch_does_not_match_authority"
     return None
