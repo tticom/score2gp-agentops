@@ -168,11 +168,12 @@ proof plus an unrelated successful CLI run is explicitly insufficient.
 
 ## 9. Mandatory PR Thread Publication & Commenting
 
-Reviewer agents MUST explicitly publish their formal review decision and findings directly to the GitHub Pull Request.
+Reviewer agents MUST publish their formal review decision and findings directly to the GitHub Pull Request using the guarded publisher (`scripts/score2gp_publish_review.py` or the pinned review skill publisher).
 
 - **Chat-Only / Local-File-Only Reviews Forbidden**: Presenting a review exclusively within the assistant chat or saving it to a local scratch file is strictly forbidden as a completed review action.
 - **Direct GitHub PR Publication Required**: For every review, the reviewer MUST:
-  1. Submit the formal review decision (`APPROVE` or `CHANGES_REQUESTED`) via `gh pr review` or `scripts/score2gp_publish_review.py` against the pinned live head;
-  2. Post line-level comments on specific changed hunks where issues or risks are identified;
-  3. Post or update a structured summary comment on the PR conversation thread (via `gh pr comment`) detailing findings, validation commands run, and verdict rationale.
-- **Verification Gate**: The reviewer must verify via `gh pr view` or GitHub API that the formal review and comments are live and visible on the PR before concluding the review operation.
+  1. Submit the formal review decision (`APPROVE`, `CHANGES_REQUESTED`, or `CANNOT_VERIFY`) bound to the exact live head via the guarded publisher (`scripts/score2gp_publish_review.py`);
+  2. Include line-level review comments for specific changed hunks where issues or risks are identified via the publisher's validated inline comment payload;
+  3. Create or update the mandatory marked summary comment on the PR conversation thread detailing review level, verdict, finding ledger, and validation commands.
+- **Unbound Raw CLI Calls Prohibited**: Raw `gh pr review` or `gh pr comment` calls that bypass exact-head verification, inline payload schema validation, or marked summary creation are strictly prohibited.
+- **Verification Gate**: The reviewer must verify via GitHub API/re-query that the formal review, inline comments, and marked summary are live and visible on the reviewed head before concluding the review operation.

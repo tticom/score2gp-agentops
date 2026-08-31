@@ -27,5 +27,6 @@ Whenever any agent creates or opens a Pull Request (via `gh pr create`, CLI scri
    - Purely synthetic/mocked tests are banned from being the *sole* validation instrument. All code must prove fitness for purpose on real inputs.
 
 6. **Mandatory GitHub PR Publication for Reviews**:
-   - Every agent acting in a reviewer capacity MUST explicitly publish their formal review verdict (`APPROVED` or `CHANGES_REQUESTED`), line-level review comments, and summary decision directly to the GitHub PR thread via GitHub CLI (`gh pr review`, `gh pr comment`) or designated publication scripts.
-   - Outputting reviews solely into the assistant chat or scratch files is strictly prohibited. The reviewer must confirm via `gh pr view` that the review and comments are live on the pull request.
+   - Every agent acting in a reviewer capacity MUST publish their formal review verdict (`APPROVED`, `CHANGES_REQUESTED`, or `CANNOT_VERIFY`), line-level review comments, and marked summary decision directly to the GitHub PR thread using the exact-head guarded publisher (`scripts/score2gp_publish_review.py` or the pinned review skill publisher).
+   - Outputting reviews solely into the assistant chat, saving them only to local scratch files, or using raw unbound CLI calls (`gh pr review` / `gh pr comment` directly) that bypass exact-head binding, summary markers, and post-publication verification is strictly prohibited.
+   - The reviewer must verify that the formal review, inline comments, and marked summary comment are live on GitHub before completing the task.

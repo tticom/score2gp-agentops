@@ -116,7 +116,7 @@ new second-order counterexample targeting the repair.
 
 ## 10. Mandatory PR Thread Publication
 
-- **Formal Exact-Head Review Submitted (`gh pr review`)?**: `yes` / `no`
-- **Inline Hunk Comments Added on GitHub PR?**: `yes` / `no` / `none found`
-- **Review Decision & Summary Comment Posted on PR Thread (`gh pr comment`)?**: `yes` / `no`
-- *Note: Reviews must be submitted directly to the GitHub PR thread. Outputting exclusively to chat or scratch files is invalid.*
+- **Formal Exact-Head Review Submitted via Guarded Publisher?**: `yes` / `no`
+- **Inline Hunk Comments Validated and Added on GitHub PR?**: `yes` / `no` / `none found`
+- **Review Decision & Marked Summary Comment Posted on PR Thread?**: `yes` / `no`
+- *Note: Reviews must be submitted directly to the GitHub PR thread using the exact-head guarded publisher. Outputting exclusively to chat or scratch files, or using raw unbound CLI calls, is invalid.*

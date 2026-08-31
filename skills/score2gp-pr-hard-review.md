@@ -70,13 +70,13 @@ only in a separate operation after a current explicit instruction from
 
 ## Publication & Mandatory PR Commenting
 
-Reviewers MUST explicitly post their formal decision, inline findings, and summary comments directly to the GitHub Pull Request. A review is incomplete if findings or decisions are only reported in conversation chat or local files.
+Reviewers MUST publish their formal decision, inline findings, and summary comments directly to the GitHub Pull Request using the guarded publisher from the pinned `code-review` skill (`scripts/score2gp_publish_review.py` or `skills/engineering/code-review/scripts/publish_review.py`). A review is incomplete if findings or decisions are only reported in conversation chat or local files.
 
-1. **Formal Review Verdict**: Submit an exact-head review using GitHub CLI (`gh pr review --approve`, `gh pr review --request-changes`, or `scripts/score2gp_publish_review.py`) pinned to the exact live head.
-2. **Inline Comments**: Attach line-level review comments to specific changed files and hunks where issues are identified.
-3. **PR Thread Summary Comment**: Post or update the structured summary comment on the PR thread (via `gh pr comment`) containing the review level, verdict, finding ledger, and executed validation commands.
+1. **Guarded Exact-Head Publication**: Always publish through the guarded publisher, which validates inline-comment payloads, binds the formal review to the exact live head, and creates or updates the mandatory marked summary comment on the PR thread as a single atomic operation.
+2. **Inline Comments**: Provide line-level review comments for specific changed files and hunks where issues are identified via the publisher's inline comment payload.
+3. **Mandatory Marked Summary**: Ensure the marked summary comment containing review level, verdict, finding ledger, and executed validation commands is created or updated on the PR.
 
-A chat verdict, committed review report, task-state edit, or PR-body rewrite is not a review publication.
+Unbound raw CLI invocations that bypass exact-head binding, summary marker generation, or post-publication validation are strictly prohibited. A chat verdict, committed review report, task-state edit, or PR-body rewrite is not a review publication.
 
 Before returning, re-query GitHub and prove the formal review, inline findings
 when present, and mandatory summary exist on the reviewed head. Re-prove local
