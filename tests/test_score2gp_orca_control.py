@@ -353,6 +353,12 @@ def test_control_plane_bootstrap_always_uses_independent_reviewer_role() -> None
     (None, "active_task_missing_pull_request"),
     ("", "active_task_invalid_pull_request"),
     ("not-a-number", "active_task_invalid_pull_request"),
+    (441.9, "active_task_invalid_pull_request"),
+    ("441.9", "active_task_invalid_pull_request"),
+    (True, "active_task_invalid_pull_request"),
+    (False, "active_task_invalid_pull_request"),
+    (0, "active_task_invalid_pull_request"),
+    (-1, "active_task_invalid_pull_request"),
     ([], "active_task_invalid_pull_request"),
     ({}, "active_task_invalid_pull_request"),
 ])

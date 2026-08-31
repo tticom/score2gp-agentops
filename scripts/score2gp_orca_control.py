@@ -249,16 +249,27 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     return deepcopy(proposal)
 
 
+def _parse_strict_positive_int(val: Any) -> int | None:
+    if val is None or isinstance(val, bool):
+        return None
+    if isinstance(val, int):
+        return val if val > 0 else None
+    if isinstance(val, str) and val.isdigit():
+        parsed = int(val)
+        return parsed if parsed > 0 else None
+    return None
+
+
 def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
     validate_authority(authority)
-    task = authority["task"]
     blockers = active_incidents(authority)
-    if blockers:
-        return result("BLOCKED", "active_incident", task, blockers=blockers)
-
+    task = authority["task"]
     declared = str(task["status"]).upper()
+    if blockers:
+        return result("BLOCKED", "active_incident_blocks_progress", task, blockers=blockers)
     if declared == "BLOCKED":
         return result("BLOCKED", "task_declared_blocked", task)
+
     pr = live.get("pull_request")
     if declared in {"COMPLETE", "MERGED", "RESOLVED"}:
         target = _completed_review_target(authority, live)
@@ -280,13 +291,11 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
     authorised_pr = task.get("pull_request")
     if authorised_pr is None:
         return result("BLOCKED", "active_task_missing_pull_request", task)
-    try:
-        authorised_pr_num = int(authorised_pr)
-    except (ValueError, TypeError):
+    authorised_pr_num = _parse_strict_positive_int(authorised_pr)
+    if authorised_pr_num is None:
         return result("BLOCKED", "active_task_invalid_pull_request", task)
-    try:
-        live_pr_num = int(pr.get("number", -1))
-    except (ValueError, TypeError):
+    live_pr_num = _parse_strict_positive_int(pr.get("number"))
+    if live_pr_num is None:
         return result("BLOCKED", "live_pr_invalid_number", task)
     if live_pr_num != authorised_pr_num:
         return result("BLOCKED", "live_pr_does_not_match_authority", task)

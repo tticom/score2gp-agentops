@@ -1,6 +1,7 @@
 """Behavioral tests for the autonomous orchestration decision interface."""
 
 from copy import deepcopy
+from typing import Any
 
 import pytest
 
@@ -218,3 +219,26 @@ def test_active_task_is_a_generated_view_of_authority() -> None:
     assert "**Status**: APPROVED" in rendered
     assert "**PR Branch**: `agy/npg-00a-baseline`" in rendered
     assert "`projects/score2gp/reports/baseline.md`" in rendered
+
+
+@pytest.mark.parametrize("invalid_pr,expected_reason", [
+    (None, "active_task_missing_pull_request"),
+    ("", "active_task_invalid_pull_request"),
+    ("not-a-number", "active_task_invalid_pull_request"),
+    (441.9, "active_task_invalid_pull_request"),
+    ("441.9", "active_task_invalid_pull_request"),
+    (True, "active_task_invalid_pull_request"),
+    (False, "active_task_invalid_pull_request"),
+    (0, "active_task_invalid_pull_request"),
+    (-1, "active_task_invalid_pull_request"),
+    ([], "active_task_invalid_pull_request"),
+    ({}, "active_task_invalid_pull_request"),
+])
+def test_advance_handles_missing_or_invalid_authority_pull_request(
+    invalid_pr: Any, expected_reason: str
+) -> None:
+    auth = authority("RUNNING")
+    auth["task"]["pull_request"] = invalid_pr
+    decision = advance(auth, live())
+    assert decision["action"] == "BLOCKED"
+    assert decision["reason"] == expected_reason
