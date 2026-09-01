@@ -4,13 +4,13 @@
 
 **Task**: REC-03 — Canonical Vector and Text Observations
 
-**Status**: PROMOTED
+**Status**: IN_PROGRESS
 
 **Repository**: tticom/score2gp
 
 **PR Branch**: `feat/rec-03-vector-text-observations`
 
-**Pull Request**: TBD
+**Pull Request**: 458
 
 **Owner Role**: implementation
 

@@ -6,11 +6,11 @@
     "id": "REC-03",
     "title": "Canonical Vector and Text Observations",
     "objective": "Implement the vector/text evidence adapter and reconstruct canonical strokes, glyphs and text spans without assigning musical meaning.",
-    "status": "PROMOTED",
+    "status": "RUNNING",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-03-vector-text-observations",
-    "pull_request": null,
+    "pull_request": 458,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/rec-03-vector-text-observations.md",
     "allowed_paths": [
