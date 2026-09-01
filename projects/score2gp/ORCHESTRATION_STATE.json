@@ -1,49 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 22,
+  "authority_revision": 23,
   "task": {
-    "id": "REC-02",
-    "title": "Recognition Contract Schemas",
-    "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "branch": "feat/rec-02-recognition-contract-schemas",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
-    "allowed_paths": [
-      "src/score2gp/recognition/schemas.py",
-      "tests/recognition/test_schemas.py"
-    ],
-    "acceptance": [
-      "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
-      "Graph relations reference existing stable node IDs.",
-      "Invalid or cross-version payloads fail closed with useful diagnostics."
-    ],
-    "validation_commands": [
-      "python3 -m pytest tests/recognition/test_schemas.py",
-      "python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py",
-      "python3 scripts/artifact_audit.py",
-      "python3 scripts/regenerate_recognition_schemas.py"
-    ],
-    "dependencies": [
-      "REC-00",
-      "REC-01"
-    ],
-    "stop_conditions": [
-      "runtime_recognition_or_export_behaviour_changes",
-      "schema_contract_leaks_inference_or_compiler_semantics"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "REC-03",
     "title": "Canonical Vector and Text Observations",
     "objective": "Implement the vector/text evidence adapter and reconstruct canonical strokes, glyphs and text spans without assigning musical meaning.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-03-vector-text-observations",
@@ -62,7 +25,8 @@
     ],
     "validation_commands": [
       "python3 -m pytest tests/recognition/test_observations.py",
-      "python3 -m mypy src/score2gp/recognition/observations.py tests/recognition/test_observations.py"
+      "python3 -m mypy src/score2gp/recognition/observations.py tests/recognition/test_observations.py",
+      "python3 scripts/artifact_audit.py"
     ],
     "dependencies": [
       "REC-02"
@@ -70,6 +34,40 @@
     "stop_conditions": [
       "output_fields_assert_musical_semantics",
       "legacy_compatibility_broken"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
+  "next_task_proposal": {
+    "id": "REC-04",
+    "title": "Local Scale Model",
+    "objective": "Estimate local notation, TAB, stroke and glyph scales and express new detector policies in dimensionless units.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "branch": "feat/rec-04-local-scale-model",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/rec-04-local-scale-model.md",
+    "allowed_paths": [
+      "src/score2gp/recognition/scale.py",
+      "tests/recognition/test_scale.py"
+    ],
+    "acceptance": [
+      "Equivalent layouts at different sizes produce materially stable normalized data.",
+      "Mixed-scale pages do not collapse into a misleading page-global unit.",
+      "No fixture-specific coordinates or expected counts enter estimation."
+    ],
+    "validation_commands": [
+      "python3 -m pytest tests/recognition/test_scale.py",
+      "python3 -m mypy src/score2gp/recognition/scale.py tests/recognition/test_scale.py"
+    ],
+    "dependencies": [
+      "REC-03"
+    ],
+    "stop_conditions": [
+      "fixture_specific_coordinates_enter_estimation",
+      "mixed_scale_pages_collapse_into_global_unit"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
@@ -526,6 +524,42 @@
         "canonical_repository_or_branch_identity_is_ambiguous"
       ],
       "reviewer_role": "governance",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "REC-02",
+      "title": "Recognition Contract Schemas",
+      "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-02-recognition-contract-schemas",
+      "pull_request": 457,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/schemas.py",
+        "tests/recognition/test_schemas.py"
+      ],
+      "acceptance": [
+        "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
+        "Graph relations reference existing stable node IDs.",
+        "Invalid or cross-version payloads fail closed with useful diagnostics."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_schemas.py",
+        "python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py",
+        "python3 scripts/artifact_audit.py"
+      ],
+      "dependencies": [
+        "REC-00",
+        "REC-01"
+      ],
+      "stop_conditions": [
+        "runtime_recognition_or_export_behaviour_changes",
+        "schema_contract_leaks_inference_or_compiler_semantics"
+      ],
+      "reviewer_role": "reviewer",
       "delivery_action": "pull_request"
     }
   ]
