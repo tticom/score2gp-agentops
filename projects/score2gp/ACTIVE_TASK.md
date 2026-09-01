@@ -4,7 +4,7 @@
 
 **Task**: REC-03 — Canonical Vector and Text Observations
 
-**Status**: IN_PROGRESS
+**Status**: MERGED
 
 **Repository**: tticom/score2gp
 
