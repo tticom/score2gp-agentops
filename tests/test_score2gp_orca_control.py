@@ -488,3 +488,59 @@ def test_resolve_state_handles_string_integer_pull_request() -> None:
     facts = live()
     res = resolve_state(config, facts)
     assert res["state"] == "REVIEW_REQUIRED"
+
+
+def test_promoted_task_without_pr_resolves_to_ready_with_owner_role() -> None:
+    config = authority()
+    config["task"]["status"] = "PROMOTED"
+    config["task"]["pull_request"] = None
+    config["task"]["owner_role"] = "implementation"
+    res = resolve_state(config, {})
+    assert res["state"] == "READY"
+    assert res["reason"] == "authorised_task_without_pr"
+    assert res["dispatch_role"] == "implementation"
+
+
+def test_promotion_pr_reconciliation_transition_resolves_correctly() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["next_task_proposal"] = {
+        "id": "REC-03",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp",
+        "branch": "feat/rec-03-vector-text-observations",
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+    }
+    # Live PR on agentops promoting REC-03
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 619,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec-03",
+            "head_sha": "a" * 40,
+            "reviews": [],
+        },
+    }
+    res_no_review = resolve_state(config, facts)
+    assert res_no_review["state"] == "REVIEW_REQUIRED"
+    assert res_no_review["dispatch_role"] == "reviewer"
+
+    # With changes requested
+    facts_changes = deepcopy(facts)
+    facts_changes["pull_request"]["reviews"] = [
+        {"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}
+    ]
+    res_changes = resolve_state(config, facts_changes)
+    assert res_changes["state"] == "RUNNING"
+    assert res_changes["dispatch_role"] == "implementation"
+
+    # With approval
+    facts_approved = deepcopy(facts)
+    facts_approved["pull_request"]["reviews"] = [
+        {"author": "reviewer", "state": "APPROVED", "head_sha": "a" * 40}
+    ]
+    res_approved = resolve_state(config, facts_approved)
+    assert res_approved["state"] == "GOVERNANCE_REQUIRED"
+    assert res_approved["dispatch_role"] == "governance"
