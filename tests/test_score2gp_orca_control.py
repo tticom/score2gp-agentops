@@ -544,3 +544,77 @@ def test_promotion_pr_reconciliation_transition_resolves_correctly() -> None:
     res_approved = resolve_state(config, facts_approved)
     assert res_approved["state"] == "GOVERNANCE_REQUIRED"
     assert res_approved["dispatch_role"] == "governance"
+
+
+def test_governance_pr_reconciling_completed_task_resolves_with_advanced_authority() -> None:
+    # Checked-in authority on PR 619: active task is REC-04 PROMOTED, proposal is REC-05,
+    # completed_tasks includes REC-03 MERGED.
+    config = authority()
+    config["task"] = {
+        "id": "REC-04",
+        "title": "Local Scale Model",
+        "status": "PROMOTED",
+        "repository": "tticom/score2gp",
+        "branch": "feat/rec-04-local-scale-model",
+        "pull_request": None,
+        "owner_role": "implementation",
+        "allowed_paths": ["src/score2gp/recognition/scale.py"],
+    }
+    config["next_task_proposal"] = {
+        "id": "REC-05",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp",
+        "branch": "feat/rec-05-raster-observation-adapter",
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+    }
+    config["completed_tasks"] = [
+        {
+            "id": "REC-03",
+            "title": "Canonical Vector and Text Observations",
+            "status": "MERGED",
+            "repository": "tticom/score2gp",
+            "branch": "feat/rec-03-vector-text-observations",
+            "pull_request": 458,
+            "owner_role": "implementation",
+            "reviewer_role": "reviewer",
+        }
+    ]
+    # Live governance PR #619 on score2gp-agentops (branch gov/promote-rec-03)
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 619,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec-03",
+            "head_sha": "a" * 40,
+            "reviews": [
+                {"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}
+            ],
+        },
+    }
+    res = resolve_state(config, facts)
+    assert res["state"] == "RUNNING"
+    assert res["reason"] == "current_head_changes_requested"
+    assert res["task_id"] == "REC-03"
+    assert res["dispatch_role"] == "governance"
+
+    # When approved
+    facts_approved = deepcopy(facts)
+    facts_approved["pull_request"]["reviews"] = [
+        {"author": "reviewer", "state": "APPROVED", "head_sha": "a" * 40}
+    ]
+    res_approved = resolve_state(config, facts_approved)
+    assert res_approved["state"] == "GOVERNANCE_REQUIRED"
+    assert res_approved["reason"] == "current_head_review_approved"
+    assert res_approved["task_id"] == "REC-03"
+    assert res_approved["dispatch_role"] == "governance"
+
+    # When review required
+    facts_no_review = deepcopy(facts)
+    facts_no_review["pull_request"]["reviews"] = []
+    res_no_review = resolve_state(config, facts_no_review)
+    assert res_no_review["state"] == "REVIEW_REQUIRED"
+    assert res_no_review["reason"] == "current_head_requires_review"
+    assert res_no_review["task_id"] == "REC-03"
+    assert res_no_review["dispatch_role"] == "governance"
