@@ -456,7 +456,7 @@ def build_assignment(
             "pull_request": task.get("pull_request"),
             "expected_head_sha": pr.get("head_sha"),
             "prompt": task.get("prompt"),
-            "allowed_paths": task["allowed_paths"],
+            "allowed_paths": task.get("allowed_paths", []),
             "acceptance": task.get("acceptance", []),
             "required_evidence": task.get("required_evidence", []),
         },
