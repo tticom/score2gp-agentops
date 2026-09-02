@@ -333,6 +333,36 @@ def test_completed_task_allows_scoped_control_plane_bootstrap_review() -> None:
     assert assignment["work"]["branch"] == "fix/control-plane-repair"
 
 
+def test_promoted_active_task_allows_isolated_control_plane_bootstrap_review() -> None:
+    config = authority()
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "control_plane_repair": True,
+        "pull_request": {
+            "number": 620,
+            "state": "OPEN",
+            "head_branch": "codex/control-plane-bootstrap-repair",
+            "head_sha": "a" * 40,
+            "reviews": [],
+        },
+    }
+
+    resolved = resolve_state(config, facts)
+
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+    assignment = build_assignment(
+        config,
+        facts,
+        resolved,
+        RuntimeIdentity("tticom", "reviewer"),
+        "b" * 40,
+    )
+    assert assignment["authority"]["task_id"] == "108"
+    assert assignment["work"]["pull_request"] == 620
+    assert assignment["work"]["branch"] == "codex/control-plane-bootstrap-repair"
+
+
 def test_promotion_branch_matching_ignores_identifier_hyphens() -> None:
     config = authority()
     config["task"]["status"] = "MERGED"
