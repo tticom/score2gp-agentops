@@ -371,6 +371,83 @@ def test_promotion_branch_matching_ignores_identifier_hyphens() -> None:
     assert resolve_state(config, facts)["state"] == "REVIEW_REQUIRED"
 
 
+@pytest.mark.parametrize(
+    "branch",
+    [
+        "gov/promote-rec-02",
+        "chore/promote-rec-02",
+        "codex/promote-rec-02",
+        "governance/promote-rec-02",
+        "gov/rec-02",
+        "chore/rec-02",
+    ],
+)
+def test_promotion_branch_matching_accepts_supported_prefixes(branch: str) -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["next_task_proposal"] = {
+        "id": "REC-02",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp",
+    }
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 612,
+            "state": "OPEN",
+            "head_branch": branch,
+            "head_sha": "a" * 40,
+            "reviews": [],
+        },
+    }
+    assert resolve_state(config, facts)["state"] == "REVIEW_REQUIRED"
+
+
+def test_promoted_authority_routes_standard_governance_pr_for_review() -> None:
+    config = authority()
+    config["task"].update({"id": "REC-02", "status": "PROMOTED", "pull_request": None})
+    config["next_task_proposal"] = {
+        "id": "REC-03",
+        "title": "Canonical observations",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp",
+        "branch": "feat/rec-03-vector-text-observations",
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "allowed_paths": ["src/a.py"],
+    }
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 619,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec-03",
+            "head_sha": "a" * 40,
+            "reviews": [],
+        },
+    }
+
+    resolved = resolve_state(config, facts)
+
+    assert resolved == {
+        "schema_version": 1,
+        "state": "REVIEW_REQUIRED",
+        "reason": "current_head_requires_review",
+        "task_id": "REC-03",
+        "dispatch_role": "reviewer",
+    }
+    assignment = build_assignment(
+        config,
+        facts,
+        resolved,
+        RuntimeIdentity("tticom", "reviewer"),
+        "b" * 40,
+    )
+    assert assignment["authority"]["task_id"] == "REC-03"
+    assert assignment["work"]["pull_request"] == 619
+    assert assignment["work"]["branch"] == "gov/promote-rec-03"
+
+
 def test_control_plane_bootstrap_always_uses_independent_reviewer_role() -> None:
     config = authority()
     config["task"]["status"] = "MERGED"

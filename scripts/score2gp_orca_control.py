@@ -242,9 +242,21 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     if snapshot.get("repository") != "tticom/score2gp-agentops":
         return None
     branch = str(pr.get("head_branch", ""))
-    actual_promotion_id = branch.removeprefix("gov/promote-").replace("-", "")
+    clean_branch = branch
+    for prefix in (
+        "gov/promote-",
+        "chore/promote-",
+        "codex/promote-",
+        "governance/promote-",
+        "gov/",
+        "chore/",
+    ):
+        if clean_branch.startswith(prefix):
+            clean_branch = clean_branch.removeprefix(prefix)
+            break
+    actual_promotion_id = clean_branch.replace("-", "").lower()
     expected_promotion_id = str(proposal.get("id", "")).lower().replace("-", "")
-    if not branch.startswith("gov/promote-") or actual_promotion_id != expected_promotion_id:
+    if actual_promotion_id != expected_promotion_id:
         return None
     return deepcopy(proposal)
 
@@ -277,7 +289,6 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
         isinstance(pr, dict)
         and str(pr.get("state", "")).upper() == "OPEN"
         and snapshot.get("repository") == "tticom/score2gp-agentops"
-        and live.get("control_plane_repair") is True
     ):
         target = _completed_review_target(authority, live)
         if target is not None:
