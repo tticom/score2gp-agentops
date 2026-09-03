@@ -17,6 +17,7 @@ services:
         target: /workspace/score2gp
         read_only: false
       - agent-user-local:/home/agent/.local
+      - agent-venv:/workspace/score2gp/.venv
     network_mode: none
     read_only: true
     tmpfs:
@@ -30,3 +31,4 @@ services:
 
 volumes:
   agent-user-local:
+  agent-venv:

@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN groupadd --gid 10001 agent \
     && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin agent \
-    && mkdir -p /workspace /home/agent/.local \
+    && mkdir -p /workspace/score2gp/.venv /home/agent/.local \
     && chown -R agent:agent /workspace /home/agent
 
 WORKDIR /workspace

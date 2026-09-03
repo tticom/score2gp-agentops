@@ -16,6 +16,15 @@ The first invocation builds the local image and installs the mounted product
 editable without resolving additional dependencies. Runtime and validation
 dependencies are baked into the image from `requirements.txt`.
 
+To create the conventional product virtual environment inside a disposable
+Docker volume (without adding `.venv` to the host worktree):
+
+```bash
+SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
+SCORE2GP_TASK=rec-03-vector-text-observations \
+  ./setup-venv.sh
+```
+
 ## Isolation policy
 
 - Only the selected product worktree is mounted, and it is task-scoped.
@@ -30,6 +39,8 @@ dependencies are baked into the image from `requirements.txt`.
   package metadata. Keep it a disposable task worktree, never a shared clone.
 - The writable home-local volume is limited to the container's pip user
   installation and is recreated only when its Compose project is removed.
+- The product `.venv` is a separate named volume, scoped to the Compose task
+  project and never stored in the host checkout.
 
 Networked setup operations such as dependency refreshes or GitHub access are
 host-side/controller operations and are intentionally outside this runtime.
