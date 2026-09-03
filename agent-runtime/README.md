@@ -13,8 +13,8 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
 ```
 
 The first invocation builds the local image and installs the mounted product
-editable without resolving additional dependencies. Dependencies are baked
-into the image from `requirements.txt`.
+editable without resolving additional dependencies. Runtime and validation
+dependencies are baked into the image from `requirements.txt`.
 
 ## Isolation policy
 
@@ -24,6 +24,8 @@ into the image from `requirements.txt`.
 - Runtime networking is disabled, the root filesystem is read-only, the
   process runs as UID 10001, all Linux capabilities are dropped, and
   `no-new-privileges` is enabled.
+- Normal `/tmp` is `noexec`; test tools use a separate disposable `/test-tmp`
+  tmpfs for legitimate executable test doubles.
 - The task worktree is writable because editable Python installation can write
   package metadata. Keep it a disposable task worktree, never a shared clone.
 - The writable home-local volume is limited to the container's pip user

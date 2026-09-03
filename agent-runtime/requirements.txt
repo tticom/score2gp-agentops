@@ -1,6 +1,10 @@
-# Runtime dependencies mirrored from score2gp/pyproject.toml.
+# Runtime and validation dependencies mirrored from score2gp/pyproject.toml.
 setuptools>=68,<81
 wheel>=0.42,<1
 pydantic>=2.6,<3
 typer>=0.12,<1
 pymupdf>=1.23,<2
+pytest>=8.0,<9
+pillow>=10.0,<12
+ruff==0.6.2
+pylint==4.0.7
