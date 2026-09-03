@@ -6,6 +6,23 @@ the source checkout and credentials remain in the calling WSL distribution.
 
 ## Start
 
+From a fresh Ubuntu/WSL instance with Docker Desktop integration enabled:
+
+```bash
+curl --fail --silent --show-error --location \
+  https://raw.githubusercontent.com/tticom/score2gp-agentops/chore/docker-agent-runtime/agent-runtime/scripts/bootstrap-instance.sh \
+  --output /tmp/score2gp-bootstrap-instance.sh
+bash /tmp/score2gp-bootstrap-instance.sh
+cd "$HOME/work/score2gp-workspace/score2gp-agentops"
+./agent-runtime/scripts/build-runtime-image.sh
+./agent-runtime/scripts/verify-runtime.sh
+```
+
+After this branch is merged, replace `chore/docker-agent-runtime` in the raw
+URL with `main`. The script stores source checkouts and Docker state locally;
+the durable inputs remain the GitHub repositories and version declarations in
+this directory.
+
 ```bash
 SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
 SCORE2GP_TASK=rec-03-vector-text-observations \
@@ -15,6 +32,15 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
 The first invocation builds the local image and installs the mounted product
 editable without resolving additional dependencies. Runtime and validation
 dependencies are baked into the image from `requirements.txt`.
+
+To launch a live Linux Antigravity CLI with an isolated config volume:
+
+```bash
+./agent-runtime/scripts/run-agy.sh
+```
+
+This is intentionally an explicit network-enabled operation. GitHub
+credentials are not mounted or installed by the bootstrap scripts.
 
 The image also contains the native Linux Antigravity CLI. Verify it without
 the worker entrypoint with:
