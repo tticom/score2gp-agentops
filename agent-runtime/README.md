@@ -10,7 +10,7 @@ From a fresh Ubuntu/WSL instance with Docker Desktop integration enabled:
 
 ```bash
 curl --fail --silent --show-error --location \
-  https://raw.githubusercontent.com/tticom/score2gp-agentops/chore/docker-agent-runtime/agent-runtime/scripts/bootstrap-instance.sh \
+  https://raw.githubusercontent.com/tticom/score2gp-agentops/main/agent-runtime/scripts/bootstrap-instance.sh \
   --output /tmp/score2gp-bootstrap-instance.sh
 bash /tmp/score2gp-bootstrap-instance.sh
 cd "$HOME/work/score2gp-workspace/score2gp-agentops"
@@ -18,8 +18,7 @@ cd "$HOME/work/score2gp-workspace/score2gp-agentops"
 ./agent-runtime/scripts/verify-runtime.sh
 ```
 
-After this branch is merged, replace `chore/docker-agent-runtime` in the raw
-URL with `main`. The script stores source checkouts and Docker state locally;
+The script stores source checkouts and Docker state locally;
 the durable inputs remain the GitHub repositories and version declarations in
 this directory.
 
