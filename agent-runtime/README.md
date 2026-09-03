@@ -16,6 +16,17 @@ The first invocation builds the local image and installs the mounted product
 editable without resolving additional dependencies. Runtime and validation
 dependencies are baked into the image from `requirements.txt`.
 
+The image also contains the native Linux Antigravity CLI. Verify it without
+the worker entrypoint with:
+
+```bash
+docker run --rm --entrypoint agy score2gp-agent:local --version
+```
+
+This reports the installed CLI version only. A live Antigravity session needs
+an explicit network and authentication design; the default worker service
+remains network-disabled.
+
 To create the conventional product virtual environment inside a disposable
 Docker volume (without adding `.venv` to the host worktree):
 

@@ -1,5 +1,7 @@
 FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254
 
+ARG ANTIGRAVITY_CLI_VERSION=1.1.25
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -10,6 +12,13 @@ RUN groupadd --gid 10001 agent \
     && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin agent \
     && mkdir -p /workspace/score2gp/.venv /home/agent/.local \
     && chown -R agent:agent /workspace /home/agent
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends bash ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl --fail --silent --show-error --location https://antigravity.google/cli/install.sh \
+      | bash -s -- --dir /usr/local/bin \
+    && test "$(/usr/local/bin/agy --version)" = "$ANTIGRAVITY_CLI_VERSION"
 
 WORKDIR /workspace
 COPY requirements.txt /tmp/requirements.txt
