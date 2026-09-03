@@ -1,0 +1,6 @@
+# Runtime dependencies mirrored from score2gp/pyproject.toml.
+setuptools>=68,<81
+wheel>=0.42,<1
+pydantic>=2.6,<3
+typer>=0.12,<1
+pymupdf>=1.23,<2

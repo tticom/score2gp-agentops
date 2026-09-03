@@ -1,0 +1,28 @@
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: score2gp-agent:local
+    user: "10001:10001"
+    environment:
+      SCORE2GP_TASK: ${SCORE2GP_TASK:?set SCORE2GP_TASK to the assigned task slug}
+      PIP_USER: "1"
+    volumes:
+      - type: bind
+        source: ${SCORE2GP_PRODUCT_DIR:?set SCORE2GP_PRODUCT_DIR to one task worktree}
+        target: /workspace/score2gp
+        read_only: false
+      - agent-user-local:/home/agent/.local
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+
+volumes:
+  agent-user-local:
