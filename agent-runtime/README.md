@@ -28,6 +28,10 @@ Ubuntu-Gov once the runtime image exists. Ubuntu-Codex remains opt-in until
 Codex configuration is complete; enable it by creating
 `~/.config/score2gp/codex-enabled`.
 
+Each startup hook synchronizes the three clean checkouts from `main` before
+launching its runtime. A dirty checkout is left untouched and prevents the
+runtime from launching, so in-progress agent work cannot be overwritten.
+
 ```bash
 SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
 SCORE2GP_TASK=rec-03-vector-text-observations \
