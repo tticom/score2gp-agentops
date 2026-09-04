@@ -66,6 +66,10 @@ the dispatch router together with the GitHub login. The task worktree is
 mounted at `/workspace/score2gp`, and the source repository's Git
 administrative directory is mounted at its original absolute path so the
 worktree's `.git` pointer remains valid inside the container.
+Before launch, the host launcher requires `setfacl` and grants UID 10001
+recursive read/write/execute access plus default ACLs on the task worktree and
+Git administrative directory. Docker's `readonly=false` flag alone cannot
+override host filesystem permissions.
 
 To enable GitHub access, authenticate `gcloud` in the WSL instance and set
 `SCORE2GP_GCP_PROJECT_ID` and `SCORE2GP_GITHUB_SECRET_NAME`. The launcher reads

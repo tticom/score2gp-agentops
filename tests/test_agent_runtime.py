@@ -39,6 +39,8 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
         "printf '%s' token\n"
     )
     (bin_dir / "gcloud").chmod(0o755)
+    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
+    (bin_dir / "setfacl").chmod(0o755)
 
     env = os.environ.copy()
     env.update(
@@ -112,6 +114,8 @@ def test_run_agy_defaults_to_role_scoped_volumes(tmp_path):
         "printf '%s' token\n"
     )
     (bin_dir / "gcloud").chmod(0o755)
+    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
+    (bin_dir / "setfacl").chmod(0o755)
 
     env = os.environ.copy()
     env.update(
