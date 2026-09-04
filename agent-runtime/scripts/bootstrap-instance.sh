@@ -13,6 +13,23 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || { echo "error: required command not found: $1" >&2; exit 69; }
 }
 
+ensure_setfacl() {
+  if command -v setfacl >/dev/null 2>&1; then
+    return
+  fi
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "error: setfacl is required; install it with: sudo apt-get update && sudo apt-get install -y acl" >&2
+    exit 69
+  fi
+  if ! sudo -n true >/dev/null 2>&1; then
+    echo "error: setfacl is required; run: sudo apt-get update && sudo apt-get install -y acl" >&2
+    exit 69
+  fi
+  sudo apt-get update
+  sudo apt-get install --yes acl
+  require_command setfacl
+}
+
 sync_repo() {
   local repo_dir=$1 remote_url=$2 ref=$3
   if [ ! -e "$repo_dir/.git" ]; then
@@ -35,6 +52,7 @@ sync_repo() {
 
 require_command git
 require_command docker
+ensure_setfacl
 docker info >/dev/null
 mkdir -p "$workspace_root"
 sync_repo "$workspace_root/score2gp-agentops" "$agentops_repo" "$agentops_ref"
