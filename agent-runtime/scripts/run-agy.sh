@@ -73,7 +73,9 @@ cleanup_secret() {
 trap cleanup_secret EXIT INT TERM
 gcloud secrets versions access latest --secret="$github_secret" --project="$gcp_project" \
   | tr -d '\r\n' > "$secret_file"
-chmod 600 "$secret_file"
+# The container runs as UID 10001; Docker bind mounts preserve host file mode.
+# This file is temporary, read-only in the container, and removed on exit.
+chmod 644 "$secret_file"
 test -s "$secret_file" || { echo "error: GitHub secret is empty" >&2; exit 74; }
 exec docker run --rm -it \
   --network bridge \
