@@ -8,6 +8,7 @@ task_slug=${SCORE2GP_TASK:-sandbox}
 task_worktree=${SCORE2GP_TASK_WORKTREE:-"$workspace_root/score2gp-$task_slug-worktree"}
 agent_role=${SCORE2GP_AGENT_ROLE:-automation}
 codex_home_volume=${CODEX_HOME_VOLUME:-"score2gp-$agent_role-codex-home"}
+local_volume=${AGENT_LOCAL_VOLUME:-"score2gp-$agent_role-agent-local"}
 gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
 github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-"score2gp-github-$agent_role-token"}}
 case "$agent_role" in
@@ -82,5 +83,6 @@ exec docker run --rm -it \
   --mount "type=bind,src=$skills_dir,dst=/workspace/agy-skills,readonly" \
   --mount "type=bind,src=$secret_file,dst=/run/secrets/github-token,readonly" \
   --mount "type=volume,src=$codex_home_volume,dst=/home/agent/.codex" \
+  --mount "type=volume,src=$local_volume,dst=/home/agent/.local" \
   --entrypoint /usr/local/bin/entrypoint.sh \
   "$image_tag" codex --dangerously-bypass-approvals-and-sandbox --add-dir /workspace/agy-skills "$@"

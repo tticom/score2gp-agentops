@@ -48,6 +48,8 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
 The launcher creates the product task worktree automatically and mounts the
 workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
 checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
+The writable package-install volume is role-scoped as
+`score2gp-automation-agent-local` (or `score2gp-gov-agent-local`).
 The default Docker volumes are role-scoped as
 `score2gp-automation-agy-config` and `score2gp-automation-agy-state`; use
 `SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override

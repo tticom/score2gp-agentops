@@ -9,6 +9,7 @@ task_worktree=${SCORE2GP_TASK_WORKTREE:-"$workspace_root/score2gp-$task_slug-wor
 agent_role=${SCORE2GP_AGENT_ROLE:-automation}
 config_volume=${AGY_CONFIG_VOLUME:-"score2gp-$agent_role-agy-config"}
 state_volume=${AGY_STATE_VOLUME:-"score2gp-$agent_role-agy-state"}
+local_volume=${AGENT_LOCAL_VOLUME:-"score2gp-$agent_role-agent-local"}
 gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
 github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-"score2gp-github-$agent_role-token"}}
 git_name=${SCORE2GP_GIT_NAME:-tticom-automation}
@@ -93,5 +94,6 @@ exec docker run --rm -it \
   --mount "type=bind,src=$secret_file,dst=/run/secrets/github-token,readonly" \
   --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \
   --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
+  --mount "type=volume,src=$local_volume,dst=/home/agent/.local" \
   --entrypoint /usr/local/bin/entrypoint.sh \
   "$image_tag" agy --dangerously-skip-permissions "$@"
