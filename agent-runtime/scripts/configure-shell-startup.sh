@@ -2,7 +2,7 @@
 set -euo pipefail
 
 startup_file=${SCORE2GP_SHELL_STARTUP_FILE:-"$HOME/.bashrc"}
-marker="# score2gp-agent-runtime-startup"
+marker="# score2gp-agent-runtime-startup-v2"
 launcher_path="${SCORE2GP_AGENTOPS_DIR:-$HOME/work/score2gp-workspace/score2gp-agentops}/agent-runtime/scripts/start-instance.sh"
 mkdir -p "$(dirname "$startup_file")"
 touch "$startup_file"
