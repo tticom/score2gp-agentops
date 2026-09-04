@@ -25,6 +25,10 @@ case "${WSL_DISTRO_NAME:-}" in
 esac
 
 agentops_dir="$workspace_root/score2gp-agentops"
+if [ "${SCORE2GP_INSTANCE_BOOTSTRAP_DONE:-0}" != 1 ] && [ -x "$agentops_dir/agent-runtime/scripts/bootstrap-instance.sh" ]; then
+  export SCORE2GP_INSTANCE_BOOTSTRAP_DONE=1
+  AGENTOPS_REF=${AGENTOPS_REF:-main} "$agentops_dir/agent-runtime/scripts/bootstrap-instance.sh"
+fi
 cd "$agentops_dir"
 if [ ! -x "$agentops_dir/agent-runtime/scripts/$launcher" ]; then
   echo "score2gp: $launcher is not installed; run bootstrap-instance.sh" >&2
