@@ -42,3 +42,4 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert "type=bind,src=" + str(product_dir) + ",dst=/workspace/score2gp,readonly=false" in mount_values
     assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
     assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
+    assert args[-2:] == ["--dangerously-skip-permissions", "--help"]

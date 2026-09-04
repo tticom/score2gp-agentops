@@ -24,4 +24,4 @@ exec docker run --rm -it \
   --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \
   --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
   --entrypoint agy \
-  "$image_tag" "$@"
+  "$image_tag" --dangerously-skip-permissions "$@"
