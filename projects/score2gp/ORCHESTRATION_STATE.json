@@ -1,75 +1,71 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 22,
+  "authority_revision": 23,
   "task": {
-    "id": "REC-02",
-    "title": "Recognition Contract Schemas",
-    "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
+    "id": "REC-04",
+    "title": "Local Scale Model",
+    "objective": "Estimate local notation, TAB, stroke and glyph scales and express new detector policies in dimensionless units.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/rec-02-recognition-contract-schemas",
+    "branch": "feat/rec-04-local-scale-model",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
+    "prompt": "projects/score2gp/prompts/next/rec-04-local-scale-model.md",
     "allowed_paths": [
-      "src/score2gp/recognition/schemas.py",
-      "tests/recognition/test_schemas.py"
+      "src/score2gp/recognition/scale.py",
+      "tests/recognition/test_scale.py"
     ],
     "acceptance": [
-      "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
-      "Graph relations reference existing stable node IDs.",
-      "Invalid or cross-version payloads fail closed with useful diagnostics."
+      "Equivalent layouts at different sizes produce materially stable normalized data.",
+      "Mixed-scale pages do not collapse into a misleading page-global unit.",
+      "No fixture-specific coordinates or expected counts enter estimation."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_schemas.py",
-      "python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py",
-      "python3 scripts/artifact_audit.py",
-      "python3 scripts/regenerate_recognition_schemas.py"
+      "python3 -m pytest tests/recognition/test_scale.py",
+      "python3 -m mypy src/score2gp/recognition/scale.py tests/recognition/test_scale.py"
     ],
     "dependencies": [
-      "REC-00",
-      "REC-01"
+      "REC-03"
     ],
     "stop_conditions": [
-      "runtime_recognition_or_export_behaviour_changes",
-      "schema_contract_leaks_inference_or_compiler_semantics"
+      "fixture_specific_coordinates_enter_estimation",
+      "mixed_scale_pages_collapse_into_global_unit"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
   "next_task_proposal": {
-    "id": "REC-03",
-    "title": "Canonical Vector and Text Observations",
-    "objective": "Implement the vector/text evidence adapter and reconstruct canonical strokes, glyphs and text spans without assigning musical meaning.",
+    "id": "REC-05",
+    "title": "Raster Observation Adapter",
+    "objective": "Add deterministic page rendering and a typed raster evidence adapter that is a peer of vector/text evidence, not a fallback source of final semantics.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/rec-03-vector-text-observations",
+    "branch": "feat/rec-05-raster-observation-adapter",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-03-vector-text-observations.md",
+    "prompt": "projects/score2gp/prompts/next/rec-05-raster-observation-adapter.md",
     "allowed_paths": [
-      "src/score2gp/recognition/observations.py",
-      "tests/recognition/test_observations.py",
-      "src/score2gp/pdf.py"
+      "src/score2gp/recognition/raster.py",
+      "tests/recognition/test_raster.py"
     ],
     "acceptance": [
-      "Fragmented and repeated drawing operations have provenance-preserving output.",
-      "No output field asserts staff, barline, string, measure, duration, pitch or event.",
-      "Private real-source probes show deterministic output at the exact revision."
+      "Repeated rendering is deterministic at the accepted tolerance.",
+      "Missing renderer or transform metadata fails closed.",
+      "Raster disagreement remains observable rather than averaged away."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_observations.py",
-      "python3 -m mypy src/score2gp/recognition/observations.py tests/recognition/test_observations.py"
+      "python3 -m pytest tests/recognition/test_raster.py",
+      "python3 -m mypy src/score2gp/recognition/raster.py tests/recognition/test_raster.py"
     ],
     "dependencies": [
       "REC-02"
     ],
     "stop_conditions": [
-      "output_fields_assert_musical_semantics",
-      "legacy_compatibility_broken"
+      "vector_observations_mutated_or_overwritten",
+      "rendering_non_deterministic"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
@@ -527,6 +523,80 @@
       ],
       "reviewer_role": "governance",
       "delivery_action": "pull_request"
+    },
+    {
+      "id": "REC-02",
+      "title": "Recognition Contract Schemas",
+      "objective": "Create versioned, frozen contracts for DocumentObservations, DocumentTopology, RecognitionGraph, ResolutionResult and MusicalDocument without changing runtime recognition or export behaviour.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-02-recognition-contract-schemas",
+      "pull_request": 457,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-02-recognition-contract-schemas.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/schemas.py",
+        "tests/recognition/test_schemas.py"
+      ],
+      "acceptance": [
+        "Observation schemas reject staff/string/bar/measure/event semantic assignments.",
+        "Graph relations reference existing stable node IDs.",
+        "Invalid or cross-version payloads fail closed with useful diagnostics."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_schemas.py",
+        "python3 -m mypy src/score2gp/recognition/schemas.py tests/recognition/test_schemas.py",
+        "python3 scripts/artifact_audit.py"
+      ],
+      "dependencies": [
+        "REC-00",
+        "REC-01"
+      ],
+      "stop_conditions": [
+        "runtime_recognition_or_export_behaviour_changes",
+        "schema_contract_leaks_inference_or_compiler_semantics"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    },
+    {
+      "id": "REC-03",
+      "title": "Canonical Vector and Text Observations",
+      "objective": "Implement the vector/text evidence adapter and reconstruct canonical strokes, glyphs and text spans without assigning musical meaning.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-03-vector-text-observations",
+      "pull_request": 458,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-03-vector-text-observations.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/observations.py",
+        "tests/recognition/test_observations.py",
+        "src/score2gp/pdf.py"
+      ],
+      "acceptance": [
+        "Fragmented and repeated drawing operations have provenance-preserving output.",
+        "No output field asserts staff, barline, string, measure, duration, pitch or event.",
+        "Private real-source probes show deterministic output at the exact revision."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_observations.py",
+        "python3 -m mypy src/score2gp/recognition/observations.py tests/recognition/test_observations.py",
+        "python3 scripts/artifact_audit.py"
+      ],
+      "dependencies": [
+        "REC-02"
+      ],
+      "stop_conditions": [
+        "output_fields_assert_musical_semantics",
+        "legacy_compatibility_broken"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "merge_commit": "16cba3a41dc831cf0b44a3b44a205e8c095a3cb6",
+      "head_sha": "cb5aa6936f6f17d8939314a9d825948a93409da3"
     }
   ]
 }

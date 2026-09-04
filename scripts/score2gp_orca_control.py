@@ -234,13 +234,11 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     snapshot = live.get("snapshot") or {}
     if not isinstance(pr, dict) or str(pr.get("state", "")).upper() != "OPEN":
         return None
-    if snapshot.get("repository") == "tticom/score2gp-agentops" and live.get("control_plane_repair") is True:
-        return deepcopy(authority["task"])
-    proposal = authority.get("next_task_proposal")
-    if not isinstance(proposal, dict) or str(proposal.get("status", "")).upper() != "PROPOSED":
-        return None
     if snapshot.get("repository") != "tticom/score2gp-agentops":
         return None
+    if live.get("control_plane_repair") is True:
+        return deepcopy(authority["task"])
+
     branch = str(pr.get("head_branch", ""))
     clean_branch = branch
     for prefix in (
@@ -254,11 +252,28 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
         if clean_branch.startswith(prefix):
             clean_branch = clean_branch.removeprefix(prefix)
             break
-    actual_promotion_id = clean_branch.replace("-", "").lower()
-    expected_promotion_id = str(proposal.get("id", "")).lower().replace("-", "")
-    if actual_promotion_id != expected_promotion_id:
-        return None
-    return deepcopy(proposal)
+    branch_id = clean_branch.replace("-", "").lower()
+
+    proposal = authority.get("next_task_proposal")
+    if isinstance(proposal, dict) and str(proposal.get("status", "")).upper() == "PROPOSED":
+        expected_promotion_id = str(proposal.get("id", "")).lower().replace("-", "")
+        if branch_id == expected_promotion_id:
+            return deepcopy(proposal)
+
+    task = authority.get("task")
+    if isinstance(task, dict):
+        task_id = str(task.get("id", "")).lower().replace("-", "")
+        if branch_id == task_id:
+            return deepcopy(task)
+
+    completed = authority.get("completed_tasks", [])
+    if isinstance(completed, list):
+        for comp in reversed(completed):
+            comp_id = str(comp.get("id", "")).lower().replace("-", "")
+            if branch_id == comp_id:
+                return deepcopy(comp)
+
+    return None
 
 
 def _parse_strict_positive_int(val: Any) -> int | None:
@@ -285,6 +300,7 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
     pr = live.get("pull_request")
     snapshot = live.get("snapshot") or {}
 
+    # Handle AgentOps governance / control-plane pull requests
     if (
         isinstance(pr, dict)
         and str(pr.get("state", "")).upper() == "OPEN"
@@ -301,11 +317,12 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
                     dispatch_role=target.get("owner_role", "implementation"),
                 )
             if review == "NONE":
+                role = "reviewer" if live.get("control_plane_repair") is True else target.get("reviewer_role", "reviewer")
                 return result(
                     "REVIEW_REQUIRED",
                     "current_head_requires_review",
                     target,
-                    dispatch_role="reviewer",
+                    dispatch_role=role,
                 )
             return result(
                 "GOVERNANCE_REQUIRED",
@@ -319,11 +336,26 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
         if target is not None:
             review = current_head_review(pr)
             if review == "CHANGES_REQUESTED":
-                return result("RUNNING", "current_head_changes_requested", target, dispatch_role=target.get("owner_role", "governance"))
+                return result(
+                    "RUNNING",
+                    "current_head_changes_requested",
+                    target,
+                    dispatch_role=target.get("owner_role", "implementation"),
+                )
             if review == "NONE":
                 role = "reviewer" if live.get("control_plane_repair") is True else target.get("reviewer_role", "reviewer")
-                return result("REVIEW_REQUIRED", "current_head_requires_review", target, dispatch_role=role)
-            return result("GOVERNANCE_REQUIRED", "current_head_review_approved", target, dispatch_role="governance")
+                return result(
+                    "REVIEW_REQUIRED",
+                    "current_head_requires_review",
+                    target,
+                    dispatch_role=role,
+                )
+            return result(
+                "GOVERNANCE_REQUIRED",
+                "current_head_review_approved",
+                target,
+                dispatch_role="governance",
+            )
         return result("COMPLETE", "task_declared_complete", task)
 
     if not isinstance(pr, dict):
@@ -424,7 +456,7 @@ def build_assignment(
             "pull_request": task.get("pull_request"),
             "expected_head_sha": pr.get("head_sha"),
             "prompt": task.get("prompt"),
-            "allowed_paths": task["allowed_paths"],
+            "allowed_paths": task.get("allowed_paths", []),
             "acceptance": task.get("acceptance", []),
             "required_evidence": task.get("required_evidence", []),
         },
