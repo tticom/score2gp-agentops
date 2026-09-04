@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/rec-04-local-scale-model`
 
-**Pull Request**: TBD
+**Pull Request**: 459
 
 **Owner Role**: implementation
 
