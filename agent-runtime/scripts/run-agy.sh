@@ -6,13 +6,27 @@ source_dir=${SCORE2GP_PRODUCT_DIR:-"$workspace_root/score2gp"}
 skills_dir=${AGY_SKILLS_DIR:-"$workspace_root/agy-skills"}
 task_slug=${SCORE2GP_TASK:-sandbox}
 task_worktree=${SCORE2GP_TASK_WORKTREE:-"$workspace_root/score2gp-$task_slug-worktree"}
-config_volume=${AGY_CONFIG_VOLUME:-agy-config}
-state_volume=${AGY_STATE_VOLUME:-agy-state}
+agent_role=${SCORE2GP_AGENT_ROLE:-automation}
+config_volume=${AGY_CONFIG_VOLUME:-"score2gp-$agent_role-agy-config"}
+state_volume=${AGY_STATE_VOLUME:-"score2gp-$agent_role-agy-state"}
+gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
+github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-"score2gp-github-$agent_role-token"}}
+git_name=${SCORE2GP_GIT_NAME:-tticom-automation}
+git_email=${SCORE2GP_GIT_EMAIL:-tticomautomation@gmail.com}
 image_tag=${SCORE2GP_AGENT_IMAGE:-score2gp-agent:local}
 
 case "$task_slug" in
   *[!A-Za-z0-9._-]*) echo "error: SCORE2GP_TASK contains unsupported characters" >&2; exit 64 ;;
 esac
+case "$agent_role" in
+  automation|gov) ;;
+  *) echo "error: SCORE2GP_AGENT_ROLE must be automation or gov" >&2; exit 64 ;;
+esac
+if [ -z "$gcp_project" ]; then
+  echo "error: SCORE2GP_GCP_PROJECT_ID is required" >&2
+  exit 64
+fi
+command -v gcloud >/dev/null 2>&1 || { echo "error: gcloud is required" >&2; exit 69; }
 
 if [ ! -f "$source_dir/pyproject.toml" ] || { [ ! -d "$source_dir/.git" ] && [ ! -f "$source_dir/.git" ]; }; then
   echo "error: product Git worktree not found: $source_dir" >&2
@@ -42,7 +56,7 @@ docker run --rm --user 0:0 \
   --entrypoint chown \
   "$image_tag" 10001:10001 /home/agent/.gemini
 for plugin in engineering productivity; do
-  docker run --rm \
+docker run --rm \
     --network none \
     --user 10001:10001 \
     --read-only \
@@ -52,14 +66,28 @@ for plugin in engineering productivity; do
     --entrypoint agy \
     "$image_tag" plugin install "/workspace/agy-skills/plugins/$plugin"
 done
+secret_file=$(mktemp)
+cleanup_secret() {
+  rm -f "$secret_file"
+}
+trap cleanup_secret EXIT INT TERM
+gcloud secrets versions access latest --secret="$github_secret" --project="$gcp_project" \
+  | tr -d '\r\n' > "$secret_file"
+chmod 600 "$secret_file"
+test -s "$secret_file" || { echo "error: GitHub secret is empty" >&2; exit 74; }
 exec docker run --rm -it \
   --network bridge \
   --user 10001:10001 \
+  --env "GIT_AUTHOR_NAME=$git_name" \
+  --env "GIT_AUTHOR_EMAIL=$git_email" \
+  --env "GIT_COMMITTER_NAME=$git_name" \
+  --env "GIT_COMMITTER_EMAIL=$git_email" \
   --read-only \
   --workdir /workspace/score2gp \
   --tmpfs /tmp:rw,noexec,nosuid,size=256m \
   --mount "type=bind,src=$task_worktree,dst=/workspace/score2gp,readonly=false" \
   --mount "type=bind,src=$skills_dir,dst=/workspace/agy-skills,readonly" \
+  --mount "type=bind,src=$secret_file,dst=/run/secrets/github-token,readonly" \
   --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \
   --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
   --entrypoint agy \

@@ -42,6 +42,22 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
 The launcher creates the product task worktree automatically and mounts the
 workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
 checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
+The default Docker volumes are role-scoped as
+`score2gp-automation-agy-config` and `score2gp-automation-agy-state`; use
+`SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override
+`AGY_CONFIG_VOLUME` or `AGY_STATE_VOLUME` only with equally role-scoped names.
+
+To enable GitHub access, authenticate `gcloud` in the WSL instance and set
+`SCORE2GP_GCP_PROJECT_ID` and `SCORE2GP_GITHUB_SECRET_NAME`. The launcher reads
+the latest secret version into a temporary read-only mount, and the container
+exposes it to `gh` as `GH_TOKEN` and to Git as an askpass credential. The token
+is not stored in the image or a Docker volume. Commits default to the
+`tticom-automation` Git author identity; set `SCORE2GP_GIT_NAME` and
+`SCORE2GP_GIT_EMAIL` for another role.
+
+```bash
+SCORE2GP_GCP_PROJECT_ID=your-project SCORE2GP_GITHUB_SECRET_NAME=score2gp-github-automation-token SCORE2GP_TASK=rec-03-vector-text-observations ./agent-runtime/scripts/run-agy.sh
+```
 
 This is intentionally an explicit network-enabled operation. GitHub
 credentials are not mounted or installed by the bootstrap scripts.
