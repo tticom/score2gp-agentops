@@ -6,12 +6,17 @@ source_dir=${SCORE2GP_PRODUCT_DIR:-"$workspace_root/score2gp"}
 skills_dir=${AGY_SKILLS_DIR:-"$workspace_root/agy-skills"}
 task_slug=${SCORE2GP_TASK:-sandbox}
 task_worktree=${SCORE2GP_TASK_WORKTREE:-"$workspace_root/score2gp-$task_slug-worktree"}
-config_volume=${AGY_CONFIG_VOLUME:-agy-config}
-state_volume=${AGY_STATE_VOLUME:-agy-state}
+agent_role=${SCORE2GP_AGENT_ROLE:-automation}
+config_volume=${AGY_CONFIG_VOLUME:-"score2gp-$agent_role-agy-config"}
+state_volume=${AGY_STATE_VOLUME:-"score2gp-$agent_role-agy-state"}
 image_tag=${SCORE2GP_AGENT_IMAGE:-score2gp-agent:local}
 
 case "$task_slug" in
   *[!A-Za-z0-9._-]*) echo "error: SCORE2GP_TASK contains unsupported characters" >&2; exit 64 ;;
+esac
+case "$agent_role" in
+  automation|gov) ;;
+  *) echo "error: SCORE2GP_AGENT_ROLE must be automation or gov" >&2; exit 64 ;;
 esac
 
 if [ ! -f "$source_dir/pyproject.toml" ] || { [ ! -d "$source_dir/.git" ] && [ ! -f "$source_dir/.git" ]; }; then
