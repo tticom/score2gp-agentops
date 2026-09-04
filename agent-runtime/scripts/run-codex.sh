@@ -10,16 +10,22 @@ agent_role=${SCORE2GP_AGENT_ROLE:-automation}
 codex_home_volume=${CODEX_HOME_VOLUME:-"score2gp-$agent_role-codex-home"}
 gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
 github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-"score2gp-github-$agent_role-token"}}
-git_name=${SCORE2GP_GIT_NAME:-tticom-automation}
-git_email=${SCORE2GP_GIT_EMAIL:-tticomautomation@gmail.com}
+case "$agent_role" in
+  automation) default_git_name=tticom-automation; default_git_email=tticomautomation@gmail.com ;;
+  gov) default_git_name=tticom-gov; default_git_email=tticomgov@gmail.com ;;
+  codex) default_git_name=tticom-codex; default_git_email=tticomcodex@gmail.com ;;
+  *) default_git_name=; default_git_email= ;;
+esac
+git_name=${SCORE2GP_GIT_NAME:-$default_git_name}
+git_email=${SCORE2GP_GIT_EMAIL:-$default_git_email}
 image_tag=${SCORE2GP_CODEX_IMAGE:-score2gp-codex:local}
 
 case "$task_slug" in
   *[!A-Za-z0-9._-]*) echo "error: SCORE2GP_TASK contains unsupported characters" >&2; exit 64 ;;
 esac
 case "$agent_role" in
-  automation|gov) ;;
-  *) echo "error: SCORE2GP_AGENT_ROLE must be automation or gov" >&2; exit 64 ;;
+  automation|gov|codex) ;;
+  *) echo "error: SCORE2GP_AGENT_ROLE must be automation, gov, or codex" >&2; exit 64 ;;
 esac
 if [ -z "$gcp_project" ]; then
   echo "error: SCORE2GP_GCP_PROJECT_ID is required" >&2

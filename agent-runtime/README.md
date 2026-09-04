@@ -22,6 +22,12 @@ The script stores source checkouts and Docker state locally;
 the durable inputs remain the GitHub repositories and version declarations in
 this directory.
 
+Bootstrap also adds an interactive-shell hook to `~/.bashrc`. It changes to
+the AgentOps checkout and starts AGY automatically in Ubuntu-Automation and
+Ubuntu-Gov once the runtime image exists. Ubuntu-Codex remains opt-in until
+Codex configuration is complete; enable it by creating
+`~/.config/score2gp/codex-enabled`.
+
 ```bash
 SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
 SCORE2GP_TASK=rec-03-vector-text-observations \
@@ -101,7 +107,8 @@ SCORE2GP_TASK=runtime-codex-smoke ./agent-runtime/scripts/run-codex.sh
 
 Codex authentication is separate from GitHub authentication. On first launch,
 Codex may require its normal ChatGPT or API-key sign-in; its state is stored in
-the role-specific `score2gp-automation-codex-home` volume.
+the role-specific `score2gp-codex-codex-home` volume when launched by the
+Codex instance startup hook.
 
 ## Isolation policy
 
