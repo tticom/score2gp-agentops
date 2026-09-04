@@ -66,12 +66,15 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
     assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
     assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
+    assert "type=volume,src=score2gp-automation-agent-local,dst=/home/agent/.local" in mount_values
     assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
     assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
     assert "GIT_AUTHOR_NAME=tticom-automation" in args
     assert "GIT_AUTHOR_EMAIL=tticomautomation@gmail.com" in args
     assert "GIT_COMMITTER_NAME=tticom-automation" in args
     assert "GIT_COMMITTER_EMAIL=tticomautomation@gmail.com" in args
+    assert "SCORE2GP_TASK=test-task" in args
+    assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
     assert args[-2:] == ["--dangerously-skip-permissions", "--help"]
 
 

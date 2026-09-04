@@ -41,6 +41,9 @@ sync_repo "$workspace_root/score2gp-agentops" "$agentops_repo" "$agentops_ref"
 sync_repo "$workspace_root/score2gp" "$product_repo" "$product_ref"
 sync_repo "$workspace_root/agy-skills" "$skills_repo" "$skills_ref"
 
+SCORE2GP_AGENTOPS_DIR="$workspace_root/score2gp-agentops" \
+  "$workspace_root/score2gp-agentops/agent-runtime/scripts/configure-shell-startup.sh"
+
 echo "ready: $workspace_root"
 echo "agentops: $(git -C "$workspace_root/score2gp-agentops" rev-parse HEAD)"
 echo "product:  $(git -C "$workspace_root/score2gp" rev-parse HEAD)"

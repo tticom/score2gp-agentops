@@ -22,6 +22,12 @@ The script stores source checkouts and Docker state locally;
 the durable inputs remain the GitHub repositories and version declarations in
 this directory.
 
+Bootstrap also adds an interactive-shell hook to `~/.bashrc`. It changes to
+the AgentOps checkout and starts AGY automatically in Ubuntu-Automation and
+Ubuntu-Gov once the runtime image exists. Ubuntu-Codex remains opt-in until
+Codex configuration is complete; enable it by creating
+`~/.config/score2gp/codex-enabled`.
+
 ```bash
 SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
 SCORE2GP_TASK=rec-03-vector-text-observations \
@@ -42,6 +48,8 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
 The launcher creates the product task worktree automatically and mounts the
 workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
 checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
+The writable package-install volume is role-scoped as
+`score2gp-automation-agent-local` (or `score2gp-gov-agent-local`).
 The default Docker volumes are role-scoped as
 `score2gp-automation-agy-config` and `score2gp-automation-agy-state`; use
 `SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override
@@ -81,6 +89,28 @@ SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
 SCORE2GP_TASK=rec-03-vector-text-observations \
   ./setup-venv.sh
 ```
+
+## Codex runtime
+
+The parallel Codex runtime uses `codex.Dockerfile`, a role-scoped Codex home
+volume, the same task-worktree and GCP GitHub-token flow, and the same
+non-root container boundary. Build it with:
+
+```bash
+./agent-runtime/scripts/build-codex-image.sh
+```
+
+Launch it with `SCORE2GP_GCP_PROJECT_ID` and
+`SCORE2GP_GITHUB_SECRET_NAME` set:
+
+```bash
+SCORE2GP_TASK=runtime-codex-smoke ./agent-runtime/scripts/run-codex.sh
+```
+
+Codex authentication is separate from GitHub authentication. On first launch,
+Codex may require its normal ChatGPT or API-key sign-in; its state is stored in
+the role-specific `score2gp-codex-codex-home` volume when launched by the
+Codex instance startup hook.
 
 ## Isolation policy
 

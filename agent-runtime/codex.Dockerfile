@@ -1,0 +1,43 @@
+FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254
+
+ARG CODEX_CLI_VERSION=0.153.2
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CODEX_HOME=/home/agent/.codex \
+    PATH=/home/agent/.local/bin:$PATH
+
+RUN groupadd --gid 10001 agent \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin agent \
+    && mkdir -p /workspace/score2gp /home/agent/.local /home/agent/.codex \
+    && chown -R agent:agent /workspace /home/agent
+
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends bash ca-certificates curl git nodejs npm \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install --global "@openai/codex@${CODEX_CLI_VERSION}" \
+    && test "$(codex --version | sed -n 's/^codex-cli //p')" = "$CODEX_CLI_VERSION"
+
+RUN mkdir -p -m 755 /etc/apt/keyrings \
+    && curl --fail --silent --show-error --location \
+      https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      --output /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends gh \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --requirement /tmp/requirements.txt \
+    && rm /tmp/requirements.txt
+
+COPY --chmod=0555 entrypoint.sh github-askpass.sh /usr/local/bin/
+USER agent
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["codex", "--help"]
