@@ -23,7 +23,7 @@ the durable inputs remain the GitHub repositories and version declarations in
 this directory.
 
 ```bash
-SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
+SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
 SCORE2GP_TASK=rec-03-vector-text-observations \
   ./start-agent.sh python -m pytest tests/recognition/test_observations.py
 ```
@@ -35,8 +35,17 @@ dependencies are baked into the image from `requirements.txt`.
 To launch a live Linux Antigravity CLI with an isolated config volume:
 
 ```bash
-./agent-runtime/scripts/run-agy.sh
+SCORE2GP_TASK=rec-03-vector-text-observations \
+  ./agent-runtime/scripts/run-agy.sh
 ```
+
+The launcher creates the product task worktree automatically and mounts the
+workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
+checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
+The default Docker volumes are role-scoped as
+`score2gp-automation-agy-config` and `score2gp-automation-agy-state`; use
+`SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override
+`AGY_CONFIG_VOLUME` or `AGY_STATE_VOLUME` only with equally role-scoped names.
 
 This is intentionally an explicit network-enabled operation. GitHub
 credentials are not mounted or installed by the bootstrap scripts.
