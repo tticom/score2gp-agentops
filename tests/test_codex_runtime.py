@@ -59,5 +59,6 @@ def test_run_codex_uses_role_scoped_home_and_secret_mount(tmp_path):
     assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
     assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
     assert "type=volume,src=score2gp-automation-codex-home,dst=/home/agent/.codex" in mount_values
+    assert "SCORE2GP_TASK=codex-test" in args
     assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
     assert args[-5:] == ["codex", "--dangerously-bypass-approvals-and-sandbox", "--add-dir", "/workspace/agy-skills", "--version"]

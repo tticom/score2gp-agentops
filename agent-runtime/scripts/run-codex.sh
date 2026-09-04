@@ -67,6 +67,7 @@ test -s "$secret_file" || { echo "error: GitHub secret is empty" >&2; exit 74; }
 exec docker run --rm -it \
   --network bridge \
   --user 10001:10001 \
+  --env "SCORE2GP_TASK=$task_slug" \
   --env CODEX_HOME=/home/agent/.codex \
   --env "GIT_AUTHOR_NAME=$git_name" \
   --env "GIT_AUTHOR_EMAIL=$git_email" \

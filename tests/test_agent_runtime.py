@@ -72,6 +72,7 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert "GIT_AUTHOR_EMAIL=tticomautomation@gmail.com" in args
     assert "GIT_COMMITTER_NAME=tticom-automation" in args
     assert "GIT_COMMITTER_EMAIL=tticomautomation@gmail.com" in args
+    assert "SCORE2GP_TASK=test-task" in args
     assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
     assert args[-2:] == ["--dangerously-skip-permissions", "--help"]
 
