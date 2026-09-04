@@ -82,6 +82,7 @@ exec docker run --rm -it \
   --network bridge \
   --user 10001:10001 \
   --env "SCORE2GP_TASK=$task_slug" \
+  --env "SCORE2GP_AGENT_ROLE=$agent_role" \
   --env "GIT_AUTHOR_NAME=$git_name" \
   --env "GIT_AUTHOR_EMAIL=$git_email" \
   --env "GIT_COMMITTER_NAME=$git_name" \
@@ -90,6 +91,7 @@ exec docker run --rm -it \
   --workdir /workspace/score2gp \
   --tmpfs /tmp:rw,noexec,nosuid,size=256m \
   --mount "type=bind,src=$task_worktree,dst=/workspace/score2gp,readonly=false" \
+  --mount "type=bind,src=$source_dir/.git,dst=$source_dir/.git,readonly=false" \
   --mount "type=bind,src=$skills_dir,dst=/workspace/agy-skills,readonly" \
   --mount "type=bind,src=$secret_file,dst=/run/secrets/github-token,readonly" \
   --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \

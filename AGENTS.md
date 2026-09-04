@@ -30,11 +30,14 @@ python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
   --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
 ```
 
-The Linux worker identity, not the command word, selects the role.
+The host Linux worker identity, not the command word, selects the role.
 `tticom-automation` runs author `go`; `tticom-gov` and `tticom-codex` run
-governance/reviewer `got` under their own isolated GitHub identities. Never
-bypass the router by calling the other role's helper. Treat its JSON as
-authoritative. Never replace it with direct GitHub queries
+governance/reviewer `got` under their own isolated GitHub identities. In the
+supported disposable container, the process user is `agent`; the launcher
+passes `SCORE2GP_AGENT_ROLE=automation|gov`, and the router maps that attested
+role to the corresponding bootstrap while still requiring the matching
+GitHub identity. Never bypass the router by calling the other role's helper.
+Treat its JSON as authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
 formal review ID, commit ID, and body. `PUBLISH_AGY_HANDBACK` means execute
