@@ -167,7 +167,8 @@ mismatch for human workspace correction.
 
 This section supersedes every conflicting local-preparation or GitHub restriction below. It applies only to the authenticated GitHub account tticom-automation.
 
-The user command `next` or `go` means: read
+The installed Score2GP `go` skill is invoked as `/go`; its plain-text
+compatibility aliases are `next` and `go`. It means: read
 `projects/score2gp/prompts/NEXT.md`, then execute the permanent Agy dispatcher
 it names. The dispatcher runs `python3 scripts/score2gp_go_bootstrap.py` to
 fetch `origin/main`, synchronize canonical `main` branches, and select the authorised

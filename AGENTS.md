@@ -13,8 +13,9 @@ Until the migration is completed, direct `go`, `got`, `next`, and review
 commands without an Orca assignment continue to use the compatibility router
 below. The two modes must not be mixed within one worker run.
 
-For any request to continue, advance, run the next command, `go`, `got`, or
-`next`, execute this identity-aware router before any manual inspection:
+The author-side `/go` skill (with plain-text compatibility aliases `go` and
+`next`) and the reviewer-side `got` command must execute this identity-aware
+router before any manual inspection:
 
 ```bash
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json

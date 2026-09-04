@@ -5,11 +5,16 @@ prose or a static pointer to a completed prompt.
 
 ## Gate & Bootstrap Protocol
 
-Every `go` invocation MUST execute the executable dispatcher bootstrap helper:
+Every `/go` invocation MUST execute the identity-aware router, which selects
+the executable author bootstrap helper:
 
 ```bash
-python3 scripts/score2gp_go_bootstrap.py --product ../score2gp --agentops .
+python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
+
+The router must select `score2gp_go_bootstrap.py` for `tticom-automation`.
+Calling the bootstrap directly remains the underlying implementation, but is
+not the user-facing command because it bypasses the role-selection boundary.
 
 Before task dispatch, it must also run the shared control-plane gate against
 the skills source repository. This gate fetches and fast-forwards only clean
