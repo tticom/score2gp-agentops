@@ -20,7 +20,7 @@ case "${WSL_DISTRO_NAME:-}" in
     if [ ! -e "$HOME/.config/score2gp/codex-enabled" ]; then
       exit 0
     fi
-    role=automation; launcher=run-codex.sh; image=score2gp-codex:local ;;
+    role=codex; launcher=run-codex.sh; image=score2gp-codex:local ;;
   *) exit 0 ;;
 esac
 
