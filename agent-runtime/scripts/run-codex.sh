@@ -7,13 +7,12 @@ skills_dir=${AGY_SKILLS_DIR:-"$workspace_root/agy-skills"}
 task_slug=${SCORE2GP_TASK:-sandbox}
 task_worktree=${SCORE2GP_TASK_WORKTREE:-"$workspace_root/score2gp-$task_slug-worktree"}
 agent_role=${SCORE2GP_AGENT_ROLE:-automation}
-config_volume=${AGY_CONFIG_VOLUME:-"score2gp-$agent_role-agy-config"}
-state_volume=${AGY_STATE_VOLUME:-"score2gp-$agent_role-agy-state"}
+codex_home_volume=${CODEX_HOME_VOLUME:-"score2gp-$agent_role-codex-home"}
 gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
 github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-"score2gp-github-$agent_role-token"}}
 git_name=${SCORE2GP_GIT_NAME:-tticom-automation}
 git_email=${SCORE2GP_GIT_EMAIL:-tticomautomation@gmail.com}
-image_tag=${SCORE2GP_AGENT_IMAGE:-score2gp-agent:local}
+image_tag=${SCORE2GP_CODEX_IMAGE:-score2gp-codex:local}
 
 case "$task_slug" in
   *[!A-Za-z0-9._-]*) echo "error: SCORE2GP_TASK contains unsupported characters" >&2; exit 64 ;;
@@ -32,8 +31,8 @@ if [ ! -f "$source_dir/pyproject.toml" ] || { [ ! -d "$source_dir/.git" ] && [ !
   echo "error: product Git worktree not found: $source_dir" >&2
   exit 66
 fi
-if [ ! -f "$skills_dir/plugins/engineering/plugin.json" ] || [ ! -f "$skills_dir/plugins/productivity/plugin.json" ]; then
-  echo "error: agy-skills checkout not found or incomplete: $skills_dir" >&2
+if [ ! -d "$skills_dir" ]; then
+  echo "error: skills checkout not found: $skills_dir" >&2
   exit 66
 fi
 if [ "$source_dir" = "$task_worktree" ]; then
@@ -49,23 +48,6 @@ elif [ ! -f "$task_worktree/pyproject.toml" ] || { [ ! -d "$task_worktree/.git" 
   exit 66
 fi
 
-docker volume create "$config_volume" >/dev/null
-docker volume create "$state_volume" >/dev/null
-docker run --rm --user 0:0 \
-  --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
-  --entrypoint chown \
-  "$image_tag" 10001:10001 /home/agent/.gemini
-for plugin in engineering productivity; do
-docker run --rm \
-    --network none \
-    --user 10001:10001 \
-    --read-only \
-    --tmpfs /tmp:rw,noexec,nosuid,size=64m \
-    --mount "type=bind,src=$skills_dir,dst=/workspace/agy-skills,readonly" \
-    --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
-    --entrypoint agy \
-    "$image_tag" plugin install "/workspace/agy-skills/plugins/$plugin"
-done
 secret_file=$(mktemp)
 cleanup_secret() {
   rm -f "$secret_file"
@@ -75,9 +57,11 @@ gcloud secrets versions access latest --secret="$github_secret" --project="$gcp_
   | tr -d '\r\n' > "$secret_file"
 chmod 600 "$secret_file"
 test -s "$secret_file" || { echo "error: GitHub secret is empty" >&2; exit 74; }
+
 exec docker run --rm -it \
   --network bridge \
   --user 10001:10001 \
+  --env CODEX_HOME=/home/agent/.codex \
   --env "GIT_AUTHOR_NAME=$git_name" \
   --env "GIT_AUTHOR_EMAIL=$git_email" \
   --env "GIT_COMMITTER_NAME=$git_name" \
@@ -88,7 +72,6 @@ exec docker run --rm -it \
   --mount "type=bind,src=$task_worktree,dst=/workspace/score2gp,readonly=false" \
   --mount "type=bind,src=$skills_dir,dst=/workspace/agy-skills,readonly" \
   --mount "type=bind,src=$secret_file,dst=/run/secrets/github-token,readonly" \
-  --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \
-  --mount "type=volume,src=$state_volume,dst=/home/agent/.gemini" \
+  --mount "type=volume,src=$codex_home_volume,dst=/home/agent/.codex" \
   --entrypoint /usr/local/bin/entrypoint.sh \
-  "$image_tag" agy --dangerously-skip-permissions "$@"
+  "$image_tag" codex --dangerously-bypass-approvals-and-sandbox --add-dir /workspace/agy-skills "$@"

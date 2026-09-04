@@ -82,6 +82,27 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
   ./setup-venv.sh
 ```
 
+## Codex runtime
+
+The parallel Codex runtime uses `codex.Dockerfile`, a role-scoped Codex home
+volume, the same task-worktree and GCP GitHub-token flow, and the same
+non-root container boundary. Build it with:
+
+```bash
+./agent-runtime/scripts/build-codex-image.sh
+```
+
+Launch it with `SCORE2GP_GCP_PROJECT_ID` and
+`SCORE2GP_GITHUB_SECRET_NAME` set:
+
+```bash
+SCORE2GP_TASK=runtime-codex-smoke ./agent-runtime/scripts/run-codex.sh
+```
+
+Codex authentication is separate from GitHub authentication. On first launch,
+Codex may require its normal ChatGPT or API-key sign-in; its state is stored in
+the role-specific `score2gp-automation-codex-home` volume.
+
 ## Isolation policy
 
 - Only the selected product worktree is mounted, and it is task-scoped.
