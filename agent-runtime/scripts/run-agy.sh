@@ -18,7 +18,7 @@ exec docker run --rm -it \
   --read-only \
   --workdir /workspace/score2gp \
   --tmpfs /tmp:rw,noexec,nosuid,size=256m \
-  --mount "type=bind,src=$product_dir,dst=/workspace/score2gp,rw" \
+  --mount "type=bind,src=$product_dir,dst=/workspace/score2gp,readonly=false" \
   --mount "type=volume,src=$config_volume,dst=/home/agent/.config" \
   --entrypoint agy \
   "$image_tag" "$@"
