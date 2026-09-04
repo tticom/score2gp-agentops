@@ -7,9 +7,11 @@ SCRIPT = Path(__file__).parents[1] / "agent-runtime/scripts/run-agy.sh"
 
 
 def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
-    product_dir = tmp_path / "product"
-    product_dir.mkdir()
-    (product_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
+    source_dir = tmp_path / "product"
+    source_dir.mkdir()
+    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
+    (source_dir / ".git").mkdir()
+    task_worktree = tmp_path / "task-worktree"
 
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
@@ -20,11 +22,20 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
         f"printf '%s\\n' \"$@\" > {args_file}\n"
     )
     (bin_dir / "docker").chmod(0o755)
+    (bin_dir / "git").write_text(
+        "#!/usr/bin/env bash\n"
+        "if [[ $1 == -C && $3 == worktree && $4 == add ]]; then\n"
+        f"  mkdir -p {task_worktree}; printf '%s\\n' '[project]' > {task_worktree}/pyproject.toml; mkdir -p {task_worktree}/.git\n"
+        "fi\n"
+    )
+    (bin_dir / "git").chmod(0o755)
 
     env = os.environ.copy()
     env.update(
         PATH=f"{bin_dir}:{env['PATH']}",
-        SCORE2GP_PRODUCT_DIR=str(product_dir),
+        SCORE2GP_PRODUCT_DIR=str(source_dir),
+        SCORE2GP_TASK_WORKTREE=str(task_worktree),
+        SCORE2GP_TASK="test-task",
         AGY_CONFIG_VOLUME="test-config",
         AGY_STATE_VOLUME="test-state",
     )
@@ -39,7 +50,7 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert result.returncode == 0, result.stderr
     args = args_file.read_text().splitlines()
     mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
-    assert "type=bind,src=" + str(product_dir) + ",dst=/workspace/score2gp,readonly=false" in mount_values
+    assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
     assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
     assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
     assert args[-2:] == ["--dangerously-skip-permissions", "--help"]

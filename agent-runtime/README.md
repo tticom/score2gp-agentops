@@ -23,7 +23,7 @@ the durable inputs remain the GitHub repositories and version declarations in
 this directory.
 
 ```bash
-SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
+SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
 SCORE2GP_TASK=rec-03-vector-text-observations \
   ./start-agent.sh python -m pytest tests/recognition/test_observations.py
 ```
@@ -35,7 +35,8 @@ dependencies are baked into the image from `requirements.txt`.
 To launch a live Linux Antigravity CLI with an isolated config volume:
 
 ```bash
-./agent-runtime/scripts/run-agy.sh
+SCORE2GP_TASK=rec-03-vector-text-observations \
+  ./agent-runtime/scripts/run-agy.sh
 ```
 
 This is intentionally an explicit network-enabled operation. GitHub
