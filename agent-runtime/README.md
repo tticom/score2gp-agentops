@@ -59,6 +59,14 @@ The default Docker volumes are role-scoped as
 `SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override
 `AGY_CONFIG_VOLUME` or `AGY_STATE_VOLUME` only with equally role-scoped names.
 
+The container process runs as the unprivileged `agent` user. The launcher
+passes `SCORE2GP_AGENT_ROLE=automation` or `gov`; this role attestation is the
+supported container equivalent of the host Linux identity and is checked by
+the dispatch router together with the GitHub login. The task worktree is
+mounted at `/workspace/score2gp`, and the source repository's Git
+administrative directory is mounted at its original absolute path so the
+worktree's `.git` pointer remains valid inside the container.
+
 To enable GitHub access, authenticate `gcloud` in the WSL instance and set
 `SCORE2GP_GCP_PROJECT_ID` and `SCORE2GP_GITHUB_SECRET_NAME`. The launcher reads
 the latest secret version into a temporary read-only mount, and the container

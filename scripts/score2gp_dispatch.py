@@ -43,6 +43,16 @@ def synchronize_agentops_main(
 
 
 def select_bootstrap(linux_user: str) -> str:
+    # Disposable AGY containers run as the unprivileged `agent` user. The
+    # launcher attests the intended worker role separately; preserve the host
+    # identity path while allowing the containerized role to reach the same
+    # role-specific bootstrap.
+    if linux_user == "agent":
+        container_role = os.environ.get("SCORE2GP_AGENT_ROLE", "")
+        if container_role == "automation":
+            return "score2gp_go_bootstrap.py"
+        if container_role == "gov":
+            return "score2gp_got_bootstrap.py"
     if linux_user == "tticom-automation":
         return "score2gp_go_bootstrap.py"
     if linux_user in {"tticom-gov", "tticom-codex", "tticom"}:

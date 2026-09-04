@@ -57,6 +57,7 @@ def test_run_codex_uses_role_scoped_home_and_secret_mount(tmp_path):
     args = args_file.read_text().splitlines()
     mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
     assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
+    assert "type=bind,src=" + str(source_dir / ".git") + ",dst=" + str(source_dir / ".git") + ",readonly=false" in mount_values
     assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
     assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
     assert "type=volume,src=score2gp-codex-codex-home,dst=/home/agent/.codex" in mount_values
@@ -64,6 +65,7 @@ def test_run_codex_uses_role_scoped_home_and_secret_mount(tmp_path):
     assert "GIT_AUTHOR_NAME=tticom-codex" in args
     assert "GIT_AUTHOR_EMAIL=tticomcodex@gmail.com" in args
     assert "SCORE2GP_TASK=codex-test" in args
+    assert "SCORE2GP_AGENT_ROLE=codex" in args
     assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
     assert args[-5:] == ["codex", "--dangerously-bypass-approvals-and-sandbox", "--add-dir", "/workspace/agy-skills", "--version"]
 

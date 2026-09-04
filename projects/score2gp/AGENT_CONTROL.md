@@ -137,6 +137,21 @@ If the WSL proof cannot be established, Agy must make no filesystem, Git, or
 GitHub write and stop. It must not compensate by resetting, cleaning, copying,
 or recreating a checkout.
 
+### Supported disposable-container identity
+
+The Docker AGY runtime intentionally runs its unprivileged process as
+`agent`/UID 10001 rather than as one of the host worker accounts. This is not a
+host-workspace identity. The launcher must pass
+`SCORE2GP_AGENT_ROLE=automation` or `SCORE2GP_AGENT_ROLE=gov`; the dispatcher
+maps that role to the corresponding author or governance bootstrap and the
+bootstrap still verifies the matching GitHub login. A container without that
+role attestation fails closed.
+
+The launcher also mounts the source repository's Git administrative directory
+at the absolute path recorded by the disposable worktree's `.git` pointer.
+Without that mount, Git sees a host-only `gitdir` path and the task worktree is
+invalid inside the container.
+
 ## WSL Edit Coherency Gate
 
 An IDE “Edited” event is not evidence that the canonical WSL worktree changed.
