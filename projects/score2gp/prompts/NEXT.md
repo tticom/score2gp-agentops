@@ -1,8 +1,9 @@
 # Command Dispatch
 
-Commands are role-specific. In a harness with the Score2GP `go` skill
+Commands are role-specific. In Antigravity with the Score2GP `go` skill
 installed, the author invokes `/go` (plain `go`/`next` are compatibility
-aliases):
+aliases). Codex uses `got` for governance/reviewer work and must not invoke
+the author command:
 
 - Agy `/go`, `next`, and `go`: execute
   [go-dispatch.md](next/go-dispatch.md).
