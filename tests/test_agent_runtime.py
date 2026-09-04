@@ -26,6 +26,7 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
         PATH=f"{bin_dir}:{env['PATH']}",
         SCORE2GP_PRODUCT_DIR=str(product_dir),
         AGY_CONFIG_VOLUME="test-config",
+        AGY_STATE_VOLUME="test-state",
     )
     result = subprocess.run(
         [str(SCRIPT), "--help"],
@@ -39,3 +40,5 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     args = args_file.read_text().splitlines()
     mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
     assert "type=bind,src=" + str(product_dir) + ",dst=/workspace/score2gp,readonly=false" in mount_values
+    assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
+    assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
