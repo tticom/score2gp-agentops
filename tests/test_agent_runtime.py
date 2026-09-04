@@ -34,6 +34,11 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
         "fi\n"
     )
     (bin_dir / "git").chmod(0o755)
+    (bin_dir / "gcloud").write_text(
+        "#!/usr/bin/env bash\n"
+        "printf '%s' token\n"
+    )
+    (bin_dir / "gcloud").chmod(0o755)
 
     env = os.environ.copy()
     env.update(
@@ -42,6 +47,8 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
         AGY_SKILLS_DIR=str(skills_dir),
         SCORE2GP_TASK_WORKTREE=str(task_worktree),
         SCORE2GP_TASK="test-task",
+        SCORE2GP_GCP_PROJECT_ID="test-project",
+        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
         AGY_CONFIG_VOLUME="test-config",
         AGY_STATE_VOLUME="test-state",
     )
@@ -60,6 +67,11 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
     assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
     assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
+    assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
+    assert "GIT_AUTHOR_NAME=tticom-automation" in args
+    assert "GIT_AUTHOR_EMAIL=tticomautomation@gmail.com" in args
+    assert "GIT_COMMITTER_NAME=tticom-automation" in args
+    assert "GIT_COMMITTER_EMAIL=tticomautomation@gmail.com" in args
     assert args[-2:] == ["--dangerously-skip-permissions", "--help"]
 
 
@@ -90,6 +102,11 @@ def test_run_agy_defaults_to_role_scoped_volumes(tmp_path):
         "fi\n"
     )
     (bin_dir / "git").chmod(0o755)
+    (bin_dir / "gcloud").write_text(
+        "#!/usr/bin/env bash\n"
+        "printf '%s' token\n"
+    )
+    (bin_dir / "gcloud").chmod(0o755)
 
     env = os.environ.copy()
     env.update(
@@ -98,6 +115,8 @@ def test_run_agy_defaults_to_role_scoped_volumes(tmp_path):
         AGY_SKILLS_DIR=str(skills_dir),
         SCORE2GP_TASK_WORKTREE=str(task_worktree),
         SCORE2GP_TASK="test-task",
+        SCORE2GP_GCP_PROJECT_ID="test-project",
+        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
         SCORE2GP_AGENT_ROLE="gov",
     )
     result = subprocess.run(
