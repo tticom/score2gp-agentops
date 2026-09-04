@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-04-local-scale-model",
-    "pull_request": null,
+    "pull_request": 459,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/rec-04-local-scale-model.md",
     "allowed_paths": [
