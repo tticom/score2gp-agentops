@@ -18,6 +18,14 @@ cd "$HOME/work/score2gp-workspace/score2gp-agentops"
 ./agent-runtime/scripts/verify-runtime.sh
 ```
 
+Bootstrap also provisions the host `acl` package when passwordless `sudo` is
+available. If it reports that `setfacl` is missing, install it once in that
+WSL distribution and rerun bootstrap:
+
+```bash
+sudo apt-get update && sudo apt-get install -y acl
+```
+
 The script stores source checkouts and Docker state locally;
 the durable inputs remain the GitHub repositories and version declarations in
 this directory.
