@@ -39,6 +39,10 @@ SCORE2GP_TASK=rec-03-vector-text-observations \
   ./agent-runtime/scripts/run-agy.sh
 ```
 
+The launcher creates the product task worktree automatically and mounts the
+workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
+checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
+
 This is intentionally an explicit network-enabled operation. GitHub
 credentials are not mounted or installed by the bootstrap scripts.
 

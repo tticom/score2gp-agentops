@@ -12,6 +12,11 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
     (source_dir / ".git").mkdir()
     task_worktree = tmp_path / "task-worktree"
+    skills_dir = tmp_path / "agy-skills"
+    (skills_dir / "plugins/engineering").mkdir(parents=True)
+    (skills_dir / "plugins/productivity").mkdir(parents=True)
+    (skills_dir / "plugins/engineering/plugin.json").write_text("{}")
+    (skills_dir / "plugins/productivity/plugin.json").write_text("{}")
 
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
@@ -34,6 +39,7 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     env.update(
         PATH=f"{bin_dir}:{env['PATH']}",
         SCORE2GP_PRODUCT_DIR=str(source_dir),
+        AGY_SKILLS_DIR=str(skills_dir),
         SCORE2GP_TASK_WORKTREE=str(task_worktree),
         SCORE2GP_TASK="test-task",
         AGY_CONFIG_VOLUME="test-config",
@@ -53,4 +59,5 @@ def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
     assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
     assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
     assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
+    assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
     assert args[-2:] == ["--dangerously-skip-permissions", "--help"]

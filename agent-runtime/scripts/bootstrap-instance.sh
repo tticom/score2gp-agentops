@@ -4,8 +4,10 @@ set -euo pipefail
 workspace_root=${SCORE2GP_WORKSPACE_ROOT:-"$HOME/work/score2gp-workspace"}
 agentops_ref=${AGENTOPS_REF:-main}
 product_ref=${SCORE2GP_REF:-main}
+skills_ref=${AGY_SKILLS_REF:-main}
 agentops_repo=${AGENTOPS_REPO:-https://github.com/tticom/score2gp-agentops.git}
 product_repo=${SCORE2GP_REPO:-https://github.com/tticom/score2gp.git}
+skills_repo=${AGY_SKILLS_REPO:-https://github.com/tticom/agy-skills.git}
 
 require_command() {
   command -v "$1" >/dev/null 2>&1 || { echo "error: required command not found: $1" >&2; exit 69; }
@@ -37,7 +39,9 @@ docker info >/dev/null
 mkdir -p "$workspace_root"
 sync_repo "$workspace_root/score2gp-agentops" "$agentops_repo" "$agentops_ref"
 sync_repo "$workspace_root/score2gp" "$product_repo" "$product_ref"
+sync_repo "$workspace_root/agy-skills" "$skills_repo" "$skills_ref"
 
 echo "ready: $workspace_root"
 echo "agentops: $(git -C "$workspace_root/score2gp-agentops" rev-parse HEAD)"
 echo "product:  $(git -C "$workspace_root/score2gp" rev-parse HEAD)"
+echo "skills:   $(git -C "$workspace_root/agy-skills" rev-parse HEAD)"
