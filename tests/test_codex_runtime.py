@@ -33,6 +33,8 @@ def test_run_codex_uses_role_scoped_home_and_secret_mount(tmp_path):
     (bin_dir / "git").chmod(0o755)
     (bin_dir / "gcloud").write_text("#!/usr/bin/env bash\nprintf '%s' token\n")
     (bin_dir / "gcloud").chmod(0o755)
+    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
+    (bin_dir / "setfacl").chmod(0o755)
 
     env = os.environ.copy()
     env.update(

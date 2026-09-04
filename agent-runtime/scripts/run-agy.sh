@@ -28,6 +28,7 @@ if [ -z "$gcp_project" ]; then
   exit 64
 fi
 command -v gcloud >/dev/null 2>&1 || { echo "error: gcloud is required" >&2; exit 69; }
+command -v setfacl >/dev/null 2>&1 || { echo "error: setfacl is required to prepare container worktree permissions" >&2; exit 69; }
 
 if [ ! -f "$source_dir/pyproject.toml" ] || { [ ! -d "$source_dir/.git" ] && [ ! -f "$source_dir/.git" ]; }; then
   echo "error: product Git worktree not found: $source_dir" >&2
@@ -49,6 +50,11 @@ elif [ ! -f "$task_worktree/pyproject.toml" ] || { [ ! -d "$task_worktree/.git" 
   echo "error: task worktree path exists but is not a Score2GP Git worktree: $task_worktree" >&2
   exit 66
 fi
+
+# Docker's readonly=false does not override host permissions. Grant the
+# disposable container identity access to the task worktree and Git metadata.
+setfacl -R -m u:10001:rwX "$task_worktree" "$source_dir/.git"
+setfacl -R -d -m u:10001:rwX "$task_worktree" "$source_dir/.git"
 
 docker volume create "$config_volume" >/dev/null
 docker volume create "$state_volume" >/dev/null
