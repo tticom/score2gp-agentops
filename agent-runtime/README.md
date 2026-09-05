@@ -64,6 +64,8 @@ legacy product/sandbox clones, resets a branch, or installs ACL tools.
 Shell startup does not run bootstrap or update repositories. With no
 `SCORE2GP_CYCLE_ASSIGNMENT`, the instance reports `idle` and opens a shell.
 A running WSL distribution does not imply a running Docker worker.
+With an assignment present, a missing launcher or runtime image returns exit
+status 69 rather than reporting a successful startup.
 
 Create a host-owned JSON assignment using [assignment.example.json](assignment.example.json).
 The example has placeholder SHAs and a GitHub-only network policy and is not
@@ -194,6 +196,17 @@ GitHub HTTPS, a denied HTTPS destination and a direct-IP bypass attempt. It
 never authenticates an agent or reads a real GitHub secret. Controller tests
 use real Git remotes for checkpoint/conflict/recovery and stub cloud identity
 and Docker orchestration; neither test layer constitutes live agent acceptance.
+Worker-entrypoint tests execute `worker.py` with substituted assignment/secret
+reads and client subprocess calls, checking prompts, arguments, plugin failures
+and exit propagation. They do not authenticate a real agent. Workers use
+`GH_TOKEN` for GitHub API access; only the host controller installs a Git
+askpass helper for managed publication.
+
+When the default temporary directory is mounted `noexec`, the test suite
+automatically creates a unique executable test directory under ignored
+`work/test-tmp/`. An explicit `--basetemp` is preserved; choose an executable
+mount when supplying it. This keeps real Git hooks and CLI test doubles
+executable without weakening the worker's `/tmp` mount policy.
 
 `start-agent.sh` remains an explicit offline utility for a caller-selected
 worktree, not a managed/published cycle. It now uses the host UID/GID and

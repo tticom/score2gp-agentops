@@ -2,6 +2,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+
 STARTUP_SCRIPT = Path(__file__).parents[1] / "agent-runtime/scripts/start-instance.sh"
 
 
@@ -73,3 +75,28 @@ def test_start_instance_is_idle_without_assignment(tmp_path):
     result = subprocess.run([str(STARTUP_SCRIPT)], env=env, capture_output=True, text=True)
     assert result.returncode == 0
     assert "idle" in result.stdout
+
+
+@pytest.mark.parametrize("missing", ["launcher", "image"])
+def test_assigned_startup_fails_when_prerequisites_are_missing(tmp_path, missing):
+    scripts = tmp_path / "workspace/score2gp-agentops/agent-runtime/scripts"
+    scripts.mkdir(parents=True)
+    sentinel = tmp_path / "launched"
+    if missing != "launcher":
+        launcher = scripts / "run-agy.sh"
+        launcher.write_text(f"#!/bin/sh\ntouch '{sentinel}'\n")
+        launcher.chmod(0o755)
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    docker = binaries / "docker"
+    docker.write_text("#!/bin/sh\nexit 1\n")
+    docker.chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k != "SCORE2GP_INSTANCE_STARTUP_DONE"}
+    env.update(PATH=f"{binaries}:{env['PATH']}", WSL_DISTRO_NAME="Ubuntu-Automation",
+               SCORE2GP_WORKSPACE_ROOT=str(tmp_path / "workspace"),
+               SCORE2GP_RUNTIME_ENV_FILE=str(tmp_path / "absent"),
+               SCORE2GP_CYCLE_ASSIGNMENT=str(tmp_path / "assignment.json"))
+    result = subprocess.run([str(STARTUP_SCRIPT)], env=env, capture_output=True, text=True)
+    assert result.returncode == 69
+    assert ("not installed" if missing == "launcher" else "not built") in result.stderr
+    assert not sentinel.exists()

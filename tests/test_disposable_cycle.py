@@ -50,17 +50,25 @@ def assignment(**changes):
     return data
 
 
-@pytest.mark.parametrize("change", [
-    {"branch": "main"}, {"branch": "master"}, {"branch": "HEAD"},
-    {"allowed_paths": ["../"]}, {"allowed_paths": ["."]},
-    {"allowed_paths": ["fixtures/private/"]}, {"allowed_paths": [".git/"]},
-    {"base_sha": "main"}, {"egress_hosts": ["*.google.com"]},
-    {"egress_hosts": ["127.0.0.1"]}, {"validation": ["echo pass"]},
-    {"repository": "https://user:token@github.com/tticom/score2gp.git"},
-    {"mode": "reviewer", "pull_request": 1, "allowed_paths": ["src/"]},
+@pytest.mark.parametrize("change,expected_error", [
+    ({"branch": "main"}, "an explicit non-protected task branch is required"),
+    ({"branch": "master"}, "an explicit non-protected task branch is required"),
+    ({"branch": "HEAD"}, "an explicit non-protected task branch is required"),
+    ({"allowed_paths": ["../"]}, "allowed_paths must contain explicit safe files or directory prefixes"),
+    ({"allowed_paths": ["."]}, "allowed_paths must contain explicit safe files or directory prefixes"),
+    ({"allowed_paths": ["fixtures/private/"]}, "allowed_paths must contain explicit safe files or directory prefixes"),
+    ({"allowed_paths": [".git/"]}, "allowed_paths must contain explicit safe files or directory prefixes"),
+    ({"base_sha": "main"}, "base_sha must pin the assigned branch head"),
+    ({"egress_hosts": ["*.google.com"]}, "egress_hosts requires exact DNS names, without wildcards or IP addresses"),
+    ({"egress_hosts": ["127.0.0.1"]}, "egress_hosts requires exact DNS names, without wildcards or IP addresses"),
+    ({"validation": ["echo pass"]}, "validation must contain nonempty command argument arrays"),
+    ({"repository": "https://user:token@github.com/tticom/score2gp.git"},
+     "repository must be an approved GitHub HTTPS repository without credentials"),
+    ({"mode": "reviewer", "pull_request": 1, "allowed_paths": ["src/"]},
+     "reviewer requires a PR number and no writable source paths"),
 ])
-def test_assignment_rejects_ambiguous_or_excessive_authority(change):
-    with pytest.raises(cycle.CycleError):
+def test_assignment_rejects_ambiguous_or_excessive_authority(change, expected_error):
+    with pytest.raises(cycle.CycleError, match=f"^{expected_error}$"):
         cycle.validate_assignment(assignment(**change))
 
 
@@ -92,7 +100,7 @@ def test_private_or_out_of_scope_changes_block_checkpoint(repository, tmp_path, 
     if committed:
         git(clone, "-c", "user.name=Fixture", "-c", "user.email=f@example.invalid", "add", ".")
         git(clone, "-c", "user.name=Fixture", "-c", "user.email=f@example.invalid", "commit", "-m", "Forbidden path")
-    with pytest.raises(cycle.CycleError):
+    with pytest.raises(cycle.CycleError, match="^out-of-scope path; clone retained:"):
         cycle.checkpoint(clone, str(remote), "feat/example", base, ["src/"],
                          {"cycle_id": "example"}, "Fixture", "f@example.invalid", os.environ.copy())
     assert clone.exists()
@@ -109,7 +117,7 @@ def test_concurrent_remote_change_retains_clone_without_overwriting(repository, 
     git(source, "push", "origin", "feat/example")
     other_head = git(source, "rev-parse", "HEAD")
     (clone / "src/example.py").write_text("value = 2\n")
-    with pytest.raises(cycle.CycleError):
+    with pytest.raises(cycle.CycleError, match="^remote branch moved during cycle; clone retained$"):
         cycle.checkpoint(clone, str(remote), "feat/example", base, ["src/"],
                          {"cycle_id": "example"}, "Fixture", "f@example.invalid", os.environ.copy())
     assert clone.exists()
@@ -170,6 +178,7 @@ def controller(repository, tmp_path, monkeypatch):
             if args[1:3] == ["image", "inspect"]:
                 return subprocess.CompletedProcess(args, 0, "sha256:" + "a" * 64, "")
             if "/worker.py" in args and args[1] == "run":
+                assert not any("github-askpass.sh" in arg or "GIT_ASKPASS=" in arg for arg in args)
                 mounts = [args[i + 1] for i, a in enumerate(args[:-1]) if a == "--mount"]
                 source_mount = next(m for m in mounts if "dst=/workspace/score2gp" in m)
                 repo = Path(source_mount.split("src=", 1)[1].split(",", 1)[0])

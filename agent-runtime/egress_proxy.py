@@ -7,6 +7,13 @@ import socket
 import socketserver
 import sys
 
+MAX_REQUEST_LINE_BYTES = 4096
+MAX_HEADERS_BYTES = 16384
+REQUEST_TIMEOUT_SECONDS = 15
+CONNECT_TIMEOUT_SECONDS = 15
+PROXY_IDLE_TIMEOUT_SECONDS = 120
+PROXY_BUFFER_BYTES = 65536
+
 
 def resolve_public(host):
     addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
@@ -16,12 +23,12 @@ def resolve_public(host):
 
 
 class Handler(socketserver.StreamRequestHandler):
-    timeout = 15
+    timeout = REQUEST_TIMEOUT_SECONDS
 
     def handle(self):
         try:
-            line = self.rfile.readline(4097)
-            if len(line) > 4096:
+            line = self.rfile.readline(MAX_REQUEST_LINE_BYTES + 1)
+            if len(line) > MAX_REQUEST_LINE_BYTES:
                 raise ValueError("request too large")
             method, authority, version = line.decode("ascii").strip().split()
             host, port = authority.rsplit(":", 1)
@@ -29,9 +36,9 @@ class Handler(socketserver.StreamRequestHandler):
                 raise ValueError("destination denied")
             size = 0
             while True:
-                header = self.rfile.readline(4097)
+                header = self.rfile.readline(MAX_REQUEST_LINE_BYTES + 1)
                 size += len(header)
-                if size > 16384 or not header:
+                if size > MAX_HEADERS_BYTES or not header:
                     raise ValueError("invalid headers")
                 if header in (b"\r\n", b"\n"):
                     break
@@ -39,7 +46,7 @@ class Handler(socketserver.StreamRequestHandler):
             upstream = None
             for family, kind, proto, _, address in resolve_public(host):
                 candidate = socket.socket(family, kind, proto)
-                candidate.settimeout(15)
+                candidate.settimeout(CONNECT_TIMEOUT_SECONDS)
                 try:
                     candidate.connect(address)
                     upstream = candidate
@@ -56,11 +63,11 @@ class Handler(socketserver.StreamRequestHandler):
             self.wfile.flush()
             peers = (self.connection, upstream)
             while True:
-                readable, _, _ = select.select(peers, [], [], 120)
+                readable, _, _ = select.select(peers, [], [], PROXY_IDLE_TIMEOUT_SECONDS)
                 if not readable:
                     return
                 for source in readable:
-                    chunk = source.recv(65536)
+                    chunk = source.recv(PROXY_BUFFER_BYTES)
                     if not chunk:
                         return
                     (upstream if source is self.connection else self.connection).sendall(chunk)

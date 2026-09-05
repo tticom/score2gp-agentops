@@ -10,7 +10,6 @@ import sys
 def main():
     data = json.loads(Path("/assignment.json").read_text())
     os.environ["GH_TOKEN"] = Path("/run/secrets/github-token").read_text().strip()
-    os.environ["GIT_ASKPASS"] = "/usr/local/bin/github-askpass.sh"
     os.environ["GIT_TERMINAL_PROMPT"] = "0"
     prompt = data["prompt"] + (
         f"\nCycle {os.environ['SCORE2GP_CYCLE_ID']}: remain on {data['branch']}. "

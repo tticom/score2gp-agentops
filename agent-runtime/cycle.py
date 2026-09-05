@@ -276,14 +276,13 @@ def execute(data, engine, extra):
         run(["docker", "network", "connect", "--alias", "egress", network, proxy_name])
         run(["docker", "exec", proxy_name, "python", "-c",
              "import socket,time\nfor attempt in range(50):\n try:\n  socket.create_connection(('127.0.0.1',3128),1).close(); break\n except OSError: time.sleep(.1)\nelse: raise SystemExit(1)"])
-        base = common_container(worker_name, image, uid, gid)
-        base += ["--network", network, "--workdir", repo_target, "--entrypoint", "python"]
-        base += bind(repo, repo_target, data["mode"] == "reviewer") + context_mounts
-        base += bind(passwd, "/etc/passwd") + bind(group, "/etc/group")
-        base += bind(secret, "/run/secrets/github-token")
-        base += bind(folder / "assignment.json", "/assignment.json")
-        base += bind(RUNTIME / "worker.py", "/worker.py")
-        base += bind(RUNTIME / "github-askpass.sh", "/usr/local/bin/github-askpass.sh")
+        worker_argv = common_container(worker_name, image, uid, gid)
+        worker_argv += ["--network", network, "--workdir", repo_target, "--entrypoint", "python"]
+        worker_argv += bind(repo, repo_target, data["mode"] == "reviewer") + context_mounts
+        worker_argv += bind(passwd, "/etc/passwd") + bind(group, "/etc/group")
+        worker_argv += bind(secret, "/run/secrets/github-token")
+        worker_argv += bind(folder / "assignment.json", "/assignment.json")
+        worker_argv += bind(RUNTIME / "worker.py", "/worker.py")
         for key, value in {
             "HOME": "/home/agent", "USER": "agent", "LOGNAME": "agent", "CODEX_HOME": "/home/agent/.codex",
             "SCORE2GP_AGENT_ROLE": data["role"], "SCORE2GP_CYCLE_ID": cycle_id,
@@ -294,7 +293,7 @@ def execute(data, engine, extra):
             "GIT_AUTHOR_NAME": login, "GIT_AUTHOR_EMAIL": email,
             "GIT_COMMITTER_NAME": login, "GIT_COMMITTER_EMAIL": email,
         }.items():
-            base += ["--env", f"{key}={value}"]
+            worker_argv += ["--env", f"{key}={value}"]
         # Only agent authentication/config state persists; source and packages do not.
         auth_root = Path.home() / ".local/share/score2gp" / data["role"] / "auth"
         for dirname in ([".codex"] if engine == "codex" else [".config", ".gemini"]):
@@ -302,7 +301,7 @@ def execute(data, engine, extra):
             auth.mkdir(parents=True, exist_ok=True, mode=0o700)
             if auth.is_symlink() or auth.stat().st_uid != uid:
                 raise CycleError("authentication state has unexpected ownership or is a symlink")
-            base += bind(auth, f"/home/agent/{dirname}", False)
+            worker_argv += bind(auth, f"/home/agent/{dirname}", False)
         skills = Path(os.environ.get("AGY_SKILLS_DIR", str(Path.home() / "work/score2gp-workspace/agy-skills"))).resolve()
         if not skills.is_dir():
             raise CycleError("AGY_SKILLS_DIR must name the installed skills checkout")
@@ -312,9 +311,9 @@ def execute(data, engine, extra):
         skills_snapshot = folder / "skills"
         run(["git", "clone", "--no-local", "--no-checkout", "--", skills, skills_snapshot], env=env)
         git(skills_snapshot, "checkout", "--detach", receipt["skills_sha"], env=env)
-        base += bind(skills_snapshot, "/workspace/agy-skills")
+        worker_argv += bind(skills_snapshot, "/workspace/agy-skills")
         # A cycle is one noninteractive invocation, not a shell/session lifetime.
-        agent = subprocess.run(base + [image, "/worker.py", engine, *extra], stdin=subprocess.DEVNULL)
+        agent = subprocess.run(worker_argv + [image, "/worker.py", engine, *extra], stdin=subprocess.DEVNULL)
         receipt["agent_exit_code"] = agent.returncode
         if agent.returncode != 0:
             raise CycleError(f"agent exited {agent.returncode}; clone retained without automatic checkpoint")

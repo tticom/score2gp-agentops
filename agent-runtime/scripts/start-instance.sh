@@ -37,11 +37,11 @@ export SCORE2GP_GITHUB_SECRET_NAME="${SCORE2GP_GITHUB_SECRET_NAME:-score2gp-gith
 cd "$agentops_dir"
 if [ ! -x "$agentops_dir/agent-runtime/scripts/$launcher" ]; then
   echo "score2gp: $launcher is not installed; run bootstrap-instance.sh" >&2
-  exit 0
+  exit 69
 fi
 if ! docker image inspect "$image" >/dev/null 2>&1; then
   echo "score2gp: $image is not built; run its build script" >&2
-  exit 0
+  exit 69
 fi
 
 SCORE2GP_AGENT_ROLE="$role" exec "./agent-runtime/scripts/$launcher"
