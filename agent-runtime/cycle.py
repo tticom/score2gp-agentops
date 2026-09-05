@@ -230,7 +230,7 @@ def execute(data, engine, extra):
         secret_name = os.environ.get("SCORE2GP_GITHUB_SECRET_NAME", f"score2gp-github-{data['role']}-token")
         if not project:
             raise CycleError("SCORE2GP_GCP_PROJECT_ID is required")
-        token = run(["gcloud", "secrets", "versions", "access", "latest", f"--secret={secret_name}", f"--project={project}"])
+        token = "".join(run(["gcloud", "secrets", "versions", "access", "latest", f"--secret={secret_name}", f"--project={project}"]).split())
         if not token or "\n" in token or "\r" in token:
             raise CycleError("invalid GitHub secret")
         secret.write_text(token)
