@@ -277,6 +277,9 @@ def execute(data, engine, extra):
         run(["docker", "exec", proxy_name, "python", "-c",
              "import socket,time\nfor attempt in range(50):\n try:\n  socket.create_connection(('127.0.0.1',3128),1).close(); break\n except OSError: time.sleep(.1)\nelse: raise SystemExit(1)"])
         worker_argv = common_container(worker_name, image, uid, gid)
+        interactive_auth = os.environ.get("SCORE2GP_INTERACTIVE_AUTH") == "1" and sys.stdin.isatty()
+        if interactive_auth:
+            worker_argv[2:2] = ["--interactive", "--tty"]
         worker_argv += ["--network", network, "--workdir", repo_target, "--entrypoint", "python"]
         worker_argv += bind(repo, repo_target, data["mode"] == "reviewer") + context_mounts
         worker_argv += bind(passwd, "/etc/passwd") + bind(group, "/etc/group")
@@ -312,8 +315,10 @@ def execute(data, engine, extra):
         run(["git", "clone", "--no-local", "--no-checkout", "--", skills, skills_snapshot], env=env)
         git(skills_snapshot, "checkout", "--detach", receipt["skills_sha"], env=env)
         worker_argv += bind(skills_snapshot, "/workspace/agy-skills")
-        # A cycle is one noninteractive invocation, not a shell/session lifetime.
-        agent = subprocess.run(worker_argv + [image, "/worker.py", engine, *extra], stdin=subprocess.DEVNULL)
+        # Interactive WSL launches may complete first-run AGY auth; unattended
+        # cycles remain noninteractive and fail closed if auth is missing.
+        agent_stdin = None if interactive_auth else subprocess.DEVNULL
+        agent = subprocess.run(worker_argv + [image, "/worker.py", engine, *extra], stdin=agent_stdin)
         receipt["agent_exit_code"] = agent.returncode
         if agent.returncode != 0:
             raise CycleError(f"agent exited {agent.returncode}; clone retained without automatic checkpoint")
