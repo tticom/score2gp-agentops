@@ -20,6 +20,10 @@ def command_json(command: list[str], cwd: Path, env: dict[str, str]) -> dict:
         except json.JSONDecodeError:
             failure = {}
         reason = failure.get("reason") if isinstance(failure, dict) else None
+        if not reason:
+            detail = result.stderr.strip() or result.stdout.strip()
+            if detail:
+                reason = detail.splitlines()[-1]
         raise AdapterError(reason or f"governance dispatch failed (exit {result.returncode})")
     try:
         value = json.loads(result.stdout)
