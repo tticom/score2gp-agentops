@@ -42,11 +42,18 @@ sync_repo() {
   fi
   git -C "$repo_dir" fetch --prune origin
   if git -C "$repo_dir" show-ref --verify --quiet "refs/remotes/origin/$ref"; then
-    git -C "$repo_dir" switch --force-create "$ref" "origin/$ref" 2>/dev/null \
-      || git -C "$repo_dir" switch "$ref"
-    git -C "$repo_dir" reset --hard "origin/$ref" >/dev/null
+    if [ "$(git -C "$repo_dir" branch --show-current)" != "$ref" ]; then
+      echo "error: checkout is on another branch; checkpoint it before explicit switching: $repo_dir" >&2
+      exit 75
+    fi
+    if [ "$(git -C "$repo_dir" rev-list --count "origin/$ref..HEAD")" != 0 ]; then
+      echo "error: local commits are not on origin/$ref; preserve and push the task branch: $repo_dir" >&2
+      exit 75
+    fi
+    git -C "$repo_dir" merge --ff-only "origin/$ref"
   else
-    git -C "$repo_dir" switch "$ref"
+    echo "error: requested remote branch does not exist: $ref" >&2
+    exit 75
   fi
 }
 

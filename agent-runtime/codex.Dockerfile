@@ -38,6 +38,7 @@ RUN pip install --requirement /tmp/requirements.txt \
     && rm /tmp/requirements.txt
 
 COPY --chmod=0555 entrypoint.sh github-askpass.sh /usr/local/bin/
+COPY --chmod=0555 task_branch.py task-checkpoint /usr/local/bin/
 USER agent
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["codex", "--help"]

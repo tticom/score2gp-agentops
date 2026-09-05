@@ -2,6 +2,16 @@
 
 This file is the governance control policy for agentic work on `score2gp`.
 
+## Mandatory remote checkpoints
+
+The maintainer's task-branch/push requirement in
+[TASK_CHECKPOINT_POLICY.md](TASK_CHECKPOINT_POLICY.md) applies to all authored
+work, including planning and unfinished development. Publish and verify the
+task branch before work and checkpoint after meaningful changes and before
+pausing. PR readiness is a separate gate; incomplete checkpoints do not require
+a PR. This supersedes local-only handoff wording without changing task scope,
+private-data exclusions, reviewer authority or merge restrictions.
+
 ## Orca orchestration boundary
 
 `ORCHESTRATION_STATE.json` is the sole machine-readable task and incident

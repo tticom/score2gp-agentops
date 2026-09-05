@@ -3,6 +3,13 @@
 This file supplies Score2GP-specific policy to the reusable skills pinned by
 `SKILLS_LOCK.md`.
 
+## Task persistence override
+
+All author roles follow [TASK_CHECKPOINT_POLICY.md](TASK_CHECKPOINT_POLICY.md).
+Publish task branches and verified checkpoints even before PR readiness. Local
+commits and container volumes are not durable handoffs. This project override
+does not require a shared-skills upgrade and does not permit reviewer writes.
+
 ## Authority
 
 - Canonical authority: `projects/score2gp/ACTIVE_TASK.md`

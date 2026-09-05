@@ -4,6 +4,7 @@ set -eu
 runtime_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 product_dir=${SCORE2GP_PRODUCT_DIR:-}
 task_slug=${SCORE2GP_TASK:-}
+task_branch=${SCORE2GP_TASK_BRANCH:?set SCORE2GP_TASK_BRANCH to the assigned branch}
 
 if [ -z "$product_dir" ] || [ ! -d "$product_dir" ]; then
   echo "usage: SCORE2GP_PRODUCT_DIR=/absolute/task/worktree SCORE2GP_TASK=task-slug $0 [command ...]" >&2
@@ -27,8 +28,14 @@ fi
 
 export SCORE2GP_PRODUCT_DIR="$product_dir"
 export SCORE2GP_TASK="$task_slug"
+export SCORE2GP_TASK_BRANCH="$task_branch"
+task_remote=$(git -C "$product_dir" remote get-url origin)
+python3 "$runtime_dir/task_branch.py" verify --repo "$product_dir" --branch "$task_branch" --remote "$task_remote"
 export COMPOSE_PROJECT_NAME="score2gp-agent-$task_slug"
 if [ "$#" -eq 0 ]; then
   set -- python -m score2gp.cli --help
 fi
-exec docker compose --file "$runtime_dir/compose.yaml" run --rm agent "$@"
+status=0
+docker compose --file "$runtime_dir/compose.yaml" run --rm agent "$@" || status=$?
+python3 "$runtime_dir/task_branch.py" verify --repo "$product_dir" --branch "$task_branch" --remote "$task_remote"
+exit "$status"

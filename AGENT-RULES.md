@@ -1,5 +1,12 @@
 # Agent Rules
 
+## Remote durability before disposal
+
+Follow `projects/score2gp/TASK_CHECKPOINT_POLICY.md` for all authored work.
+Task branches and verified GitHub checkpoints are mandatory even for unfinished
+work; PRs are deferred until ready for review. A clean worktree alone is not
+proof of durability. Never reset an ahead/diverged checkout during bootstrap.
+
 ## Bootstrapping and Agent Loading
 
 At the very start of any conversation session, the agent MUST:

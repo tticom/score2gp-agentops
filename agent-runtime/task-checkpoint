@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+mode=${SCORE2GP_SESSION_MODE:-author}
+operation=checkpoint
+if [ "$mode" = review ]; then operation=verify; fi
+exec python /usr/local/bin/task_branch.py "$operation" \
+  --repo "${SCORE2GP_REPOSITORY_DIR:?}" \
+  --branch "${SCORE2GP_TASK_BRANCH:?}" --remote "${SCORE2GP_TASK_REMOTE:?}"

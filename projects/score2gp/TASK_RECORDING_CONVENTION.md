@@ -20,6 +20,12 @@ Agent implementation actions and test plans are tracked at the Pull Request leve
 Do **not** archive chat logs or raw terminal outputs into `runs/` or `archive/` folders.
 
 ## 3. Outcomes & Evidence
+
+Before a PR exists, preserve incomplete task work and sanitized continuation
+instructions on its pushed task branch under
+[TASK_CHECKPOINT_POLICY.md](TASK_CHECKPOINT_POLICY.md). A local-only commit is
+not a handoff. Open the PR when ready for review, then attach exact-head results
+as below. Never require a PR to make a checkpoint durable.
 The outcome of a task is recorded permanently on the GitHub Pull Request itself using standard templates, ensuring outcomes remain tied to their exact code SHAs.
 
 - **Implementation Handback:** The developer agent must submit their completion state as a PR comment following the format in `templates/PR_BODY_TEMPLATE.md` and `PR_EVIDENCE_CONTRACT.md`.

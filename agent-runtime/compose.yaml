@@ -8,6 +8,11 @@ services:
     working_dir: /workspace/score2gp
     environment:
       SCORE2GP_TASK: ${SCORE2GP_TASK:?set SCORE2GP_TASK to the assigned task slug}
+      SCORE2GP_TASK_BRANCH: ${SCORE2GP_TASK_BRANCH:?set SCORE2GP_TASK_BRANCH}
+      SCORE2GP_SESSION_MODE: validation
+      SCORE2GP_REPOSITORY_DIR: /workspace/score2gp
+      GIT_AUTHOR_NAME: ${SCORE2GP_GIT_NAME:-tticom-automation}
+      GIT_AUTHOR_EMAIL: ${SCORE2GP_GIT_EMAIL:-tticomautomation@gmail.com}
       PIP_USER: "1"
       TMPDIR: /test-tmp
       PYTEST_ADDOPTS: -p no:cacheprovider
