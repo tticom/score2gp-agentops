@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "task": "replace-with-approved-task",
+  "role": "automation",
+  "mode": "author",
+  "repository": "https://github.com/tticom/score2gp.git",
+  "branch": "feat/replace-with-assigned-existing-branch",
+  "base_sha": "0000000000000000000000000000000000000000",
+  "allowed_paths": ["src/score2gp/assigned_module.py", "tests/test_assigned_module.py"],
+  "validation": [["python", "-m", "pytest", "-q", "tests/test_assigned_module.py"]],
+  "egress_hosts": ["api.github.com", "github.com"],
+  "context_repositories": [
+    {
+      "repository": "https://github.com/tticom/score2gp-agentops.git",
+      "sha": "0000000000000000000000000000000000000000"
+    }
+  ],
+  "prompt": "Replace with the approved bounded worker assignment, acceptance criteria and stop conditions."
+}

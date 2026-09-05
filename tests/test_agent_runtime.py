@@ -1,173 +1,105 @@
 import os
-import subprocess
+import json
 from pathlib import Path
+import runpy
+import subprocess
+import sys
+
+import pytest
 
 
-SCRIPT = Path(__file__).parents[1] / "agent-runtime/scripts/run-agy.sh"
+RUNTIME = Path(__file__).parents[1] / "agent-runtime"
 
 
-def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    task_worktree = tmp_path / "task-worktree"
-    skills_dir = tmp_path / "agy-skills"
-    (skills_dir / "plugins/engineering").mkdir(parents=True)
-    (skills_dir / "plugins/productivity").mkdir(parents=True)
-    (skills_dir / "plugins/engineering/plugin.json").write_text("{}")
-    (skills_dir / "plugins/productivity/plugin.json").write_text("{}")
-
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    args_file = tmp_path / "docker-args"
-    (bin_dir / "docker").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == volume ]]; then exit 0; fi\n"
-        f"printf '%s\\n' \"$@\" > {args_file}\n"
-    )
-    (bin_dir / "docker").chmod(0o755)
-    (bin_dir / "git").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == -C && $3 == worktree && $4 == add ]]; then\n"
-        f"  mkdir -p {task_worktree}; printf '%s\\n' '[project]' > {task_worktree}/pyproject.toml; mkdir -p {task_worktree}/.git\n"
-        "fi\n"
-    )
-    (bin_dir / "git").chmod(0o755)
-    (bin_dir / "gcloud").write_text(
-        "#!/usr/bin/env bash\n"
-        "printf '%s' token\n"
-    )
-    (bin_dir / "gcloud").chmod(0o755)
-    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
-    (bin_dir / "setfacl").chmod(0o755)
-
-    env = os.environ.copy()
-    env.update(
-        PATH=f"{bin_dir}:{env['PATH']}",
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK_WORKTREE=str(task_worktree),
-        SCORE2GP_TASK="test-task",
-        SCORE2GP_GCP_PROJECT_ID="test-project",
-        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
-        AGY_CONFIG_VOLUME="test-config",
-        AGY_STATE_VOLUME="test-state",
-    )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert result.returncode == 0, result.stderr
-    args = args_file.read_text().splitlines()
-    mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
-    assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
-    assert "type=bind,src=" + str(source_dir / ".git") + ",dst=" + str(source_dir / ".git") + ",readonly=false" in mount_values
-    assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
-    assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
-    assert "type=volume,src=score2gp-automation-agent-local,dst=/home/agent/.local" in mount_values
-    assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
-    assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
-    assert "GIT_AUTHOR_NAME=tticom-automation" in args
-    assert "GIT_AUTHOR_EMAIL=tticomautomation@gmail.com" in args
-    assert "GIT_COMMITTER_NAME=tticom-automation" in args
-    assert "GIT_COMMITTER_EMAIL=tticomautomation@gmail.com" in args
-    assert "SCORE2GP_TASK=test-task" in args
-    assert "SCORE2GP_AGENT_ROLE=automation" in args
-    assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
-    assert args[-2:] == ["--dangerously-skip-permissions", "--help"]
+@pytest.mark.parametrize("engine", ["agy", "codex"])
+def test_live_launcher_requires_explicit_assignment(engine):
+    env = {k: v for k, v in os.environ.items() if k != "SCORE2GP_CYCLE_ASSIGNMENT"}
+    result = subprocess.run([str(RUNTIME / "scripts" / f"run-{engine}.sh")],
+                            env=env, capture_output=True, text=True)
+    assert result.returncode == 2
+    assert "approved cycle assignment" in result.stderr
 
 
-def test_run_agy_defaults_to_role_scoped_volumes(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    task_worktree = tmp_path / "task-worktree"
-    skills_dir = tmp_path / "agy-skills"
-    for plugin in ("engineering", "productivity"):
-        (skills_dir / "plugins" / plugin).mkdir(parents=True)
-        (skills_dir / "plugins" / plugin / "plugin.json").write_text("{}")
-
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    args_file = tmp_path / "docker-args"
-    (bin_dir / "docker").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == volume ]]; then exit 0; fi\n"
-        f"printf '%s\\n' \"$@\" > {args_file}\n"
-    )
-    (bin_dir / "docker").chmod(0o755)
-    (bin_dir / "git").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == -C && $3 == worktree && $4 == add ]]; then\n"
-        f"  mkdir -p {task_worktree}; printf '%s\\n' '[project]' > {task_worktree}/pyproject.toml; mkdir -p {task_worktree}/.git\n"
-        "fi\n"
-    )
-    (bin_dir / "git").chmod(0o755)
-    (bin_dir / "gcloud").write_text(
-        "#!/usr/bin/env bash\n"
-        "printf '%s' token\n"
-    )
-    (bin_dir / "gcloud").chmod(0o755)
-    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
-    (bin_dir / "setfacl").chmod(0o755)
-
-    env = os.environ.copy()
-    env.update(
-        PATH=f"{bin_dir}:{env['PATH']}",
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK_WORKTREE=str(task_worktree),
-        SCORE2GP_TASK="test-task",
-        SCORE2GP_GCP_PROJECT_ID="test-project",
-        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
-        SCORE2GP_AGENT_ROLE="gov",
-    )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert result.returncode == 0, result.stderr
-    args = args_file.read_text().splitlines()
-    mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
-    assert "type=volume,src=score2gp-gov-agy-config,dst=/home/agent/.config" in mount_values
-    assert "type=volume,src=score2gp-gov-agy-state,dst=/home/agent/.gemini" in mount_values
-    assert "SCORE2GP_AGENT_ROLE=gov" in args
-
-
-def test_run_agy_rejects_unknown_agent_role(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    skills_dir = tmp_path / "agy-skills"
-    for plugin in ("engineering", "productivity"):
-        (skills_dir / "plugins" / plugin).mkdir(parents=True)
-        (skills_dir / "plugins" / plugin / "plugin.json").write_text("{}")
-
-    env = os.environ.copy()
-    env.update(
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK="test-task",
-        SCORE2GP_AGENT_ROLE="reviewer",
-    )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
+@pytest.mark.parametrize("engine", ["agy", "codex"])
+def test_live_launcher_passes_engine_and_assignment_to_controller(tmp_path, engine):
+    assignment = tmp_path / "assignment.json"
+    assignment.write_text('{}')
+    result = subprocess.run([str(RUNTIME / "scripts" / f"run-{engine}.sh"),
+                             "--assignment", str(assignment)], capture_output=True, text=True)
     assert result.returncode == 64
-    assert "SCORE2GP_AGENT_ROLE must be automation or gov" in result.stderr
+    assert "assignment is missing required fields" in result.stderr
+
+
+@pytest.fixture
+def worker_entrypoint(monkeypatch):
+    """Execute worker.py itself; replace only container files and client process boundary."""
+    state = {"mode": "author", "calls": [], "exit_code": 0, "plugin_failure": None}
+    original_read = Path.read_text
+
+    def read(path, *args, **kwargs):
+        if path == Path("/assignment.json"):
+            return json.dumps({"prompt": "Perform the bounded test task.",
+                               "branch": "feat/assigned", "mode": state["mode"]})
+        if path == Path("/run/secrets/github-token"):
+            return "test-token\n"
+        return original_read(path, *args, **kwargs)
+
+    def client(argv):
+        state["calls"].append(argv)
+        assert os.environ["GH_TOKEN"] == "test-token"
+        assert os.environ["GIT_TERMINAL_PROMPT"] == "0"
+        assert "GIT_ASKPASS" not in os.environ
+        is_plugin = argv[:3] == ["agy", "plugin", "install"]
+        status = (31 if argv[-1].endswith(str(state["plugin_failure"])) else 0) if is_plugin else state["exit_code"]
+        return subprocess.CompletedProcess(argv, status)
+
+    monkeypatch.setattr(Path, "read_text", read)
+    monkeypatch.setattr(subprocess, "run", client)
+    monkeypatch.setenv("SCORE2GP_CYCLE_ID", "test-cycle")
+    monkeypatch.setenv("GH_TOKEN", "initial-test-token")
+    monkeypatch.setenv("GIT_TERMINAL_PROMPT", "initial")
+    monkeypatch.delenv("GIT_ASKPASS", raising=False)
+
+    def execute(engine, *extra):
+        monkeypatch.setattr(sys, "argv", ["worker.py", engine, *extra])
+        with pytest.raises(SystemExit) as result:
+            runpy.run_path(str(RUNTIME / "worker.py"), run_name="__main__")
+        return result.value.code
+
+    return execute, state
+
+
+@pytest.mark.parametrize("engine", ["agy", "codex"])
+@pytest.mark.parametrize("mode", ["author", "reviewer"])
+@pytest.mark.parametrize("exit_code", [0, 23])
+def test_worker_executes_bounded_client_and_propagates_status(worker_entrypoint, engine, mode, exit_code):
+    execute, state = worker_entrypoint
+    state.update(mode=mode, exit_code=exit_code)
+    assert execute(engine, "--model", "test-model") == exit_code
+    if engine == "agy":
+        assert state["calls"][:-1] == [
+            ["agy", "plugin", "install", f"/workspace/agy-skills/plugins/{plugin}"]
+            for plugin in ("engineering", "productivity")]
+        assert state["calls"][-1][:-1] == ["agy", "--dangerously-skip-permissions",
+                                               "--model", "test-model", "--print"]
+    else:
+        assert len(state["calls"]) == 1
+        assert state["calls"][0][:-1] == ["codex", "exec", "--ephemeral",
+            "--dangerously-bypass-approvals-and-sandbox", "--add-dir", "/workspace/agy-skills",
+            "--model", "test-model"]
+    prompt = state["calls"][-1][-1]
+    assert prompt.startswith("Perform the bounded test task.")
+    assert "Cycle test-cycle: remain on feat/assigned." in prompt
+    assert "Do not push or switch branches." in prompt
+    assert "do not select another task" in prompt
+    assert ("Source is read-only" in prompt) == (mode == "reviewer")
+    assert ("<!-- score2gp-cycle:test-cycle -->" in prompt) == (mode == "reviewer")
+
+
+@pytest.mark.parametrize("plugin", ["engineering", "productivity"])
+def test_worker_stops_before_agent_invocation_on_plugin_failure(worker_entrypoint, plugin):
+    execute, state = worker_entrypoint
+    state["plugin_failure"] = plugin
+    assert execute("agy") == 31
+    assert len(state["calls"]) == (1 if plugin == "engineering" else 2)
+    assert all(argv[:3] == ["agy", "plugin", "install"] for argv in state["calls"])

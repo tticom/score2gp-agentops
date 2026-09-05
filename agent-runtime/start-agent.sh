@@ -27,6 +27,12 @@ fi
 
 export SCORE2GP_PRODUCT_DIR="$product_dir"
 export SCORE2GP_TASK="$task_slug"
+export SCORE2GP_HOST_UID=$(id -u)
+export SCORE2GP_HOST_GID=$(id -g)
+if [ "$SCORE2GP_HOST_UID" = 0 ]; then
+  echo "error: run as the distribution's non-root owner" >&2
+  exit 64
+fi
 export COMPOSE_PROJECT_NAME="score2gp-agent-$task_slug"
 if [ "$#" -eq 0 ]; then
   set -- python -m score2gp.cli --help
