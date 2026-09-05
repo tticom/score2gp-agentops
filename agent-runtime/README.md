@@ -180,6 +180,11 @@ before running governance dispatch, because dispatch uses `gh` to inspect live
 state. This means the only interactive authentication required is `gcloud
 auth login`; the token remains temporary and is never written to `gh`'s
 credential store.
+
+Interactive WSL launches pass the terminal through to the AGY worker for its
+first-run Google sign-in. Unattended launches keep stdin closed and fail if
+AGY authentication has not already been completed in the role-scoped local
+auth directory.
 The proxy policy therefore constrains worker egress, not all WSL host traffic.
 
 ## Verification and offline utility

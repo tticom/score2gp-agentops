@@ -5,6 +5,9 @@ if [ "${SCORE2GP_INSTANCE_STARTUP_DONE:-0}" = 1 ]; then
   exit 0
 fi
 export SCORE2GP_INSTANCE_STARTUP_DONE=1
+if [ -t 0 ] && [ -t 1 ]; then
+  export SCORE2GP_INTERACTIVE_AUTH=1
+fi
 
 workspace_root=${SCORE2GP_WORKSPACE_ROOT:-"$HOME/work/score2gp-workspace"}
 config_file=${SCORE2GP_RUNTIME_ENV_FILE:-"$HOME/.config/score2gp/runtime.env"}
