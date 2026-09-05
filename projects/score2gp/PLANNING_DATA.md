@@ -1,5 +1,26 @@
 # Approved Task Queue: score2gp
 
+## Current planning proposal — 2026-09-05
+
+The maintainer requested a native Lesson 3 working slice and preservation of
+the full product requirement. See
+[L3-NATIVE requirement and delivery plan](plans/2026-09-05-lesson3-native-working-slice.md)
+and [L3-00 proposed prompt](prompts/next/l3-00-native-source-contract-and-acceptance.md).
+
+Status: PROPOSED FOR PROMOTION after disposition of REC-04 / product PR #459.
+Recommended next task: L3-00, ahead of generic REC-05. One full original PDF
+through native recognition, precise compilation and real Guitar Pro acceptance
+is the milestone; smaller passages are checkpoints. Audiveris/vendor selection
+is settled, and the broader native programme is retained.
+
+`ORCHESTRATION_STATE.json` is the sole machine execution authority. This
+proposal does not alter its current task or next-task proposal. Governance
+must reconcile those fields when promoting L3-00; no parallel product task is
+authorized by this planning entry. The older queue below is historical context
+and must not override the machine authority or this latest planning direction.
+
+## Historical queue
+
 This file contains ordered, human-approved, bounded task prompts.
 
 `ACTIVE_TASK.md` remains the immediate execution contract. Agents may promote the next eligible approved queue item into `ACTIVE_TASK.md` without further human approval only when the previous task has been human-merged or explicitly human-closed, prerequisites are satisfied, and the task remains within its written scope.
