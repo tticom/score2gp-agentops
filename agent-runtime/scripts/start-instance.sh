@@ -25,6 +25,8 @@ case "${WSL_DISTRO_NAME:-}" in
 esac
 
 agentops_dir="$workspace_root/score2gp-agentops"
+gcp_project=${SCORE2GP_GCP_PROJECT_ID:-${PROJECT_ID:-}}
+github_secret=${SCORE2GP_GITHUB_SECRET_NAME:-${SECRET_NAME:-}}
 # Updating the controller is an explicit host maintenance operation. Starting
 # a shell must not reset repositories, switch task branches or touch old worktrees.
 cycle_assignment=${SCORE2GP_CYCLE_ASSIGNMENT:-}
@@ -34,7 +36,24 @@ if [ -z "$cycle_assignment" ]; then
     echo "score2gp: idle; set SCORE2GP_EGRESS_HOSTS before starting an assigned cycle"
     exit 0
   fi
+  if [ -z "$gcp_project" ]; then
+    echo "error: SCORE2GP_GCP_PROJECT_ID is required for dispatch" >&2
+    exit 64
+  fi
+  github_secret=${github_secret:-score2gp-github-$role-token}
+  command -v gcloud >/dev/null 2>&1 || { echo "error: gcloud is required" >&2; exit 69; }
   mkdir -p "$HOME/.config/score2gp"
+  dispatch_secret=$(mktemp "$HOME/.config/score2gp/dispatch-secret.XXXXXX")
+  chmod 600 "$dispatch_secret"
+  trap 'rm -f "$dispatch_secret"' EXIT INT TERM
+  if ! gcloud secrets versions access latest --secret="$github_secret" --project="$gcp_project" \
+      | tr -d '\r\n' > "$dispatch_secret"; then
+    echo "error: gcloud could not read the GitHub secret; run gcloud auth login" >&2
+    exit 77
+  fi
+  test -s "$dispatch_secret" || { echo "error: GitHub secret is empty" >&2; exit 74; }
+  export GH_TOKEN=$(<"$dispatch_secret")
+  export GIT_TERMINAL_PROMPT=0
   generated_assignment=$(mktemp "$HOME/.config/score2gp/cycle.XXXXXX.json")
   rm -f "$generated_assignment"
   trap 'rm -f "$generated_assignment"' EXIT INT TERM
@@ -44,8 +63,8 @@ if [ -z "$cycle_assignment" ]; then
   cycle_assignment=$generated_assignment
 fi
 export SCORE2GP_CYCLE_ASSIGNMENT="$cycle_assignment"
-export SCORE2GP_GCP_PROJECT_ID="${SCORE2GP_GCP_PROJECT_ID:-}"
-export SCORE2GP_GITHUB_SECRET_NAME="${SCORE2GP_GITHUB_SECRET_NAME:-score2gp-github-$role-token}"
+export SCORE2GP_GCP_PROJECT_ID="$gcp_project"
+export SCORE2GP_GITHUB_SECRET_NAME="$github_secret"
 cd "$agentops_dir"
 if [ ! -x "$agentops_dir/agent-runtime/scripts/$launcher" ]; then
   echo "score2gp: $launcher is not installed; run bootstrap-instance.sh" >&2
