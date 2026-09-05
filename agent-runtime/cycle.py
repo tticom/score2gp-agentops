@@ -449,6 +449,8 @@ def execute(data, engine, extra):
             with (folder / f"validation-{index}.log").open("w") as output:
                 result = subprocess.run(validation + [image, *argv[1:]], stdout=output, stderr=subprocess.STDOUT)
             receipt["validation"].append({"argv": argv, "exit_code": result.returncode})
+        if any(v["exit_code"] != 0 for v in receipt["validation"]):
+            raise CycleError("validation failed; see retained validation logs")
         if data["mode"] == "author":
             receipt["status"] = "checkpoint"
             checkpoint_receipt = {"cycle_id": cycle_id, "task": data["task"], "base_sha": data["base_sha"],
@@ -457,8 +459,6 @@ def execute(data, engine, extra):
                                   "context_repositories": data.get("context_repositories", [])}
             receipt["published_head"] = checkpoint(repo, data["repository"], data["branch"], data["base_sha"],
                                                    data["allowed_paths"], checkpoint_receipt, login, email, env)
-            if any(v["exit_code"] != 0 for v in receipt["validation"]):
-                raise CycleError("validation failed; checkpoint published, clone retained")
             slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
             pr_info = ensure_pull_request(slug, data["branch"], receipt["published_head"],
                                           data["task"], data["prompt"], env)
