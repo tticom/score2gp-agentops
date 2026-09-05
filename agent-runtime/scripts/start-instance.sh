@@ -27,11 +27,23 @@ esac
 agentops_dir="$workspace_root/score2gp-agentops"
 # Updating the controller is an explicit host maintenance operation. Starting
 # a shell must not reset repositories, switch task branches or touch old worktrees.
-if [ -z "${SCORE2GP_CYCLE_ASSIGNMENT:-}" ]; then
-  echo "score2gp: idle; set SCORE2GP_CYCLE_ASSIGNMENT to an approved branch assignment"
-  exit 0
+cycle_assignment=${SCORE2GP_CYCLE_ASSIGNMENT:-}
+generated_assignment=
+if [ -z "$cycle_assignment" ]; then
+  if [ -z "${SCORE2GP_EGRESS_HOSTS:-}" ]; then
+    echo "score2gp: idle; set SCORE2GP_EGRESS_HOSTS before starting an assigned cycle"
+    exit 0
+  fi
+  mkdir -p "$HOME/.config/score2gp"
+  generated_assignment=$(mktemp "$HOME/.config/score2gp/cycle.XXXXXX.json")
+  rm -f "$generated_assignment"
+  trap 'rm -f "$generated_assignment"' EXIT INT TERM
+  python3 "$agentops_dir/agent-runtime/assignment_adapter.py" \
+    --role "$role" --agentops "$agentops_dir" --product "$workspace_root/score2gp" \
+    --output "$generated_assignment"
+  cycle_assignment=$generated_assignment
 fi
-export SCORE2GP_CYCLE_ASSIGNMENT
+export SCORE2GP_CYCLE_ASSIGNMENT="$cycle_assignment"
 export SCORE2GP_GCP_PROJECT_ID="${SCORE2GP_GCP_PROJECT_ID:-}"
 export SCORE2GP_GITHUB_SECRET_NAME="${SCORE2GP_GITHUB_SECRET_NAME:-score2gp-github-$role-token}"
 cd "$agentops_dir"
@@ -44,4 +56,13 @@ if ! docker image inspect "$image" >/dev/null 2>&1; then
   exit 69
 fi
 
+if [ -n "$generated_assignment" ]; then
+  set +e
+  SCORE2GP_AGENT_ROLE="$role" "./agent-runtime/scripts/$launcher"
+  status=$?
+  set -e
+  rm -f "$generated_assignment"
+  trap - EXIT INT TERM
+  exit "$status"
+fi
 SCORE2GP_AGENT_ROLE="$role" exec "./agent-runtime/scripts/$launcher"

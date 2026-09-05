@@ -61,30 +61,24 @@ Python 3, Git, `gh`, and authenticated host `gcloud` available:
 Bootstrap synchronizes only clean controller and skills clones already on
 the configured branch, using fast-forward-only updates. It never updates the
 legacy product/sandbox clones, resets a branch, or installs ACL tools.
-Shell startup does not run bootstrap or update repositories. With no
-`SCORE2GP_CYCLE_ASSIGNMENT`, the instance reports `idle` and opens a shell.
+Shell startup does not reset old source worktrees. If no assignment path is
+set, it asks the existing role-specific `go` or `got` helper for the current
+authorized assignment and converts it to the disposable-cycle envelope. You
+do not hand-author JSON. It fails closed on blocked, stale, missing or
+unvalidated authority. If `SCORE2GP_EGRESS_HOSTS` is absent it remains idle.
 A running WSL distribution does not imply a running Docker worker.
-With an assignment present, a missing launcher or runtime image returns exit
-status 69 rather than reporting a successful startup.
 
-Create a host-owned JSON assignment using [assignment.example.json](assignment.example.json).
-The example has placeholder SHAs and a GitHub-only network policy and is not
-an approved task. The orchestrator or maintainer must supply the actual task,
-permitted paths, commands, existing branch head, pinned context repositories,
-and required agent API/authentication endpoints. This envelope transports
-existing task authority; it does not approve a task or select a next task.
-The initial implementation deliberately does not infer assignments from
-`ACTIVE_TASK.md`, a stale local sandbox branch, or a default `sandbox` slug.
+Set only the host configuration needed for automatic dispatch:
 
 ```bash
-export SCORE2GP_CYCLE_ASSIGNMENT="$HOME/.config/score2gp/cycle.json"
 export SCORE2GP_GCP_PROJECT_ID=your-project
-export SCORE2GP_AGENT_ROLE=automation
 export SCORE2GP_GITHUB_SECRET_NAME=score2gp-github-automation-token
-./agent-runtime/scripts/run-agy.sh
+export SCORE2GP_EGRESS_HOSTS="api.github.com github.com antigravity.google"
 ```
 
-Use `run-codex.sh` for Codex. Each invocation runs one prompt to completion
+Then `wsl -d Ubuntu-Automation` starts one generated assignment. Use the
+analogous Gov settings with the Gov token and the provider hosts required by
+the reviewer CLI. Use `run-codex.sh` for Codex. Each invocation runs one prompt to completion
 (AGY print mode or ephemeral Codex exec), then validates/checkpoints; it does
 not leave an interactive session or start another cycle. Optional agent CLI
 flags follow the launcher command. Update the assignment's `base_sha` from
