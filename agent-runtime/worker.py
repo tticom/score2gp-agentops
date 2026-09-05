@@ -9,7 +9,7 @@ import sys
 
 def main():
     data = json.loads(Path("/assignment.json").read_text())
-    os.environ["GH_TOKEN"] = Path("/run/secrets/github-token").read_text().strip()
+    os.environ["GH_TOKEN"] = "".join(Path("/run/secrets/github-token").read_text().split())
     os.environ["GIT_TERMINAL_PROMPT"] = "0"
     prompt = data["prompt"] + (
         f"\nCycle {os.environ['SCORE2GP_CYCLE_ID']}: remain on {data['branch']}. "
@@ -25,7 +25,8 @@ def main():
             result = subprocess.run(["agy", "plugin", "install", f"/workspace/agy-skills/plugins/{plugin}"])
             if result.returncode:
                 return result.returncode
-        command = ["agy", "--dangerously-skip-permissions", *extra, "--print", prompt]
+        timeout = os.environ.get("SCORE2GP_AGY_PRINT_TIMEOUT", "30m")
+        command = ["agy", "--dangerously-skip-permissions", *extra, "--print-timeout", timeout, "--print", prompt]
     else:
         command = ["codex", "exec", "--ephemeral", "--dangerously-bypass-approvals-and-sandbox", "--add-dir", "/workspace/agy-skills", *extra, prompt]
     return subprocess.run(command).returncode

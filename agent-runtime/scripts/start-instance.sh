@@ -50,7 +50,7 @@ if [ -z "$cycle_assignment" ]; then
   chmod 600 "$dispatch_secret"
   trap 'rm -f "$dispatch_secret"' EXIT INT TERM
   if ! gcloud secrets versions access latest --secret="$github_secret" --project="$gcp_project" \
-      | tr -d '[:space:]' > "$dispatch_secret"; then
+      | tr -cd '[:graph:]' > "$dispatch_secret"; then
     echo "error: gcloud could not read the GitHub secret; run gcloud auth login" >&2
     exit 77
   fi
