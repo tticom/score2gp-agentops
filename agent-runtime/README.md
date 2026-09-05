@@ -11,9 +11,22 @@ Use `scripts/bootstrap-instance.sh` and the appropriate
 Bootstrap only fast-forwards clean checkouts already on the requested branch;
 it refuses dirty, ahead, or differently checked-out repositories.
 The host needs Docker, Git, Python 3, gh, gcloud, and setfacl (Ubuntu `acl`).
-Authenticate gcloud and set `SCORE2GP_GCP_PROJECT_ID` and
+Authenticate gcloud once on the persistent WSL host and set
+`SCORE2GP_GCP_PROJECT_ID` and
 `SCORE2GP_GITHUB_SECRET_NAME` for the role. Secrets are not baked into images
 or stored in Docker volumes.
+
+```bash
+./agent-runtime/scripts/gcloud-login.sh
+```
+
+This stores gcloud's refresh credentials in the WSL user's local gcloud
+configuration and removes group/other permissions from that configuration.
+On an interactive launch, the runtime starts this browser login automatically
+when stored credentials are absent or expired. Set
+`SCORE2GP_GCLOUD_AUTO_LOGIN=0` to require the explicit command above. A
+non-interactive launch fails with a login instruction instead of attempting to
+put Google credentials in a worker container.
 
 ## Start an author session
 

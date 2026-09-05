@@ -41,9 +41,7 @@ cleanup() { rm -f -- "$secret_file"; }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
-gcloud secrets versions access latest --secret="$secret_name" --project="$gcp_project" | tr -d '\r\n' > "$secret_file"
-test -s "$secret_file" || { echo 'error: empty GitHub secret' >&2; exit 74; }
-chmod 600 "$secret_file"
+"$runtime_dir/scripts/fetch-github-secret.sh" "$secret_file" "$gcp_project" "$secret_name"
 setfacl -m u:10001:r "$secret_file"
 export GH_TOKEN=$(<"$secret_file")
 export GIT_ASKPASS="$runtime_dir/github-askpass.sh" GIT_TERMINAL_PROMPT=0
