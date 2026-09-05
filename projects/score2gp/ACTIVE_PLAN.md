@@ -1,5 +1,23 @@
 # Active Plan: Native PDF-to-GP and Audiveris Retirement
 
+## Immediate working-slice requirement
+
+The maintainer's 2026-09-05 direction is captured in
+[Native Score2GP requirement and Lesson 3 working slice](plans/2026-09-05-lesson3-native-working-slice.md).
+The immediate goal is the complete original `Lesson-3.pdf` converted through
+native recognition to a faithful GP file with independent semantic and Guitar
+Pro open/play/save/reopen acceptance. Audiveris replacement is a settled
+decision. The full native programme below remains the ultimate requirement.
+
+The proposed first task is
+[L3-00: native source contract and red acceptance](prompts/next/l3-00-native-source-contract-and-acceptance.md).
+This is a planning priority, not a replacement for the current machine task:
+REC-04 / PR #459 must be explicitly resolved before promotion. The Lesson 3
+plan defers the generic REC sequence in favour of a complete vertical slice;
+it does not mark any unfinished implementation complete.
+
+## Full programme
+
 The active product direction is defined by:
 
 `projects/score2gp/plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md`
