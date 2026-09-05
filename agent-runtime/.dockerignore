@@ -5,3 +5,5 @@
 !entrypoint.sh
 !github-askpass.sh
 !requirements.txt
+!task_branch.py
+!task-checkpoint

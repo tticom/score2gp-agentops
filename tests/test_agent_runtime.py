@@ -1,173 +1,142 @@
+import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
 
-SCRIPT = Path(__file__).parents[1] / "agent-runtime/scripts/run-agy.sh"
+RUNTIME = Path(__file__).parents[1] / "agent-runtime"
 
 
-def test_run_agy_uses_valid_long_form_bind_mount(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    task_worktree = tmp_path / "task-worktree"
-    skills_dir = tmp_path / "agy-skills"
-    (skills_dir / "plugins/engineering").mkdir(parents=True)
-    (skills_dir / "plugins/productivity").mkdir(parents=True)
-    (skills_dir / "plugins/engineering/plugin.json").write_text("{}")
-    (skills_dir / "plugins/productivity/plugin.json").write_text("{}")
+def git(repo, *args, env=None):
+    return subprocess.run(["git", "-C", str(repo), *args], env=env, check=True, capture_output=True, text=True).stdout.strip()
+
+
+@pytest.fixture
+def launch_env(tmp_path):
+    env = os.environ.copy()
+    config = tmp_path / "gitconfig"
+    config.write_text('[user]\n name = Test Worker\n email = worker@example.invalid\n')
+    env.update(GIT_CONFIG_GLOBAL=str(config), GIT_CONFIG_NOSYSTEM="1")
+    source = tmp_path / "score2gp"
+    source.mkdir()
+    git(source, "init", "-b", "main", env=env)
+    (source / ".gitignore").write_text("*.egg-info/\n")
+    git(source, "add", ".gitignore", env=env)
+    git(source, "commit", "-m", "base", env=env)
+    remote = tmp_path / "remote.git"
+    git(source, "init", "--bare", str(remote), env=env)
+    git(source, "remote", "add", "origin", str(remote), env=env)
+    git(source, "push", "origin", "main", env=env)
+    git(remote, "symbolic-ref", "HEAD", "refs/heads/main", env=env)
+    github_url = "https://github.com/tticom/score2gp.git"
+    git(source, "remote", "set-url", "origin", github_url, env=env)
 
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    args_file = tmp_path / "docker-args"
-    (bin_dir / "docker").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == volume ]]; then exit 0; fi\n"
-        f"printf '%s\\n' \"$@\" > {args_file}\n"
-    )
-    (bin_dir / "docker").chmod(0o755)
+    real_git = shutil.which("git")
+    # Only transport is substituted. All Git branch/ref/clone operations are real.
     (bin_dir / "git").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == -C && $3 == worktree && $4 == add ]]; then\n"
-        f"  mkdir -p {task_worktree}; printf '%s\\n' '[project]' > {task_worktree}/pyproject.toml; mkdir -p {task_worktree}/.git\n"
-        "fi\n"
+        "#!/usr/bin/env python3\nimport os,sys\n"
+        f"real={real_git!r}\n"
+        f"mapping=['-c', 'url.{remote}.insteadOf={github_url}']\n"
+        "args=sys.argv[1:]\n"
+        "if 'get-url' in args: mapping=[]\n"
+        "os.execv(real,[real,*mapping,*args])\n"
     )
-    (bin_dir / "git").chmod(0o755)
-    (bin_dir / "gcloud").write_text(
-        "#!/usr/bin/env bash\n"
-        "printf '%s' token\n"
+    (bin_dir / "gcloud").write_text("#!/bin/sh\nprintf %s test-token\n")
+    (bin_dir / "gh").write_text("#!/bin/sh\nprintf '%s\\n' \"$TEST_GITHUB_LOGIN\"\n")
+    (bin_dir / "setfacl").write_text("#!/bin/sh\nexit 0\n")
+    (bin_dir / "docker").write_text(
+        "#!/usr/bin/env python3\nimport os,sys,json\nfrom pathlib import Path\n"
+        "args=sys.argv[1:]\n"
+        "with open(os.environ['TEST_DOCKER_LOG'],'a') as f: f.write(json.dumps(args)+'\\n')\n"
+        "if '--name' in args:\n"
+        " if os.environ.get('TEST_DIRTY') == '1':\n"
+        "  Path(os.environ['SCORE2GP_TASK_WORKTREE'],'unfinished.txt').write_text('unsaved work')\n"
+        " sys.exit(int(os.environ.get('TEST_WORKER_EXIT','0')))\n"
     )
-    (bin_dir / "gcloud").chmod(0o755)
-    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
-    (bin_dir / "setfacl").chmod(0o755)
-
-    env = os.environ.copy()
+    for file in bin_dir.iterdir():
+        file.chmod(0o755)
+    skills = tmp_path / "skills"
+    for plugin in ["engineering", "productivity"]:
+        folder = skills / "plugins" / plugin
+        folder.mkdir(parents=True)
+        (folder / "plugin.json").write_text("{}")
     env.update(
         PATH=f"{bin_dir}:{env['PATH']}",
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK_WORKTREE=str(task_worktree),
-        SCORE2GP_TASK="test-task",
+        SCORE2GP_PRODUCT_DIR=str(source),
+        SCORE2GP_TASK_WORKTREE=str(tmp_path / "worker"),
+        SCORE2GP_TASK="example",
+        SCORE2GP_TASK_BRANCH="feat/example",
         SCORE2GP_GCP_PROJECT_ID="test-project",
-        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
-        AGY_CONFIG_VOLUME="test-config",
-        AGY_STATE_VOLUME="test-state",
+        SCORE2GP_AGENT_ROLE="automation",
+        AGY_SKILLS_DIR=str(skills),
+        TEST_GITHUB_LOGIN="tticom-automation",
+        TEST_DOCKER_LOG=str(tmp_path / "docker.jsonl"),
     )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert result.returncode == 0, result.stderr
-    args = args_file.read_text().splitlines()
-    mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
-    assert "type=bind,src=" + str(task_worktree) + ",dst=/workspace/score2gp,readonly=false" in mount_values
-    assert "type=bind,src=" + str(source_dir / ".git") + ",dst=" + str(source_dir / ".git") + ",readonly=false" in mount_values
-    assert "type=volume,src=test-config,dst=/home/agent/.config" in mount_values
-    assert "type=volume,src=test-state,dst=/home/agent/.gemini" in mount_values
-    assert "type=volume,src=score2gp-automation-agent-local,dst=/home/agent/.local" in mount_values
-    assert "type=bind,src=" + str(skills_dir) + ",dst=/workspace/agy-skills,readonly" in mount_values
-    assert any(value.endswith(",dst=/run/secrets/github-token,readonly") for value in mount_values)
-    assert "GIT_AUTHOR_NAME=tticom-automation" in args
-    assert "GIT_AUTHOR_EMAIL=tticomautomation@gmail.com" in args
-    assert "GIT_COMMITTER_NAME=tticom-automation" in args
-    assert "GIT_COMMITTER_EMAIL=tticomautomation@gmail.com" in args
-    assert "SCORE2GP_TASK=test-task" in args
-    assert "SCORE2GP_AGENT_ROLE=automation" in args
-    assert args[args.index("--entrypoint") + 1] == "/usr/local/bin/entrypoint.sh"
-    assert args[-2:] == ["--dangerously-skip-permissions", "--help"]
+    for name in ["SCORE2GP_REPOSITORY_DIR", "SCORE2GP_SESSION_MODE", "AGY_CONFIG_VOLUME",
+                 "AGY_STATE_VOLUME", "AGENT_LOCAL_VOLUME", "CODEX_HOME_VOLUME"]:
+        env.pop(name, None)
+    return env, remote
 
 
-def test_run_agy_defaults_to_role_scoped_volumes(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    task_worktree = tmp_path / "task-worktree"
-    skills_dir = tmp_path / "agy-skills"
-    for plugin in ("engineering", "productivity"):
-        (skills_dir / "plugins" / plugin).mkdir(parents=True)
-        (skills_dir / "plugins" / plugin / "plugin.json").write_text("{}")
-
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    args_file = tmp_path / "docker-args"
-    (bin_dir / "docker").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == volume ]]; then exit 0; fi\n"
-        f"printf '%s\\n' \"$@\" > {args_file}\n"
-    )
-    (bin_dir / "docker").chmod(0o755)
-    (bin_dir / "git").write_text(
-        "#!/usr/bin/env bash\n"
-        "if [[ $1 == -C && $3 == worktree && $4 == add ]]; then\n"
-        f"  mkdir -p {task_worktree}; printf '%s\\n' '[project]' > {task_worktree}/pyproject.toml; mkdir -p {task_worktree}/.git\n"
-        "fi\n"
-    )
-    (bin_dir / "git").chmod(0o755)
-    (bin_dir / "gcloud").write_text(
-        "#!/usr/bin/env bash\n"
-        "printf '%s' token\n"
-    )
-    (bin_dir / "gcloud").chmod(0o755)
-    (bin_dir / "setfacl").write_text("#!/usr/bin/env bash\nexit 0\n")
-    (bin_dir / "setfacl").chmod(0o755)
-
-    env = os.environ.copy()
-    env.update(
-        PATH=f"{bin_dir}:{env['PATH']}",
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK_WORKTREE=str(task_worktree),
-        SCORE2GP_TASK="test-task",
-        SCORE2GP_GCP_PROJECT_ID="test-project",
-        SCORE2GP_GITHUB_SECRET_NAME="test-secret",
-        SCORE2GP_AGENT_ROLE="gov",
-    )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert result.returncode == 0, result.stderr
-    args = args_file.read_text().splitlines()
-    mount_values = [value for index, value in enumerate(args) if args[index - 1] == "--mount"]
-    assert "type=volume,src=score2gp-gov-agy-config,dst=/home/agent/.config" in mount_values
-    assert "type=volume,src=score2gp-gov-agy-state,dst=/home/agent/.gemini" in mount_values
-    assert "SCORE2GP_AGENT_ROLE=gov" in args
+@pytest.mark.parametrize("client,role,login", [
+    ("agy", "automation", "tticom-automation"),
+    ("agy", "gov", "tticomgov-code"),
+    ("codex", "codex", "tticom-codex"),
+])
+def test_live_launcher_has_durable_branch_and_isolated_mounts(launch_env, client, role, login):
+    env, remote = launch_env
+    env.update(SCORE2GP_AGENT_ROLE=role, TEST_GITHUB_LOGIN=login)
+    result = subprocess.run([str(RUNTIME / "scripts" / f"run-{client}.sh"), "--help"],
+                            env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    calls = [json.loads(line) for line in Path(env["TEST_DOCKER_LOG"]).read_text().splitlines()]
+    args = next(call for call in calls if "--name" in call)
+    mounts = [args[i+1] for i, value in enumerate(args) if value == "--mount"]
+    worker = Path(env["SCORE2GP_TASK_WORKTREE"])
+    assert f"type=bind,src={worker},dst=/workspace/score2gp" in mounts
+    assert not any(str(Path(env["SCORE2GP_PRODUCT_DIR"]) / ".git") in value for value in mounts)
+    assert (worker / ".git").is_dir()
+    assert "--rm" not in args
+    assert "--cap-drop" in args and "ALL" in args
+    assert "no-new-privileges:true" in args
+    assert f"GIT_AUTHOR_NAME={login}" in args
+    assert "SCORE2GP_TASK_BRANCH=feat/example" in args
+    assert git(remote, "rev-parse", "refs/heads/feat/example", env=env) == git(worker, "rev-parse", "HEAD", env=env)
+    assert any(call[0] == "rm" for call in calls)
+    secret_mount = next(value for value in mounts if "dst=/run/secrets/github-token" in value)
+    secret_path = secret_mount.split("src=")[1].split(",")[0]
+    assert not Path(secret_path).exists()
 
 
-def test_run_agy_rejects_unknown_agent_role(tmp_path):
-    source_dir = tmp_path / "product"
-    source_dir.mkdir()
-    (source_dir / "pyproject.toml").write_text("[project]\nname = 'test-product'\n")
-    (source_dir / ".git").mkdir()
-    skills_dir = tmp_path / "agy-skills"
-    for plugin in ("engineering", "productivity"):
-        (skills_dir / "plugins" / plugin).mkdir(parents=True)
-        (skills_dir / "plugins" / plugin / "plugin.json").write_text("{}")
+@pytest.mark.parametrize("dirty,worker_exit,expected", [(True, 0, 75), (False, 9, 9)])
+def test_failed_session_is_not_disposed(launch_env, dirty, worker_exit, expected):
+    env, _ = launch_env
+    env.update(TEST_DIRTY=str(int(dirty)), TEST_WORKER_EXIT=str(worker_exit))
+    result = subprocess.run([str(RUNTIME / "scripts/run-agy.sh")], env=env, capture_output=True, text=True)
+    assert result.returncode == expected
+    assert "RECOVERY_REQUIRED" in result.stderr
+    calls = [json.loads(line) for line in Path(env["TEST_DOCKER_LOG"]).read_text().splitlines()]
+    assert not any(call[0] == "rm" for call in calls)
+    if dirty:
+        assert (Path(env["SCORE2GP_TASK_WORKTREE"]) / "unfinished.txt").read_text() == "unsaved work"
 
-    env = os.environ.copy()
-    env.update(
-        SCORE2GP_PRODUCT_DIR=str(source_dir),
-        AGY_SKILLS_DIR=str(skills_dir),
-        SCORE2GP_TASK="test-task",
-        SCORE2GP_AGENT_ROLE="reviewer",
-    )
-    result = subprocess.run(
-        [str(SCRIPT), "--help"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
 
-    assert result.returncode == 64
-    assert "SCORE2GP_AGENT_ROLE must be automation or gov" in result.stderr
+def test_identity_mismatch_prevents_clone_and_docker(launch_env):
+    env, _ = launch_env
+    env["TEST_GITHUB_LOGIN"] = "wrong-account"
+    result = subprocess.run([str(RUNTIME / "scripts/run-agy.sh")], env=env, capture_output=True, text=True)
+    assert result.returncode == 77
+    assert not Path(env["SCORE2GP_TASK_WORKTREE"]).exists()
+    assert not Path(env["TEST_DOCKER_LOG"]).exists()
+
+
+def test_missing_task_branch_prevents_launch(launch_env):
+    env, _ = launch_env
+    env.pop("SCORE2GP_TASK_BRANCH")
+    result = subprocess.run([str(RUNTIME / "scripts/run-codex.sh")], env=env, capture_output=True, text=True)
+    assert result.returncode != 0
+    assert not Path(env["TEST_DOCKER_LOG"]).exists()

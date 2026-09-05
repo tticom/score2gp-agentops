@@ -42,8 +42,11 @@ if [ -f "$product_dir/pyproject.toml" ]; then
 fi
 echo 'Task policy: work on the assigned branch; commit safe explicit paths and run task-checkpoint after each meaningful change and before ending. PRs are a separate readiness step.'
 status=0
-"$@" &
+# Explicit redirection preserves interactive input for an asynchronous child.
+exec 3<&0
+"$@" <&3 &
 child=$!
+exec 3<&-
 trap 'kill -TERM "$child" 2>/dev/null || true; wait "$child" 2>/dev/null || true; exit 143' TERM
 trap 'kill -INT "$child" 2>/dev/null || true; wait "$child" 2>/dev/null || true; exit 130' INT
 wait "$child" || status=$?
