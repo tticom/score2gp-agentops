@@ -16,7 +16,7 @@ def governed(worker_role="implementation", pull_request=None):
                      "allowed_paths": ["src/a.py"], "prompt": "worker prompt"}}
 
 def test_convert_author_assignment():
-    result = adapter.convert(governed(), AUTHORITY, "automation", ["api.github.com"])
+    result = adapter.convert(governed(pull_request=459), AUTHORITY, "automation", ["api.github.com"])
     assert result["mode"] == "author"
     assert result["repository"] == "https://github.com/tticom/score2gp.git"
     assert result["validation"] == [["python", "-m", "pytest", "tests/test_a.py"]]
