@@ -3,32 +3,32 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: score2gp-agent:local
-    user: "10001:10001"
+    image: ${SCORE2GP_AGENT_IMAGE:-score2gp-agent:local}
+    user: "${SCORE2GP_HOST_UID:?use start-agent.sh}:${SCORE2GP_HOST_GID:?use start-agent.sh}"
     working_dir: /workspace/score2gp
     environment:
       SCORE2GP_TASK: ${SCORE2GP_TASK:?set SCORE2GP_TASK to the assigned task slug}
       PIP_USER: "1"
       TMPDIR: /test-tmp
       PYTEST_ADDOPTS: -p no:cacheprovider
+      HOME: /home/agent
+      PYTHONPATH: /workspace/score2gp/src
     volumes:
       - type: bind
         source: ${SCORE2GP_PRODUCT_DIR:?set SCORE2GP_PRODUCT_DIR to one task worktree}
         target: /workspace/score2gp
         read_only: false
-      - agent-user-local:/home/agent/.local
-      - agent-venv:/workspace/score2gp/.venv
     network_mode: none
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=256m
       - /test-tmp:rw,exec,nosuid,size=256m
+      - /home/agent:rw,exec,nosuid,nodev,size=512m,uid=${SCORE2GP_HOST_UID},gid=${SCORE2GP_HOST_GID},mode=700
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     init: true
-
-volumes:
-  agent-user-local:
-  agent-venv:
+    mem_limit: 4g
+    cpus: 2
+    pids_limit: 512

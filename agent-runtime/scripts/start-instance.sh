@@ -25,10 +25,15 @@ case "${WSL_DISTRO_NAME:-}" in
 esac
 
 agentops_dir="$workspace_root/score2gp-agentops"
-if [ "${SCORE2GP_STARTUP_BOOTSTRAP_DONE:-0}" != 1 ] && [ -x "$agentops_dir/agent-runtime/scripts/bootstrap-instance.sh" ]; then
-  export SCORE2GP_STARTUP_BOOTSTRAP_DONE=1
-  AGENTOPS_REF=${AGENTOPS_REF:-main} "$agentops_dir/agent-runtime/scripts/bootstrap-instance.sh"
+# Updating the controller is an explicit host maintenance operation. Starting
+# a shell must not reset repositories, switch task branches or touch old worktrees.
+if [ -z "${SCORE2GP_CYCLE_ASSIGNMENT:-}" ]; then
+  echo "score2gp: idle; set SCORE2GP_CYCLE_ASSIGNMENT to an approved branch assignment"
+  exit 0
 fi
+export SCORE2GP_CYCLE_ASSIGNMENT
+export SCORE2GP_GCP_PROJECT_ID="${SCORE2GP_GCP_PROJECT_ID:-}"
+export SCORE2GP_GITHUB_SECRET_NAME="${SCORE2GP_GITHUB_SECRET_NAME:-score2gp-github-$role-token}"
 cd "$agentops_dir"
 if [ ! -x "$agentops_dir/agent-runtime/scripts/$launcher" ]; then
   echo "score2gp: $launcher is not installed; run bootstrap-instance.sh" >&2

@@ -19,7 +19,7 @@ if [ -f /run/secrets/github-token ]; then
   export GIT_TERMINAL_PROMPT=0
 fi
 
-# The task worktree is explicit and writable only because editable installation
-# may create metadata beside the mounted source. No parent workspace is mounted.
-python -m pip install --user --no-deps --no-build-isolation --editable "$product_dir" >/dev/null
+# Dependencies are baked into the image; import the mounted source without
+# creating package metadata or a persistent user installation on the host.
+export PYTHONPATH="$product_dir/src${PYTHONPATH:+:$PYTHONPATH}"
 exec "$@"

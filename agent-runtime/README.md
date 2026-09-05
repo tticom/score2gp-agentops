@@ -1,157 +1,202 @@
-# Score2GP Docker agent runtime
+# Disposable Score2GP agent cycles
 
-This runtime launches one disposable, non-root worker against one explicitly
-selected Score2GP task worktree. Docker Desktop may use its shared engine, but
-the source checkout and credentials remain in the calling WSL distribution.
+A cycle is one approved assignment, one independent clone and one bounded
+agent invocation. The host controller owns validation and branch publication.
+No host source clone, shared Git administrative directory, Docker socket,
+home directory or Google credential store is mounted into a worker.
 
-## Start
+## Lifecycle
 
-From a fresh Ubuntu/WSL instance with Docker Desktop integration enabled:
+1. Require an explicit repository, existing task branch and exact starting SHA.
+2. Retrieve the role's GitHub token through host-side Secret Manager and check
+   its GitHub login. Clone the remote branch without local object sharing;
+   refuse a head that differs from the assignment.
+3. Run the agent with the WSL owner's numeric UID/GID. The container still sees
+   the account name `agent`. Its root filesystem is read-only; capabilities
+   are dropped; privilege escalation is disabled; CPU, memory and process
+   counts are bounded.
+4. Run the assignment's validation commands in separate offline containers
+   with no token, authentication state or skills mount.
+5. For an author, reject changed paths outside the assignment, forbidden
+   private/generated paths, switched branches, rewritten history, unknown
+   ignored outputs, and changes made concurrently on the remote branch. Check
+   every new commit, including files added and then removed. Sanitize Git
+   configuration before running host Git; worker hooks and filters never run
+   on the host. Commit permitted changes and sanitized validation evidence in
+   the checkpoint commit message, then push normally to the assigned branch.
+6. Read the remote branch back and compare its full SHA. Delete the unique
+   source/context clones only when publication is verified and validation
+   passed. No force push, merge, branch deletion or remote-main write occurs.
 
-```bash
-curl --fail --silent --show-error --location \
-  https://raw.githubusercontent.com/tticom/score2gp-agentops/main/agent-runtime/scripts/bootstrap-instance.sh \
-  --output /tmp/score2gp-bootstrap-instance.sh
-bash /tmp/score2gp-bootstrap-instance.sh
-cd "$HOME/work/score2gp-workspace/score2gp-agentops"
-./agent-runtime/scripts/build-runtime-image.sh
-./agent-runtime/scripts/verify-runtime.sh
-```
+A validation failure can still produce an incomplete-work checkpoint. Its
+nonzero exit codes are in the commit message; the controller returns failure
+and retains the local clone. An agent failure, interruption, scope violation,
+push rejection or failed remote readback retains the clone. It never counts
+as completion. The controller removes the temporary token and Docker resources
+on ordinary exit, SIGINT and SIGTERM. SIGKILL, host failure or power loss cannot
+run cleanup; inspect retained cycle directories before restarting after those
+failures, including leftover secret files and containers.
 
-Bootstrap also provisions the host `acl` package when passwordless `sudo` is
-available. If it reports that `setfacl` is missing, install it once in that
-WSL distribution and rerun bootstrap:
+For a reviewer, source and context mounts are read-only. The controller checks
+that the assigned PR belongs to another author and matches the repository,
+branch and full SHA. It never stages, commits or pushes the source branch.
+Disposal requires a published formal review by the assigned login on the same
+head, with `<!-- score2gp-cycle:CYCLE_ID -->` in its body, plus passing
+validation. A changed PR or absent review receipt retains the clone. Review
+validation status remains in the local receipt; the worker's published review
+must include its own evidence. This runtime does not replace the project's
+exact-head review publisher or its evidence requirements.
 
-```bash
-sudo apt-get update && sudo apt-get install -y acl
-```
+## Setup and explicit startup
 
-The script stores source checkouts and Docker state locally;
-the durable inputs remain the GitHub repositories and version declarations in
-this directory.
-
-Bootstrap also adds an interactive-shell hook to `~/.bashrc`. It changes to
-the AgentOps checkout and starts AGY automatically in Ubuntu-Automation and
-Ubuntu-Gov once the runtime image exists. Ubuntu-Codex remains opt-in until
-Codex configuration is complete; enable it by creating
-`~/.config/score2gp/codex-enabled`.
-
-Each startup hook synchronizes the three clean checkouts from `main` before
-launching its runtime. A dirty checkout is left untouched and prevents the
-runtime from launching, so in-progress agent work cannot be overwritten.
-
-```bash
-SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp \
-SCORE2GP_TASK=rec-03-vector-text-observations \
-  ./start-agent.sh python -m pytest tests/recognition/test_observations.py
-```
-
-The first invocation builds the local image and installs the mounted product
-editable without resolving additional dependencies. Runtime and validation
-dependencies are baked into the image from `requirements.txt`.
-
-To launch a live Linux Antigravity CLI with an isolated config volume:
-
-```bash
-SCORE2GP_TASK=rec-03-vector-text-observations \
-  ./agent-runtime/scripts/run-agy.sh
-```
-
-The launcher creates the product task worktree automatically and mounts the
-workspace's `agy-skills` checkout read-only. Set `AGY_SKILLS_DIR` when that
-checkout is not at `$HOME/work/score2gp-workspace/agy-skills`.
-The writable package-install volume is role-scoped as
-`score2gp-automation-agent-local` (or `score2gp-gov-agent-local`).
-The default Docker volumes are role-scoped as
-`score2gp-automation-agy-config` and `score2gp-automation-agy-state`; use
-`SCORE2GP_AGENT_ROLE=gov` for the governance instance. Override
-`AGY_CONFIG_VOLUME` or `AGY_STATE_VOLUME` only with equally role-scoped names.
-
-The container process runs as the unprivileged `agent` user. The launcher
-passes `SCORE2GP_AGENT_ROLE=automation` or `gov`; this role attestation is the
-supported container equivalent of the host Linux identity and is checked by
-the dispatch router together with the GitHub login. The task worktree is
-mounted at `/workspace/score2gp`, and the source repository's Git
-administrative directory is mounted at its original absolute path so the
-worktree's `.git` pointer remains valid inside the container.
-Before launch, the host launcher requires `setfacl` and grants UID 10001
-recursive read/write/execute access plus default ACLs on the task worktree and
-Git administrative directory. Docker's `readonly=false` flag alone cannot
-override host filesystem permissions.
-
-To enable GitHub access, authenticate `gcloud` in the WSL instance and set
-`SCORE2GP_GCP_PROJECT_ID` and `SCORE2GP_GITHUB_SECRET_NAME`. The launcher reads
-the latest secret version into a temporary read-only mount, and the container
-exposes it to `gh` as `GH_TOKEN` and to Git as an askpass credential. The token
-is not stored in the image or a Docker volume. Commits default to the
-`tticom-automation` Git author identity; set `SCORE2GP_GIT_NAME` and
-`SCORE2GP_GIT_EMAIL` for another role.
+From the owning Ubuntu/WSL distribution with Docker Desktop integration,
+Python 3, Git, `gh`, and authenticated host `gcloud` available:
 
 ```bash
-SCORE2GP_GCP_PROJECT_ID=your-project SCORE2GP_GITHUB_SECRET_NAME=score2gp-github-automation-token SCORE2GP_TASK=rec-03-vector-text-observations ./agent-runtime/scripts/run-agy.sh
+./agent-runtime/scripts/bootstrap-instance.sh
+./agent-runtime/scripts/build-runtime-image.sh  # AGY
+./agent-runtime/scripts/build-codex-image.sh    # Codex, if needed
 ```
 
-This is intentionally an explicit network-enabled operation. GitHub
-credentials are not mounted or installed by the bootstrap scripts.
+Bootstrap synchronizes only clean controller and skills clones already on
+the configured branch, using fast-forward-only updates. It never updates the
+legacy product/sandbox clones, resets a branch, or installs ACL tools.
+Shell startup does not run bootstrap or update repositories. With no
+`SCORE2GP_CYCLE_ASSIGNMENT`, the instance reports `idle` and opens a shell.
+A running WSL distribution does not imply a running Docker worker.
 
-The image also contains the native Linux Antigravity CLI. Verify it without
-the worker entrypoint with:
+Create a host-owned JSON assignment using [assignment.example.json](assignment.example.json).
+The example has placeholder SHAs and a GitHub-only network policy and is not
+an approved task. The orchestrator or maintainer must supply the actual task,
+permitted paths, commands, existing branch head, pinned context repositories,
+and required agent API/authentication endpoints. This envelope transports
+existing task authority; it does not approve a task or select a next task.
+The initial implementation deliberately does not infer assignments from
+`ACTIVE_TASK.md`, a stale local sandbox branch, or a default `sandbox` slug.
 
 ```bash
-docker run --rm --entrypoint agy score2gp-agent:local --version
+export SCORE2GP_CYCLE_ASSIGNMENT="$HOME/.config/score2gp/cycle.json"
+export SCORE2GP_GCP_PROJECT_ID=your-project
+export SCORE2GP_AGENT_ROLE=automation
+export SCORE2GP_GITHUB_SECRET_NAME=score2gp-github-automation-token
+./agent-runtime/scripts/run-agy.sh
 ```
 
-This reports the installed CLI version only. A live Antigravity session needs
-an explicit network and authentication design; the default worker service
-remains network-disabled.
+Use `run-codex.sh` for Codex. Each invocation runs one prompt to completion
+(AGY print mode or ephemeral Codex exec), then validates/checkpoints; it does
+not leave an interactive session or start another cycle. Optional agent CLI
+flags follow the launcher command. Update the assignment's `base_sha` from
+fresh remote state before the next cycle. `SCORE2GP_AGENT_ROLE` identifies the
+credential principal; `mode` independently specifies author or reviewer.
+Gov can therefore author governance work or review product work without being
+mistaken for an author solely because it has a token.
 
-To create the conventional product virtual environment inside a disposable
-Docker volume (without adding `.venv` to the host worktree):
+The shell hook loads `~/.config/score2gp/runtime.env`. Put the assignment path
+and GCP settings there to enable assigned startup. Ubuntu-Codex additionally
+requires the existing `~/.config/score2gp/codex-enabled` opt-in file. The new
+launcher ignores the obsolete `SCORE2GP_TASK_WORKTREE` and package-volume
+settings; it never resumes or disposes of a legacy sandbox implicitly.
+
+## Persistence and recovery
+
+Successful source work and sanitized validation results live in the remote
+task branch and checkpoint commit message. The image ID, skills SHA and pinned
+context SHAs are recorded; publish and retain the corresponding runtime image
+in your image registry if recovery on another machine must reproduce it.
+The existing Dockerfiles contain version ranges/dynamic installers, so
+rebuilding an image is not a substitute for retaining its digest.
+
+Local receipts/logs and failed clones are under:
+
+```
+~/.local/state/score2gp/cycles/<role>-<unique-id>/
+```
+
+`receipt.json` records status, assignment and any verified published head;
+`repo/` is the retained independent clone. Validation logs stay local and are
+not automatically added to Git. Treat them as potentially private. On a
+failed push, inspect `git status`, `git log` and the live remote before retrying
+a normal push from this clone. On concurrent remote changes, reconcile in the
+retained clone with a fresh assignment; never reset it or force push. Recovery
+is explicit in this version: starting a fresh cycle does not retry or delete
+an earlier failed cycle. Agent authentication is separate from GitHub auth.
+
+Only role-scoped agent auth/config state is persistent, under:
+
+```
+~/.local/share/score2gp/<role>/auth/.codex
+~/.local/share/score2gp/<role>/auth/.config
+~/.local/share/score2gp/<role>/auth/.gemini
+```
+
+These are new locations; old Docker volumes are not silently copied or
+reowned. Provision the matching CLI's authentication in the new location
+before the first unattended cycle. Do not copy credentials between roles.
+Each worker home/package area is otherwise tmpfs, so package installations
+and session-local files do not survive disposal. Required dependencies belong
+in the runtime image. Configure the worker for container/device-code auth;
+there are no published callback ports.
+
+Existing UID-10001 legacy work is left intact. To recover its host ownership,
+with no legacy worker running, execute this inside each affected distribution
+as its normal `tticom` user (one time, not during every startup):
 
 ```bash
-SCORE2GP_PRODUCT_DIR=/absolute/path/to/score2gp-task-worktree \
-SCORE2GP_TASK=rec-03-vector-text-observations \
-  ./setup-venv.sh
+workspace="$HOME/work/score2gp-workspace"
+host_owner="$(id -u):$(id -g)"
+sudo find "$workspace/score2gp/.git" "$workspace/score2gp-sandbox-worktree" \
+  -xdev -uid 10001 -exec chown -h "$host_owner" {} +
 ```
 
-## Codex runtime
+Inspect and push permitted legacy work before retiring those old clones.
+The new runtime never needs root ownership repairs for its own clones.
 
-The parallel Codex runtime uses `codex.Dockerfile`, a role-scoped Codex home
-volume, the same task-worktree and GCP GitHub-token flow, and the same
-non-root container boundary. Build it with:
+## Network and credential boundary
+
+The worker is attached only to a per-cycle internal Docker network. A separate
+non-root proxy has external connectivity and shares that internal network.
+The worker receives HTTP(S)_PROXY settings; no direct external network, Docker
+socket, host networking or published port is provided. The proxy accepts only
+HTTPS CONNECT to port 443 on exact `egress_hosts` names. It rejects private,
+loopback, link-local and other non-public DNS results and connects to the
+validated numeric address, avoiding a second DNS lookup.
+
+List GitHub API/Git endpoints and the agent provider's actual API, login and
+artifact endpoints required by your configured workflow. Add endpoints only
+after observing the required dependency. There are no wildcard domains or
+an unrestricted bridge fallback. A client that ignores HTTPS proxy settings
+fails closed. Test provider authentication, streaming and any gRPC/WebSocket
+usage in the intended instance before rollout; the infrastructure smoke test
+alone does not prove provider compatibility.
+
+The host performs Google token acquisition and Secret Manager access. Workers
+receive only the role's GitHub token, not Google credentials or project-wide
+Secret Manager authority. Grant the host principal secret-version access to
+that one secret; use GitHub tokens limited to the assigned repositories and
+needed operations. Enforce protected refs and role permissions on GitHub too:
+an HTTPS destination allowlist cannot restrict actions within an allowed
+service, and the worker can read its injected token.
+
+Host fetch/push and Secret Manager traffic do not traverse the worker proxy.
+The proxy policy therefore constrains worker egress, not all WSL host traffic.
+
+## Verification and offline utility
 
 ```bash
-./agent-runtime/scripts/build-codex-image.sh
+python -m pytest -q tests/test_disposable_cycle.py tests/test_cycle_egress.py \
+  tests/test_agent_runtime.py tests/test_codex_runtime.py
+SCORE2GP_DOCKER_TESTS=1 python -m pytest -q tests/test_cycle_egress.py
 ```
 
-Launch it with `SCORE2GP_GCP_PROJECT_ID` and
-`SCORE2GP_GITHUB_SECRET_NAME` set:
+The Docker test uses an installed `score2gp-codex:local` image (override
+`SCORE2GP_TEST_IMAGE`), real host-owned writes and Git objects, allowlisted
+GitHub HTTPS, a denied HTTPS destination and a direct-IP bypass attempt. It
+never authenticates an agent or reads a real GitHub secret. Controller tests
+use real Git remotes for checkpoint/conflict/recovery and stub cloud identity
+and Docker orchestration; neither test layer constitutes live agent acceptance.
 
-```bash
-SCORE2GP_TASK=runtime-codex-smoke ./agent-runtime/scripts/run-codex.sh
-```
-
-Codex authentication is separate from GitHub authentication. On first launch,
-Codex may require its normal ChatGPT or API-key sign-in; its state is stored in
-the role-specific `score2gp-codex-codex-home` volume when launched by the
-Codex instance startup hook.
-
-## Isolation policy
-
-- Only the selected product worktree is mounted, and it is task-scoped.
-- No WSL home, workspace root, sibling checkout, SSH/GitHub configuration,
-  Docker socket, or private-fixture directory is mounted.
-- Runtime networking is disabled, the root filesystem is read-only, the
-  process runs as UID 10001, all Linux capabilities are dropped, and
-  `no-new-privileges` is enabled.
-- Normal `/tmp` is `noexec`; test tools use a separate disposable `/test-tmp`
-  tmpfs for legitimate executable test doubles.
-- The task worktree is writable because editable Python installation can write
-  package metadata. Keep it a disposable task worktree, never a shared clone.
-- The writable home-local volume is limited to the container's pip user
-  installation and is recreated only when its Compose project is removed.
-- The product `.venv` is a separate named volume, scoped to the Compose task
-  project and never stored in the host checkout.
-
-Networked setup operations such as dependency refreshes or GitHub access are
-host-side/controller operations and are intentionally outside this runtime.
+`start-agent.sh` remains an explicit offline utility for a caller-selected
+worktree, not a managed/published cycle. It now uses the host UID/GID and
+transient home/venv mounts with no persistent package volumes. Run its command
+against disposable source. `setup-venv.sh COMMAND...` creates a venv and executes
+that command in the same container; the venv disappears on exit.
