@@ -335,7 +335,7 @@ def execute(data, engine, extra):
                                "--env", "HTTPS_PROXY=http://egress:3128",
                                "--env", "NO_PROXY="]
             else:
-                validation += ["--env", "SCORE2GP_GOVERNANCE_AUDIT_OFFLINE=1"]
+                pass
             validation += [
                            "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "PYTEST_ADDOPTS=-p no:cacheprovider", "--env", "TMPDIR=/test-tmp"]
             with (folder / f"validation-{index}.log").open("w") as output:
