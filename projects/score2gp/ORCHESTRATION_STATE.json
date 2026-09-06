@@ -1,37 +1,45 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 23,
+  "authority_revision": 24,
   "task": {
-    "id": "REC-04",
-    "title": "Local Scale Model",
-    "objective": "Estimate local notation, TAB, stroke and glyph scales and express new detector policies in dimensionless units.",
+    "id": "ORC-03",
+    "title": "Automated Post-Merge State Reconciliation",
+    "objective": "Automate verified gate-completion transitions so merged tasks are reconciled into completed_tasks and the generated active view advances without manual state edits.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/rec-04-local-scale-model",
-    "pull_request": 459,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-04-local-scale-model.md",
+    "branch": "codex/orc-03-post-merge-reconciliation",
+    "pull_request": null,
+    "owner_role": "governance",
+    "prompt": "projects/score2gp/prompts/next/orc-03-post-merge-state-reconciliation.md",
     "allowed_paths": [
-      "src/score2gp/recognition/scale.py",
-      "tests/recognition/test_scale.py"
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_orchestrator.py",
+      "scripts/score2gp_governance_audit.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py",
+      "tests/test_governance_audit.py"
     ],
     "acceptance": [
-      "Equivalent layouts at different sizes produce materially stable normalized data.",
-      "Mixed-scale pages do not collapse into a misleading page-global unit.",
-      "No fixture-specific coordinates or expected counts enter estimation."
+      "A verified merged product PR is reconciled exactly once with its product head SHA and merge commit recorded in completed_tasks.",
+      "A stale, mismatched, open, or already-reconciled PR fails closed without mutating authority.",
+      "ACTIVE_TASK.md is regenerated from ORCHESTRATION_STATE.json and governance audit passes after reconciliation.",
+      "The next task remains PROPOSED and cannot be dispatched by the reconciliation operation.",
+      "Repeating reconciliation with the same live merge is idempotent and produces no duplicate completion record."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_scale.py",
-      "python3 -m mypy src/score2gp/recognition/scale.py tests/recognition/test_scale.py"
+      "python3 -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py",
+      "python3 scripts/score2gp_governance_audit.py",
+      "python3 -m compileall -q scripts"
     ],
     "dependencies": [
-      "REC-03"
+      "REC-04"
     ],
     "stop_conditions": [
-      "fixture_specific_coordinates_enter_estimation",
-      "mixed_scale_pages_collapse_into_global_unit"
+      "reconciliation_without_exact_live_merge",
+      "duplicate_completion_or_active_view_drift",
+      "next_task_authorized_implicitly"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
@@ -195,6 +203,42 @@
     "allow_admin_bypass": false
   },
   "completed_tasks": [
+    {
+      "id": "REC-04",
+      "title": "Local Scale Model",
+      "objective": "Estimate local notation, TAB, stroke and glyph scales and express new detector policies in dimensionless units.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-04-local-scale-model",
+      "pull_request": 459,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-04-local-scale-model.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/scale.py",
+        "tests/recognition/test_scale.py"
+      ],
+      "acceptance": [
+        "Equivalent layouts at different sizes produce materially stable normalized data.",
+        "Mixed-scale pages do not collapse into a misleading page-global unit.",
+        "No fixture-specific coordinates or expected counts enter estimation."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_scale.py",
+        "python3 -m mypy src/score2gp/recognition/scale.py tests/recognition/test_scale.py"
+      ],
+      "dependencies": [
+        "REC-03"
+      ],
+      "stop_conditions": [
+        "fixture_specific_coordinates_enter_estimation",
+        "mixed_scale_pages_collapse_into_global_unit"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "merge_commit": "c6ef422b9be007c3046503ae12092b7ce87d125a",
+      "head_sha": "6da49c7eda5e9999ee8a6573efac9fe44a7b10cb"
+    },
     {
       "id": "REC-01",
       "title": "Layered Semantic Oracle",

@@ -2,28 +2,33 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REC-04 — Local Scale Model
+**Task**: ORC-03 — Automated Post-Merge State Reconciliation
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/rec-04-local-scale-model`
+**PR Branch**: `codex/orc-03-post-merge-reconciliation`
 
-**Pull Request**: 459
+**Pull Request**: TBD
 
-**Owner Role**: implementation
+**Owner Role**: governance
 
 ## Objective
 
-Estimate local notation, TAB, stroke and glyph scales and express new detector policies in dimensionless units.
+Automate verified gate-completion transitions so merged tasks are reconciled into completed_tasks and the generated active view advances without manual state edits.
 
 ## Allowed paths
 
-- `src/score2gp/recognition/scale.py`
-- `tests/recognition/test_scale.py`
+- `scripts/score2gp_orca_control.py`
+- `scripts/score2gp_orchestrator.py`
+- `scripts/score2gp_governance_audit.py`
+- `tests/test_score2gp_orca_control.py`
+- `tests/test_score2gp_orchestrator.py`
+- `tests/test_governance_audit.py`
 
 ## Validation commands
 
-- `python3 -m pytest tests/recognition/test_scale.py`
-- `python3 -m mypy src/score2gp/recognition/scale.py tests/recognition/test_scale.py`
+- `python3 -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py`
+- `python3 scripts/score2gp_governance_audit.py`
+- `python3 -m compileall -q scripts`
