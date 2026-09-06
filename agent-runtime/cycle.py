@@ -372,8 +372,19 @@ def execute(data, engine, extra):
         print("cycle status: COMPLETE", flush=True)
         print("assessment: agent work, validation, and remote evidence all passed", flush=True)
         if data["mode"] == "author":
-            print(f"next: inspect or open the PR for {data['repository']} branch "
-                  f"{data['branch']} at {receipt['published_head'][:12]}", flush=True)
+            slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
+            try:
+                open_prs = json.loads(run(["gh", "pr", "list", "--repo", slug,
+                                           "--head", data["branch"], "--state", "open",
+                                           "--json", "number,url"], env=env))
+            except CycleError:
+                open_prs = []
+            if isinstance(open_prs, list) and open_prs:
+                print(f"next: inspect PR #{open_prs[0]['number']} at {open_prs[0]['url']} "
+                      f"for branch head {receipt['published_head'][:12]}", flush=True)
+            else:
+                print(f"next: create a follow-up PR for {data['repository']} branch "
+                      f"{data['branch']} at {receipt['published_head'][:12]}", flush=True)
             print("next: send the published change through devil's-advocate review before merging", flush=True)
         else:
             print(f"next: inspect the published review at {receipt['review_url']}", flush=True)
