@@ -324,6 +324,7 @@ def execute(data, engine, extra):
             validation += bind(repo, repo_target, data["mode"] == "reviewer") + context_mounts
             validation += bind(passwd, "/etc/passwd") + bind(group, "/etc/group")
             validation += ["--env", "HOME=/home/agent", "--env", f"PYTHONPATH={repo_target}/src:{repo_target}",
+                           "--env", "SCORE2GP_GOVERNANCE_AUDIT_OFFLINE=1",
                            "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "PYTEST_ADDOPTS=-p no:cacheprovider", "--env", "TMPDIR=/test-tmp"]
             with (folder / f"validation-{index}.log").open("w") as output:
                 result = subprocess.run(validation + [image, *argv[1:]], stdout=output, stderr=subprocess.STDOUT)
