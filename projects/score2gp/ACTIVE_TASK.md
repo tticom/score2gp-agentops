@@ -8,7 +8,7 @@
 
 **Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `codex/orc-03-post-merge-reconciliation`
+**PR Branch**: `codex/orc-03-post-merge-state-reconciliation`
 
 **Pull Request**: 639
 
