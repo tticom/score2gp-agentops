@@ -18,6 +18,8 @@ from scripts.score2gp_orca_control import (
     build_assignment,
     capture_live_state,
     current_head_review,
+    reconcile,
+    reconcile_post_merge,
     resolve_state,
     validate_assignment,
     validate_legacy_alignment,
@@ -668,3 +670,292 @@ def test_build_assignment_with_checked_in_authority_and_authorized_reviewer_iden
     assert assignment["authority"]["task_id"] == "REC-03"
     assert assignment["worker"]["role"] == "reviewer"
     assert assignment["worker"]["github_login"] == "tticom-codex"
+
+
+def schema2_authority(status: str = "RUNNING") -> dict:
+    return {
+        "schema_version": 2,
+        "authority_revision": 5,
+        "task": {
+            "id": "108",
+            "title": "Bounded repair",
+            "objective": "Apply the bounded repair.",
+            "status": status,
+            "repository": "tticom/score2gp",
+            "base_branch": "main",
+            "branch": "feat/task-108",
+            "pull_request": 441,
+            "owner_role": "implementation",
+            "prompt": "prompt.md",
+            "allowed_paths": ["src/a.py", "tests/test_a.py"],
+            "acceptance": ["prove repair"],
+            "validation_commands": ["python3 -m pytest"],
+            "dependencies": [],
+            "stop_conditions": [],
+            "reviewer_role": "reviewer",
+            "delivery_action": "pull_request",
+        },
+        "next_task_proposal": {
+            "id": "109",
+            "title": "Next step",
+            "objective": "Apply next step.",
+            "status": "PROPOSED",
+            "repository": "tticom/score2gp",
+            "base_branch": "main",
+            "branch": "feat/task-109",
+            "pull_request": None,
+            "owner_role": "implementation",
+            "prompt": "prompt-109.md",
+            "allowed_paths": ["src/b.py"],
+            "acceptance": ["prove next step"],
+            "validation_commands": ["python3 -m pytest"],
+            "dependencies": ["108"],
+            "stop_conditions": [],
+            "reviewer_role": "reviewer",
+            "delivery_action": "pull_request",
+        },
+        "incidents": [],
+        "roles": {
+            "implementation": {
+                "github_logins": ["worker"],
+                "allowed_actions": ["edit", "test"],
+                "forbidden_actions": ["merge"],
+            },
+        },
+        "merge_policy": {
+            "required_checks": ["test"],
+            "minimum_approvals": 1,
+            "require_governance_go": True,
+            "require_reviewed_head": True,
+            "require_resolved_threads": True,
+            "allow_admin_bypass": False,
+        },
+    }
+
+
+def live_merged_orca(
+    *,
+    head_sha: str = "a" * 40,
+    merge_commit: str = "b" * 40,
+    pr_number: int = 441,
+    branch: str = "feat/task-108",
+    repo: str = "tticom/score2gp",
+) -> dict:
+    return {
+        "snapshot": {"repository": repo},
+        "pull_request": {
+            "number": pr_number,
+            "state": "MERGED",
+            "head_branch": branch,
+            "head_sha": head_sha,
+            "merge_commit": merge_commit,
+            "reviews": [],
+            "checks": [{"name": "test", "conclusion": "SUCCESS"}],
+            "unresolved_threads": 0,
+        },
+    }
+
+
+def test_reconcile_post_merge_updates_authority_and_active_task_view(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    facts = live_merged_orca(head_sha="1" * 40, merge_commit="2" * 40)
+    res = reconcile_post_merge(auth, facts, authority_path, active_task_path)
+
+    assert res["reconciled"] is True
+    assert res["status"] == "MERGED"
+    assert res["task_id"] == "108"
+    assert res["head_sha"] == "1" * 40
+    assert res["merge_commit"] == "2" * 40
+
+    saved_auth = json.loads(authority_path.read_text(encoding="utf-8"))
+    assert saved_auth["task"]["status"] == "MERGED"
+    assert len(saved_auth["completed_tasks"]) == 1
+    completed = saved_auth["completed_tasks"][0]
+    assert completed["id"] == "108"
+    assert completed["status"] == "MERGED"
+    assert completed["head_sha"] == "1" * 40
+    assert completed["merge_commit"] == "2" * 40
+    assert completed["allowed_paths"] == ["src/a.py", "tests/test_a.py"]
+    assert saved_auth["next_task_proposal"]["status"] == "PROPOSED"
+
+    saved_active = active_task_path.read_text(encoding="utf-8")
+    assert "**Status**: MERGED" in saved_active
+    assert "**Status**: APPROVED" not in saved_active
+    assert "**Status**: PROMOTED" not in saved_active
+
+    validate_legacy_alignment(saved_auth, saved_active)
+
+
+def test_reconcile_dry_run_leaves_files_byte_for_byte_unchanged(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    auth_bytes = authority_path.read_bytes()
+    active_bytes = active_task_path.read_bytes()
+
+    facts = live_merged_orca()
+    res = reconcile_post_merge(auth, facts, authority_path, active_task_path, dry_run=True)
+
+    assert res["dry_run"] is True
+    assert res["reconciled"] is True
+    assert authority_path.read_bytes() == auth_bytes
+    assert active_task_path.read_bytes() == active_bytes
+
+
+@pytest.mark.parametrize("mutator,match_err", [
+    (lambda l: l["pull_request"].update(state="OPEN"), "expected 'MERGED'"),
+    (lambda l: l["pull_request"].update(number=999), "PR number mismatch"),
+    (lambda l: l["pull_request"].update(head_branch="wrong"), "branch mismatch"),
+    (lambda l: l["pull_request"].update(head_sha="short"), "invalid or missing product head SHA"),
+    (lambda l: l["pull_request"].pop("merge_commit"), "invalid or missing merge commit SHA"),
+])
+def test_reconcile_fails_closed_and_leaves_files_byte_for_byte_unchanged(
+    tmp_path: Path, mutator: Any, match_err: str
+) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    auth_bytes = authority_path.read_bytes()
+    active_bytes = active_task_path.read_bytes()
+
+    facts = live_merged_orca()
+    mutator(facts)
+
+    with pytest.raises(ControlError, match=match_err):
+        reconcile_post_merge(auth, facts, authority_path, active_task_path)
+
+    assert authority_path.read_bytes() == auth_bytes
+    assert active_task_path.read_bytes() == active_bytes
+
+
+def test_reconcile_cli_command_success_and_idempotent_replay(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+    live_path = tmp_path / "live.json"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+    live_path.write_text(json.dumps(live_merged_orca()), encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/score2gp_orca_control.py",
+            "reconcile",
+            "--authority",
+            str(authority_path),
+            "--live",
+            str(live_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    first_result = json.loads(completed.stdout)
+    assert first_result["reconciled"] is True
+    assert first_result["status"] == "MERGED"
+
+    saved_auth = json.loads(authority_path.read_text(encoding="utf-8"))
+    assert len(saved_auth["completed_tasks"]) == 1
+    assert saved_auth["task"]["status"] == "MERGED"
+
+    # Replaying the exact same merge must be idempotent without writes or duplicate
+    completed2 = subprocess.run(
+        [
+            sys.executable,
+            "scripts/score2gp_orca_control.py",
+            "reconcile",
+            "--authority",
+            str(authority_path),
+            "--live",
+            str(live_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed2.returncode == 0, completed2.stderr
+    second_result = json.loads(completed2.stdout)
+    assert second_result["reconciled"] is False
+    assert second_result["idempotent"] is True
+
+    saved_auth_second = json.loads(authority_path.read_text(encoding="utf-8"))
+    assert len(saved_auth_second["completed_tasks"]) == 1
+
+
+def test_reconcile_cli_command_dry_run(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+    live_path = tmp_path / "live.json"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+    live_path.write_text(json.dumps(live_merged_orca()), encoding="utf-8")
+
+    auth_bytes = authority_path.read_bytes()
+    active_bytes = active_task_path.read_bytes()
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/score2gp_orca_control.py",
+            "reconcile",
+            "--authority",
+            str(authority_path),
+            "--live",
+            str(live_path),
+            "--dry-run",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    res = json.loads(completed.stdout)
+    assert res["dry_run"] is True
+    assert res["reconciled"] is True
+    assert authority_path.read_bytes() == auth_bytes
+    assert active_task_path.read_bytes() == active_bytes
+
+
+def test_capture_live_state_normalizes_merge_commit(monkeypatch) -> None:
+    responses = iter([
+        {
+            "number": 441,
+            "state": "MERGED",
+            "headRefName": "feat/task-108",
+            "headRefOid": "a" * 40,
+            "baseRefName": "main",
+            "author": {"login": "worker"},
+            "reviews": [],
+            "statusCheckRollup": [{"name": "test", "conclusion": "SUCCESS"}],
+            "mergeCommit": {"oid": "b" * 40},
+        },
+        {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}},
+        [{"id": 7, "enforcement": "active"}],
+        {"id": 7, "current_user_can_bypass": "never"},
+    ])
+    monkeypatch.setattr("scripts.score2gp_orca_control.run_json", lambda command: next(responses))
+    snapshot = capture_live_state("tticom/score2gp", 441)
+    assert snapshot["pull_request"]["state"] == "MERGED"
+    assert snapshot["pull_request"]["merge_commit"] == "b" * 40
+    assert snapshot["pull_request"]["head_sha"] == "a" * 40

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -265,6 +266,130 @@ def upgrade_authority(authority: dict[str, Any]) -> dict[str, Any]:
     task.setdefault("delivery_action", "pull_request")
     upgraded["schema_version"] = 2
     return upgraded
+
+
+def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str, Any]:
+    """Reconcile a verified merged PR into completed_tasks without promoting the successor."""
+    if not isinstance(authority, dict):
+        raise OrchestrationError("authority must be an object")
+    if authority.get("schema_version") == 1:
+        working_authority = upgrade_authority(authority)
+        if not working_authority["task"].get("validation_commands"):
+            working_authority["task"]["validation_commands"] = ["git diff --check"]
+    else:
+        working_authority = deepcopy(authority)
+    _validate_authority(working_authority)
+
+    if not isinstance(live_state, dict):
+        raise OrchestrationError("live_state must be an object")
+    pull_request = live_state.get("pull_request")
+    if not isinstance(pull_request, dict):
+        raise OrchestrationError("live pull_request missing or invalid")
+
+    pr_state = str(pull_request.get("state", "")).upper()
+    if pr_state != "MERGED":
+        raise OrchestrationError(f"live pull request state is '{pr_state}', expected 'MERGED'")
+
+    task = working_authority["task"]
+    task_id = str(task["id"])
+
+    expected_pr = _parse_strict_positive_int(task.get("pull_request"))
+    if expected_pr is None:
+        raise OrchestrationError("authority task missing valid pull_request number")
+    live_pr = _parse_strict_positive_int(pull_request.get("number"))
+    if live_pr is None:
+        raise OrchestrationError("live pull_request missing valid number")
+    if expected_pr != live_pr:
+        raise OrchestrationError(
+            f"PR number mismatch: authority expects {expected_pr}, live is {live_pr}"
+        )
+
+    expected_branch = str(task.get("branch", "")).strip()
+    live_branch = str(pull_request.get("head_branch", "")).strip()
+    if not live_branch or live_branch != expected_branch:
+        raise OrchestrationError(
+            f"branch mismatch: authority expects '{expected_branch}', live is '{live_branch}'"
+        )
+
+    if live_state.get("snapshot", {}).get("repository"):
+        live_repo = str(live_state["snapshot"]["repository"]).strip()
+        expected_repo = str(task.get("repository", "")).strip()
+        if live_repo != expected_repo:
+            raise OrchestrationError(
+                f"repository mismatch: authority expects '{expected_repo}', live is '{live_repo}'"
+            )
+
+    head_sha = str(
+        pull_request.get("head_sha", "") or pull_request.get("headRefOid", "")
+    ).strip().lower()
+    if not re.fullmatch(r"[0-9a-f]{40}", head_sha):
+        raise OrchestrationError(f"invalid or missing product head SHA: '{head_sha}'")
+
+    if live_state.get("governance", {}).get("reviewed_head_sha"):
+        reviewed_head = str(live_state["governance"]["reviewed_head_sha"]).strip().lower()
+        if reviewed_head and reviewed_head != head_sha:
+            raise OrchestrationError(
+                f"product head SHA '{head_sha}' does not match reviewed head '{reviewed_head}'"
+            )
+
+    if live_state.get("expected_head_sha"):
+        expected_head = str(live_state["expected_head_sha"]).strip().lower()
+        if expected_head and expected_head != head_sha:
+            raise OrchestrationError(
+                f"product head SHA '{head_sha}' does not match expected head '{expected_head}'"
+            )
+
+    raw_merge = pull_request.get("merge_commit") or pull_request.get("mergeCommit")
+    if isinstance(raw_merge, dict):
+        raw_merge = raw_merge.get("oid")
+    merge_commit = str(raw_merge or "").strip().lower()
+    if not re.fullmatch(r"[0-9a-f]{40}", merge_commit):
+        raise OrchestrationError(f"invalid or missing merge commit SHA: '{merge_commit}'")
+
+    if live_state.get("expected_merge_commit"):
+        expected_merge = str(live_state["expected_merge_commit"]).strip().lower()
+        if expected_merge and expected_merge != merge_commit:
+            raise OrchestrationError(
+                f"merge commit '{merge_commit}' does not match expected merge commit '{expected_merge}'"
+            )
+
+    completed = working_authority.get("completed_tasks", [])
+    if isinstance(completed, list):
+        for existing in completed:
+            if not isinstance(existing, dict):
+                continue
+            if str(existing.get("id")) == task_id:
+                existing_head = str(existing.get("head_sha", "")).strip().lower()
+                existing_merge = str(existing.get("merge_commit", "")).strip().lower()
+                if existing_head == head_sha and existing_merge == merge_commit:
+                    if str(working_authority["task"].get("status", "")).upper() == "MERGED":
+                        return working_authority
+                else:
+                    raise OrchestrationError(
+                        f"task '{task_id}' already completed with different merge metadata "
+                        f"({existing_head[:7]}/{existing_merge[:7]} vs {head_sha[:7]}/{merge_commit[:7]})"
+                    )
+
+    completed_record = deepcopy(task)
+    completed_record["status"] = "MERGED"
+    completed_record["head_sha"] = head_sha
+    completed_record["merge_commit"] = merge_commit
+
+    completed_tasks = working_authority.setdefault("completed_tasks", [])
+    if not isinstance(completed_tasks, list):
+        raise OrchestrationError("completed_tasks must be a list")
+    completed_tasks.insert(0, completed_record)
+    working_authority["task"]["status"] = "MERGED"
+
+    if "next_task_proposal" in working_authority and isinstance(
+        working_authority["next_task_proposal"], dict
+    ):
+        working_authority["next_task_proposal"]["status"] = "PROPOSED"
+
+    return working_authority
+
+
+reconcile_authority = reconcile
 
 
 def render_active_task(authority: dict[str, Any]) -> str:

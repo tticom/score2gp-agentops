@@ -19,9 +19,19 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.score2gp_orchestrator import advance as advance_orchestration
+    from scripts.score2gp_orchestrator import (
+        OrchestrationError,
+        advance as advance_orchestration,
+        reconcile as reconcile_orchestration,
+        render_active_task,
+    )
 except ModuleNotFoundError:
-    from score2gp_orchestrator import advance as advance_orchestration
+    from score2gp_orchestrator import (
+        OrchestrationError,
+        advance as advance_orchestration,
+        reconcile as reconcile_orchestration,
+        render_active_task,
+    )
 
 STATES = {
     "BLOCKED",
@@ -70,7 +80,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
     """Capture normalized GitHub facts under the caller's scoped credential."""
     raw = run_json([
         "gh", "pr", "view", str(pull_request), "--repo", repository, "--json",
-        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup",
+        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit",
     ])
     reviews = []
     for review in raw.get("reviews", []):
@@ -85,6 +95,11 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
         conclusion = check.get("conclusion") or check.get("state")
         if name:
             checks.append({"name": str(name), "conclusion": str(conclusion or "")})
+    merge_commit = None
+    if raw.get("mergeCommit"):
+        merge_commit = str(raw["mergeCommit"].get("oid", "")) or None
+    elif raw.get("merge_commit"):
+        merge_commit = str(raw["merge_commit"])
     
     nodes = []
     cursor = None
@@ -132,6 +147,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
             "reviews": reviews,
             "checks": checks,
             "unresolved_threads": sum(not bool(node.get("isResolved")) for node in nodes),
+            "merge_commit": merge_commit,
         },
         "protection": {
             "active_rulesets": len(active_rulesets),
@@ -552,6 +568,63 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     }
 
 
+def reconcile_post_merge(
+    authority: dict[str, Any],
+    live: dict[str, Any],
+    authority_path: Path | str | None = None,
+    active_task_path: Path | str | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute verified gate-completion transition with staged write boundary."""
+    validate_authority(authority)
+    if authority_path is not None:
+        authority_path = Path(authority_path)
+    if active_task_path is None and authority_path is not None:
+        active_task_path = authority_path.parent / "ACTIVE_TASK.md"
+    elif active_task_path is not None:
+        active_task_path = Path(active_task_path)
+
+    if active_task_path is not None and active_task_path.exists():
+        validate_legacy_alignment(authority, active_task_path.read_text(encoding="utf-8"))
+
+    try:
+        updated = reconcile_orchestration(authority, live)
+    except OrchestrationError as error:
+        raise ControlError(str(error)) from error
+
+    is_already_reconciled = (
+        updated.get("task", {}).get("status") == authority.get("task", {}).get("status")
+        and len(updated.get("completed_tasks", [])) == len(authority.get("completed_tasks", []))
+    )
+
+    rendered = render_active_task(updated)
+    validate_legacy_alignment(updated, rendered)
+
+    if not is_already_reconciled and not dry_run:
+        if authority_path is not None:
+            authority_path.write_text(json.dumps(updated, indent=2) + "\n", encoding="utf-8")
+        if active_task_path is not None:
+            active_task_path.write_text(rendered, encoding="utf-8")
+
+    completed_task = updated["completed_tasks"][0] if updated.get("completed_tasks") else {}
+    return {
+        "schema_version": 1,
+        "reconciled": not is_already_reconciled,
+        "idempotent": is_already_reconciled,
+        "status": "MERGED",
+        "task_id": str(updated["task"]["id"]),
+        "head_sha": completed_task.get("head_sha", ""),
+        "merge_commit": completed_task.get("merge_commit", ""),
+        "dry_run": dry_run,
+        "authority": updated,
+        "task": updated["task"],
+        "completed_tasks": updated.get("completed_tasks", []),
+    }
+
+
+reconcile = reconcile_post_merge
+
+
 def git_head(root: Path) -> str:
     dirty = subprocess.run(
         ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True
@@ -582,7 +655,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check"),
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "reconcile"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -590,6 +663,7 @@ def main() -> None:
     parser.add_argument("--repository")
     parser.add_argument("--pull-request", type=int)
     parser.add_argument("--github-login", default="")
+    parser.add_argument("--dry-run", action="store_true", default=False)
     args = parser.parse_args()
     if args.command == "snapshot":
         if not args.repository or args.pull_request is None:
@@ -602,6 +676,17 @@ def main() -> None:
     live = load_json(args.live)
     if args.command == "advance":
         print(json.dumps(advance_orchestration(authority, live), indent=2, sort_keys=True))
+        return
+    if args.command == "reconcile":
+        active_task_path = args.authority.parent / "ACTIVE_TASK.md"
+        output = reconcile_post_merge(
+            authority,
+            live,
+            authority_path=args.authority,
+            active_task_path=active_task_path,
+            dry_run=args.dry_run,
+        )
+        print(json.dumps(output, indent=2, sort_keys=True))
         return
     active_task_path = args.authority.parent / "ACTIVE_TASK.md"
     validate_legacy_alignment(authority, active_task_path.read_text(encoding="utf-8"))

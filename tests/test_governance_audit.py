@@ -698,3 +698,88 @@ def test_review_id_accepts_rest_numeric_and_graphql_node_ids() -> None:
     assert not score2gp_governance_audit.has_valid_review_id(
         "**Review Verdict**: APPROVED (Review ID `looks-good`)"
     )
+
+
+def test_reconciled_merged_task_passes_governance_audit(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+
+    auth_json = json.dumps({
+        "schema_version": 2,
+        "authority_revision": 24,
+        "task": {
+            "id": "REC-04",
+            "title": "Local Scale Model",
+            "objective": "Estimate local notation, TAB, stroke and glyph scales.",
+            "status": "MERGED",
+            "repository": "tticom/score2gp",
+            "base_branch": "main",
+            "branch": "feat/rec-04-local-scale-model",
+            "pull_request": 459,
+            "owner_role": "implementation",
+            "allowed_paths": ["src/scale.py"],
+            "validation_commands": ["python3 -m pytest"],
+            "dependencies": [],
+            "stop_conditions": [],
+            "reviewer_role": "reviewer",
+            "delivery_action": "pull_request",
+        },
+        "next_task_proposal": {
+            "id": "REC-05",
+            "title": "Raster adapter",
+            "status": "PROPOSED",
+            "repository": "tticom/score2gp",
+        },
+        "incidents": [],
+        "completed_tasks": [
+            {
+                "id": "REC-04",
+                "status": "MERGED",
+                "head_sha": "a" * 40,
+                "merge_commit": "b" * 40,
+            }
+        ],
+    })
+
+    from scripts.score2gp_orchestrator import render_active_task
+    active_content = render_active_task(json.loads(auth_json))
+    monkeypatch.setattr(score2gp_governance_audit, "load_authority", lambda path: json.loads(auth_json))
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(read_data=active_content)()
+        if "ORCHESTRATION_STATE.json" in str(path):
+            return m_open(read_data=auth_json)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    # Subprocess should not be called for gh when task status is MERGED
+    def mock_run(args, **kwargs):
+        if "gh" in args:
+            raise AssertionError("gh command should not be called for MERGED task")
+        return subprocess.run(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    captured = capsys.readouterr()
+    assert "GOVERNANCE AUDIT PASS" in captured.out
