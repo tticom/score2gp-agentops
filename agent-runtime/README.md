@@ -178,6 +178,14 @@ The proxy policy therefore constrains worker egress, not all WSL host traffic.
 
 ## Verification and offline utility
 
+Use the project test wrapper from the AgentOps repository root. It creates
+`.venv` when absent, installs the runtime test requirements only when needed,
+and always invokes pytest through that environment:
+
+```bash
+./agent-runtime/scripts/run-tests.sh -q tests/test_supervisor.py
+```
+
 ```bash
 python -m pytest -q tests/test_disposable_cycle.py tests/test_cycle_egress.py \
   tests/test_agent_runtime.py tests/test_codex_runtime.py
