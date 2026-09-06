@@ -1120,3 +1120,13 @@ def test_reconcile_cli_with_repo_and_pull_request_args(tmp_path: Path, monkeypat
     assert res["status"] == "MERGED"
     saved = json.loads(authority_path.read_text(encoding="utf-8"))
     assert saved["task"]["status"] == "MERGED"
+
+
+def test_verify_merge_gate_handles_non_dict_governance_and_protection() -> None:
+    facts = merge_ready()
+    facts["governance"] = "invalid"
+    facts["protection"] = "invalid"
+    decision = verify_merge_gate(authority(), facts)
+    assert decision["decision"] == "DENY"
+    assert "governance_go_missing" in decision["failures"]
+    assert "active_main_ruleset_missing" in decision["failures"]

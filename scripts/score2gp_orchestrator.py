@@ -74,7 +74,7 @@ def advance(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str, 
         return _decision(authority, live_state, "BLOCKED", "task_declared_blocked")
     if declared in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
         pull_request = live_state.get("pull_request")
-        snapshot = live_state.get("snapshot") or {}
+        snapshot = live_state.get("snapshot") if isinstance(live_state.get("snapshot"), dict) else {}
         proposal = authority.get("next_task_proposal")
         is_promotion = (
             isinstance(pull_request, dict)
@@ -313,8 +313,10 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
             f"branch mismatch: authority expects '{expected_branch}', live is '{live_branch}'"
         )
 
+    snapshot = live_state.get("snapshot")
+    snapshot_repo = snapshot.get("repository") if isinstance(snapshot, dict) else None
     live_repo = (
-        live_state.get("snapshot", {}).get("repository")
+        snapshot_repo
         or live_state.get("repository")
         or pull_request.get("repository")
     )
@@ -353,8 +355,9 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
     if not re.fullmatch(r"[0-9a-f]{40}", head_sha):
         raise OrchestrationError(f"invalid or missing product head SHA: '{head_sha}'")
 
-    if live_state.get("governance", {}).get("reviewed_head_sha"):
-        reviewed_head = str(live_state["governance"]["reviewed_head_sha"]).strip().lower()
+    gov = live_state.get("governance")
+    if isinstance(gov, dict) and gov.get("reviewed_head_sha"):
+        reviewed_head = str(gov["reviewed_head_sha"]).strip().lower()
         if reviewed_head and reviewed_head != head_sha:
             raise OrchestrationError(
                 f"product head SHA '{head_sha}' does not match reviewed head '{reviewed_head}'"

@@ -448,3 +448,15 @@ def test_reconcile_rejects_top_level_repo_mismatch() -> None:
 
     with pytest.raises(OrchestrationError, match="repository mismatch"):
         reconcile(auth, facts)
+
+
+def test_reconcile_handles_non_dict_snapshot_and_governance() -> None:
+    auth = authority("RUNNING")
+    facts = live_merged()
+    facts["snapshot"] = "invalid-non-dict"
+    facts["governance"] = "GO"
+    facts["repository"] = "tticom/score2gp-agentops"
+
+    updated = reconcile(auth, facts)
+    assert updated["task"]["status"] == "MERGED"
+    assert len(updated["completed_tasks"]) == 1

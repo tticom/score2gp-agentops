@@ -260,7 +260,7 @@ def current_head_review(pr: dict[str, Any]) -> str:
 
 def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any] | None:
     pr = live.get("pull_request")
-    snapshot = live.get("snapshot") or {}
+    snapshot = live.get("snapshot") if isinstance(live.get("snapshot"), dict) else {}
     if not isinstance(pr, dict) or str(pr.get("state", "")).upper() != "OPEN":
         return None
     if snapshot.get("repository") != "tticom/score2gp-agentops":
@@ -327,7 +327,7 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
         return result("BLOCKED", "task_declared_blocked", task)
 
     pr = live.get("pull_request")
-    snapshot = live.get("snapshot") or {}
+    snapshot = live.get("snapshot") if isinstance(live.get("snapshot"), dict) else {}
 
     # Handle AgentOps governance / control-plane pull requests
     if (
@@ -458,7 +458,9 @@ def build_assignment(
     target = _completed_review_target(authority, live)
     if target is not None and str(target.get("id")) == resolved.get("task_id"):
         task = target
-        task["repository"] = str((live.get("snapshot") or {}).get("repository", task["repository"]))
+        snapshot = live.get("snapshot")
+        snapshot_dict = snapshot if isinstance(snapshot, dict) else {}
+        task["repository"] = str(snapshot_dict.get("repository", task["repository"]))
         task["branch"] = str((live.get("pull_request") or {}).get("head_branch", task["branch"]))
         task["pull_request"] = (live.get("pull_request") or {}).get("number")
     pr = live.get("pull_request") or {}
@@ -541,7 +543,9 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     if str(pr.get("head_branch", "")) != str(task["branch"]):
         failures.append("branch_mismatch")
     head = str(pr.get("head_sha", ""))
-    reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
+    gov = live.get("governance")
+    gov_dict = gov if isinstance(gov, dict) else {}
+    reviewed_head = str(gov_dict.get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):
         failures.append("reviewed_head_mismatch")
     if current_head_review(pr) != "APPROVED":
@@ -559,16 +563,18 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append(f"required_check_not_success:{required}")
     if policy["require_resolved_threads"] and int(pr.get("unresolved_threads", 0)) != 0:
         failures.append("unresolved_review_threads")
-    if policy["require_governance_go"] and live.get("governance", {}).get("decision") != "GO":
+    if policy["require_governance_go"] and gov_dict.get("decision") != "GO":
         failures.append("governance_go_missing")
     controller_login = str(live.get("merge_controller_login", ""))
     if controller_login not in authority["roles"]["merge_controller"]["github_logins"]:
         failures.append("merge_controller_identity_not_configured")
     if bool(live.get("admin_bypass", False)):
         failures.append("admin_bypass_forbidden")
-    if int(live.get("protection", {}).get("active_rulesets", 0)) < 1:
+    protection = live.get("protection")
+    protection_dict = protection if isinstance(protection, dict) else {}
+    if int(protection_dict.get("active_rulesets", 0)) < 1:
         failures.append("active_main_ruleset_missing")
-    if bool(live.get("protection", {}).get("current_user_can_bypass", False)):
+    if bool(protection_dict.get("current_user_can_bypass", False)):
         failures.append("merge_controller_can_bypass_ruleset")
     return {
         "schema_version": 1,
