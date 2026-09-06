@@ -797,6 +797,7 @@ def test_governance_audit_loads_secret_token_when_gh_token_unset(monkeypatch, ca
         score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
     )
     monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
 
     def mock_exists(path):
         return True
@@ -824,6 +825,46 @@ def test_governance_audit_loads_secret_token_when_gh_token_unset(monkeypatch, ca
 
     assert raised.value.code == 0
     assert os.environ.get("GH_TOKEN") == "secret-test-token"
+
+
+def test_governance_audit_loads_github_token_when_gh_token_unset(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.setenv("GITHUB_TOKEN", "test-github-token-val")
+
+    def mock_exists(path):
+        return True
+
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(
+                read_data="# Active Task\n**Status**: MERGED\n"
+            )()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    assert os.environ.get("GH_TOKEN") == "test-github-token-val"
 
 
 def test_reconciliation_end_to_end_produces_clean_governance_audit(tmp_path, monkeypatch, capsys) -> None:
