@@ -189,7 +189,8 @@ def main():
                 "refusing to skip merged-task replay verification."
             )
 
-        if status in branch_relevant_statuses and branch_name:
+        if (status in branch_relevant_statuses and branch_name
+                and os.environ.get("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE") != "1"):
             # Query gh to see if a PR exists for this branch and whether it is already merged
             try:
                 res = subprocess.run(

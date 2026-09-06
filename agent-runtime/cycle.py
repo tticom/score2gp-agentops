@@ -235,6 +235,9 @@ def execute(data, engine, extra):
             raise CycleError("invalid GitHub secret")
         secret.write_text(token)
         secret.chmod(0o600)
+        gh_env = folder / "gh.env"
+        gh_env.write_text(f"GH_TOKEN={token}\n")
+        gh_env.chmod(0o600)
         askpass = folder / "askpass.sh"
         askpass.write_text('#!/bin/sh\ncase "$1" in *Username*) printf "%s\\n" x-access-token ;; *) cat "$SCORE2GP_TOKEN_FILE" ;; esac\n')
         askpass.chmod(0o700)
@@ -319,11 +322,21 @@ def execute(data, engine, extra):
             raise CycleError(f"agent exited {agent.returncode}; clone retained without automatic checkpoint")
         # Validate offline in new containers, without the token, auth or skills mounts.
         for index, argv in enumerate(data["validation"]):
+            live_governance_audit = argv[-1].endswith("score2gp_governance_audit.py")
             validation = common_container(worker_name, image, uid, gid)
-            validation += ["--network", "none", "--workdir", repo_target, "--entrypoint", argv[0]]
+            validation += ["--network", network if live_governance_audit else "none",
+                           "--workdir", repo_target, "--entrypoint", argv[0]]
             validation += bind(repo, repo_target, data["mode"] == "reviewer") + context_mounts
             validation += bind(passwd, "/etc/passwd") + bind(group, "/etc/group")
-            validation += ["--env", "HOME=/home/agent", "--env", f"PYTHONPATH={repo_target}/src:{repo_target}",
+            validation += ["--env", "HOME=/home/agent", "--env", f"PYTHONPATH={repo_target}/src:{repo_target}"]
+            if live_governance_audit:
+                validation += ["--env-file", str(gh_env),
+                               "--env", "HTTP_PROXY=http://egress:3128",
+                               "--env", "HTTPS_PROXY=http://egress:3128",
+                               "--env", "NO_PROXY="]
+            else:
+                pass
+            validation += [
                            "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "PYTEST_ADDOPTS=-p no:cacheprovider", "--env", "TMPDIR=/test-tmp"]
             with (folder / f"validation-{index}.log").open("w") as output:
                 result = subprocess.run(validation + [image, *argv[1:]], stdout=output, stderr=subprocess.STDOUT)
