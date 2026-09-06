@@ -59,9 +59,10 @@ def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> d
     branch, head = work.get("branch"), work.get("expected_head_sha")
     if not isinstance(branch, str) or not isinstance(head, str) or len(head) != 40:
         raise AdapterError("governance assignment does not pin an exact branch head")
-    # A pull request is normal for an implementation cycle. The governed worker
-    # role, not PR existence, determines whether the source mount is writable.
-    mode = "reviewer" if worker.get("role") in {"reviewer", "governance"} else "author"
+    # A pull request is normal for an implementation cycle. Governance promotion
+    # is a bounded author action even when its source PR is already merged;
+    # only the reviewer role requires a read-only source mount.
+    mode = "reviewer" if worker.get("role") == "reviewer" else "author"
     prompt = work.get("prompt") or task.get("prompt")
     if not isinstance(prompt, str) or not prompt.strip():
         raise AdapterError("task has no bounded prompt")
