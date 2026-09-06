@@ -12,8 +12,8 @@
 - Repository: `tticom/score2gp-agentops`
 - Base revision: `3e24901044b7556d64cd055278f1c8428c578ffe`
 - Branch: `codex/orc-03-post-merge-reconciliation`
-- Local HEAD: `68ab4968e6c0a383fdc727d8d933d32f1926496e`
-- Remote HEAD: `68ab4968e6c0a383fdc727d8d933d32f1926496e`
+- Local HEAD at handoff capture: `d2dac4d8227a087ec7bed85909ad6dd6da816548`
+- Remote HEAD at handoff capture: `d2dac4d8227a087ec7bed85909ad6dd6da816548`
 - Worktree: clean at final handoff commit
 - PR: https://github.com/tticom/score2gp-agentops/pull/638
 
