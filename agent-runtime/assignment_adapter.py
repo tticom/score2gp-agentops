@@ -66,11 +66,16 @@ def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> d
     if not isinstance(work, dict) or not isinstance(worker, dict):
         raise AdapterError("governance assignment has no bounded work/worker sections")
     task = task_by_id(authority, str(assignment.get("authority", {}).get("task_id", "")))
+    repository = work.get("repository")
+    if not isinstance(repository, str):
+        raise AdapterError("assignment repository is missing")
+    if not repository.startswith("https://"):
+        repository = f"https://github.com/{repository}.git"
     branch, head = work.get("branch"), work.get("expected_head_sha")
     if not isinstance(branch, str):
         raise AdapterError("governance assignment is missing its branch")
     if head is None and work.get("pull_request") is None:
-        head = remote_branch_head(work.get("repository", ""), branch)
+        head = remote_branch_head(repository, branch)
     if not isinstance(head, str) or len(head) != 40:
         raise AdapterError("governance assignment does not pin an exact branch head")
     # A pull request is normal for an implementation cycle. Governance promotion
@@ -80,11 +85,6 @@ def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> d
     prompt = work.get("prompt") or task.get("prompt")
     if not isinstance(prompt, str) or not prompt.strip():
         raise AdapterError("task has no bounded prompt")
-    repository = work.get("repository")
-    if not isinstance(repository, str):
-        raise AdapterError("assignment repository is missing")
-    if not repository.startswith("https://"):
-        repository = f"https://github.com/{repository}.git"
     return {"version": 1, "task": str(task["id"]), "role": role, "mode": mode,
             "repository": repository, "branch": branch, "base_sha": head,
             "pull_request": work.get("pull_request"),

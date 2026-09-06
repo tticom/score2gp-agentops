@@ -20,6 +20,7 @@ logs/private*
 evidence/private*
 
 .antigravitycli/
+.venv/
 __pycache__/
 *.pyc
 
