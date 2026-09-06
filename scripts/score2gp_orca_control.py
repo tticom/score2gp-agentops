@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import getpass
 import json
+import os
 import re
 import subprocess
 from copy import deepcopy
@@ -17,6 +18,15 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+if not os.environ.get("GH_TOKEN") and os.path.exists("/run/secrets/github-token"):
+    try:
+        with open("/run/secrets/github-token", "r", encoding="utf-8") as _f:
+            _tok = _f.read().strip()
+            if _tok:
+                os.environ["GH_TOKEN"] = _tok
+    except Exception:
+        pass
 
 try:
     from scripts.score2gp_orchestrator import (
@@ -606,7 +616,10 @@ def reconcile_post_merge(
         if active_task_path is not None:
             active_task_path.write_text(rendered, encoding="utf-8")
 
-    completed_task = updated["completed_tasks"][0] if updated.get("completed_tasks") else {}
+    completed_task = next(
+        (c for c in updated.get("completed_tasks", []) if str(c.get("id")) == str(updated["task"]["id"])),
+        updated["completed_tasks"][0] if updated.get("completed_tasks") else {},
+    )
     return {
         "schema_version": 1,
         "reconciled": not is_already_reconciled,
@@ -659,6 +672,7 @@ def main() -> None:
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
+    parser.add_argument("--active-task", type=Path, default=None, help="Path to ACTIVE_TASK.md")
     parser.add_argument("--assignment", type=Path)
     parser.add_argument("--repository")
     parser.add_argument("--pull-request", type=int)
@@ -671,14 +685,18 @@ def main() -> None:
         print(json.dumps(capture_live_state(args.repository, args.pull_request), indent=2, sort_keys=True))
         return
     if args.live is None:
-        raise ControlError(f"{args.command} requires --live")
+        if args.repository and args.pull_request is not None:
+            live = capture_live_state(args.repository, args.pull_request)
+        else:
+            raise ControlError(f"{args.command} requires --live")
+    else:
+        live = load_json(args.live)
     authority = load_json(args.authority)
-    live = load_json(args.live)
     if args.command == "advance":
         print(json.dumps(advance_orchestration(authority, live), indent=2, sort_keys=True))
         return
     if args.command == "reconcile":
-        active_task_path = args.authority.parent / "ACTIVE_TASK.md"
+        active_task_path = args.active_task or (args.authority.parent / "ACTIVE_TASK.md")
         output = reconcile_post_merge(
             authority,
             live,

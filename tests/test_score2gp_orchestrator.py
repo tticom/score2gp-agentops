@@ -388,3 +388,54 @@ def test_reconciled_active_task_never_reports_merged_task_as_active() -> None:
     assert "**Status**: APPROVED" not in rendered
     assert "**Status**: PROMOTED" not in rendered
     assert "**Status**: IN_PROGRESS" not in rendered
+
+
+def test_reconcile_handles_alternative_formats_and_normalizes_shas() -> None:
+    auth = authority("RUNNING")
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 600,
+            "state": "merged",  # Lowercase state
+            "headRefName": "agy/npg-00a-baseline",  # headRefName instead of head_branch
+            "headRefOid": "A" * 40,  # Uppercase hex
+            "mergeCommit": {"oid": "B" * 40},  # Dict format and uppercase hex
+        },
+    }
+
+    updated = reconcile(auth, facts)
+
+    assert updated["task"]["status"] == "MERGED"
+    assert len(updated["completed_tasks"]) == 1
+    completed = updated["completed_tasks"][0]
+    assert completed["head_sha"] == "a" * 40
+    assert completed["merge_commit"] == "b" * 40
+
+
+def test_reconcile_when_active_task_already_in_completed_tasks_updates_status_without_duplication() -> None:
+    auth = authority("RUNNING")
+    auth["completed_tasks"] = [
+        {
+            "id": "NPG-00A",
+            "title": "Existing",
+            "status": "MERGED",
+            "head_sha": "a" * 40,
+            "merge_commit": "c" * 40,
+        }
+    ]
+    facts = live_merged(head_sha="a" * 40, merge_commit="c" * 40)
+
+    updated = reconcile(auth, facts)
+
+    assert updated["task"]["status"] == "MERGED"
+    assert len(updated["completed_tasks"]) == 1
+
+
+def test_reconcile_rejects_top_level_repo_mismatch() -> None:
+    auth = authority("RUNNING")
+    facts = live_merged()
+    facts["repository"] = "wrong/repo"
+    facts.pop("snapshot", None)
+
+    with pytest.raises(OrchestrationError, match="repository mismatch"):
+        reconcile(auth, facts)

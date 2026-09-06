@@ -783,3 +783,44 @@ def test_reconciled_merged_task_passes_governance_audit(monkeypatch, capsys) -> 
     assert raised.value.code == 0
     captured = capsys.readouterr()
     assert "GOVERNANCE AUDIT PASS" in captured.out
+
+
+def test_governance_audit_loads_secret_token_when_gh_token_unset(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+
+    def mock_exists(path):
+        return True
+
+    monkeypatch.setattr(os.path, "exists", mock_exists)
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if str(path) == "/run/secrets/github-token":
+            return m_open(read_data="secret-test-token")()
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(
+                read_data="# Active Task\n**Status**: MERGED\n"
+            )()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    assert os.environ.get("GH_TOKEN") == "secret-test-token"

@@ -959,3 +959,90 @@ def test_capture_live_state_normalizes_merge_commit(monkeypatch) -> None:
     assert snapshot["pull_request"]["state"] == "MERGED"
     assert snapshot["pull_request"]["merge_commit"] == "b" * 40
     assert snapshot["pull_request"]["head_sha"] == "a" * 40
+
+
+def test_resolve_state_merged_pr_requires_governance_reconciliation() -> None:
+    config = schema2_authority("RUNNING")
+    facts = live_merged_orca()
+    res = resolve_state(config, facts)
+    assert res["state"] == "GOVERNANCE_REQUIRED"
+    assert res["reason"] == "merge_requires_governance_reconciliation"
+    assert res["dispatch_role"] == "governance"
+    assert res["task_id"] == "108"
+
+
+def test_build_assignment_governance_reconciliation() -> None:
+    config = schema2_authority("RUNNING")
+    config["roles"]["governance"] = {
+        "github_logins": ["gov-worker"],
+        "allowed_actions": ["reconcile"],
+        "forbidden_actions": ["merge"],
+    }
+    facts = live_merged_orca()
+    resolved = resolve_state(config, facts)
+    assignment = build_assignment(
+        config,
+        facts,
+        resolved,
+        RuntimeIdentity("agent", "gov-worker"),
+        "a" * 40,
+    )
+    assert assignment["worker"]["role"] == "governance"
+    assert assignment["authority"]["reason"] == "merge_requires_governance_reconciliation"
+    assert assignment["completion_contract"]["may_merge"] is False
+    assert assignment["completion_contract"]["may_select_next_task"] is False
+
+
+def test_reconcile_cli_with_custom_active_task_path(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    custom_active_path = tmp_path / "CUSTOM_ACTIVE.md"
+    live_path = tmp_path / "live.json"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    custom_active_path.write_text(render_active_task(auth), encoding="utf-8")
+    live_path.write_text(json.dumps(live_merged_orca()), encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/score2gp_orca_control.py",
+            "reconcile",
+            "--authority",
+            str(authority_path),
+            "--live",
+            str(live_path),
+            "--active-task",
+            str(custom_active_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    res = json.loads(completed.stdout)
+    assert res["reconciled"] is True
+    assert "**Status**: MERGED" in custom_active_path.read_text(encoding="utf-8")
+
+
+def test_reconcile_post_merge_picks_correct_task_when_multiple_completed(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    auth["completed_tasks"] = [
+        {"id": "099", "status": "MERGED", "head_sha": "9" * 40, "merge_commit": "8" * 40}
+    ]
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    facts = live_merged_orca(head_sha="1" * 40, merge_commit="2" * 40)
+    res = reconcile_post_merge(auth, facts, authority_path, active_task_path)
+
+    assert res["task_id"] == "108"
+    assert res["head_sha"] == "1" * 40
+    assert res["merge_commit"] == "2" * 40
+    assert len(res["completed_tasks"]) == 2
+    assert res["completed_tasks"][0]["id"] == "108"
+    assert res["completed_tasks"][1]["id"] == "099"

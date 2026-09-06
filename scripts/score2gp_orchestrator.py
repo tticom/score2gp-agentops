@@ -305,18 +305,25 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
         )
 
     expected_branch = str(task.get("branch", "")).strip()
-    live_branch = str(pull_request.get("head_branch", "")).strip()
+    live_branch = str(
+        pull_request.get("head_branch", "") or pull_request.get("headRefName", "")
+    ).strip()
     if not live_branch or live_branch != expected_branch:
         raise OrchestrationError(
             f"branch mismatch: authority expects '{expected_branch}', live is '{live_branch}'"
         )
 
-    if live_state.get("snapshot", {}).get("repository"):
-        live_repo = str(live_state["snapshot"]["repository"]).strip()
+    live_repo = (
+        live_state.get("snapshot", {}).get("repository")
+        or live_state.get("repository")
+        or pull_request.get("repository")
+    )
+    if live_repo:
+        live_repo_str = str(live_repo).strip()
         expected_repo = str(task.get("repository", "")).strip()
-        if live_repo != expected_repo:
+        if expected_repo and live_repo_str != expected_repo:
             raise OrchestrationError(
-                f"repository mismatch: authority expects '{expected_repo}', live is '{live_repo}'"
+                f"repository mismatch: authority expects '{expected_repo}', live is '{live_repo_str}'"
             )
 
     head_sha = str(
@@ -362,8 +369,8 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
                 existing_head = str(existing.get("head_sha", "")).strip().lower()
                 existing_merge = str(existing.get("merge_commit", "")).strip().lower()
                 if existing_head == head_sha and existing_merge == merge_commit:
-                    if str(working_authority["task"].get("status", "")).upper() == "MERGED":
-                        return working_authority
+                    working_authority["task"]["status"] = "MERGED"
+                    return working_authority
                 else:
                     raise OrchestrationError(
                         f"task '{task_id}' already completed with different merge metadata "

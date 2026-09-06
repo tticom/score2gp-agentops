@@ -109,6 +109,15 @@ def has_valid_review_id(text: str) -> bool:
 
 
 def main():
+    if not os.environ.get("GH_TOKEN") and os.path.exists("/run/secrets/github-token"):
+        try:
+            with open("/run/secrets/github-token", "r", encoding="utf-8") as _f:
+                _tok = _f.read().strip()
+                if _tok:
+                    os.environ["GH_TOKEN"] = _tok
+        except Exception:
+            pass
+
     print("Running Score2GP Governance Audit...")
     violations = []
 
