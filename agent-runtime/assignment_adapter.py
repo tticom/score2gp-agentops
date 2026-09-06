@@ -51,13 +51,27 @@ def parse_hosts(value: str) -> list[str]:
         raise AdapterError("SCORE2GP_EGRESS_HOSTS must name the required HTTPS services")
     return hosts
 
+def remote_branch_head(repository: str, branch: str) -> str:
+    result = subprocess.run(
+        ["git", "ls-remote", repository, f"refs/heads/{branch}"],
+        capture_output=True, text=True, check=False,
+    )
+    fields = result.stdout.split()
+    if result.returncode or len(fields) != 2 or len(fields[0]) != 40:
+        raise AdapterError("assigned branch does not have an exact remote head")
+    return fields[0]
+
 def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> dict:
     work, worker = assignment.get("work"), assignment.get("worker")
     if not isinstance(work, dict) or not isinstance(worker, dict):
         raise AdapterError("governance assignment has no bounded work/worker sections")
     task = task_by_id(authority, str(assignment.get("authority", {}).get("task_id", "")))
     branch, head = work.get("branch"), work.get("expected_head_sha")
-    if not isinstance(branch, str) or not isinstance(head, str) or len(head) != 40:
+    if not isinstance(branch, str):
+        raise AdapterError("governance assignment is missing its branch")
+    if head is None and work.get("pull_request") is None:
+        head = remote_branch_head(work.get("repository", ""), branch)
+    if not isinstance(head, str) or len(head) != 40:
         raise AdapterError("governance assignment does not pin an exact branch head")
     # A pull request is normal for an implementation cycle. Governance promotion
     # is a bounded author action even when its source PR is already merged;

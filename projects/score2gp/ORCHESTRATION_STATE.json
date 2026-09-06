@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "codex/orc-03-post-merge-state-reconciliation",
-    "pull_request": 639,
+    "pull_request": null,
     "owner_role": "governance",
     "prompt": "projects/score2gp/prompts/next/orc-03-post-merge-state-reconciliation.md",
     "allowed_paths": [
