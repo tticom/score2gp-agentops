@@ -361,7 +361,8 @@ def execute(data, engine, extra):
     except (CycleError, KeyboardInterrupt) as exc:
         receipt["status"] = "retained"
         receipt["reason"] = str(exc) or "interrupted"
-        print(f"cycle retained: {receipt['reason']}\nrecovery: {folder}", file=sys.stderr)
+        print(f"cycle outcome: RETAINED\ncycle retained: {receipt['reason']}\nrecovery: {folder}", file=sys.stderr)
+        print("next: resolve a fresh assignment before retrying; do not reuse this cycle", file=sys.stderr)
         return 1
     finally:
         # Supervise Docker instead of exec: ordinary exit and SIGINT/SIGTERM reach cleanup.
