@@ -26,6 +26,11 @@ def test_convert_reviewer_is_read_only():
     assert result["mode"] == "reviewer"
     assert result["allowed_paths"] == []
 
+def test_convert_governance_promotion_is_writable():
+    result = adapter.convert(governed("governance", 459), AUTHORITY, "gov", ["github.com"])
+    assert result["mode"] == "author"
+    assert result["allowed_paths"] == ["src/a.py"]
+
 @pytest.mark.parametrize("assignment", [{}, {"work": {}, "worker": {}},
     {"authority": {"task_id": "UNKNOWN"}, "worker": {"role": "implementation"}, "work": {}}])
 def test_convert_rejects_incomplete_assignment(assignment):
