@@ -25,7 +25,12 @@ def main():
             result = subprocess.run(["agy", "plugin", "install", f"/workspace/agy-skills/plugins/{plugin}"])
             if result.returncode:
                 return result.returncode
-        command = ["agy", "--dangerously-skip-permissions", *extra, "--print", prompt]
+        # A bounded cycle may include implementation, tests and a handoff. AGY's
+        # CLI default is five minutes, which is too short for unattended work
+        # and surfaces as the opaque "timeout waiting for response" exit.
+        print_timeout = os.environ.get("SCORE2GP_AGY_PRINT_TIMEOUT", "30m")
+        command = ["agy", "--dangerously-skip-permissions", *extra,
+                   "--print-timeout", print_timeout, "--print", prompt]
     else:
         command = ["codex", "exec", "--ephemeral", "--dangerously-bypass-approvals-and-sandbox", "--add-dir", "/workspace/agy-skills", *extra, prompt]
     return subprocess.run(command).returncode

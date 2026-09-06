@@ -81,7 +81,7 @@ def test_worker_executes_bounded_client_and_propagates_status(worker_entrypoint,
             ["agy", "plugin", "install", f"/workspace/agy-skills/plugins/{plugin}"]
             for plugin in ("engineering", "productivity")]
         assert state["calls"][-1][:-1] == ["agy", "--dangerously-skip-permissions",
-                                               "--model", "test-model", "--print"]
+                                               "--model", "test-model", "--print-timeout", "30m", "--print"]
     else:
         assert len(state["calls"]) == 1
         assert state["calls"][0][:-1] == ["codex", "exec", "--ephemeral",
