@@ -369,6 +369,15 @@ def execute(data, engine, extra):
         if (folder / "context").exists():
             shutil.rmtree(folder / "context")
         shutil.rmtree(skills_snapshot)
+        print("cycle status: COMPLETE", flush=True)
+        print("assessment: agent work, validation, and remote evidence all passed", flush=True)
+        if data["mode"] == "author":
+            print(f"next: inspect or open the PR for {data['repository']} branch "
+                  f"{data['branch']} at {receipt['published_head'][:12]}", flush=True)
+            print("next: send the published change through devil's-advocate review before merging", flush=True)
+        else:
+            print(f"next: inspect the published review at {receipt['review_url']}", flush=True)
+            print("next: merge if approved; otherwise hand the findings back to the developer", flush=True)
         print("cycle complete: remote evidence verified; disposable clone removed", flush=True)
         return 0
     except (CycleError, KeyboardInterrupt) as exc:
