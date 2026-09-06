@@ -924,3 +924,48 @@ def test_reconciliation_end_to_end_produces_clean_governance_audit(tmp_path, mon
     assert raised.value.code == 0
     captured = capsys.readouterr()
     assert "GOVERNANCE AUDIT PASS" in captured.out
+
+
+def test_governance_audit_skips_gh_when_offline_env_set(monkeypatch, capsys) -> None:
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setenv("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE", "1")
+
+    active_content = """# Active Task
+**Status**: PROMOTED
+**Repository**: tticom/score2gp
+**PR Branch**: `feat/active-branch`
+"""
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(read_data=active_content)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    def mock_run(args, **kwargs):
+        if "gh" in args:
+            raise AssertionError("gh should not be called when SCORE2GP_GOVERNANCE_AUDIT_OFFLINE=1")
+        return subprocess.run(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    captured = capsys.readouterr()
+    assert "GOVERNANCE AUDIT PASS" in captured.out
