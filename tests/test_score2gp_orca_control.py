@@ -816,10 +816,21 @@ def test_reconcile_dry_run_leaves_files_byte_for_byte_unchanged(tmp_path: Path) 
 
 @pytest.mark.parametrize("mutator,match_err", [
     (lambda l: l["pull_request"].update(state="OPEN"), "expected 'MERGED'"),
+    (lambda l: l["pull_request"].update(state="CLOSED"), "expected 'MERGED'"),
     (lambda l: l["pull_request"].update(number=999), "PR number mismatch"),
     (lambda l: l["pull_request"].update(head_branch="wrong"), "branch mismatch"),
     (lambda l: l["pull_request"].update(head_sha="short"), "invalid or missing product head SHA"),
+    (lambda l: l["pull_request"].update(head_sha="z" * 40), "invalid or missing product head SHA"),
+    (lambda l: l["pull_request"].update(head_sha=None), "invalid or missing product head SHA"),
     (lambda l: l["pull_request"].pop("merge_commit"), "invalid or missing merge commit SHA"),
+    (lambda l: l["pull_request"].update(merge_commit="invalid"), "invalid or missing merge commit SHA"),
+    (lambda l: l["pull_request"].update(merge_commit=None), "invalid or missing merge commit SHA"),
+    (lambda l: l.pop("pull_request"), "live pull_request missing or invalid"),
+    (lambda l: (l.pop("snapshot", None), l.pop("repository", None)), "missing repository in live state"),
+    (lambda l: l.update(snapshot={"repository": "wrong/repo"}), "repository mismatch"),
+    (lambda l: l.update(governance={"reviewed_head_sha": "b" * 40}), "does not match reviewed head"),
+    (lambda l: l.update(expected_head_sha="b" * 40), "does not match expected head"),
+    (lambda l: l.update(expected_merge_commit="c" * 40), "does not match expected merge commit"),
 ])
 def test_reconcile_fails_closed_and_leaves_files_byte_for_byte_unchanged(
     tmp_path: Path, mutator: Any, match_err: str
@@ -1046,3 +1057,66 @@ def test_reconcile_post_merge_picks_correct_task_when_multiple_completed(tmp_pat
     assert len(res["completed_tasks"]) == 2
     assert res["completed_tasks"][0]["id"] == "108"
     assert res["completed_tasks"][1]["id"] == "099"
+
+
+def test_reconcile_fails_when_existing_active_task_is_split_brain(tmp_path: Path) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    # Divergent active task file
+    active_task_path.write_text(
+        "# Active Task\n**Task**: WRONG-999\n**Status**: IN_PROGRESS\n**Repository**: tticom/score2gp\n**PR Branch**: `feat/wrong`\n",
+        encoding="utf-8",
+    )
+
+    auth_bytes = authority_path.read_bytes()
+    active_bytes = active_task_path.read_bytes()
+
+    facts = live_merged_orca()
+    with pytest.raises(ControlError, match="ACTIVE_TASK.md diverges from orchestration authority"):
+        reconcile_post_merge(auth, facts, authority_path, active_task_path)
+
+    assert authority_path.read_bytes() == auth_bytes
+    assert active_task_path.read_bytes() == active_bytes
+
+
+def test_reconcile_cli_with_repo_and_pull_request_args(tmp_path: Path, monkeypatch) -> None:
+    auth = schema2_authority("RUNNING")
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    from scripts.score2gp_orchestrator import render_active_task
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    captured_facts = live_merged_orca()
+
+    import scripts.score2gp_orca_control as orca_ctrl
+    monkeypatch.setattr(orca_ctrl, "capture_live_state", lambda repo, pr: captured_facts)
+
+    # Use python CLI invocation with monkeypatch by invoking main with sys.argv
+    test_argv = [
+        "score2gp_orca_control.py",
+        "reconcile",
+        "--authority",
+        str(authority_path),
+        "--repository",
+        "tticom/score2gp",
+        "--pull-request",
+        "441",
+    ]
+    monkeypatch.setattr(sys, "argv", test_argv)
+
+    import io
+    from contextlib import redirect_stdout
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        orca_ctrl.main()
+
+    res = json.loads(buf.getvalue())
+    assert res["reconciled"] is True
+    assert res["status"] == "MERGED"
+    saved = json.loads(authority_path.read_text(encoding="utf-8"))
+    assert saved["task"]["status"] == "MERGED"

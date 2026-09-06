@@ -19,14 +19,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-if not os.environ.get("GH_TOKEN") and os.path.exists("/run/secrets/github-token"):
-    try:
-        with open("/run/secrets/github-token", "r", encoding="utf-8") as _f:
-            _tok = _f.read().strip()
-            if _tok:
-                os.environ["GH_TOKEN"] = _tok
-    except Exception:
-        pass
+if not os.environ.get("GH_TOKEN"):
+    if os.environ.get("GITHUB_TOKEN"):
+        os.environ["GH_TOKEN"] = os.environ["GITHUB_TOKEN"]
+    elif os.path.exists("/run/secrets/github-token"):
+        try:
+            with open("/run/secrets/github-token", "r", encoding="utf-8") as _f:
+                _tok = _f.read().strip()
+                if _tok:
+                    os.environ["GH_TOKEN"] = _tok
+        except Exception:
+            pass
 
 try:
     from scripts.score2gp_orchestrator import (

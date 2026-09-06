@@ -318,12 +318,33 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
         or live_state.get("repository")
         or pull_request.get("repository")
     )
-    if live_repo:
-        live_repo_str = str(live_repo).strip()
-        expected_repo = str(task.get("repository", "")).strip()
-        if expected_repo and live_repo_str != expected_repo:
+    if not live_repo:
+        raise OrchestrationError("missing repository in live state")
+    live_repo_str = str(live_repo).strip()
+    expected_repo = str(task.get("repository", "")).strip()
+    if expected_repo and live_repo_str != expected_repo:
+        raise OrchestrationError(
+            f"repository mismatch: authority expects '{expected_repo}', live is '{live_repo_str}'"
+        )
+
+    live_task_id = str(live_state.get("task_id") or live_state.get("expected_task_id") or "").strip()
+    if live_task_id and live_task_id != task_id:
+        raise OrchestrationError(
+            f"task ID mismatch: authority expects '{task_id}', live is '{live_task_id}'"
+        )
+
+    if live_state.get("expected_branch"):
+        expected_b = str(live_state["expected_branch"]).strip()
+        if expected_b and expected_b != expected_branch:
             raise OrchestrationError(
-                f"repository mismatch: authority expects '{expected_repo}', live is '{live_repo_str}'"
+                f"branch mismatch: authority expects '{expected_branch}', expected_branch is '{expected_b}'"
+            )
+
+    if live_state.get("expected_pull_request"):
+        exp_pr = _parse_strict_positive_int(live_state["expected_pull_request"])
+        if exp_pr is not None and exp_pr != expected_pr:
+            raise OrchestrationError(
+                f"PR number mismatch: authority expects {expected_pr}, expected is {exp_pr}"
             )
 
     head_sha = str(
@@ -370,6 +391,10 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
                 existing_merge = str(existing.get("merge_commit", "")).strip().lower()
                 if existing_head == head_sha and existing_merge == merge_commit:
                     working_authority["task"]["status"] = "MERGED"
+                    if "next_task_proposal" in working_authority and isinstance(
+                        working_authority["next_task_proposal"], dict
+                    ):
+                        working_authority["next_task_proposal"]["status"] = "PROPOSED"
                     return working_authority
                 else:
                     raise OrchestrationError(

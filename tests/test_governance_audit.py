@@ -824,3 +824,103 @@ def test_governance_audit_loads_secret_token_when_gh_token_unset(monkeypatch, ca
 
     assert raised.value.code == 0
     assert os.environ.get("GH_TOKEN") == "secret-test-token"
+
+
+def test_reconciliation_end_to_end_produces_clean_governance_audit(tmp_path, monkeypatch, capsys) -> None:
+    from scripts.score2gp_orca_control import reconcile_post_merge
+    from scripts.score2gp_orchestrator import render_active_task
+
+    auth = {
+        "schema_version": 2,
+        "authority_revision": 24,
+        "task": {
+            "id": "ORC-03",
+            "title": "Automated Post-Merge State Reconciliation",
+            "objective": "Objective",
+            "status": "RUNNING",
+            "repository": "tticom/score2gp-agentops",
+            "base_branch": "main",
+            "branch": "codex/orc-03-post-merge-reconciliation",
+            "pull_request": 639,
+            "owner_role": "governance",
+            "allowed_paths": ["scripts/score2gp_orca_control.py"],
+            "validation_commands": ["git diff --check"],
+            "dependencies": [],
+            "stop_conditions": [],
+            "reviewer_role": "reviewer",
+            "delivery_action": "pull_request",
+        },
+        "incidents": [],
+        "completed_tasks": [],
+    }
+
+    authority_path = tmp_path / "ORCHESTRATION_STATE.json"
+    active_task_path = tmp_path / "ACTIVE_TASK.md"
+
+    authority_path.write_text(json.dumps(auth, indent=2) + "\n", encoding="utf-8")
+    active_task_path.write_text(render_active_task(auth), encoding="utf-8")
+
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 639,
+            "state": "MERGED",
+            "head_branch": "codex/orc-03-post-merge-reconciliation",
+            "head_sha": "a" * 40,
+            "merge_commit": "b" * 40,
+            "reviews": [],
+            "checks": [{"name": "test", "conclusion": "SUCCESS"}],
+            "unresolved_threads": 0,
+        },
+    }
+
+    # Run actual reconciliation
+    res = reconcile_post_merge(auth, facts, authority_path, active_task_path)
+    assert res["reconciled"] is True
+    assert res["status"] == "MERGED"
+
+    reconciled_auth_text = authority_path.read_text(encoding="utf-8")
+    reconciled_active_text = active_task_path.read_text(encoding="utf-8")
+    assert "**Status**: MERGED" in reconciled_active_text
+
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "projects/score2gp/skills/developer/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(
+        score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files)
+    )
+    monkeypatch.setattr(
+        score2gp_governance_audit, "load_authority", lambda path: json.loads(reconciled_auth_text)
+    )
+
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(read_data=reconciled_active_text)()
+        if "ORCHESTRATION_STATE.json" in str(path):
+            return m_open(read_data=reconciled_auth_text)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    def mock_run(args, **kwargs):
+        if "gh" in args:
+            raise AssertionError("gh should not be called for MERGED task")
+        return subprocess.run(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+
+    assert raised.value.code == 0
+    captured = capsys.readouterr()
+    assert "GOVERNANCE AUDIT PASS" in captured.out
