@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
@@ -12,12 +13,42 @@ import sys
 class AdapterError(RuntimeError):
     pass
 
+def diagnostic(result: subprocess.CompletedProcess) -> str:
+    detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
+    return re.sub(
+        r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*[^\s]+",
+        r"\1=[REDACTED]",
+        detail,
+    )[:500]
+
+def role_dispatch_environment(role: str) -> dict[str, str]:
+    env = os.environ.copy()
+    project = env.get("SCORE2GP_GCP_PROJECT_ID", "")
+    secret = env.get("SCORE2GP_GITHUB_SECRET_NAME", f"score2gp-github-{role}-token")
+    if not project:
+        raise AdapterError("SCORE2GP_GCP_PROJECT_ID is required before governance dispatch")
+    result = subprocess.run(
+        ["gcloud", "secrets", "versions", "access", "latest",
+         f"--secret={secret}", f"--project={project}"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        raise AdapterError(
+            f"GitHub secret lookup failed (exit {result.returncode}): {diagnostic(result)}"
+        )
+    token = result.stdout.strip()
+    if not token or "\n" in token or "\r" in token:
+        raise AdapterError("GitHub secret lookup returned an invalid token")
+    env["GH_TOKEN"] = token
+    return env
+
 def command_json(command: list[str], cwd: Path, env: dict[str, str]) -> dict:
     result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True)
     if result.returncode:
-        detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
         raise AdapterError(
-            f"governance dispatch failed (exit {result.returncode}): {detail}"
+            f"governance dispatch failed (exit {result.returncode}): {diagnostic(result)}"
         )
     try:
         value = json.loads(result.stdout)
@@ -104,7 +135,8 @@ def main() -> int:
     args = parser.parse_args()
     agentops, product = args.agentops.resolve(), args.product.resolve()
     env = os.environ.copy(); env["SCORE2GP_AGENT_ROLE"] = args.role
-    assignment = command_json([sys.executable, str(agentops / "scripts" / ("score2gp_go_bootstrap.py" if args.role == "automation" else "score2gp_got_bootstrap.py")), "--agentops", str(agentops), "--product", str(product), "--json"], agentops, env)
+    dispatch_env = role_dispatch_environment(args.role)
+    assignment = command_json([sys.executable, str(agentops / "scripts" / ("score2gp_go_bootstrap.py" if args.role == "automation" else "score2gp_got_bootstrap.py")), "--agentops", str(agentops), "--product", str(product), "--json"], agentops, dispatch_env)
     try:
         authority = json.loads((agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text())
     except (OSError, json.JSONDecodeError) as exc:
