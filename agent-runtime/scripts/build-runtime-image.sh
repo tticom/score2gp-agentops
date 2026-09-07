@@ -9,4 +9,5 @@ command -v docker >/dev/null 2>&1 || { echo "error: docker is required" >&2; exi
 docker info >/dev/null
 docker build --pull --tag "$image_tag" "$runtime_dir"
 docker run --rm --entrypoint agy "$image_tag" --version
+docker run --rm --entrypoint python "$image_tag" -m mypy --version
 echo "ready: $image_tag"
