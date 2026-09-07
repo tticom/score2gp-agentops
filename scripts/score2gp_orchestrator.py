@@ -335,18 +335,18 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
             f"task ID mismatch: authority expects '{task_id}', live is '{live_task_id}'"
         )
 
-    if live_state.get("expected_branch"):
+    if "expected_branch" in live_state and live_state["expected_branch"] is not None:
         expected_b = str(live_state["expected_branch"]).strip()
-        if expected_b and expected_b != expected_branch:
+        if not expected_b or expected_b != expected_branch:
             raise OrchestrationError(
                 f"branch mismatch: authority expects '{expected_branch}', expected_branch is '{expected_b}'"
             )
 
-    if live_state.get("expected_pull_request"):
+    if "expected_pull_request" in live_state and live_state["expected_pull_request"] is not None:
         exp_pr = _parse_strict_positive_int(live_state["expected_pull_request"])
-        if exp_pr is not None and exp_pr != expected_pr:
+        if exp_pr is None or exp_pr != expected_pr:
             raise OrchestrationError(
-                f"PR number mismatch: authority expects {expected_pr}, expected is {exp_pr}"
+                f"PR number mismatch: authority expects {expected_pr}, expected is {live_state['expected_pull_request']}"
             )
 
     head_sha = str(
@@ -363,9 +363,9 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
                 f"product head SHA '{head_sha}' does not match reviewed head '{reviewed_head}'"
             )
 
-    if live_state.get("expected_head_sha"):
+    if "expected_head_sha" in live_state and live_state["expected_head_sha"] is not None:
         expected_head = str(live_state["expected_head_sha"]).strip().lower()
-        if expected_head and expected_head != head_sha:
+        if not expected_head or expected_head != head_sha:
             raise OrchestrationError(
                 f"product head SHA '{head_sha}' does not match expected head '{expected_head}'"
             )
@@ -377,9 +377,9 @@ def reconcile(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str
     if not re.fullmatch(r"[0-9a-f]{40}", merge_commit):
         raise OrchestrationError(f"invalid or missing merge commit SHA: '{merge_commit}'")
 
-    if live_state.get("expected_merge_commit"):
+    if "expected_merge_commit" in live_state and live_state["expected_merge_commit"] is not None:
         expected_merge = str(live_state["expected_merge_commit"]).strip().lower()
-        if expected_merge and expected_merge != merge_commit:
+        if not expected_merge or expected_merge != merge_commit:
             raise OrchestrationError(
                 f"merge commit '{merge_commit}' does not match expected merge commit '{expected_merge}'"
             )

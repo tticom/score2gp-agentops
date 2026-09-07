@@ -357,10 +357,15 @@ def test_reconcile_replaying_same_verified_merge_does_not_duplicate_completed_ta
     (lambda l: l.update(task_id="wrong-task"), "task ID mismatch"),
     (lambda l: l.update(expected_task_id="wrong-task"), "task ID mismatch"),
     (lambda l: l.update(expected_branch="wrong-branch"), "branch mismatch"),
+    (lambda l: l.update(expected_branch=""), "branch mismatch"),
     (lambda l: l.update(expected_pull_request=999), "PR number mismatch"),
+    (lambda l: l.update(expected_pull_request=-1), "PR number mismatch"),
+    (lambda l: l.update(expected_pull_request="invalid"), "PR number mismatch"),
     (lambda l: l.update(governance={"reviewed_head_sha": "b" * 40}), "does not match reviewed head"),
     (lambda l: l.update(expected_head_sha="b" * 40), "does not match expected head"),
+    (lambda l: l.update(expected_head_sha=""), "does not match expected head"),
     (lambda l: l.update(expected_merge_commit="b" * 40), "does not match expected merge commit"),
+    (lambda l: l.update(expected_merge_commit=""), "does not match expected merge commit"),
 ])
 def test_reconcile_fails_closed_and_leaves_authority_byte_for_byte_unchanged(
     mutator: Any, match_err: str

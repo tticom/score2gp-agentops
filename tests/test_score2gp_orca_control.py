@@ -828,9 +828,15 @@ def test_reconcile_dry_run_leaves_files_byte_for_byte_unchanged(tmp_path: Path) 
     (lambda l: l.pop("pull_request"), "live pull_request missing or invalid"),
     (lambda l: (l.pop("snapshot", None), l.pop("repository", None)), "missing repository in live state"),
     (lambda l: l.update(snapshot={"repository": "wrong/repo"}), "repository mismatch"),
+    (lambda l: l.update(task_id="wrong-task"), "task ID mismatch"),
+    (lambda l: l.update(expected_task_id="wrong-task"), "task ID mismatch"),
+    (lambda l: l.update(expected_branch="wrong"), "branch mismatch"),
+    (lambda l: l.update(expected_pull_request=999), "PR number mismatch"),
     (lambda l: l.update(governance={"reviewed_head_sha": "b" * 40}), "does not match reviewed head"),
     (lambda l: l.update(expected_head_sha="b" * 40), "does not match expected head"),
+    (lambda l: l.update(expected_head_sha=""), "does not match expected head"),
     (lambda l: l.update(expected_merge_commit="c" * 40), "does not match expected merge commit"),
+    (lambda l: l.update(expected_merge_commit=""), "does not match expected merge commit"),
 ])
 def test_reconcile_fails_closed_and_leaves_files_byte_for_byte_unchanged(
     tmp_path: Path, mutator: Any, match_err: str
