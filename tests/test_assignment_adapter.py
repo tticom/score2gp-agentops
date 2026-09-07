@@ -41,3 +41,21 @@ def test_hosts_are_explicit():
     with pytest.raises(adapter.AdapterError):
         adapter.parse_hosts("")
     assert adapter.parse_hosts("api.github.com github.com") == ["api.github.com", "github.com"]
+
+
+def test_role_dispatch_environment_fetches_secret_without_gh_login(monkeypatch):
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append(command)
+        return type("Result", (), {"returncode": 0, "stdout": "role-token\n", "stderr": ""})()
+
+    monkeypatch.setattr(adapter.subprocess, "run", run)
+    monkeypatch.setenv("SCORE2GP_GCP_PROJECT_ID", "score2gp-test")
+    monkeypatch.setenv("SCORE2GP_GITHUB_SECRET_NAME", "score2gp-github-automation-token")
+    env = adapter.role_dispatch_environment("automation")
+    assert env["GH_TOKEN"] == "role-token"
+    assert calls == [[
+        "gcloud", "secrets", "versions", "access", "latest",
+        "--secret=score2gp-github-automation-token", "--project=score2gp-test",
+    ]]
