@@ -15,4 +15,6 @@ fi
 SCORE2GP_PRODUCT_DIR="$product_dir" SCORE2GP_TASK="$task_slug" \
   "$runtime_dir/start-agent.sh" python -c 'import score2gp; print(score2gp.__file__)'
 SCORE2GP_PRODUCT_DIR="$product_dir" SCORE2GP_TASK="$task_slug" \
+  "$runtime_dir/start-agent.sh" python -m mypy --version
+SCORE2GP_PRODUCT_DIR="$product_dir" SCORE2GP_TASK="$task_slug" \
   "$runtime_dir/start-agent.sh" python -m pytest -q tests/recognition/test_schemas.py

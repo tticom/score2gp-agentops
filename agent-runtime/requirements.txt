@@ -5,6 +5,7 @@ pydantic>=2.6,<3
 typer>=0.12,<1
 pymupdf>=1.23,<2
 pytest>=8.0,<9
+mypy>=1.11,<2
 pillow>=10.0,<12
 ruff==0.6.2
 pylint==4.0.7
