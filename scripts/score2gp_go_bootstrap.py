@@ -28,8 +28,11 @@ def sync_main(cwd: Path, name: str) -> None:
         if res.stdout.strip():
             fail_closed(f"{name} repository is dirty. Commit or stash changes before dispatching.")
         subprocess.run(["git", "fetch", "origin", "main"], cwd=cwd, capture_output=True, text=True, check=True)
+        subprocess.run(["git", "switch", "main"], cwd=cwd, capture_output=True, text=True, check=True)
+        subprocess.run(["git", "merge", "--ff-only", "origin/main"], cwd=cwd, capture_output=True, text=True, check=True)
     except Exception as e:
-        fail_closed(f"Failed to sync {name}: {e}")
+        detail = getattr(e, "stderr", None) or str(e)
+        fail_closed(f"Failed to sync {name}: {detail.strip()}")
 
 
 def main() -> None:

@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import pytest
+from types import SimpleNamespace
 
 spec = importlib.util.spec_from_file_location("assignment_adapter", Path(__file__).parents[1] / "agent-runtime/assignment_adapter.py")
 adapter = importlib.util.module_from_spec(spec)
@@ -41,3 +42,12 @@ def test_hosts_are_explicit():
     with pytest.raises(adapter.AdapterError):
         adapter.parse_hosts("")
     assert adapter.parse_hosts("api.github.com github.com") == ["api.github.com", "github.com"]
+
+
+def test_command_json_preserves_dispatch_diagnostic(monkeypatch, tmp_path):
+    def run(*args, **kwargs):
+        return SimpleNamespace(returncode=1, stdout="", stderr="gh: not logged in")
+
+    monkeypatch.setattr(adapter.subprocess, "run", run)
+    with pytest.raises(adapter.AdapterError, match="gh: not logged in"):
+        adapter.command_json(["dispatch"], tmp_path, {})
