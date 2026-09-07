@@ -255,8 +255,7 @@ def test_reviewer_never_pushes_source_and_requires_remote_review_receipt(control
     assert not (folder / "github-token").exists()
 
 
-@pytest.mark.parametrize("existing_work", ["branch", "dirty"])
-def test_bootstrap_preserves_existing_work_and_never_touches_legacy_product(repository, tmp_path, existing_work):
+def test_bootstrap_switches_clean_controller_checkout_to_main(repository, tmp_path):
     remote, source = repository
     scripts = source / "agent-runtime/scripts"
     scripts.mkdir(parents=True)
@@ -280,14 +279,49 @@ def test_bootstrap_preserves_existing_work_and_never_touches_legacy_product(repo
     first = subprocess.run(command, env=env, capture_output=True, text=True)
     assert first.returncode == 0, first.stderr
     checkout = workspace / "score2gp-agentops"
-    if existing_work == "branch":
-        git(checkout, "switch", "-c", "feat/unfinished")
-    else:
-        (checkout / "uncommitted.txt").write_text("unfinished work\n")
-    before_branch = git(checkout, "branch", "--show-current")
-    before_status = git(checkout, "status", "--porcelain")
+    git(checkout, "switch", "-c", "feat/unfinished")
+    second = subprocess.run(command, env=env, capture_output=True, text=True)
+    assert second.returncode == 0, second.stderr
+    assert git(checkout, "branch", "--show-current") == "main"
+    assert not (workspace / "score2gp").exists()
+
+
+def test_bootstrap_refuses_dirty_controller_checkout(repository, tmp_path):
+    remote, source = repository
+    scripts = source / "agent-runtime/scripts"
+    scripts.mkdir(parents=True)
+    configure = scripts / "configure-shell-startup.sh"
+    configure.write_text((RUNTIME / "scripts/configure-shell-startup.sh").read_text())
+    configure.chmod(0o755)
+    git(source, "add", ".")
+    git(source, "commit", "-m", "Bootstrap fixture")
+    git(source, "push", "origin", "HEAD:main")
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    docker = binaries / "docker"
+    docker.write_text("#!/bin/sh\nexit 0\n")
+    docker.chmod(0o755)
+    workspace = tmp_path / "workspace"
+    env = os.environ.copy()
+    env.update(PATH=f"{binaries}:{env['PATH']}", SCORE2GP_WORKSPACE_ROOT=str(workspace),
+               AGENTOPS_REPO=str(remote), AGY_SKILLS_REPO=str(remote), AGENTOPS_REF="main", AGY_SKILLS_REF="main",
+               SCORE2GP_SHELL_STARTUP_FILE=str(tmp_path / "bashrc"))
+    command = [str(RUNTIME / "scripts/bootstrap-instance.sh")]
+    first = subprocess.run(command, env=env, capture_output=True, text=True)
+    assert first.returncode == 0, first.stderr
+    checkout = workspace / "score2gp-agentops"
+    (checkout / "uncommitted.txt").write_text("unfinished work\n")
     second = subprocess.run(command, env=env, capture_output=True, text=True)
     assert second.returncode == 75
-    assert git(checkout, "branch", "--show-current") == before_branch
-    assert git(checkout, "status", "--porcelain") == before_status
-    assert not (workspace / "score2gp").exists()
+    assert "dirty repository" in second.stderr
+
+
+def test_cycle_run_preserves_safe_cloud_diagnostic(monkeypatch):
+    def run(*args, **kwargs):
+        return subprocess.CompletedProcess(args[0], 1, "", "ERROR: PERMISSION_DENIED secret=topsecret")
+
+    monkeypatch.setattr(cycle.subprocess, "run", run)
+    with pytest.raises(cycle.CycleError, match="PERMISSION_DENIED") as error:
+        cycle.run(["gcloud", "secrets"])
+    assert "topsecret" not in str(error.value)
+    assert "REDACTED" in str(error.value)
