@@ -21,13 +21,12 @@ sync_repo() {
     echo "error: refusing to update dirty repository: $repo_dir" >&2
     exit 75
   fi
-  if [ "$(git -C "$repo_dir" branch --show-current)" != "$ref" ]; then
-    echo "error: refusing to switch an existing checkout away from its branch: $repo_dir" >&2
-    exit 75
-  fi
   if [ "$(git -C "$repo_dir" remote get-url origin)" != "$remote_url" ]; then
     echo "error: refusing to synchronize an unexpected remote: $repo_dir" >&2
     exit 75
+  fi
+  if [ "$(git -C "$repo_dir" branch --show-current)" != "$ref" ]; then
+    git -C "$repo_dir" switch "$ref"
   fi
   git -C "$repo_dir" fetch origin "$ref"
   git -C "$repo_dir" merge --ff-only "origin/$ref"

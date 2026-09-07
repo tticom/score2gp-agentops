@@ -1,6 +1,11 @@
 import subprocess
 import sys
 import os
+from types import SimpleNamespace
+
+import pytest
+
+from scripts import score2gp_go_bootstrap, score2gp_got_bootstrap
 
 def setup_clean_repo(tmp_path):
     repo_path = tmp_path / "repo"
@@ -75,3 +80,22 @@ def test_got_wrapper_dirty_repo_fails(tmp_path):
     )
     assert result.returncode != 0
     assert "is dirty" in result.stderr
+
+
+@pytest.mark.parametrize("module", [score2gp_go_bootstrap, score2gp_got_bootstrap])
+def test_bootstrap_switches_to_and_fast_forwards_main(monkeypatch, tmp_path, module):
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(module.subprocess, "run", run)
+    module.sync_main(tmp_path, "agentops")
+
+    assert calls == [
+        ["git", "status", "--porcelain"],
+        ["git", "fetch", "origin", "main"],
+        ["git", "switch", "main"],
+        ["git", "merge", "--ff-only", "origin/main"],
+    ]

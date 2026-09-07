@@ -32,8 +32,16 @@ def run(args, *, cwd=None, env=None, capture=True):
     result = subprocess.run([str(x) for x in args], cwd=cwd, env=env,
                             text=True, capture_output=capture)
     if result.returncode:
-        # Do not print subprocess output: remote errors can contain credentials.
-        raise CycleError(f"{args[0]} {args[1]} failed (exit {result.returncode})")
+        detail = result.stderr.strip() if capture else ""
+        if detail:
+            detail = re.sub(
+                r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*[^\s]+",
+                r"\1=[REDACTED]",
+                detail,
+            )
+            detail = detail[:500]
+        suffix = f": {detail}" if detail else ""
+        raise CycleError(f"{args[0]} {args[1]} failed (exit {result.returncode}){suffix}")
     return result.stdout.strip() if capture else ""
 
 

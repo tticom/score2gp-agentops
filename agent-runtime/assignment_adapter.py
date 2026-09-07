@@ -15,7 +15,10 @@ class AdapterError(RuntimeError):
 def command_json(command: list[str], cwd: Path, env: dict[str, str]) -> dict:
     result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True)
     if result.returncode:
-        raise AdapterError(f"governance dispatch failed (exit {result.returncode})")
+        detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
+        raise AdapterError(
+            f"governance dispatch failed (exit {result.returncode}): {detail}"
+        )
     try:
         value = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
