@@ -2,33 +2,28 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: ORC-03 — Automated Post-Merge State Reconciliation
+**Task**: REC-05 — Raster Observation Adapter
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `codex/orc-03-post-merge-state-reconciliation`
+**PR Branch**: `feat/rec-05-raster-observation-adapter`
 
 **Pull Request**: TBD
 
-**Owner Role**: governance
+**Owner Role**: implementation
 
 ## Objective
 
-Automate verified gate-completion transitions so merged tasks are reconciled into completed_tasks and the generated active view advances without manual state edits.
+Add deterministic page rendering and a typed raster evidence adapter that is a peer of vector/text evidence, not a fallback source of final semantics.
 
 ## Allowed paths
 
-- `scripts/score2gp_orca_control.py`
-- `scripts/score2gp_orchestrator.py`
-- `scripts/score2gp_governance_audit.py`
-- `tests/test_score2gp_orca_control.py`
-- `tests/test_score2gp_orchestrator.py`
-- `tests/test_governance_audit.py`
+- `src/score2gp/recognition/raster.py`
+- `tests/recognition/test_raster.py`
 
 ## Validation commands
 
-- `python3 -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py`
-- `python3 scripts/score2gp_governance_audit.py`
-- `python3 -m compileall -q scripts`
+- `python3 -m pytest tests/recognition/test_raster.py`
+- `python3 -m mypy src/score2gp/recognition/raster.py tests/recognition/test_raster.py`
