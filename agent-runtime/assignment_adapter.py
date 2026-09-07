@@ -85,17 +85,75 @@ def parse_hosts(value: str) -> list[str]:
         raise AdapterError("SCORE2GP_EGRESS_HOSTS must name the required HTTPS services")
     return hosts
 
-def remote_branch_head(repository: str, branch: str) -> str:
+def remote_branch_head(repository: str, branch: str) -> str | None:
     result = subprocess.run(
         ["git", "ls-remote", repository, f"refs/heads/{branch}"],
         capture_output=True, text=True, check=False,
     )
     fields = result.stdout.split()
-    if result.returncode or len(fields) != 2 or len(fields[0]) != 40:
+    if result.returncode:
+        raise AdapterError(f"cannot inspect assigned branch: {diagnostic(result)}")
+    if not fields:
+        return None
+    if len(fields) != 2 or len(fields[0]) != 40:
         raise AdapterError("assigned branch does not have an exact remote head")
     return fields[0]
 
-def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> dict:
+def git_checked(product: Path, args: list[str], env: dict[str, str]) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(product), *args],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        raise AdapterError(f"product git {' '.join(args)} failed: {diagnostic(result)}")
+    return result.stdout.strip()
+
+def ensure_task_branch(
+    repository: str,
+    branch: str,
+    product: Path,
+    env: dict[str, str],
+) -> str:
+    current = remote_branch_head(repository, branch)
+    if current is not None:
+        return current
+    if git_checked(product, ["status", "--porcelain"], env) != "":
+        raise AdapterError(f"product repository is dirty: {product}")
+    git_checked(product, ["fetch", "origin", "main"], env)
+    base = git_checked(product, ["rev-parse", "origin/main"], env)
+    if git_checked(product, ["branch", "--show-current"], env) != "main":
+        raise AdapterError("product checkout is not on main")
+    if git_checked(product, ["rev-parse", "HEAD"], env) != base:
+        raise AdapterError("product main is not synchronized with origin/main")
+    slug = repository.removeprefix("https://github.com/").removesuffix(".git")
+    result = subprocess.run(
+        ["gh", "api", f"repos/{slug}/git/refs", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={base}"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        current = remote_branch_head(repository, branch)
+        if current == base:
+            return current
+        raise AdapterError(f"task branch creation failed: {diagnostic(result)}")
+    current = remote_branch_head(repository, branch)
+    if current != base:
+        raise AdapterError("created task branch did not read back at product origin/main")
+    return current
+
+def convert(
+    assignment: dict,
+    authority: dict,
+    role: str,
+    hosts: list[str],
+    product: Path | None = None,
+    env: dict[str, str] | None = None,
+) -> dict:
     work, worker = assignment.get("work"), assignment.get("worker")
     if not isinstance(work, dict) or not isinstance(worker, dict):
         raise AdapterError("governance assignment has no bounded work/worker sections")
@@ -110,6 +168,10 @@ def convert(assignment: dict, authority: dict, role: str, hosts: list[str]) -> d
         raise AdapterError("governance assignment is missing its branch")
     if head is None and work.get("pull_request") is None:
         head = remote_branch_head(repository, branch)
+        if head is None:
+            if product is None or env is None:
+                raise AdapterError("assigned branch does not have an exact remote head")
+            head = ensure_task_branch(repository, branch, product, env)
     if not isinstance(head, str) or len(head) != 40:
         raise AdapterError("governance assignment does not pin an exact branch head")
     # A pull request is normal for an implementation cycle. Governance promotion
@@ -141,7 +203,14 @@ def main() -> int:
         authority = json.loads((agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text())
     except (OSError, json.JSONDecodeError) as exc:
         raise AdapterError("cannot read orchestration authority") from exc
-    converted = convert(assignment, authority, args.role, parse_hosts(os.environ.get("SCORE2GP_EGRESS_HOSTS", "")))
+    converted = convert(
+        assignment,
+        authority,
+        args.role,
+        parse_hosts(os.environ.get("SCORE2GP_EGRESS_HOSTS", "")),
+        product=product,
+        env=dispatch_env,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     try:
         descriptor = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

@@ -62,6 +62,40 @@ def test_role_dispatch_environment_fetches_secret_without_gh_login(monkeypatch):
     ]]
 
 
+def test_convert_creates_missing_task_branch_from_product_main(monkeypatch, tmp_path):
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        if command[:2] == ["git", "ls-remote"]:
+            return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+        if command[:3] == ["git", "-C", str(tmp_path)]:
+            if command[3:] == ["status", "--porcelain"]:
+                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+            if command[3:] == ["fetch", "origin", "main"]:
+                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+            if command[3:] == ["rev-parse", "origin/main"]:
+                return type("Result", (), {"returncode": 0, "stdout": "a" * 40, "stderr": ""})()
+            if command[3:] == ["branch", "--show-current"]:
+                return type("Result", (), {"returncode": 0, "stdout": "main", "stderr": ""})()
+            if command[3:] == ["rev-parse", "HEAD"]:
+                return type("Result", (), {"returncode": 0, "stdout": "a" * 40, "stderr": ""})()
+        if command[:3] == ["gh", "api", "repos/tticom/score2gp/git/refs"]:
+            return type("Result", (), {"returncode": 0, "stdout": "{}", "stderr": ""})()
+        raise AssertionError(command)
+
+    monkeypatch.setattr(adapter.subprocess, "run", run)
+    heads = iter([None, None, "a" * 40])
+    monkeypatch.setattr(adapter, "remote_branch_head", lambda repository, branch: next(heads))
+    assignment = governed()
+    assignment["work"]["expected_head_sha"] = None
+    result = adapter.convert(
+        assignment, AUTHORITY, "automation", ["github.com"], product=tmp_path, env={}
+    )
+    assert result["base_sha"] == "a" * 40
+    assert any(command[:3] == ["gh", "api", "repos/tticom/score2gp/git/refs"] for command in commands)
+
+
 def test_command_json_preserves_dispatch_diagnostic(monkeypatch, tmp_path):
     def run(*args, **kwargs):
         return SimpleNamespace(returncode=1, stdout="", stderr="gh: not logged in")
