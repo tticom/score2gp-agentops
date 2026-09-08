@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 26,
+  "authority_revision": 27,
   "task": {
     "id": "REC-05",
     "title": "Raster Observation Adapter",
     "objective": "Add deterministic page rendering and a typed raster evidence adapter that is a peer of vector/text evidence, not a fallback source of final semantics.",
-    "status": "PROMOTED",
+    "status": "MERGED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-05-raster-observation-adapter",
@@ -32,7 +32,9 @@
       "rendering_non_deterministic"
     ],
     "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
+    "delivery_action": "pull_request",
+    "merge_commit": "eae1afb5d875f6d3f3603c3601865485ca9a3dee",
+    "head_sha": "27216115bdc0192ab90bc74f226b8c7d835ccf41"
   },
   "next_task_proposal": {
     "id": "ORC-04",
@@ -727,6 +729,40 @@
       "delivery_action": "pull_request",
       "merge_commit": "16cba3a41dc831cf0b44a3b44a205e8c095a3cb6",
       "head_sha": "cb5aa6936f6f17d8939314a9d825948a93409da3"
+    },
+    {
+      "id": "REC-05",
+      "title": "Raster Observation Adapter",
+      "objective": "Add deterministic page rendering and a typed raster evidence adapter that is a peer of vector/text evidence, not a fallback source of final semantics.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-05-raster-observation-adapter",
+      "pull_request": 460,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-05-raster-observation-adapter.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/raster.py",
+        "tests/recognition/test_raster.py"
+      ],
+      "acceptance": [
+        "Repeated rendering is deterministic at the accepted tolerance.",
+        "Missing renderer or transform metadata fails closed.",
+        "Raster disagreement remains observable rather than averaged away."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_raster.py",
+        "python3 -m mypy src/score2gp/recognition/raster.py tests/recognition/test_raster.py"
+      ],
+      "dependencies": ["REC-02"],
+      "stop_conditions": [
+        "vector_observations_mutated_or_overwritten",
+        "rendering_non_deterministic"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "merge_commit": "eae1afb5d875f6d3f3603c3601865485ca9a3dee",
+      "head_sha": "27216115bdc0192ab90bc74f226b8c7d835ccf41"
     }
   ]
 }
