@@ -30,8 +30,17 @@ during migration; they must not introduce a second authority or contradict an
 `advance` decision.
 
 Orca owns sequencing, isolated worktrees, role dispatch, validation receipts,
-and handoffs. A worker receives one bounded assignment and must not select a
-next task, change scope, change role, approve its own work, or merge.
+PR creation, and handoffs. A worker receives one bounded assignment and must
+not select a next task, change scope, change role, approve its own work, or
+merge. A successful author cycle is incomplete until the host verifies the
+published head and creates or finds exactly one PR for it.
+
+The authority may contain multiple independently leased tasks. Concurrent
+tasks must have distinct task IDs, branches, PRs, cycle roots, and writable
+clones. A reviewer assignment is pinned to one repository, PR number, and
+full head SHA; it must reject self-review and stale live state. A task's
+successor may be prepared after reconciliation, but cannot execute until it
+has its own promoted authority.
 
 The legacy clauses remain applicable only to a direct compatibility `go/got`
 run without an Orca assignment. They must not be combined with Orca mode.
@@ -210,11 +219,13 @@ Agy must never:
 The cadence is one governance step followed by one development step. Agy does
 the implementation or evidence collection and publishes its PR. A reviewer
 publishes review metadata only and never corrects the reviewed branch, PR body,
-task state, report, prompt, or evidence artifact. `tticom-automation` and
-`tticom-gov` never merge. `tticom-codex` may merge only in a separate operation
-after a current explicit instruction from `tticom` naming the exact repository,
-PR number, and reviewed full head SHA. Agy may independently review a
-Codex-authored governance PR only when the active authority identifies it.
+task state, report, prompt, or evidence artifact. `tticom-automation`,
+`tticom-gov`, and `tticom-codex` never merge. `tticom-codex` may author
+governance/control-plane work and may review independently authored PRs; it
+may merge only in a separate operation after a current explicit instruction
+from `tticom` naming the exact repository, PR number, and reviewed full head
+SHA. Agy may independently review a Gov-authored governance PR only when the
+active authority identifies it, and no identity may review its own PR.
 
 ## Continuous Forward Motion and Real-World Validation
 
