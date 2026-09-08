@@ -4,7 +4,7 @@
 
 **Task**: REC-05 — Raster Observation Adapter
 
-**Status**: PROMOTED
+**Status**: MERGED
 
 **Repository**: tticom/score2gp
 
