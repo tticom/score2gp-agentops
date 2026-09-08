@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 25,
+  "authority_revision": 26,
   "task": {
     "id": "REC-05",
     "title": "Raster Observation Adapter",
@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/rec-05-raster-observation-adapter",
-    "pull_request": null,
+    "pull_request": 460,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/rec-05-raster-observation-adapter.md",
     "allowed_paths": [
@@ -35,38 +35,86 @@
     "delivery_action": "pull_request"
   },
   "next_task_proposal": {
-    "id": "REC-06",
-    "title": "Staff and System Topology",
-    "objective": "Reconstruct pages, reading order, systems, staff regions, notation/TAB pairings and stable identities from observations.",
+    "id": "ORC-04",
+    "title": "Integrated PR Lifecycle and Concurrent Review Routing",
+    "objective": "Make each agent cycle open its PR, route exact-head reviews across independent roles, and support isolated concurrent tasks with verified post-merge reconciliation.",
     "status": "PROPOSED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/rec-06-staff-system-topology",
+    "branch": "feat/orc-04-integrated-pr-lifecycle",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-06-staff-system-topology.md",
+    "prompt": "projects/score2gp/prompts/next/orc-04-integrated-pr-lifecycle.md",
     "allowed_paths": [
-      "src/score2gp/recognition/topology.py",
-      "tests/recognition/test_topology.py"
+      "agent-runtime/assignment_adapter.py",
+      "agent-runtime/cycle.py",
+      "agent-runtime/scripts/start-instance.sh",
+      "scripts/score2gp_dispatch.py",
+      "scripts/score2gp_go_bootstrap.py",
+      "scripts/score2gp_got_bootstrap.py",
+      "scripts/score2gp_orchestrator.py",
+      "scripts/score2gp_orca_control.py",
+      "tests/test_assignment_adapter.py",
+      "tests/test_disposable_cycle.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py"
     ],
     "acceptance": [
-      "Disconnected systems cannot cross-snap.",
-      "Titles, diagrams and horizontal noise do not become supported staves.",
-      "At least two structurally distinct private scores have stable identities."
+      "A successful author cycle verifies its exact remote head and creates or updates exactly one PR before completing.",
+      "Gov can review Automation PR 460 at its exact head and Automation can review a Gov-authored governance PR without either identity gaining merge authority.",
+      "Two different task IDs can be dispatched concurrently with isolated clones, leases, branches, PRs, and recovery receipts.",
+      "A reviewer assignment is read-only, exact-head pinned, and rejects self-review or stale PR state.",
+      "Post-merge reconciliation completes one task idempotently and prepares, but never implicitly executes, its successor."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_topology.py",
-      "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
+      "python3 -m pytest tests/test_assignment_adapter.py tests/test_disposable_cycle.py tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py",
+      "python3 -m compileall -q agent-runtime scripts"
     ],
-    "dependencies": ["REC-04", "REC-05"],
+    "dependencies": ["ORC-03", "REC-05"],
     "stop_conditions": [
-      "disconnected_systems_cross_snap",
-      "unsupported_layout_is_silently_accepted",
-      "topology_assigns_measure_duration_pitch_or_event_semantics"
+      "author_cycle_completes_without_a_verified_pr",
+      "review_identity_or_exact_head_is_ambiguous",
+      "concurrent_cycles_share_writable_source_or_authority_state",
+      "successor_executes_without_separate_authority"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
+  "queued_task_proposals": [
+    {
+      "id": "REC-06",
+      "title": "Staff and System Topology",
+      "objective": "Reconstruct pages, reading order, systems, staff regions, notation/TAB pairings and stable identities from observations.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/rec-06-staff-system-topology",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/rec-06-staff-system-topology.md",
+      "allowed_paths": [
+        "src/score2gp/recognition/topology.py",
+        "tests/recognition/test_topology.py"
+      ],
+      "acceptance": [
+        "Disconnected systems cannot cross-snap.",
+        "Titles, diagrams and horizontal noise do not become supported staves.",
+        "At least two structurally distinct private scores have stable identities."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/recognition/test_topology.py",
+        "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
+      ],
+      "dependencies": ["REC-04", "REC-05"],
+      "stop_conditions": [
+        "disconnected_systems_cross_snap",
+        "unsupported_layout_is_silently_accepted",
+        "topology_assigns_measure_duration_pitch_or_event_semantics"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -84,7 +132,8 @@
   "roles": {
     "implementation": {
       "github_logins": [
-        "tticom-automation"
+        "tticom-automation",
+        "tticom-codex"
       ],
       "allowed_actions": [
         "edit",
@@ -122,7 +171,8 @@
     "reviewer": {
       "github_logins": [
         "tticom-codex",
-        "tticomgov-code"
+        "tticomgov-code",
+        "tticom-automation"
       ],
       "allowed_actions": [
         "inspect",

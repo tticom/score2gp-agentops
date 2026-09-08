@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/rec-05-raster-observation-adapter`
 
-**Pull Request**: TBD
+**Pull Request**: 460
 
 **Owner Role**: implementation
 
