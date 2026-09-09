@@ -1,0 +1,50 @@
+version: 1
+
+states:
+  READY:
+    command: claim
+    next: CLAIMED
+  CLAIMED:
+    command: implement
+    next: IMPLEMENTING
+  IMPLEMENTING:
+    command: verify
+    next: VALIDATING
+  VALIDATING:
+    command: open-pr
+    next: PR_OPEN
+  PR_OPEN:
+    command: verify-head
+    next: REVIEW_REQUIRED
+  REVIEW_REQUIRED:
+    command: review
+    next: [APPROVED, CHANGES_REQUESTED]
+  CHANGES_REQUESTED:
+    command: review-fix
+    next: IMPLEMENTING
+  APPROVED:
+    command: merge-check
+    next: MERGE_READY
+  MERGE_READY:
+    command: reconcile
+    next: MERGED
+  MERGED:
+    command: reconcile
+    next: RECONCILED
+  RECONCILED:
+    command: complete
+    next: COMPLETE
+  MERGE_READY:
+    command: complete
+    next: COMPLETE
+  COMPLETE:
+    command: none
+  BLOCKED:
+    command: repair
+  FAILED:
+    command: repair
+
+limits:
+  max_prs_per_cycle: 1
+  max_implementation_sessions: 1
+  max_retries_per_state: 1

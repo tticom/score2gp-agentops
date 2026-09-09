@@ -97,3 +97,82 @@ Project-specific governance lives under `projects/score2gp/`:
 ## Privacy Rule
 
 Private assets remain private and must never be committed. Private benchmark names may be referenced as benchmark rungs, but files, images, PDFs, exports, or derived confidential data must stay outside version control.
+
+## AGY Cycle v2 Operation
+
+The supported delivery process is a deterministic, one-task/one-PR AGY cycle.
+The full design and comparison with the earlier integrated PR lifecycle are in
+[`docs/agy-cycle-v2-plan.md`](docs/agy-cycle-v2-plan.md).
+
+### Source of truth
+
+- [`.agy/flow.yaml`](.agy/flow.yaml) defines lifecycle transitions and hard
+  limits. It is the one file a human edits when the state flow is wrong.
+- [`plan/backlog.yaml`](plan/backlog.yaml) defines sprints, tasks, ordering,
+  dependencies, cardinality, scope, acceptance, and validation.
+- `.agy/cycles/` contains ignored runtime records and atomic claim locks.
+
+`ACTIVE_TASK.md` and `ORCHESTRATION_STATE.json` are compatibility views only;
+they are not separately authored during an AGY Cycle.
+
+### Normal cycle
+
+From the repository root:
+
+```bash
+python3 -m pip install -r requirements-agy-cycle.txt
+scripts/agy-cycle claim
+scripts/agy-cycle next CYCLE-ID
+scripts/agy-cycle run CYCLE-ID
+scripts/agy-cycle status CYCLE-ID
+```
+
+`run` starts the configured interactive AGY CLI in a PTY and injects the bounded
+task prompt. AGY edits only the assigned worktree; it does not select another
+task, change lifecycle state, open a second PR, or merge.
+
+The controller/orchestrator then performs explicit transitions and attaches the
+single PR:
+
+```bash
+scripts/agy-cycle transition CYCLE-ID IMPLEMENTING
+scripts/agy-cycle transition CYCLE-ID VALIDATING
+scripts/agy-cycle validate CYCLE-ID
+scripts/agy-cycle open-pr CYCLE-ID --repository ORG/REPO
+scripts/agy-cycle verify-pr CYCLE-ID
+scripts/agy-cycle transition CYCLE-ID REVIEW_REQUIRED
+```
+
+The PR head must be read back and match the recorded SHA before review or merge
+readiness. Reviewers use an exact-head, read-only worktree. Review fixes remain
+on the same branch and PR. After a human merge, reconciliation is explicit:
+
+```bash
+scripts/agy-cycle transition CYCLE-ID APPROVED
+scripts/agy-cycle transition CYCLE-ID MERGE_READY
+scripts/agy-cycle reconcile CYCLE-ID
+scripts/agy-cycle reconcile CYCLE-ID
+```
+
+The second reconciliation call is intentionally safe and demonstrates
+idempotence. Successor tasks are prepared only; they are never implicitly
+started.
+
+### Concurrent cycles and repair
+
+Task claims are atomic. Independent tasks can run simultaneously because each
+cycle has a unique lease, branch, worktree, runtime directory, and PR. Declare
+`resource_group` in the backlog when two tasks must not edit the same area at
+the same time.
+
+To repair a stuck cycle:
+
+```bash
+scripts/agy-cycle status CYCLE-ID
+scripts/agy-cycle reset CYCLE-ID FAILED
+scripts/agy-cycle reset CYCLE-ID READY
+```
+
+Docker is optional hardening, not a process dependency. Normal execution uses
+disposable worktrees, explicit allowed paths, sanitized Git configuration,
+isolated runtime records, and read-only reviewer worktrees.
