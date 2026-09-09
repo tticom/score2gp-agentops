@@ -18,8 +18,10 @@ from scripts.score2gp_orca_control import (
     build_assignment,
     capture_live_state,
     current_head_review,
+    reconcile_task,
     resolve_state,
     validate_assignment,
+    validate_authority,
     validate_legacy_alignment,
     verify_merge_gate,
 )
@@ -668,3 +670,225 @@ def test_build_assignment_with_checked_in_authority_and_authorized_reviewer_iden
     assert assignment["authority"]["task_id"] == "REC-03"
     assert assignment["worker"]["role"] == "reviewer"
     assert assignment["worker"]["github_login"] == "tticom-codex"
+
+
+def test_gov_can_review_product_pr_460() -> None:
+    auth_file = Path(__file__).resolve().parent.parent / "projects" / "score2gp" / "ORCHESTRATION_STATE.json"
+    auth_data = json.loads(auth_file.read_text(encoding="utf-8"))
+
+    live_facts = {
+        "snapshot": {"repository": "tticom/score2gp"},
+        "pull_request": {
+            "number": 460,
+            "state": "OPEN",
+            "head_branch": "feat/rec-05-raster-observation-adapter",
+            "head_sha": "27216115bdc0192ab90bc74f226b8c7d835ccf41",
+            "author": "tticom-automation",
+            "reviews": [],
+        },
+    }
+    resolved = resolve_state(auth_data, live_facts)
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+    assert resolved["task_id"] == "REC-05"
+
+    assignment = build_assignment(
+        auth_data,
+        live_facts,
+        resolved,
+        RuntimeIdentity("tticom-gov", "tticomgov-code"),
+        "a" * 40,
+    )
+    assert assignment["work"]["pull_request"] == 460
+    assert assignment["work"]["branch"] == "feat/rec-05-raster-observation-adapter"
+    assert assignment["authority"]["task_id"] == "REC-05"
+    assert assignment["worker"]["role"] == "reviewer"
+    assert assignment["worker"]["github_login"] == "tticomgov-code"
+    assert assignment["work"]["allowed_paths"] == []
+    assert assignment["completion_contract"]["may_merge"] is False
+
+
+def test_automation_cannot_review_own_pr_460() -> None:
+    auth_file = Path(__file__).resolve().parent.parent / "projects" / "score2gp" / "ORCHESTRATION_STATE.json"
+    auth_data = json.loads(auth_file.read_text(encoding="utf-8"))
+
+    live_facts = {
+        "snapshot": {"repository": "tticom/score2gp"},
+        "pull_request": {
+            "number": 460,
+            "state": "OPEN",
+            "head_branch": "feat/rec-05-raster-observation-adapter",
+            "head_sha": "27216115bdc0192ab90bc74f226b8c7d835ccf41",
+            "author": "tticom-automation",
+            "reviews": [],
+        },
+    }
+    resolved = resolve_state(auth_data, live_facts)
+    with pytest.raises(ControlError, match="self-review is forbidden"):
+        build_assignment(
+            auth_data,
+            live_facts,
+            resolved,
+            RuntimeIdentity("tticom-automation", "tticom-automation"),
+            "a" * 40,
+        )
+
+
+def test_automation_can_review_gov_authored_governance_pr() -> None:
+    auth_file = Path(__file__).resolve().parent.parent / "projects" / "score2gp" / "ORCHESTRATION_STATE.json"
+    auth_data = json.loads(auth_file.read_text(encoding="utf-8"))
+
+    live_facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 619,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec-03",
+            "head_sha": "a" * 40,
+            "author": "tticomgov-code",
+            "reviews": [],
+        },
+    }
+    resolved = resolve_state(auth_data, live_facts)
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+
+    assignment = build_assignment(
+        auth_data,
+        live_facts,
+        resolved,
+        RuntimeIdentity("tticom-automation", "tticom-automation"),
+        "a" * 40,
+    )
+    assert assignment["work"]["pull_request"] == 619
+    assert assignment["worker"]["role"] == "reviewer"
+    assert assignment["worker"]["github_login"] == "tticom-automation"
+    assert assignment["work"]["allowed_paths"] == []
+    assert assignment["completion_contract"]["may_merge"] is False
+
+
+def test_gov_cannot_review_own_governance_pr() -> None:
+    auth_file = Path(__file__).resolve().parent.parent / "projects" / "score2gp" / "ORCHESTRATION_STATE.json"
+    auth_data = json.loads(auth_file.read_text(encoding="utf-8"))
+
+    live_facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "pull_request": {
+            "number": 619,
+            "state": "OPEN",
+            "head_branch": "gov/promote-rec-03",
+            "head_sha": "a" * 40,
+            "author": "tticomgov-code",
+            "reviews": [],
+        },
+    }
+    resolved = resolve_state(auth_data, live_facts)
+    with pytest.raises(ControlError, match="self-review is forbidden"):
+        build_assignment(
+            auth_data,
+            live_facts,
+            resolved,
+            RuntimeIdentity("tticom-gov", "tticomgov-code"),
+            "a" * 40,
+        )
+
+
+def test_cross_task_branch_reuse_in_authority_fails_closed() -> None:
+    config = authority()
+    config["task_registry"] = {
+        "OTHER-01": {
+            "id": "OTHER-01",
+            "status": "RUNNING",
+            "branch": "feat/task-108",
+        }
+    }
+    with pytest.raises(ControlError, match="cross-task branch reuse detected"):
+        validate_authority(config)
+
+
+def test_reconcile_task_success_and_idempotence() -> None:
+    config = authority()
+    config["task"]["status"] = "MERGED"
+    config["next_task_proposal"] = {
+        "id": "TASK-109",
+        "status": "PROPOSED",
+    }
+    head = "c" * 40
+    merge_sha = "d" * 40
+    live_facts = {
+        "pull_request": {
+            "number": 441,
+            "state": "MERGED",
+            "head_branch": "feat/task-108",
+            "head_sha": head,
+            "merge_commit": merge_sha,
+        }
+    }
+    # Initial reconciliation
+    res = reconcile_task(config, live_facts)
+    assert res["status"] == "RECONCILED"
+    assert res["idempotent"] is False
+    assert res["task_id"] == "108"
+    new_auth = res["authority"]
+    assert new_auth["task"]["status"] == "COMPLETED"
+    assert new_auth["task"]["reconciled"] is True
+    assert new_auth["task"]["merge_commit"] == merge_sha
+    assert new_auth["task"]["head_sha"] == head
+    assert new_auth["next_task_proposal"]["status"] == "PROPOSED"
+    completed = new_auth.get("completed_tasks", [])
+    assert any(c["id"] == "108" for c in completed)
+
+    # Replay reconciliation (idempotent)
+    replay = reconcile_task(new_auth, live_facts)
+    assert replay["status"] == "ALREADY_RECONCILED"
+    assert replay["idempotent"] is True
+    assert replay["task_id"] == "108"
+    matching = [c for c in replay["authority"]["completed_tasks"] if c["id"] == "108"]
+    assert len(matching) == 1
+    assert replay["authority"]["next_task_proposal"]["status"] == "PROPOSED"
+
+
+def test_reconcile_task_fails_closed_on_unmerged_or_mismatched_pr() -> None:
+    config = authority()
+    head = "c" * 40
+    merge_sha = "d" * 40
+
+    # PR is OPEN, not MERGED
+    open_facts = {
+        "pull_request": {
+            "number": 441,
+            "state": "OPEN",
+            "head_branch": "feat/task-108",
+            "head_sha": head,
+            "merge_commit": merge_sha,
+        }
+    }
+    with pytest.raises(ControlError, match="reconciliation requires a MERGED pull request"):
+        reconcile_task(config, open_facts)
+
+    # Branch mismatch
+    bad_branch_facts = {
+        "pull_request": {
+            "number": 441,
+            "state": "MERGED",
+            "head_branch": "feat/wrong-branch",
+            "head_sha": head,
+            "merge_commit": merge_sha,
+        }
+    }
+    with pytest.raises(ControlError, match="branch mismatch"):
+        reconcile_task(config, bad_branch_facts)
+
+    # Invalid merge commit SHA
+    bad_sha_facts = {
+        "pull_request": {
+            "number": 441,
+            "state": "MERGED",
+            "head_branch": "feat/task-108",
+            "head_sha": head,
+            "merge_commit": "short",
+        }
+    }
+    with pytest.raises(ControlError, match="reconciliation requires a 40-character merge_commit"):
+        reconcile_task(config, bad_sha_facts)
+

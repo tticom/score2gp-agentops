@@ -24,6 +24,17 @@ ACTIONS = {
     "PROPOSE_NEXT_TASK",
     "BLOCKED",
 }
+LIFECYCLE_STATES = {
+    "authoring",
+    "pr_open",
+    "review_required",
+    "changes_requested",
+    "approved",
+    "human_merge",
+    "merged",
+    "reconciled",
+    "successor_prepared",
+}
 ACTIVE_INCIDENT_STATUSES = {"OPEN", "BLOCKING"}
 TASK_REQUIRED_FIELDS = {
     "id",
@@ -47,6 +58,143 @@ class OrchestrationError(RuntimeError):
     """Authority or live state cannot be reduced safely."""
 
 
+def resolve_task_lifecycle(
+    task: dict[str, Any],
+    live_state: dict[str, Any] | None = None,
+) -> str:
+    status = str(task.get("status", "")).upper()
+    if status == "PROPOSED":
+        return "successor_prepared"
+    if status == "RECONCILED" or (status in {"COMPLETED", "COMPLETE"} and task.get("reconciled") is True):
+        return "reconciled"
+    if status in {"MERGED"}:
+        if task.get("reconciled") is True:
+            return "reconciled"
+        return "merged"
+    if status in {"COMPLETED", "COMPLETE"}:
+        return "reconciled"
+
+    if live_state:
+        pr = live_state.get("pull_request")
+        if isinstance(pr, dict):
+            pr_state = str(pr.get("state", "")).upper()
+            if pr_state == "MERGED":
+                return "merged"
+            if pr_state == "OPEN":
+                review = _current_head_review(pr)
+                if review == "CHANGES_REQUESTED":
+                    return "changes_requested"
+                if review == "APPROVED":
+                    checks = pr.get("checks", [])
+                    failed = [
+                        c for c in checks
+                        if str(c.get("conclusion", "")).upper() not in {"SUCCESS", "SKIPPED", "NEUTRAL"}
+                    ]
+                    if not failed and int(pr.get("unresolved_threads", 0)) == 0:
+                        return "human_merge"
+                    return "approved"
+                return "review_required"
+
+    if task.get("pull_request") is not None:
+        return "pr_open"
+
+    return "authoring"
+
+
+def build_task_registry(
+    authority: dict[str, Any],
+    live_state: dict[str, Any] | None = None,
+) -> dict[str, dict[str, Any]]:
+    _validate_authority(authority)
+    registry: dict[str, dict[str, Any]] = {}
+
+    candidates: list[dict[str, Any]] = []
+    if isinstance(authority.get("task_registry"), dict):
+        candidates.extend(authority["task_registry"].values())
+    if isinstance(authority.get("task"), dict):
+        candidates.append(authority["task"])
+    if isinstance(authority.get("tasks"), list):
+        candidates.extend(authority["tasks"])
+    if isinstance(authority.get("completed_tasks"), list):
+        candidates.extend(authority["completed_tasks"])
+    proposal = authority.get("next_task_proposal")
+    if isinstance(proposal, dict):
+        candidates.append(proposal)
+    for q in authority.get("queued_task_proposals", []):
+        if isinstance(q, dict):
+            candidates.append(q)
+
+    # Check for cross-task branch reuse among active tasks
+    active_branches: dict[str, str] = {}
+    for t in candidates:
+        if not isinstance(t, dict) or not t.get("id"):
+            continue
+        tid = str(t["id"])
+        branch = str(t.get("branch", ""))
+        status = str(t.get("status", "")).upper()
+        if branch and status not in {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}:
+            if branch in active_branches and active_branches[branch] != tid:
+                raise OrchestrationError(
+                    f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
+                )
+            active_branches[branch] = tid
+
+    for t in candidates:
+        if not isinstance(t, dict) or not t.get("id"):
+            continue
+        tid = str(t["id"])
+        if tid in registry:
+            continue
+
+        matching_live = None
+        if live_state and isinstance(live_state.get("pull_request"), dict):
+            pr_data = live_state["pull_request"]
+            if (
+                pr_data.get("number") == t.get("pull_request")
+                or pr_data.get("head_branch") == t.get("branch")
+                or (str(authority.get("task", {}).get("id")) == tid and t.get("pull_request") is None)
+            ):
+                matching_live = live_state
+
+        lifecycle = resolve_task_lifecycle(t, matching_live)
+        pr_number = t.get("pull_request")
+        head_sha = t.get("head_sha")
+        if matching_live and isinstance(matching_live.get("pull_request"), dict):
+            pr_data = matching_live["pull_request"]
+            if pr_number is None and pr_data.get("number") is not None:
+                pr_number = pr_data["number"]
+            if pr_data.get("head_sha"):
+                head_sha = pr_data["head_sha"]
+
+        record = {
+            "id": tid,
+            "title": str(t.get("title", "")),
+            "objective": str(t.get("objective", "")),
+            "status": str(t.get("status", "")),
+            "repository": str(t.get("repository", "")),
+            "base_branch": str(t.get("base_branch", "main")),
+            "branch": str(t.get("branch", "")),
+            "owner_role": str(t.get("owner_role", "implementation")),
+            "reviewer_role": str(t.get("reviewer_role", "reviewer")),
+            "pull_request": pr_number,
+            "head_sha": head_sha,
+            "lifecycle_state": lifecycle,
+            "lease_id": t.get("lease_id") or t.get("cycle_id") or (live_state.get("cycle_id") if matching_live else None),
+            "cycle_id": t.get("cycle_id") or t.get("lease_id") or (live_state.get("cycle_id") if matching_live else None),
+            "validation_commands": list(t.get("validation_commands") or t.get("validation_contract", [])),
+            "validation_contract": list(t.get("validation_contract") or t.get("validation_commands", [])),
+            "allowed_paths": list(t.get("allowed_paths", [])),
+            "dependencies": list(t.get("dependencies", [])),
+            "stop_conditions": list(t.get("stop_conditions", [])),
+            "delivery_action": str(t.get("delivery_action", "pull_request")),
+            "recovery_receipt": t.get("recovery_receipt_location") or t.get("recovery_receipt") or (f"cycles/{tid}/receipt.json" if (t.get("cycle_id") or t.get("lease_id")) else None),
+            "recovery_receipt_location": t.get("recovery_receipt_location") or t.get("recovery_receipt") or (f"cycles/{tid}/receipt.json" if (t.get("cycle_id") or t.get("lease_id")) else None),
+        }
+        registry[tid] = record
+
+    return registry
+
+
 def load_authority(path: str | Path) -> dict[str, Any]:
     """Load machine authority without consulting legacy pointer prose."""
     authority_path = Path(path)
@@ -59,10 +207,16 @@ def load_authority(path: str | Path) -> dict[str, Any]:
     return value
 
 
-def advance(authority: dict[str, Any], live_state: dict[str, Any]) -> dict[str, Any]:
+def advance(authority: dict[str, Any], live_state: dict[str, Any], task_id: str | None = None) -> dict[str, Any]:
     """Return the next permitted action without producing side effects."""
     _validate_authority(authority)
     task = authority["task"]
+    if task_id is not None and str(task.get("id")) != task_id:
+        registry = build_task_registry(authority, live_state)
+        if task_id not in registry:
+            raise OrchestrationError(f"task {task_id!r} is absent from orchestration authority")
+        task = registry[task_id]
+        authority = dict(authority, task=task)
 
     blockers = _active_incidents(authority)
     if blockers:
@@ -239,6 +393,25 @@ def _validate_authority(authority: dict[str, Any]) -> None:
         if not incident_id or incident_id in incident_ids:
             raise OrchestrationError("incident IDs must be present and unique")
         incident_ids.add(incident_id)
+
+    candidates: list[dict[str, Any]] = [task]
+    if isinstance(authority.get("task_registry"), dict):
+        candidates.extend(authority["task_registry"].values())
+    if isinstance(authority.get("tasks"), list):
+        candidates.extend(authority["tasks"])
+    active_branches: dict[str, str] = {}
+    for t in candidates:
+        if not isinstance(t, dict) or not t.get("id"):
+            continue
+        tid = str(t["id"])
+        branch = str(t.get("branch", ""))
+        status = str(t.get("status", "")).upper()
+        if branch and status not in {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}:
+            if branch in active_branches and active_branches[branch] != tid:
+                raise OrchestrationError(
+                    f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
+                )
+            active_branches[branch] = tid
 
 
 def upgrade_authority(authority: dict[str, Any]) -> dict[str, Any]:

@@ -171,6 +171,25 @@ def validate_authority(authority: dict[str, Any]) -> None:
         if status == "RESOLVED" and not incident.get("resolved_by"):
             raise ControlError(f"resolved incident {incident_id} lacks resolved_by")
 
+    candidates: list[dict[str, Any]] = [task]
+    if isinstance(authority.get("task_registry"), dict):
+        candidates.extend(authority["task_registry"].values())
+    if isinstance(authority.get("tasks"), list):
+        candidates.extend(authority["tasks"])
+    active_branches: dict[str, str] = {}
+    for t in candidates:
+        if not isinstance(t, dict) or not t.get("id"):
+            continue
+        tid = str(t["id"])
+        branch = str(t.get("branch", ""))
+        status = str(t.get("status", "")).upper()
+        if branch and status not in {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}:
+            if branch in active_branches and active_branches[branch] != tid:
+                raise ControlError(
+                    f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
+                )
+            active_branches[branch] = tid
+
 
 def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) -> None:
     """Reject split-brain authority while ACTIVE_TASK.md remains in migration use."""
@@ -234,12 +253,11 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     snapshot = live.get("snapshot") or {}
     if not isinstance(pr, dict) or str(pr.get("state", "")).upper() != "OPEN":
         return None
-    if snapshot.get("repository") != "tticom/score2gp-agentops":
-        return None
     if live.get("control_plane_repair") is True:
         return deepcopy(authority["task"])
 
     branch = str(pr.get("head_branch", ""))
+    pr_num = _parse_strict_positive_int(pr.get("number"))
     clean_branch = branch
     for prefix in (
         "gov/promote-",
@@ -254,23 +272,44 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
             break
     branch_id = clean_branch.replace("-", "").lower()
 
+    if isinstance(authority.get("task_registry"), dict):
+        for reg_id, reg_task in authority["task_registry"].items():
+            if pr_num and reg_task.get("pull_request") == pr_num:
+                return deepcopy(reg_task)
+            if branch and reg_task.get("branch") == branch:
+                return deepcopy(reg_task)
+            if branch_id == reg_id.lower().replace("-", ""):
+                return deepcopy(reg_task)
+
     proposal = authority.get("next_task_proposal")
     if isinstance(proposal, dict) and str(proposal.get("status", "")).upper() == "PROPOSED":
         expected_promotion_id = str(proposal.get("id", "")).lower().replace("-", "")
         if branch_id == expected_promotion_id:
             return deepcopy(proposal)
+        if pr_num and proposal.get("pull_request") == pr_num:
+            return deepcopy(proposal)
+        if branch and proposal.get("branch") == branch:
+            return deepcopy(proposal)
 
     task = authority.get("task")
     if isinstance(task, dict):
         task_id = str(task.get("id", "")).lower().replace("-", "")
+        task_status = str(task.get("status", "")).upper()
         if branch_id == task_id:
             return deepcopy(task)
+        if task_status in {"COMPLETE", "MERGED", "RESOLVED"}:
+            if (pr_num and task.get("pull_request") == pr_num) or (branch and task.get("branch") == branch):
+                return deepcopy(task)
 
     completed = authority.get("completed_tasks", [])
     if isinstance(completed, list):
         for comp in reversed(completed):
             comp_id = str(comp.get("id", "")).lower().replace("-", "")
             if branch_id == comp_id:
+                return deepcopy(comp)
+            if pr_num and comp.get("pull_request") == pr_num:
+                return deepcopy(comp)
+            if branch and comp.get("branch") == branch:
                 return deepcopy(comp)
 
     return None
@@ -287,10 +326,21 @@ def _parse_strict_positive_int(val: Any) -> int | None:
     return None
 
 
-def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
+def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str | None = None) -> dict[str, Any]:
     validate_authority(authority)
     blockers = active_incidents(authority)
     task = authority["task"]
+    if task_id:
+        candidates = [task]
+        if isinstance(authority.get("task_registry"), dict):
+            candidates.extend(authority["task_registry"].values())
+        if isinstance(authority.get("completed_tasks"), list):
+            candidates.extend(authority["completed_tasks"])
+        for candidate in candidates:
+            if str(candidate.get("id")) == task_id:
+                task = candidate
+                break
+
     declared = str(task["status"]).upper()
     if blockers:
         return result("BLOCKED", "active_incident_blocks_progress", task, blockers=blockers)
@@ -300,12 +350,10 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, 
     pr = live.get("pull_request")
     snapshot = live.get("snapshot") or {}
 
-    # Handle AgentOps governance / control-plane pull requests
-    if (
-        isinstance(pr, dict)
-        and str(pr.get("state", "")).upper() == "OPEN"
-        and snapshot.get("repository") == "tticom/score2gp-agentops"
-    ):
+    # Handle review targets for open PRs not belonging to an in-flight active task
+    # (e.g. governance promotion PRs, control-plane repairs, or completed/registry PRs like PR 460)
+    is_active_task_branch = bool(task.get("branch") and str((pr or {}).get("head_branch", "")) == str(task.get("branch")))
+    if isinstance(pr, dict) and str(pr.get("state", "")).upper() == "OPEN" and not is_active_task_branch:
         target = _completed_review_target(authority, live)
         if target is not None:
             review = current_head_review(pr)
@@ -425,6 +473,11 @@ def build_assignment(
     if resolved["state"] not in {"READY", "RUNNING", "REVIEW_REQUIRED", "GOVERNANCE_REQUIRED"} or not role:
         raise ControlError(f"state {resolved['state']} is not dispatchable")
     authorize_role(authority, str(role), identity)
+    if role in {"reviewer", "governance"}:
+        pr_author_raw = (live.get("pull_request") or {}).get("author") or (live.get("pull_request") or {}).get("user")
+        pr_author = pr_author_raw.get("login", "") if isinstance(pr_author_raw, dict) else str(pr_author_raw or "")
+        if pr_author and identity.github_login == pr_author:
+            raise ControlError(f"self-review is forbidden: {identity.github_login} cannot review own PR")
     task = authority["task"]
     target = _completed_review_target(authority, live)
     if target is not None and str(target.get("id")) == resolved.get("task_id"):
@@ -456,7 +509,7 @@ def build_assignment(
             "pull_request": task.get("pull_request"),
             "expected_head_sha": pr.get("head_sha"),
             "prompt": task.get("prompt"),
-            "allowed_paths": task.get("allowed_paths", []),
+            "allowed_paths": [] if role == "reviewer" else list(task.get("allowed_paths", [])),
             "acceptance": task.get("acceptance", []),
             "required_evidence": task.get("required_evidence", []),
         },
@@ -578,11 +631,108 @@ def authenticated_github_login() -> str:
     return login
 
 
+def reconcile_task(
+    authority: dict[str, Any],
+    live: dict[str, Any],
+    task_id: str | None = None,
+) -> dict[str, Any]:
+    validate_authority(authority)
+    pr = live.get("pull_request")
+    if not isinstance(pr, dict):
+        raise ControlError("reconciliation requires live pull_request data")
+    pr_state = str(pr.get("state", "")).upper()
+    if pr_state != "MERGED":
+        raise ControlError(f"reconciliation requires a MERGED pull request, got state {pr_state}")
+
+    target = None
+    if task_id:
+        candidates = [authority.get("task", {})]
+        if isinstance(authority.get("task_registry"), dict):
+            candidates.extend(authority["task_registry"].values())
+        if isinstance(authority.get("completed_tasks"), list):
+            candidates.extend(authority["completed_tasks"])
+        proposal = authority.get("next_task_proposal")
+        if isinstance(proposal, dict):
+            candidates.append(proposal)
+        for c in candidates:
+            if str(c.get("id")) == task_id:
+                target = deepcopy(c)
+                break
+    if target is None:
+        target = _completed_review_target(authority, live)
+    if target is None:
+        target = deepcopy(authority["task"])
+
+    target_id = str(target.get("id", ""))
+    target_branch = str(target.get("branch", ""))
+    pr_branch = str(pr.get("head_branch", ""))
+    if pr_branch and target_branch and pr_branch != target_branch:
+        raise ControlError(f"branch mismatch: PR branch {pr_branch} != task branch {target_branch}")
+
+    target_pr_num = _parse_strict_positive_int(target.get("pull_request"))
+    live_pr_num = _parse_strict_positive_int(pr.get("number"))
+    if target_pr_num and live_pr_num and target_pr_num != live_pr_num:
+        raise ControlError(f"PR number mismatch: live #{live_pr_num} != task #{target_pr_num}")
+
+    head_sha = str(pr.get("head_sha") or pr.get("headRefOid") or "")
+    if len(head_sha) != 40:
+        raise ControlError("reconciliation requires a 40-character head_sha")
+
+    merge_commit = str(
+        pr.get("merge_commit")
+        or pr.get("merge_commit_sha")
+        or (pr.get("mergeCommit") or {}).get("oid")
+        or pr.get("merge_commit_oid")
+        or ""
+    )
+    if len(merge_commit) != 40:
+        raise ControlError("reconciliation requires a 40-character merge_commit SHA")
+
+    completed = authority.setdefault("completed_tasks", [])
+    existing = [comp for comp in completed if str(comp.get("id")) == target_id]
+    if existing:
+        return {
+            "schema_version": 1,
+            "status": "ALREADY_RECONCILED",
+            "task_id": target_id,
+            "authority": authority,
+            "idempotent": True,
+        }
+
+    updated_auth = deepcopy(authority)
+    comp_record = deepcopy(target)
+    comp_record["status"] = "COMPLETED"
+    comp_record["head_sha"] = head_sha
+    comp_record["merge_commit"] = merge_commit
+    comp_record["pull_request"] = live_pr_num or target_pr_num
+    comp_record["reconciled"] = True
+    comp_record["reconciled_at"] = datetime.now(timezone.utc).isoformat()
+    updated_auth.setdefault("completed_tasks", []).append(comp_record)
+
+    if str(updated_auth.get("task", {}).get("id")) == target_id:
+        updated_auth["task"]["status"] = "COMPLETED"
+        updated_auth["task"]["head_sha"] = head_sha
+        updated_auth["task"]["merge_commit"] = merge_commit
+        updated_auth["task"]["reconciled"] = True
+
+    proposal = updated_auth.get("next_task_proposal")
+    if isinstance(proposal, dict):
+        proposal["status"] = "PROPOSED"
+
+    return {
+        "schema_version": 1,
+        "status": "RECONCILED",
+        "task_id": target_id,
+        "authority": updated_auth,
+        "idempotent": False,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check"),
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "reconcile"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -590,6 +740,7 @@ def main() -> None:
     parser.add_argument("--repository")
     parser.add_argument("--pull-request", type=int)
     parser.add_argument("--github-login", default="")
+    parser.add_argument("--task-id", help="Explicit task ID to operate on")
     args = parser.parse_args()
     if args.command == "snapshot":
         if not args.repository or args.pull_request is None:
@@ -605,7 +756,7 @@ def main() -> None:
         return
     active_task_path = args.authority.parent / "ACTIVE_TASK.md"
     validate_legacy_alignment(authority, active_task_path.read_text(encoding="utf-8"))
-    resolved = resolve_state(authority, live)
+    resolved = resolve_state(authority, live, task_id=args.task_id)
     if args.command == "resolve":
         output = resolved
     elif args.command == "assign":
@@ -625,6 +776,8 @@ def main() -> None:
             authority, live, load_json(args.assignment), identity, git_head(Path.cwd())
         )
         output = {"ok": True, "state": resolved["state"], "assignment_valid": True}
+    elif args.command == "reconcile":
+        output = reconcile_task(authority, live, task_id=args.task_id)
     else:
         output = verify_merge_gate(authority, live)
     print(json.dumps(output, indent=2, sort_keys=True))

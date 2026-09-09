@@ -83,6 +83,9 @@ def validate_assignment(data):
         raise CycleError("unsupported assignment version, role or mode")
     if not isinstance(data["task"], str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9._-]*", data["task"]):
         raise CycleError("invalid task slug")
+    auth_id = data.get("authority", {}).get("task_id") if isinstance(data.get("authority"), dict) else None
+    if auth_id and str(auth_id) != data["task"]:
+        raise CycleError("task ID does not match authority task_id")
     if not valid_repository(data["repository"]) or data["repository"].endswith("/agy-skills.git"):
         raise CycleError("repository must be an approved GitHub HTTPS repository without credentials")
     branch = data["branch"]
@@ -208,6 +211,95 @@ def write_json(path, data):
     path.write_text(json.dumps(data, indent=2) + "\n")
 
 
+def resolve_assigned_reviewer(author_role: str) -> str:
+    if author_role == "automation":
+        return "gov"
+    if author_role == "gov":
+        return "automation"
+    if author_role == "codex":
+        return "gov"
+    return "reviewer"
+
+
+def format_handoff(handoff: dict) -> str:
+    return (
+        f"# Handoff for Task {handoff['task']}\n\n"
+        f"- **Pull Request**: #{handoff['pr_number']} ({handoff['pr_url']})\n"
+        f"- **Exact Head SHA**: `{handoff['head_sha']}`\n"
+        f"- **Assigned Reviewer**: `{handoff['assigned_reviewer']}`\n"
+        f"- **Next State**: `{handoff['next_state']}`\n"
+        f"- **Validation Receipt**: {len(handoff['validation_receipt'])} check(s) passed\n"
+    )
+
+
+def ensure_pull_request(slug: str, branch: str, head: str, task: str, prompt: str, env: dict) -> dict:
+    try:
+        raw = run(["gh", "pr", "list", "--repo", slug, "--head", branch,
+                   "--state", "open", "--json", "number,url,headRefOid"], env=env)
+        prs = json.loads(raw) if raw else []
+    except Exception as exc:
+        raise CycleError(f"PR query failed: {exc}") from exc
+
+    if isinstance(prs, dict):
+        prs = [prs]
+    if not isinstance(prs, list):
+        raise CycleError("PR query returned unexpected data")
+
+    if len(prs) > 1:
+        raise CycleError(f"expected exactly one PR for branch {branch}, found {len(prs)}")
+
+    if len(prs) == 0:
+        first_line = prompt.strip().splitlines()[0].strip("# ").strip()
+        title = f"{task}: {first_line}" if not first_line.startswith(task) else first_line
+        body = (
+            f"## Task {task}\n\n"
+            f"Automated checkpoint for `{branch}`.\n\n"
+            f"Exact Head SHA: `{head}`\n\n"
+            "AWAITING_GOVERNANCE_REVIEW\n"
+        )
+        try:
+            run(["gh", "pr", "create", "--repo", slug,
+                 "--head", branch, "--base", "main",
+                 "--title", title, "--body", body], env=env)
+        except Exception as exc:
+            raise CycleError(f"PR creation failed: {exc}") from exc
+
+        try:
+            raw = run(["gh", "pr", "list", "--repo", slug, "--head", branch,
+                       "--state", "open", "--json", "number,url,headRefOid"], env=env)
+            prs = json.loads(raw) if raw else []
+            if isinstance(prs, dict):
+                prs = [prs]
+        except Exception as exc:
+            raise CycleError(f"PR query after creation failed: {exc}") from exc
+        if len(prs) != 1:
+            raise CycleError(f"expected exactly one PR after creation, found {len(prs)}")
+
+    pr = prs[0]
+    pr_head = pr.get("headRefOid") or pr.get("head", {}).get("sha")
+    if not pr_head:
+        try:
+            view_raw = run(["gh", "pr", "view", str(pr["number"]), "--repo", slug,
+                            "--json", "headRefOid,state"], env=env)
+            view_data = json.loads(view_raw)
+            pr_head = view_data.get("headRefOid")
+            if str(view_data.get("state", "")).upper() != "OPEN":
+                raise CycleError(f"PR #{pr['number']} is not open")
+        except Exception as exc:
+            if isinstance(exc, CycleError):
+                raise
+            raise CycleError(f"PR head verification failed: {exc}") from exc
+
+    if pr_head != head:
+        raise CycleError(f"PR #{pr['number']} head {pr_head} does not match published head {head}")
+
+    return {
+        "number": int(pr["number"]),
+        "url": str(pr["url"]),
+        "head_sha": pr_head,
+    }
+
+
 def execute(data, engine, extra):
     uid, gid = os.getuid(), os.getgid()
     if uid == 0:
@@ -216,7 +308,7 @@ def execute(data, engine, extra):
         raise CycleError("assignment role differs from instance role")
     login, email = IDENTITIES[data["role"]]
     image_tag = os.environ.get("SCORE2GP_CODEX_IMAGE" if engine == "codex" else "SCORE2GP_AGENT_IMAGE",
-                               f"score2gp-{'codex' if engine == 'codex' else 'agent'}:local")
+                                f"score2gp-{'codex' if engine == 'codex' else 'agent'}:local")
     image = run(["docker", "image", "inspect", "--format", "{{.Id}}", image_tag])
     root = Path(os.environ.get("SCORE2GP_CYCLE_ROOT", str(Path.home() / ".local/state/score2gp/cycles")))
     cycle_id = f"{data['role']}-{uuid.uuid4().hex}"
@@ -228,7 +320,8 @@ def execute(data, engine, extra):
     secret = folder / "github-token"
     network, proxy_name, worker_name = (f"score2gp-{cycle_id}-{suffix}" for suffix in ("net", "proxy", "worker"))
     receipt = {"cycle_id": cycle_id, "assignment": data, "image_id": image,
-               "status": "retained", "validation": []}
+               "status": "retained", "validation": [], "lease_id": cycle_id,
+               "recovery_folder": str(folder)}
     write_json(folder / "receipt.json", receipt)
     print(f"cycle: {cycle_id}\nrecovery: {folder}", flush=True)
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
@@ -255,10 +348,12 @@ def execute(data, engine, extra):
         if data["mode"] == "reviewer":
             slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
             pr = json.loads(run(["gh", "api", f"repos/{slug}/pulls/{data['pull_request']}"], env=env))
+            if pr["user"]["login"] == login:
+                raise CycleError("self-review is forbidden; review must target another author's PR")
             if (pr["head"]["sha"] != data["base_sha"] or pr["head"]["ref"] != data["branch"]
-                    or pr["user"]["login"] == login or pr["state"] != "open"
+                    or str(pr.get("state", "")).lower() != "open"
                     or pr["head"]["repo"]["full_name"] != slug):
-                raise CycleError("review must target another author's open PR at the assigned repository, branch and head")
+                raise CycleError("review must target an open PR at the assigned repository, branch and head")
         clone_branch(data["repository"], data["branch"], data["base_sha"], repo, env)
         git(repo, "config", "user.name", login, env=env)
         git(repo, "config", "user.email", email, env=env)
@@ -357,6 +452,25 @@ def execute(data, engine, extra):
                                   "context_repositories": data.get("context_repositories", [])}
             receipt["published_head"] = checkpoint(repo, data["repository"], data["branch"], data["base_sha"],
                                                    data["allowed_paths"], checkpoint_receipt, login, email, env)
+            if any(v["exit_code"] != 0 for v in receipt["validation"]):
+                raise CycleError("validation failed; checkpoint published, clone retained")
+            slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
+            pr_info = ensure_pull_request(slug, data["branch"], receipt["published_head"],
+                                          data["task"], data["prompt"], env)
+            receipt["pull_request"] = pr_info
+            assigned_reviewer = resolve_assigned_reviewer(data["role"])
+            handoff = {
+                "task": data["task"],
+                "pr_number": pr_info["number"],
+                "pr_url": pr_info["url"],
+                "head_sha": receipt["published_head"],
+                "validation_receipt": receipt["validation"],
+                "assigned_reviewer": assigned_reviewer,
+                "next_state": "REVIEW_REQUIRED",
+            }
+            receipt["handoff"] = handoff
+            write_json(folder / "handoff.json", handoff)
+            (folder / "handoff.md").write_text(format_handoff(handoff))
         else:
             slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
             current = json.loads(run(["gh", "api", f"repos/{slug}/pulls/{data['pull_request']}"], env=env))
@@ -369,8 +483,8 @@ def execute(data, engine, extra):
             if not found:
                 raise CycleError("no published exact-head review receipt; clone retained")
             receipt["review_url"] = found[-1]["html_url"]
-        if any(v["exit_code"] != 0 for v in receipt["validation"]):
-            raise CycleError("validation failed; checkpoint published, clone retained")
+            if any(v["exit_code"] != 0 for v in receipt["validation"]):
+                raise CycleError("validation failed; clone retained")
         receipt["status"] = "complete"
         # This unique clone was created by this invocation; remote work is verified above.
         shutil.rmtree(repo)
@@ -380,19 +494,10 @@ def execute(data, engine, extra):
         print("cycle status: COMPLETE", flush=True)
         print("assessment: agent work, validation, and remote evidence all passed", flush=True)
         if data["mode"] == "author":
-            slug = data["repository"].removeprefix("https://github.com/").removesuffix(".git")
-            try:
-                open_prs = json.loads(run(["gh", "pr", "list", "--repo", slug,
-                                           "--head", data["branch"], "--state", "open",
-                                           "--json", "number,url"], env=env))
-            except CycleError:
-                open_prs = []
-            if isinstance(open_prs, list) and open_prs:
-                print(f"next: inspect PR #{open_prs[0]['number']} at {open_prs[0]['url']} "
-                      f"for branch head {receipt['published_head'][:12]}", flush=True)
-            else:
-                print(f"next: create a follow-up PR for {data['repository']} branch "
-                      f"{data['branch']} at {receipt['published_head'][:12]}", flush=True)
+            print(f"handoff: PR #{pr_info['number']} at {pr_info['url']} head {receipt['published_head'][:12]}", flush=True)
+            print(f"assigned reviewer: {assigned_reviewer}", flush=True)
+            print("next state: REVIEW_REQUIRED", flush=True)
+            print(f"next: inspect PR #{pr_info['number']} at {pr_info['url']} for branch head {receipt['published_head'][:12]}", flush=True)
             print("next: send the published change through devil's-advocate review before merging", flush=True)
         else:
             print(f"next: inspect the published review at {receipt['review_url']}", flush=True)
