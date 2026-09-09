@@ -12,8 +12,8 @@
 - Repository: `tticom/score2gp-agentops`
 - Base revision: `6048b8321cfaad27ab171b1e6dfc0398d40c485f`
 - Branch: `gov/promote-orc-04`
-- Local HEAD: `6ece926351695a946a5b2f5b7d24f43f0bab7716`
-- Remote HEAD: `6ece926351695a946a5b2f5b7d24f43f0bab7716`
+- Local HEAD: `6c44a66ff5bb3cf415a10d4febbca0926d1c9fc5`
+- Remote HEAD: `6c44a66ff5bb3cf415a10d4febbca0926d1c9fc5`
 - Worktree: clean at handoff capture
 - PR: https://github.com/tticom/score2gp-agentops/pull/659
 
@@ -36,5 +36,5 @@
 
 ## Next authorised action
 
-- Action: Independently review PR #659 at exact head `6ece926351695a946a5b2f5b7d24f43f0bab7716`; after maintainer merge, dispatch ORC-04 from the merged active-task state.
+- Action: Independently review PR #659 at exact head `6c44a66ff5bb3cf415a10d4febbca0926d1c9fc5`; after maintainer merge, dispatch ORC-04 from the merged active-task state.
 - Stop condition: Do not implement or dispatch ORC-04 before PR #659 is reviewed and merged; stop on any authority, exact-head, identity, or scope mismatch.
