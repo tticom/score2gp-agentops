@@ -204,6 +204,9 @@ def main() -> int:
     env = os.environ.copy(); env["SCORE2GP_AGENT_ROLE"] = args.role
     dispatch_env = role_dispatch_environment(args.role)
     assignment = command_json([sys.executable, str(agentops / "scripts" / ("score2gp_go_bootstrap.py" if args.role == "automation" else "score2gp_got_bootstrap.py")), "--agentops", str(agentops), "--product", str(product), "--json"], agentops, dispatch_env)
+    if assignment.get("state") == "COMPLETE":
+        print(f"score2gp: task {assignment.get('task_id')} is complete; no assignment generated")
+        return 0
     try:
         authority = json.loads((agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text())
     except (OSError, json.JSONDecodeError) as exc:

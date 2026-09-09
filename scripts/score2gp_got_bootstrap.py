@@ -19,6 +19,12 @@ CONTROL_PLANE_REPAIR_PATHS = {
     "tests/test_score2gp_orca_control.py",
     "tests/test_score2gp_orchestrator.py",
 }
+TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED"}
+
+
+def should_snapshot_task_pr(status: str, explicit_review: bool) -> bool:
+    """Only inspect a task PR when it is live, or when review was explicit."""
+    return explicit_review or status.strip().upper() not in TERMINAL_TASK_STATUSES
 
 
 def fail_closed(reason: str) -> None:
@@ -93,7 +99,8 @@ def main() -> None:
         live_file = f.name
 
     try:
-        if repo and pr:
+        explicit_review = bool(args.review_repo and args.review_pr)
+        if repo and pr and should_snapshot_task_pr(str(task.get("status", "")), explicit_review):
             res = subprocess.run(
                 [sys.executable, "scripts/score2gp_orca_control.py", "snapshot", "--repository", str(repo), "--pull-request", str(pr)],
                 cwd=agentops, capture_output=True, text=True
@@ -129,6 +136,12 @@ def main() -> None:
         resolved = json.loads(res.stdout)
         role = resolved.get("dispatch_role")
         if not role:
+            if resolved.get("state") == "COMPLETE":
+                if args.json:
+                    print(json.dumps({"ok": True, **resolved}, indent=2))
+                else:
+                    print(f"score2gp: task {resolved.get('task_id')} is complete; no dispatch required")
+                return
             fail_closed(f"No dispatch role resolved. State: {resolved.get('state')}")
 
         gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True)

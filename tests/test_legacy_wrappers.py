@@ -99,3 +99,10 @@ def test_bootstrap_switches_to_and_fast_forwards_main(monkeypatch, tmp_path, mod
         ["git", "switch", "main"],
         ["git", "merge", "--ff-only", "origin/main"],
     ]
+
+
+def test_terminal_task_does_not_snapshot_historical_pr() -> None:
+    assert score2gp_go_bootstrap.should_snapshot_task_pr("COMPLETED") is False
+    assert score2gp_go_bootstrap.should_snapshot_task_pr("PROMOTED") is True
+    assert score2gp_got_bootstrap.should_snapshot_task_pr("MERGED", False) is False
+    assert score2gp_got_bootstrap.should_snapshot_task_pr("MERGED", True) is True
