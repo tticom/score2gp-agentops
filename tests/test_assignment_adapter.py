@@ -85,7 +85,7 @@ def test_convert_creates_missing_task_branch_from_product_main(monkeypatch, tmp_
         raise AssertionError(command)
 
     monkeypatch.setattr(adapter.subprocess, "run", run)
-    heads = iter([None, None, "a" * 40])
+    heads = iter([None, None, "a" * 40, "a" * 40])
     monkeypatch.setattr(adapter, "remote_branch_head", lambda repository, branch: next(heads))
     assignment = governed()
     assignment["work"]["expected_head_sha"] = None
@@ -94,6 +94,50 @@ def test_convert_creates_missing_task_branch_from_product_main(monkeypatch, tmp_
     )
     assert result["base_sha"] == "a" * 40
     assert any(command[:3] == ["gh", "api", "repos/tticom/score2gp/git/refs"] for command in commands)
+
+
+def test_convert_creates_missing_branch_from_task_repository_main(monkeypatch, tmp_path):
+    commands = []
+    product_base = "a" * 40
+    task_repository_base = "b" * 40
+
+    def run(command, **kwargs):
+        commands.append(command)
+        if command[:2] == ["git", "ls-remote"]:
+            return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+        if command[:3] == ["git", "-C", str(tmp_path)]:
+            if command[3:] == ["status", "--porcelain"]:
+                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+            if command[3:] == ["fetch", "origin", "main"]:
+                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+            if command[3:] == ["rev-parse", "origin/main"]:
+                return type("Result", (), {"returncode": 0, "stdout": product_base, "stderr": ""})()
+            if command[3:] == ["branch", "--show-current"]:
+                return type("Result", (), {"returncode": 0, "stdout": "main", "stderr": ""})()
+            if command[3:] == ["rev-parse", "HEAD"]:
+                return type("Result", (), {"returncode": 0, "stdout": product_base, "stderr": ""})()
+        if command[:3] == ["gh", "api", "repos/tticom/score2gp-agentops/git/refs"]:
+            assert f"sha={task_repository_base}" in command
+            return type("Result", (), {"returncode": 0, "stdout": "{}", "stderr": ""})()
+        raise AssertionError(command)
+
+    monkeypatch.setattr(adapter.subprocess, "run", run)
+    heads = iter([None, None, task_repository_base, task_repository_base])
+    monkeypatch.setattr(adapter, "remote_branch_head", lambda repository, branch: next(heads))
+    assignment = governed()
+    assignment["work"]["repository"] = "tticom/score2gp-agentops"
+    assignment["work"]["expected_head_sha"] = None
+
+    result = adapter.convert(
+        assignment,
+        AUTHORITY,
+        "automation",
+        ["github.com"],
+        product=tmp_path,
+        env={},
+    )
+
+    assert result["base_sha"] == task_repository_base
 
 
 def test_command_json_preserves_dispatch_diagnostic(monkeypatch, tmp_path):
