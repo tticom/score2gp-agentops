@@ -4,13 +4,13 @@
 
 **Task**: ORC-04 — Integrated PR Lifecycle and Concurrent Review Routing
 
-**Status**: PROMOTED
+**Status**: COMPLETED
 
 **Repository**: tticom/score2gp-agentops
 
 **PR Branch**: `feat/orc-04-integrated-pr-lifecycle`
 
-**Pull Request**: TBD
+**Pull Request**: 661
 
 **Owner Role**: implementation
 

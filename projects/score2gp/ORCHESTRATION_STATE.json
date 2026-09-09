@@ -1,16 +1,16 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 28,
+  "authority_revision": 29,
   "task": {
     "id": "ORC-04",
     "title": "Integrated PR Lifecycle and Concurrent Review Routing",
     "objective": "Make each agent cycle open its PR, route exact-head reviews across independent roles, and support isolated concurrent tasks with verified post-merge reconciliation.",
-    "status": "PROMOTED",
+    "status": "COMPLETED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "feat/orc-04-integrated-pr-lifecycle",
-    "pull_request": null,
+    "pull_request": 661,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/orc-04-integrated-pr-lifecycle.md",
     "allowed_paths": [
@@ -46,7 +46,9 @@
       "successor_executes_without_separate_authority"
     ],
     "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
+    "delivery_action": "pull_request",
+    "merge_commit": "e6d7cdc5941edf9907f181f345d9485b81d56357",
+    "head_sha": "5fb590343a48da5edaf286352dc1ee1938e246fc"
   },
   "next_task_proposal": {
     "id": "REC-06",
@@ -762,6 +764,56 @@
       "delivery_action": "pull_request",
       "merge_commit": "eae1afb5d875f6d3f3603c3601865485ca9a3dee",
       "head_sha": "27216115bdc0192ab90bc74f226b8c7d835ccf41"
+    },
+    {
+      "id": "ORC-04",
+      "title": "Integrated PR Lifecycle and Concurrent Review Routing",
+      "objective": "Make each agent cycle open its PR, route exact-head reviews across independent roles, and support isolated concurrent tasks with verified post-merge reconciliation.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "feat/orc-04-integrated-pr-lifecycle",
+      "pull_request": 661,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/orc-04-integrated-pr-lifecycle.md",
+      "allowed_paths": [
+        "agent-runtime/assignment_adapter.py",
+        "agent-runtime/cycle.py",
+        "agent-runtime/scripts/start-instance.sh",
+        "scripts/score2gp_dispatch.py",
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "scripts/score2gp_orchestrator.py",
+        "scripts/score2gp_orca_control.py",
+        "tests/test_assignment_adapter.py",
+        "tests/test_disposable_cycle.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_orchestrator.py"
+      ],
+      "acceptance": [
+        "A successful author cycle verifies its exact remote head and creates or updates exactly one PR before completing.",
+        "Gov can review Automation PR 460 at its exact head and Automation can review a Gov-authored governance PR without either identity gaining merge authority.",
+        "Two different task IDs can be dispatched concurrently with isolated clones, leases, branches, PRs, and recovery receipts.",
+        "A reviewer assignment is read-only, exact-head pinned, and rejects self-review or stale PR state.",
+        "Post-merge reconciliation completes one task idempotently and prepares, but never implicitly executes, its successor."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/test_assignment_adapter.py tests/test_disposable_cycle.py tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py",
+        "python3 -m compileall -q agent-runtime scripts"
+      ],
+      "dependencies": ["ORC-03", "REC-05"],
+      "stop_conditions": [
+        "author_cycle_completes_without_a_verified_pr",
+        "review_identity_or_exact_head_is_ambiguous",
+        "concurrent_cycles_share_writable_source_or_authority_state",
+        "successor_executes_without_separate_authority"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "merge_commit": "e6d7cdc5941edf9907f181f345d9485b81d56357",
+      "head_sha": "5fb590343a48da5edaf286352dc1ee1938e246fc",
+      "reconciled": true,
+      "reconciled_at": "2026-09-09T07:55:28Z"
     }
   ]
 }
