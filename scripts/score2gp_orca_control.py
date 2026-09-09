@@ -206,7 +206,8 @@ def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) 
         "APPROVED": {"APPROVED"},
         "RUNNING": {"IN_PROGRESS", "PR_OPEN"},
         "BLOCKED": {"BLOCKED"},
-        "COMPLETE": {"COMPLETED", "MERGED", "RESOLVED"},
+        "COMPLETE": {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"},
+        "COMPLETED": {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"},
         "MERGED": {"MERGED"},
         "RESOLVED": {"RESOLVED"},
     }

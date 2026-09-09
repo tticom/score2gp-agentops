@@ -117,6 +117,19 @@ def test_promoted_legacy_active_task_alignment_passes() -> None:
     validate_legacy_alignment(auth, text)
 
 
+def test_completed_legacy_active_task_alignment_passes() -> None:
+    text = """# Active Task
+**Task**: 108 — Bounded repair
+**Status**: COMPLETED
+**Repository**: tticom/score2gp
+**PR Branch**: `feat/task-108`
+**Pull Request**: 441
+"""
+    auth = authority()
+    auth["task"]["status"] = "COMPLETED"
+    validate_legacy_alignment(auth, text)
+
+
 def test_legacy_active_task_divergence_fails_closed() -> None:
     text = """# Active Task
 **Task**: Task 999 — Wrong task
@@ -891,4 +904,3 @@ def test_reconcile_task_fails_closed_on_unmerged_or_mismatched_pr() -> None:
     }
     with pytest.raises(ControlError, match="reconciliation requires a 40-character merge_commit"):
         reconcile_task(config, bad_sha_facts)
-
