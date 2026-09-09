@@ -120,14 +120,12 @@ def ensure_task_branch(
     current = remote_branch_head(repository, branch)
     if current is not None:
         return current
-    if git_checked(product, ["status", "--porcelain"], env) != "":
-        raise AdapterError(f"product repository is dirty: {product}")
-    git_checked(product, ["fetch", "origin", "main"], env)
-    base = git_checked(product, ["rev-parse", "origin/main"], env)
-    if git_checked(product, ["branch", "--show-current"], env) != "main":
-        raise AdapterError("product checkout is not on main")
-    if git_checked(product, ["rev-parse", "HEAD"], env) != base:
-        raise AdapterError("product main is not synchronized with origin/main")
+    # The task repository may differ from the product checkout (for example,
+    # governance tasks run in AgentOps while the product checkout is score2gp).
+    # Resolve the branch base from the repository that will receive the ref.
+    base = remote_branch_head(repository, "main")
+    if base is None:
+        raise AdapterError("task repository main does not have an exact remote head")
     slug = repository.removeprefix("https://github.com/").removesuffix(".git")
     result = subprocess.run(
         ["gh", "api", f"repos/{slug}/git/refs", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={base}"],
