@@ -62,6 +62,7 @@ def main() -> None:
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)
+    parser.add_argument("--review-head")
     parser.add_argument("--review-level")
     args = parser.parse_args()
 
@@ -101,6 +102,15 @@ def main() -> None:
                 fail_closed(f"Snapshot failed: {res.stderr.strip()}")
             with open(live_file, "w") as f:
                 live = json.loads(res.stdout)
+                pr_data = live.get("pull_request")
+                if not isinstance(pr_data, dict):
+                    fail_closed(f"PR #{pr} not found or missing from snapshot")
+                if str(pr_data.get("state", "")).upper() != "OPEN":
+                    fail_closed(f"PR #{pr} is not open (state: {pr_data.get('state')})")
+                if args.review_head:
+                    live_head = pr_data.get("head_sha")
+                    if live_head != args.review_head:
+                        fail_closed(f"PR #{pr} head changed: expected {args.review_head}, got {live_head}")
                 if args.review_repo and args.review_pr and classify_control_plane_repair(repo, pr):
                     live["control_plane_repair"] = True
                 json.dump(live, f)
@@ -125,6 +135,11 @@ def main() -> None:
         if gh_user.returncode != 0:
             fail_closed(f"GitHub identity check failed: {gh_user.stderr.strip()}")
         login = gh_user.stdout.strip()
+        if repo and pr and isinstance(pr_data, dict):
+            pr_author_raw = pr_data.get("author") or pr_data.get("user")
+            pr_author = pr_author_raw.get("login", "") if isinstance(pr_author_raw, dict) else str(pr_author_raw or "")
+            if pr_author and login == pr_author:
+                fail_closed(f"self-review is forbidden: {login} cannot review own PR #{pr}")
 
         cmd = [
             sys.executable, "scripts/score2gp_dispatch.py",
@@ -138,6 +153,8 @@ def main() -> None:
             cmd.extend(["--review-repo", args.review_repo])
         if args.review_pr:
             cmd.extend(["--review-pr", str(args.review_pr)])
+        if args.review_head:
+            cmd.extend(["--review-head", args.review_head])
         if args.review_level:
             cmd.extend(["--review-level", args.review_level])
         if args.json:

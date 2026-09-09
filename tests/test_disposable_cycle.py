@@ -1,4 +1,5 @@
 """Real Git repositories exercise checkpoint and recovery; Docker has a separate smoke test."""
+from copy import deepcopy
 import importlib.util
 import json
 import os
@@ -167,8 +168,26 @@ def controller(repository, tmp_path, monkeypatch):
                             "state": "COMMENTED", "body": f"<!-- score2gp-cycle:{cycle_id} -->",
                             "html_url": "https://github.com/tticom/score2gp/pull/1#pullrequestreview-1"}]] if state["review_published"] else [[]]
                 return subprocess.CompletedProcess(args, 0, json.dumps(reviews), "")
-            pr = {"head": {"sha": git(source, "rev-parse", "HEAD"), "ref": "feat/example",
-                           "repo": {"full_name": "tticom/score2gp"}}, "user": {"login": "other-author"}, "state": "open"}
+            if state.get("pr_create_fail"):
+                if args[1:3] == ["pr", "create"]:
+                    return subprocess.CompletedProcess(args, 1, "", "pr create failed")
+                if args[1:3] == ["pr", "list"]:
+                    return subprocess.CompletedProcess(args, 0, "[]", "")
+            branch_name = "feat/example"
+            if "--head" in args:
+                branch_name = args[args.index("--head") + 1]
+            current_remote_head = git(remote, "rev-parse", f"refs/heads/{branch_name}")
+            pr = {
+                "number": 1 if branch_name == "feat/example" else 2,
+                "url": f"https://github.com/tticom/score2gp/pull/{1 if branch_name == 'feat/example' else 2}",
+                "headRefOid": current_remote_head,
+                "head": {"sha": current_remote_head, "ref": branch_name,
+                         "repo": {"full_name": "tticom/score2gp"}},
+                "user": {"login": "other-author"},
+                "state": "open",
+            }
+            if args[1:3] == ["pr", "list"]:
+                return subprocess.CompletedProcess(args, 0, json.dumps([pr]), "")
             return subprocess.CompletedProcess(args, 0, json.dumps(pr), "")
         if args[0] == "git":
             args = [str(remote) if a == "https://github.com/tticom/score2gp.git" else a for a in args]
@@ -325,3 +344,69 @@ def test_cycle_run_preserves_safe_cloud_diagnostic(monkeypatch):
         cycle.run(["gcloud", "secrets"])
     assert "topsecret" not in str(error.value)
     assert "REDACTED" in str(error.value)
+
+
+def test_author_cycle_retained_when_pr_creation_fails(controller):
+    data, state, root, remote = controller
+    state["pr_create_fail"] = True
+    assert cycle.execute(data, "codex", []) == 1
+    folder = next(root.iterdir())
+    assert (folder / "repo").exists()
+    receipt = json.loads((folder / "receipt.json").read_text())
+    assert receipt["status"] == "retained"
+    assert "PR creation failed" in receipt.get("reason", "")
+
+
+def test_remote_branch_moved_after_assignment_retains_cycle(controller):
+    data, state, root, remote = controller
+    data["base_sha"] = "0" * 40
+    assert cycle.execute(data, "codex", []) == 1
+    folder = next(root.iterdir())
+    assert (folder / "repo").exists()
+    receipt = json.loads((folder / "receipt.json").read_text())
+    assert receipt["status"] == "retained"
+
+
+def test_reviewer_self_review_fails_closed(controller, monkeypatch):
+    data, state, root, remote = controller
+    state.update(login="tticom-codex", review_published=True)
+    data.update(role="codex", mode="reviewer", allowed_paths=[], pull_request=1)
+    orig_boundary = subprocess.run
+    def self_review_run(args, **kwargs):
+        args = [str(a) for a in args]
+        if args[0] == "gh" and args[1:3] == ["api", "user"]:
+            return subprocess.CompletedProcess(args, 0, "tticom-codex", "")
+        if args[0] == "gh" and any("pulls/1" in a for a in args):
+            pr = {
+                "head": {"sha": data["base_sha"], "ref": "feat/example", "repo": {"full_name": "tticom/score2gp"}},
+                "user": {"login": "tticom-codex"},
+                "state": "open",
+            }
+            return subprocess.CompletedProcess(args, 0, json.dumps(pr), "")
+        return orig_boundary(args, **kwargs)
+    monkeypatch.setattr(subprocess, "run", self_review_run)
+    assert cycle.execute(data, "codex", []) == 1
+    folder = next(root.iterdir())
+    receipt = json.loads((folder / "receipt.json").read_text())
+    assert receipt["status"] == "retained"
+    assert "self-review is forbidden" in receipt.get("reason", "")
+
+
+def test_concurrent_distinct_task_cycles_remain_isolated(controller):
+    data1, state, root, remote = controller
+    data2 = deepcopy(data1)
+    data2["task"] = "TASK-B"
+    data2["branch"] = "feat/task-b"
+    git(remote, "branch", "feat/task-b", data1["base_sha"])
+
+    assert cycle.execute(data1, "codex", []) == 0
+    assert cycle.execute(data2, "codex", []) == 0
+
+    folders = list(root.iterdir())
+    assert len(folders) == 2
+    receipts = [json.loads((f / "receipt.json").read_text()) for f in folders]
+    tasks = {r["assignment"]["task"] for r in receipts}
+    assert tasks == {"example", "TASK-B"}
+    leases = {r["cycle_id"] for r in receipts}
+    assert len(leases) == 2
+

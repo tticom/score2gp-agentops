@@ -42,7 +42,10 @@ def synchronize_agentops_main(
     run_git("merge", "--ff-only", "origin/main")
 
 
-def select_bootstrap(linux_user: str) -> str:
+def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
+    # If explicit review dispatch was requested, route to the review bootstrap helper.
+    if review_pr is not None:
+        return "score2gp_got_bootstrap.py"
     # Disposable AGY containers run as the unprivileged `agent` user. The
     # launcher attests the intended worker role separately; preserve the host
     # identity path while allowing the containerized role to reach the same
@@ -70,6 +73,7 @@ def main() -> None:
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)
+    parser.add_argument("--review-head")
     parser.add_argument("--review-level")
     parser.add_argument("--orca-role", choices=("implementation", "reviewer", "governance", "architect"))
     parser.add_argument("--live", type=Path)
@@ -138,15 +142,11 @@ def main() -> None:
     linux_user = getpass.getuser()
     if (args.review_repo is None) != (args.review_pr is None):
         raise DispatchError("--review-repo and --review-pr must be supplied together")
-    if linux_user == "tticom-automation" and args.review_pr is not None:
-        raise DispatchError(
-            "tticom-automation cannot use explicit reviewer dispatch"
-        )
     agentops = Path(args.agentops).resolve()
     product = Path(args.product).resolve()
     skills_repo = Path(args.skills_repo).resolve()
     synchronize_agentops_main(agentops)
-    helper = agentops / "scripts" / select_bootstrap(linux_user)
+    helper = agentops / "scripts" / select_bootstrap(linux_user, review_pr=args.review_pr)
     command = [
         sys.executable,
         os.fspath(helper),
@@ -159,9 +159,11 @@ def main() -> None:
             "--review-repo", str(args.review_repo),
             "--review-pr", str(args.review_pr),
         ])
+    if args.review_head:
+        command.extend(["--review-head", args.review_head])
     if args.review_level:
         command.extend(["--review-level", args.review_level])
-    if helper.name == "score2gp_go_bootstrap.py" and args.json:
+    if args.json:
         command.append("--json")
     completed = subprocess.run(command, cwd=agentops)
     raise SystemExit(completed.returncode)

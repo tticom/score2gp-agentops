@@ -60,7 +60,14 @@ def command_json(command: list[str], cwd: Path, env: dict[str, str]) -> dict:
 
 def task_by_id(authority: dict, task_id: str) -> dict:
     candidates = ([authority["task"]] if isinstance(authority.get("task"), dict) else [])
+    if isinstance(authority.get("task_registry"), dict):
+        if task_id in authority["task_registry"]:
+            return authority["task_registry"][task_id]
+        candidates += list(authority["task_registry"].values())
     candidates += [item for item in authority.get("tasks", []) + authority.get("completed_tasks", []) if isinstance(item, dict)]
+    proposal = authority.get("next_task_proposal")
+    if isinstance(proposal, dict):
+        candidates.append(proposal)
     for task in candidates:
         if str(task.get("id")) == task_id:
             return task

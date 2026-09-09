@@ -6,9 +6,12 @@ from typing import Any
 import pytest
 
 from scripts.score2gp_orchestrator import (
+    LIFECYCLE_STATES,
     OrchestrationError,
     advance,
+    build_task_registry,
     render_active_task,
+    resolve_task_lifecycle,
     upgrade_authority,
 )
 
@@ -242,3 +245,157 @@ def test_advance_handles_missing_or_invalid_authority_pull_request(
     decision = advance(auth, live())
     assert decision["action"] == "BLOCKED"
     assert decision["reason"] == expected_reason
+
+
+def test_build_task_registry_preserves_required_metadata() -> None:
+    auth = authority("RUNNING")
+    auth["next_task_proposal"] = {
+        "id": "REC-06",
+        "title": "Staff and System Topology",
+        "objective": "Reconstruct pages",
+        "status": "PROPOSED",
+        "repository": "tticom/score2gp",
+        "base_branch": "main",
+        "branch": "feat/rec-06-topology",
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "allowed_paths": ["src/topology.py"],
+        "validation_commands": ["python3 -m pytest tests/test_topology.py"],
+    }
+    registry = build_task_registry(auth, live())
+    assert "NPG-00A" in registry
+    assert "REC-06" in registry
+
+    rec = registry["NPG-00A"]
+    required_keys = {
+        "id", "repository", "base_branch", "branch", "owner_role", "reviewer_role",
+        "pull_request", "head_sha", "lifecycle_state", "lease_id",
+        "validation_commands", "validation_contract", "allowed_paths",
+        "recovery_receipt_location",
+    }
+    assert required_keys <= rec.keys()
+    assert rec["repository"] == "tticom/score2gp-agentops"
+    assert rec["base_branch"] == "main"
+    assert rec["branch"] == "agy/npg-00a-baseline"
+    assert rec["owner_role"] == "implementation"
+    assert rec["reviewer_role"] == "reviewer"
+    assert rec["pull_request"] == 600
+    assert rec["head_sha"] == "a" * 40
+    assert rec["lifecycle_state"] in LIFECYCLE_STATES
+
+
+def test_resolve_task_lifecycle_covers_all_nine_states() -> None:
+    # 1. authoring
+    t_auth = {"status": "RUNNING", "pull_request": None}
+    assert resolve_task_lifecycle(t_auth) == "authoring"
+
+    # 2. pr_open
+    t_open = {"status": "RUNNING", "pull_request": 100}
+    assert resolve_task_lifecycle(t_open) == "pr_open"
+
+    # 3. review_required
+    live_review_req = {
+        "pull_request": {
+            "number": 100,
+            "state": "OPEN",
+            "head_sha": "a" * 40,
+            "reviews": [],
+        }
+    }
+    assert resolve_task_lifecycle(t_open, live_review_req) == "review_required"
+
+    # 4. changes_requested
+    live_changes = {
+        "pull_request": {
+            "number": 100,
+            "state": "OPEN",
+            "head_sha": "a" * 40,
+            "reviews": [{"author": "rev", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}],
+        }
+    }
+    assert resolve_task_lifecycle(t_open, live_changes) == "changes_requested"
+
+    # 5. approved (pending checks or unresolved threads)
+    live_approved = {
+        "pull_request": {
+            "number": 100,
+            "state": "OPEN",
+            "head_sha": "a" * 40,
+            "reviews": [{"author": "rev", "state": "APPROVED", "head_sha": "a" * 40}],
+            "checks": [{"name": "ci", "conclusion": "FAILURE"}],
+            "unresolved_threads": 0,
+        }
+    }
+    assert resolve_task_lifecycle(t_open, live_approved) == "approved"
+
+    # 6. human_merge (approved, all checks passed, 0 unresolved threads)
+    live_merge = {
+        "pull_request": {
+            "number": 100,
+            "state": "OPEN",
+            "head_sha": "a" * 40,
+            "reviews": [{"author": "rev", "state": "APPROVED", "head_sha": "a" * 40}],
+            "checks": [{"name": "ci", "conclusion": "SUCCESS"}],
+            "unresolved_threads": 0,
+        }
+    }
+    assert resolve_task_lifecycle(t_open, live_merge) == "human_merge"
+
+    # 7. merged
+    t_merged = {"status": "MERGED", "pull_request": 100}
+    assert resolve_task_lifecycle(t_merged) == "merged"
+
+    # 8. reconciled
+    t_reconciled = {"status": "MERGED", "reconciled": True}
+    assert resolve_task_lifecycle(t_reconciled) == "reconciled"
+
+    # 9. successor_prepared
+    t_succ = {"status": "PROPOSED"}
+    assert resolve_task_lifecycle(t_succ) == "successor_prepared"
+
+
+def test_cross_task_branch_reuse_in_orchestrator_fails_closed() -> None:
+    auth = authority("RUNNING")
+    auth["next_task_proposal"] = {
+        "id": "REC-06",
+        "title": "Staff and System Topology",
+        "objective": "Reconstruct pages",
+        "status": "RUNNING",
+        "repository": "tticom/score2gp",
+        "base_branch": "main",
+        "branch": "agy/npg-00a-baseline",  # Reuse active branch of NPG-00A!
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "allowed_paths": ["src/topology.py"],
+        "validation_commands": ["python3 -m pytest tests/test_topology.py"],
+        "dependencies": [],
+        "stop_conditions": [],
+        "delivery_action": "pull_request",
+    }
+    with pytest.raises(OrchestrationError, match="cross-task branch reuse detected"):
+        build_task_registry(auth)
+
+
+def test_advance_with_task_id() -> None:
+    auth = authority("READY")
+    auth["next_task_proposal"] = {
+        "id": "REC-06",
+        "title": "Staff and System Topology",
+        "objective": "Reconstruct pages",
+        "status": "READY",
+        "repository": "tticom/score2gp",
+        "base_branch": "main",
+        "branch": "feat/rec-06-topology",
+        "pull_request": None,
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "allowed_paths": ["src/topology.py"],
+        "validation_commands": ["python3 -m pytest tests/test_topology.py"],
+        "dependencies": [],
+        "stop_conditions": [],
+        "delivery_action": "pull_request",
+    }
+    decision = advance(auth, {}, task_id="REC-06")
+    assert decision["action"] == "EXECUTE_ASSIGNMENT"
+    assert decision["task_id"] == "REC-06"
+
