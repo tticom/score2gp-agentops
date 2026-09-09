@@ -43,6 +43,10 @@ if [ -z "$cycle_assignment" ]; then
   python3 "$agentops_dir/agent-runtime/assignment_adapter.py" \
     --role "$role" --agentops "$agentops_dir" --product "$workspace_root/score2gp" \
     --output "$generated_assignment"
+  if [ ! -s "$generated_assignment" ]; then
+    echo "score2gp: no runnable task; controller state is terminal or awaiting separate authorization"
+    exit 0
+  fi
   cycle_assignment=$generated_assignment
 fi
 export SCORE2GP_CYCLE_ASSIGNMENT="$cycle_assignment"

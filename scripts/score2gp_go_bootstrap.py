@@ -13,6 +13,12 @@ import sys
 import tempfile
 from pathlib import Path
 
+TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED"}
+
+
+def should_snapshot_task_pr(status: str) -> bool:
+    return status.strip().upper() not in TERMINAL_TASK_STATUSES
+
 
 def fail_closed(reason: str) -> None:
     if "--json" in sys.argv:
@@ -65,7 +71,7 @@ def main() -> None:
         live_file = f.name
 
     try:
-        if repo and pr:
+        if repo and pr and should_snapshot_task_pr(str(task.get("status", ""))):
             res = subprocess.run(
                 [sys.executable, "scripts/score2gp_orca_control.py", "snapshot", "--repository", str(repo), "--pull-request", str(pr)],
                 cwd=agentops, capture_output=True, text=True
@@ -82,6 +88,13 @@ def main() -> None:
         if gh_user.returncode != 0:
             fail_closed(f"GitHub identity check failed: {gh_user.stderr.strip()}")
         login = gh_user.stdout.strip()
+
+        if not should_snapshot_task_pr(str(task.get("status", ""))):
+            if args.json:
+                print(json.dumps({"ok": True, "state": "COMPLETE", "reason": "task_declared_complete", "task_id": task.get("id")}, indent=2))
+            else:
+                print(f"score2gp: task {task.get('id')} is complete; no dispatch required")
+            return
 
         cmd = [
             sys.executable, "scripts/score2gp_dispatch.py",
