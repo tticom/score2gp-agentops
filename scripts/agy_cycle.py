@@ -23,8 +23,8 @@ from typing import Any
 
 try:
     import yaml
-except ImportError as exc:  # pragma: no cover - exercised in deployment
-    raise SystemExit("agy-cycle requires PyYAML; install it in the controller environment") from exc
+except ImportError:
+    yaml = None  # type: ignore[assignment]
 
 
 TERMINAL = {"COMPLETE", "CANCELLED"}
@@ -39,8 +39,27 @@ def utc_now() -> str:
 
 
 def read_yaml(path: Path) -> dict[str, Any]:
+    if yaml is None:
+        raise CycleError("agy-cycle requires PyYAML; install it in the controller environment")
     try:
-        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+        class DuplicateCheckingLoader(yaml.SafeLoader):
+            pass
+
+        def construct_mapping(loader: Any, node: Any, deep: bool = False) -> dict[str, Any]:
+            mapping: dict[str, Any] = {}
+            for key_node, value_node in node.value:
+                key = loader.construct_object(key_node, deep=deep)
+                if key in mapping:
+                    raise CycleError(f"duplicate key '{key}' found in {path}")
+                mapping[key] = loader.construct_object(value_node, deep=deep)
+            return mapping
+
+        DuplicateCheckingLoader.add_constructor(
+            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping
+        )
+        value = yaml.load(path.read_text(encoding="utf-8"), Loader=DuplicateCheckingLoader)
+    except CycleError:
+        raise
     except (OSError, yaml.YAMLError) as exc:
         raise CycleError(f"cannot read {path}: {exc}") from exc
     if not isinstance(value, dict):
@@ -164,12 +183,36 @@ def claim(root: Path, task_id: str | None, owner: str) -> dict[str, Any]:
         raise CycleError(f"task {task['id']} is not READY")
     if not dependencies_satisfied(task, tasks, completed_task_ids(cycles)):
         raise CycleError(f"task {task['id']} has unmet dependencies")
+    resource_group = task.get("resource_group")
+    if resource_group:
+        for cpath in cycles.glob("*.json"):
+            if not cpath.is_file():
+                continue
+            try:
+                cdata = json.loads(cpath.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if cdata.get("state") not in TERMINAL:
+                c_task = tasks.get(str(cdata.get("task_id")), {})
+                if c_task.get("resource_group") == resource_group:
+                    raise CycleError(
+                        f"resource group '{resource_group}' is currently locked by active cycle {cdata.get('cycle_id')}"
+                    )
+        group_lock = cycles / f"{resource_group}.group_claim"
+        try:
+            fd = os.open(group_lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(f"{task['id']} {owner} {utc_now()}\n")
+        except FileExistsError as exc:
+            raise CycleError(f"resource group '{resource_group}' is already claimed") from exc
     lock = cycles / f"{task['id']}.claim"
     try:
         fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
             handle.write(f"{owner} {utc_now()}\n")
     except FileExistsError as exc:
+        if resource_group:
+            (cycles / f"{resource_group}.group_claim").unlink(missing_ok=True)
         raise CycleError(f"task {task['id']} is already claimed") from exc
     cycle_id = f"CYCLE-{uuid.uuid4().hex[:10].upper()}"
     record = {
@@ -208,8 +251,6 @@ def transition(root: Path, cycle_id: str, requested: str, actor: str) -> dict[st
         targets = [targets]
     if not definition or requested not in targets:
         raise CycleError(f"invalid transition {current} -> {requested}")
-    if requested == "PR_OPEN" and len(record.get("prs", [])) >= 1:
-        raise CycleError("cycle already has its one permitted PR")
     record["state"] = requested
     record["updated_at"] = utc_now()
     record.setdefault("history", []).append({"state": requested, "at": utc_now(), "by": actor})
@@ -218,8 +259,7 @@ def transition(root: Path, cycle_id: str, requested: str, actor: str) -> dict[st
 
 
 def reset(root: Path, cycle_id: str, state: str, actor: str) -> dict[str, Any]:
-    load_config(root)
-    cycles = paths(root)[2]
+    _, backlog, cycles = load_config(root)
     path, record = load_cycle(cycles, cycle_id)
     if state not in {"READY", "BLOCKED", "FAILED"}:
         raise CycleError("reset state must be READY, BLOCKED, or FAILED")
@@ -231,6 +271,11 @@ def reset(root: Path, cycle_id: str, state: str, actor: str) -> dict[str, Any]:
         archive.mkdir(parents=True, exist_ok=True)
         os.replace(path, archive / path.name)
         (cycles / f"{record['task_id']}.claim").unlink(missing_ok=True)
+        tasks = task_map(backlog)
+        task = tasks.get(str(record.get("task_id")), {})
+        rg = task.get("resource_group")
+        if rg:
+            (cycles / f"{rg}.group_claim").unlink(missing_ok=True)
         return record
     write_json_atomic(path, record)
     return record
@@ -310,20 +355,33 @@ def verify_pr(root: Path, cycle_id: str, actor: str) -> dict[str, Any]:
     return record
 
 
-def open_pr(root: Path, cycle_id: str, repository: str, actor: str) -> dict[str, Any]:
+def open_pr(root: Path, cycle_id: str, repository: str, actor: str, worktree: Path | None = None) -> dict[str, Any]:
     """Create or find the single PR for the cycle and pin its exact head."""
     _, backlog, cycles = load_config(root)
     path, record = load_cycle(cycles, cycle_id)
-    if record.get("prs"):
-        return verify_pr(root, cycle_id, actor)
-    branch_result = subprocess.run(["git", "-C", str(root), "branch", "--show-current"], capture_output=True, text=True, check=False)
+    cwd = (worktree or root).resolve()
+    branch_result = subprocess.run(["git", "-C", str(cwd), "branch", "--show-current"], capture_output=True, text=True, check=False)
     branch = branch_result.stdout.strip()
     if branch_result.returncode or not branch or branch in {"main", "master"}:
         raise CycleError("open-pr requires a named non-protected branch")
-    head_result = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=False)
+    head_result = subprocess.run(["git", "-C", str(cwd), "rev-parse", "HEAD"], capture_output=True, text=True, check=False)
     if head_result.returncode:
         raise CycleError("cannot resolve local branch head")
     head_sha = head_result.stdout.strip()
+
+    if record.get("prs"):
+        record["pr_head_sha"] = head_sha
+        record["state"] = "PR_OPEN"
+        record["updated_at"] = utc_now()
+        record.setdefault("history", []).append({
+            "state": "PR_HEAD_UPDATED",
+            "at": utc_now(),
+            "by": actor,
+            "head_sha": head_sha,
+        })
+        write_json_atomic(path, record)
+        return verify_pr(root, cycle_id, actor)
+
     task = task_map(backlog)[record["task_id"]]
     body = "\n".join([
         f"## AGY Cycle {cycle_id}",
@@ -347,6 +405,52 @@ def open_pr(root: Path, cycle_id: str, repository: str, actor: str) -> dict[str,
     return verify_pr(root, cycle_id, actor) if record.get("pr_head_sha") else record
 
 
+def update_pr_head(root: Path, cycle_id: str, head_sha: str, actor: str) -> dict[str, Any]:
+    """Explicitly update the recorded PR head SHA and verify against GitHub."""
+    load_config(root)
+    cycles = paths(root)[2]
+    path, record = load_cycle(cycles, cycle_id)
+    if not record.get("prs"):
+        raise CycleError("cycle has no attached PR to update")
+    if len(head_sha) != 40 or any(char not in "0123456789abcdef" for char in head_sha):
+        raise CycleError("PR head SHA must be a 40-character lowercase hex SHA")
+    record["pr_head_sha"] = head_sha
+    record["updated_at"] = utc_now()
+    record.setdefault("history", []).append({
+        "state": "PR_HEAD_UPDATED",
+        "at": utc_now(),
+        "by": actor,
+        "head_sha": head_sha,
+    })
+    write_json_atomic(path, record)
+    return verify_pr(root, cycle_id, actor)
+
+
+def review(root: Path, cycle_id: str, verdict: str, reviewer: str) -> dict[str, Any]:
+    """Record a review verdict while strictly preventing self-review."""
+    load_config(root)
+    cycles = paths(root)[2]
+    path, record = load_cycle(cycles, cycle_id)
+    if record.get("state") != "REVIEW_REQUIRED":
+        raise CycleError(f"cycle must be in REVIEW_REQUIRED to record a review (current: {record.get('state')})")
+    if reviewer == record.get("owner"):
+        raise CycleError(f"self-review is forbidden: reviewer '{reviewer}' cannot review cycle owned by '{record.get('owner')}'")
+    if verdict not in {"APPROVED", "CHANGES_REQUESTED"}:
+        raise CycleError("review verdict must be APPROVED or CHANGES_REQUESTED")
+    return transition(root, cycle_id, verdict, reviewer)
+
+
+def merge_check(root: Path, cycle_id: str, actor: str) -> dict[str, Any]:
+    """Verify approved status and remote PR state before merge readiness."""
+    load_config(root)
+    cycles = paths(root)[2]
+    path, record = load_cycle(cycles, cycle_id)
+    if record.get("state") != "APPROVED":
+        raise CycleError(f"cycle must be in APPROVED to run merge-check (current: {record.get('state')})")
+    record = verify_pr(root, cycle_id, actor)
+    return transition(root, cycle_id, "MERGE_READY", actor)
+
+
 def reconcile(root: Path, cycle_id: str, actor: str) -> dict[str, Any]:
     """Record merged/reconciled facts without starting a successor task."""
     record = verify_pr(root, cycle_id, actor)
@@ -362,6 +466,22 @@ def reconcile(root: Path, cycle_id: str, actor: str) -> dict[str, Any]:
     if not any(item.get("state") == "RECONCILED" for item in record.get("history", [])):
         record.setdefault("history", []).append({"state": record["state"], "at": utc_now(), "by": actor})
     write_json_atomic(path, record)
+    return record
+
+
+def complete_cycle(root: Path, cycle_id: str, actor: str) -> dict[str, Any]:
+    """Transition a reconciled cycle to COMPLETE and release locks."""
+    _, backlog, cycles = load_config(root)
+    path, record = load_cycle(cycles, cycle_id)
+    if record.get("state") not in {"RECONCILED", "MERGE_READY"}:
+        raise CycleError(f"cycle must be in RECONCILED or MERGE_READY to complete (current: {record.get('state')})")
+    record = transition(root, cycle_id, "COMPLETE", actor)
+    tasks = task_map(backlog)
+    (cycles / f"{record['task_id']}.claim").unlink(missing_ok=True)
+    task = tasks.get(str(record.get("task_id")), {})
+    rg = task.get("resource_group")
+    if rg:
+        (cycles / f"{rg}.group_claim").unlink(missing_ok=True)
     return record
 
 
@@ -435,29 +555,47 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("cycle_id")
     prompt_parser = sub.add_parser("prompt")
     prompt_parser.add_argument("cycle_id")
-    run_parser = sub.add_parser("run")
-    run_parser.add_argument("cycle_id")
-    run_parser.add_argument("--agy-bin", default=os.environ.get("AGY_CLI", "agy"))
+    for r_name in ("run", "implement"):
+        run_parser = sub.add_parser(r_name)
+        run_parser.add_argument("cycle_id")
+        run_parser.add_argument("--agy-bin", default=os.environ.get("AGY_CLI", "agy"))
     transition_parser = sub.add_parser("transition")
     transition_parser.add_argument("cycle_id")
     transition_parser.add_argument("state")
-    reset_parser = sub.add_parser("reset")
-    reset_parser.add_argument("cycle_id")
-    reset_parser.add_argument("state")
+    for res_name in ("reset", "repair"):
+        reset_parser = sub.add_parser(res_name)
+        reset_parser.add_argument("cycle_id")
+        reset_parser.add_argument("state", nargs="?", default="READY")
     pr_parser = sub.add_parser("attach-pr")
     pr_parser.add_argument("cycle_id")
     pr_parser.add_argument("url")
     pr_parser.add_argument("--head-sha")
-    validate_parser = sub.add_parser("validate")
-    validate_parser.add_argument("cycle_id")
-    validate_parser.add_argument("--worktree", type=Path)
-    verify_parser = sub.add_parser("verify-pr")
-    verify_parser.add_argument("cycle_id")
+    u_head_parser = sub.add_parser("update-pr-head")
+    u_head_parser.add_argument("cycle_id")
+    u_head_parser.add_argument("--head-sha", required=True)
+    for v_name in ("validate", "verify"):
+        validate_parser = sub.add_parser(v_name)
+        validate_parser.add_argument("cycle_id")
+        validate_parser.add_argument("--worktree", type=Path)
+    for vp_name in ("verify-pr", "verify-head"):
+        verify_parser = sub.add_parser(vp_name)
+        verify_parser.add_argument("cycle_id")
     open_parser = sub.add_parser("open-pr")
     open_parser.add_argument("cycle_id")
     open_parser.add_argument("--repository", required=True)
+    open_parser.add_argument("--worktree", type=Path)
+    review_parser = sub.add_parser("review")
+    review_parser.add_argument("cycle_id")
+    review_parser.add_argument("verdict", choices=("APPROVED", "CHANGES_REQUESTED"))
+    review_parser.add_argument("--reviewer", default=os.environ.get("AGY_CYCLE_REVIEWER", "reviewer"))
+    rf_parser = sub.add_parser("review-fix")
+    rf_parser.add_argument("cycle_id")
+    mc_parser = sub.add_parser("merge-check")
+    mc_parser.add_argument("cycle_id")
     reconcile_parser = sub.add_parser("reconcile")
     reconcile_parser.add_argument("cycle_id")
+    comp_parser = sub.add_parser("complete")
+    comp_parser.add_argument("cycle_id")
     args = parser.parse_args(argv)
     try:
         if args.command == "claim":
@@ -469,20 +607,30 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "prompt":
             print(prompt(args.root, args.cycle_id), end="")
             return 0
-        elif args.command == "run":
+        elif args.command in {"run", "implement"}:
             return run_interactive(args.root, args.cycle_id, args.agy_bin)
         elif args.command == "transition":
             result = transition(args.root, args.cycle_id, args.state, args.owner)
         elif args.command == "attach-pr":
             result = attach_pr(args.root, args.cycle_id, args.url, args.owner, args.head_sha)
-        elif args.command == "validate":
+        elif args.command == "update-pr-head":
+            result = update_pr_head(args.root, args.cycle_id, args.head_sha, args.owner)
+        elif args.command in {"validate", "verify"}:
             result = validate_cycle(args.root, args.cycle_id, args.worktree)
-        elif args.command == "verify-pr":
+        elif args.command in {"verify-pr", "verify-head"}:
             result = verify_pr(args.root, args.cycle_id, args.owner)
         elif args.command == "open-pr":
-            result = open_pr(args.root, args.cycle_id, args.repository, args.owner)
+            result = open_pr(args.root, args.cycle_id, args.repository, args.owner, args.worktree)
+        elif args.command == "review":
+            result = review(args.root, args.cycle_id, args.verdict, args.reviewer)
+        elif args.command == "review-fix":
+            result = transition(args.root, args.cycle_id, "IMPLEMENTING", args.owner)
+        elif args.command == "merge-check":
+            result = merge_check(args.root, args.cycle_id, args.owner)
         elif args.command == "reconcile":
             result = reconcile(args.root, args.cycle_id, args.owner)
+        elif args.command == "complete":
+            result = complete_cycle(args.root, args.cycle_id, args.owner)
         else:
             result = reset(args.root, args.cycle_id, args.state, args.owner)
         print(json.dumps(result, indent=2, sort_keys=True))

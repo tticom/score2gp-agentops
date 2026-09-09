@@ -34,9 +34,6 @@ states:
   RECONCILED:
     command: complete
     next: COMPLETE
-  MERGE_READY:
-    command: complete
-    next: COMPLETE
   COMPLETE:
     command: none
   BLOCKED:
