@@ -5,7 +5,9 @@ durable PR handback and exact live GitHub state.
 
 ## Gate
 
-Prove one complete, non-mixed reviewer profile:
+Prove one complete, non-mixed reviewer profile. Any identity granted the
+reviewer role may use this path, including `tticom-automation` when it is not
+the PR author:
 
 - Linux `tticom-gov`, GitHub/Git `tticomgov-code`, workspace
   `/home/tticom-gov/work/score2gp-workspace`; or

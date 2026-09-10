@@ -68,6 +68,14 @@ def test_codex_change_request_supersedes_older_governance_approval() -> None:
     assert selected and selected["state"] == "CHANGES_REQUESTED"
 
 
+def test_automation_review_is_governing_when_exact_head() -> None:
+    selected = resolve_current_head_review(
+        [review(1, "APPROVED", user="tticom-automation")],
+        HEAD,
+    )
+    assert selected and selected["user"]["login"] == "tticom-automation"
+
+
 def test_untrusted_reviewer_cannot_supersede_owner() -> None:
     selected = resolve_current_head_review(
         [
