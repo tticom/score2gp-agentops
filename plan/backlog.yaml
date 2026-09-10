@@ -7,7 +7,7 @@ sprints:
 tasks:
   - id: AGY-001
     title: "Pilot the deterministic AGY cycle runner"
-    status: READY
+    status: DONE
     sprint: SPRINT-01
     ordinality: 1
     cardinality: 1
@@ -29,3 +29,42 @@ tasks:
     validation:
       - "python3 -m pytest -q tests/test_agy_cycle.py"
       - "git diff --check"
+    completion:
+      pull_request: 666
+      merge_commit: ebd56d1876dde5947fda16d7102d90a89d615b66
+      head_sha: ce32c7b4e2892791040c13fb65b46ffb80193774
+
+  - id: REC-06
+    title: "Staff and System Topology"
+    status: BLOCKED
+    status_reason: "Awaiting authority promotion and a product baseline containing the assigned topology paths"
+    sprint: SPRINT-02
+    ordinality: 1
+    cardinality: 1
+    priority: 100
+    depends_on: []
+    resource_group: recognition-topology
+    repository: tticom/score2gp
+    base_branch: main
+    base_sha: eae1afb5d875f6d3f3603c3601865485ca9a3dee
+    branch: feat/rec-06-staff-system-topology
+    authority:
+      source_task: REC-06
+      promotion_pull_request: 665
+      promotion_status: OPEN
+    scope:
+      max_files: 8
+      allowed_paths:
+        - src/score2gp/recognition/topology.py
+        - tests/recognition/test_topology.py
+    acceptance:
+      - "Disconnected systems cannot cross-snap"
+      - "Titles, diagrams and horizontal noise do not become supported staves"
+      - "At least two structurally distinct private scores have stable identities"
+    validation:
+      - "python3 -m pytest tests/recognition/test_topology.py"
+      - "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
+    blockers:
+      - "PR #665 must merge and promote REC-06 authority"
+      - "Assigned topology source and test paths are absent from product main"
+      - "Product main does not currently provide mypy"

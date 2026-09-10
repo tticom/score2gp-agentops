@@ -111,6 +111,9 @@ The full design and comparison with the earlier integrated PR lifecycle are in
 - [`plan/backlog.yaml`](plan/backlog.yaml) defines sprints, tasks, ordering,
   dependencies, cardinality, scope, acceptance, and validation.
 - `.agy/cycles/` contains ignored runtime records and atomic claim locks.
+- [`docs/cycle-preparation-history/`](docs/cycle-preparation-history/) records
+  repository baselines, readiness checks, blockers, and unblock decisions for
+  each prepared cycle.
 
 `ACTIVE_TASK.md` and `ORCHESTRATION_STATE.json` are compatibility views only;
 they are not separately authored during an AGY Cycle.
