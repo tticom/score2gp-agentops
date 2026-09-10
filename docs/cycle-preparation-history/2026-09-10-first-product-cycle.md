@@ -51,7 +51,8 @@ Its intended contract is recorded in `plan/backlog.yaml`:
 
 The cycle must not start yet:
 
-1. PR #665, which promotes REC-06 authority, is still open.
+1. PR #665, which proposed REC-06 authority, was closed as superseded by
+   `tticom` at `2026-09-10T08:53:09Z`; REC-06 authority is not promoted.
 2. `src/score2gp/recognition/topology.py` is absent from product `main`.
 3. `tests/recognition/test_topology.py` is absent from product `main`.
 4. `mypy` is not installed in the product environment.
@@ -61,7 +62,7 @@ intentional fail-closed preparation result.
 
 ## Unblock and resume procedure
 
-After PR #665 is merged or explicitly replaced:
+After PR #665 is replaced by a new authority promotion:
 
 1. Fetch both repositories again.
 2. Record new exact `main` SHAs.

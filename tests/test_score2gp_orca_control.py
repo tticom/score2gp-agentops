@@ -348,6 +348,34 @@ def test_completed_task_allows_scoped_control_plane_bootstrap_review() -> None:
     assert assignment["work"]["branch"] == "fix/control-plane-repair"
 
 
+def test_explicit_review_allows_unrelated_open_pr() -> None:
+    config = authority()
+    facts = {
+        "snapshot": {"repository": "tticom/score2gp-agentops"},
+        "explicit_review": True,
+        "pull_request": {
+            "number": 667,
+            "state": "OPEN",
+            "head_branch": "chore/prepare-first-agy-cycle",
+            "head_sha": "a" * 40,
+            "author": "tticom-codex",
+            "reviews": [],
+        },
+    }
+    resolved = resolve_state(config, facts)
+    assert resolved["state"] == "REVIEW_REQUIRED"
+    assert resolved["dispatch_role"] == "reviewer"
+    assignment = build_assignment(
+        config,
+        facts,
+        resolved,
+        RuntimeIdentity("tticom-automation", "reviewer"),
+        "b" * 40,
+    )
+    assert assignment["work"]["pull_request"] == 667
+    assert assignment["work"]["branch"] == "chore/prepare-first-agy-cycle"
+
+
 def test_promoted_active_task_allows_isolated_control_plane_bootstrap_review() -> None:
     config = authority()
     facts = {

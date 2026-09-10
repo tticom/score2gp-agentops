@@ -254,7 +254,7 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
     snapshot = live.get("snapshot") or {}
     if not isinstance(pr, dict) or str(pr.get("state", "")).upper() != "OPEN":
         return None
-    if live.get("control_plane_repair") is True:
+    if live.get("control_plane_repair") is True or live.get("explicit_review") is True:
         return deepcopy(authority["task"])
 
     branch = str(pr.get("head_branch", ""))

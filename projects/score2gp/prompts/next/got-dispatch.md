@@ -12,7 +12,9 @@ the PR author:
 - Linux `tticom-gov`, GitHub/Git `tticomgov-code`, workspace
   `/home/tticom-gov/work/score2gp-workspace`; or
 - Linux `tticom-codex`, GitHub/Git `tticom-codex`, workspace
-  `/home/tticom-codex/work/score2gp-workspace`.
+  `/home/tticom-codex/work/score2gp-workspace`; or
+- Linux `tticom-automation`, GitHub/Git `tticom-automation`, workspace
+  `/home/tticom-automation/work/score2gp-workspace`.
 
 Cross-profile credentials or paths fail closed. Read
 `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the Reviewer skill, `REVIEW_RULES.md`,
