@@ -3,6 +3,10 @@ sprints:
     goal: "Pilot the deterministic AGY cycle runner"
     tasks:
       - AGY-001
+  - id: SPRINT-03
+    goal: "Make cycle completion durable before unattended product work"
+    tasks:
+      - AGY-002
 
 tasks:
   - id: AGY-001
@@ -68,3 +72,34 @@ tasks:
       - "PR #665 must merge and promote REC-06 authority"
       - "Assigned topology source and test paths are absent from product main"
       - "Product main does not currently provide mypy"
+
+  - id: AGY-002
+    title: "Make cycle completion durable and restart-safe"
+    status: READY
+    sprint: SPRINT-03
+    ordinality: 1
+    cardinality: 1
+    priority: 100
+    depends_on:
+      - AGY-001
+    resource_group: agy-control
+    repository: tticom/score2gp-agentops
+    base_branch: main
+    base_sha: ebd56d1876dde5947fda16d7102d90a89d615b66
+    branch: feat/agy-cycle-durable-completion
+    scope:
+      max_files: 12
+      allowed_paths:
+        - scripts/agy_cycle.py
+        - plan/backlog.yaml
+        - docs/cycle-history/**
+        - tests/test_agy_cycle.py
+    acceptance:
+      - "Completing a cycle writes a durable summary with task, cycle, PR, head, merge commit, validation, and timestamp"
+      - "Completion is idempotent and replay-safe"
+      - "A completed task cannot be claimed after ignored runtime records are removed"
+      - "A successor is recorded as prepared but is never automatically claimed"
+      - "Crash and replay behavior is covered by tests"
+    validation:
+      - ".venv/bin/python -m pytest -q tests/test_agy_cycle.py"
+      - "git diff --check"
