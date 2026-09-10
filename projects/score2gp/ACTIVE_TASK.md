@@ -2,38 +2,28 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: ORC-04 — Integrated PR Lifecycle and Concurrent Review Routing
+**Task**: REC-06 — Staff and System Topology
 
-**Status**: COMPLETED
+**Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/orc-04-integrated-pr-lifecycle`
+**PR Branch**: `feat/rec-06-staff-system-topology`
 
-**Pull Request**: 661
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Make each agent cycle open its PR, route exact-head reviews across independent roles, and support isolated concurrent tasks with verified post-merge reconciliation.
+Reconstruct pages, reading order, systems, staff regions, notation/TAB pairings and stable identities from observations.
 
 ## Allowed paths
 
-- `agent-runtime/assignment_adapter.py`
-- `agent-runtime/cycle.py`
-- `agent-runtime/scripts/start-instance.sh`
-- `scripts/score2gp_dispatch.py`
-- `scripts/score2gp_go_bootstrap.py`
-- `scripts/score2gp_got_bootstrap.py`
-- `scripts/score2gp_orchestrator.py`
-- `scripts/score2gp_orca_control.py`
-- `tests/test_assignment_adapter.py`
-- `tests/test_disposable_cycle.py`
-- `tests/test_score2gp_orca_control.py`
-- `tests/test_score2gp_orchestrator.py`
+- `src/score2gp/recognition/topology.py`
+- `tests/recognition/test_topology.py`
 
 ## Validation commands
 
-- `python3 -m pytest tests/test_assignment_adapter.py tests/test_disposable_cycle.py tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py`
-- `python3 -m compileall -q agent-runtime scripts`
+- `python3 -m pytest tests/recognition/test_topology.py`
+- `python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py`
