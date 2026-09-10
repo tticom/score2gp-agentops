@@ -219,13 +219,13 @@ Agy must never:
 The cadence is one governance step followed by one development step. Agy does
 the implementation or evidence collection and publishes its PR. A reviewer
 publishes review metadata only and never corrects the reviewed branch, PR body,
-task state, report, prompt, or evidence artifact. `tticom-automation`,
-`tticom-gov`, and `tticom-codex` never merge. `tticom-codex` may author
-governance/control-plane work and may review independently authored PRs; it
-may merge only in a separate operation after a current explicit instruction
-from `tticom` naming the exact repository, PR number, and reviewed full head
-SHA. Agy may independently review a Gov-authored governance PR only when the
-active authority identifies it, and no identity may review its own PR.
+task state, report, prompt, or evidence artifact. Any identity granted the
+reviewer role may review any independently authored PR, including a governance
+PR; the only identity restriction is that no identity may review its own PR.
+`tticom-automation` and `tticom-gov` never merge; `tticom-codex` never merges
+in the reviewer run.
+`tticom-codex` may merge only in a separate operation after a current explicit instruction
+from `tticom` naming the exact repository, PR number, and reviewed full head SHA.
 
 ## Continuous Forward Motion and Real-World Validation
 

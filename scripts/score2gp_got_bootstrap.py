@@ -118,6 +118,11 @@ def main() -> None:
                     live_head = pr_data.get("head_sha")
                     if live_head != args.review_head:
                         fail_closed(f"PR #{pr} head changed: expected {args.review_head}, got {live_head}")
+                if explicit_review:
+                    # An explicit review is an independently requested,
+                    # read-only operation. It must not depend on the active
+                    # task being the PR under review.
+                    live["explicit_review"] = True
                 if args.review_repo and args.review_pr and classify_control_plane_repair(repo, pr):
                     live["control_plane_repair"] = True
                 json.dump(live, f)

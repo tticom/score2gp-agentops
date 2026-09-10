@@ -49,9 +49,10 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 - May merge only in a separate operation after a current explicit instruction
   from `tticom` naming the exact repository, PR number, and reviewed full head SHA
 
-`tticom-automation` and `tticom-gov` never merge. Review and governance-authoring
-roles must never be mixed in one run. An identity or role mismatch is a
-no-write stop.
+`tticom-automation` and `tticom-gov` never merge. Any identity with the
+reviewer role may review any PR it did not author, including
+`tticom-automation`; review and implementation/governance-authoring roles must
+never be mixed in one run. An identity or role mismatch is a no-write stop.
 
 An identity mismatch is a no-write stop. Never switch accounts inside the
 other identity's workspace.
@@ -126,12 +127,13 @@ Every dispatch reports the exact AgentOps main SHA, product main SHA, and
 skills SHA. Reviewer dispatch additionally reports equal live and local PR
 head SHAs.
 
-All three identities use `scripts/score2gp_pr_review_state.py` as the sole formal
-verdict resolver. It queries reviews separately from author handback comments,
-filters to the exact live head and the trusted reviewer set (`tticomgov-code`,
-`tticom-codex`, and repository owner `tticom`), and selects the latest across
-that set by server timestamp then review ID. Reviews from other accounts never
-govern dispatch.
+All reviewer-capable identities use `scripts/score2gp_pr_review_state.py` as
+the sole formal verdict resolver. It queries reviews separately from author
+handback comments, filters to the exact live head and the trusted reviewer set
+(`tticomgov-code`, `tticom-codex`, `tticom-automation`, and repository owner
+`tticom`), and selects the latest across that set by server timestamp then
+review ID. The review bootstrap rejects self-review before publication;
+reviews from accounts without the reviewer role never govern dispatch.
 
 An agent review is not terminal until a marked issue comment from the same
 reviewer proves the selected review level, exact head, and matching verdict.

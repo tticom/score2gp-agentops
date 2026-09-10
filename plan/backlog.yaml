@@ -3,11 +3,19 @@ sprints:
     goal: "Pilot the deterministic AGY cycle runner"
     tasks:
       - AGY-001
+  - id: SPRINT-02
+    goal: "Authorize and baseline the first product recognition cycle"
+    tasks:
+      - REC-06
+  - id: SPRINT-03
+    goal: "Make cycle completion durable before unattended product work"
+    tasks:
+      - AGY-002
 
 tasks:
   - id: AGY-001
     title: "Pilot the deterministic AGY cycle runner"
-    status: READY
+    status: DONE
     sprint: SPRINT-01
     ordinality: 1
     cardinality: 1
@@ -26,6 +34,76 @@ tasks:
       - "The next action is derived from flow.yaml, never from an AI response"
       - "A cycle cannot open more than one PR"
       - "A human can reset a stuck cycle with one command"
+    validation:
+      - "python3 -m pytest -q tests/test_agy_cycle.py"
+      - "git diff --check"
+    completion:
+      pull_request: 666
+      merge_commit: ebd56d1876dde5947fda16d7102d90a89d615b66
+      head_sha: ce32c7b4e2892791040c13fb65b46ffb80193774
+
+  - id: REC-06
+    title: "Staff and System Topology"
+    status: BLOCKED
+    status_reason: "Awaiting authority promotion and a product baseline containing the assigned topology paths"
+    sprint: SPRINT-02
+    ordinality: 1
+    cardinality: 1
+    priority: 100
+    depends_on: []
+    resource_group: recognition-topology
+    repository: tticom/score2gp
+    base_branch: main
+    base_sha: eae1afb5d875f6d3f3603c3601865485ca9a3dee
+    branch: feat/rec-06-staff-system-topology
+    authority:
+      source_task: REC-06
+      promotion_pull_request: 665
+      promotion_status: CLOSED_SUPERSEDED
+    scope:
+      max_files: 8
+      allowed_paths:
+        - src/score2gp/recognition/topology.py
+        - tests/recognition/test_topology.py
+    acceptance:
+      - "Disconnected systems cannot cross-snap"
+      - "Titles, diagrams and horizontal noise do not become supported staves"
+      - "At least two structurally distinct private scores have stable identities"
+    validation:
+      - "python3 -m pytest tests/recognition/test_topology.py"
+      - "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
+    blockers:
+      - "PR #665 was closed as superseded; REC-06 authority must be re-promoted before implementation"
+      - "Assigned topology source and test paths are absent from product main"
+      - "Product main does not currently provide mypy"
+
+  - id: AGY-002
+    title: "Make cycle completion durable and restart-safe"
+    status: READY
+    sprint: SPRINT-03
+    ordinality: 1
+    cardinality: 1
+    priority: 100
+    depends_on:
+      - AGY-001
+    resource_group: agy-control
+    repository: tticom/score2gp-agentops
+    base_branch: main
+    base_sha: ebd56d1876dde5947fda16d7102d90a89d615b66
+    branch: feat/agy-cycle-durable-completion
+    scope:
+      max_files: 12
+      allowed_paths:
+        - scripts/agy_cycle.py
+        - plan/backlog.yaml
+        - docs/cycle-history/**
+        - tests/test_agy_cycle.py
+    acceptance:
+      - "Completing a cycle writes a durable summary with task, cycle, PR, head, merge commit, validation, and timestamp"
+      - "Completion is idempotent and replay-safe"
+      - "A completed task cannot be claimed after ignored runtime records are removed"
+      - "A successor is recorded as prepared but is never automatically claimed"
+      - "Crash and replay behavior is covered by tests"
     validation:
       - "python3 -m pytest -q tests/test_agy_cycle.py"
       - "git diff --check"

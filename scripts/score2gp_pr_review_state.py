@@ -7,7 +7,12 @@ import json
 import subprocess
 from typing import Any, Iterable
 
-TRUSTED_REVIEWERS = frozenset({"tticomgov-code", "tticom-codex", "tticom"})
+# Any identity granted the reviewer role may publish a governing review. The
+# caller separately rejects self-review; this set answers only whether a
+# reviewer's exact-head verdict is eligible to drive the state machine.
+TRUSTED_REVIEWERS = frozenset(
+    {"tticomgov-code", "tticom-codex", "tticom-automation", "tticom"}
+)
 
 
 class ReviewStateError(RuntimeError):

@@ -13,6 +13,10 @@ def test_automation_worker_routes_to_author_bootstrap() -> None:
     assert select_bootstrap("tticom-automation") == "score2gp_go_bootstrap.py"
 
 
+def test_automation_explicit_review_routes_to_reviewer_bootstrap() -> None:
+    assert select_bootstrap("tticom-automation", review_pr=667) == "score2gp_got_bootstrap.py"
+
+
 def test_automation_container_routes_from_attested_role(monkeypatch) -> None:
     monkeypatch.setenv("SCORE2GP_AGENT_ROLE", "automation")
     assert select_bootstrap("agent") == "score2gp_go_bootstrap.py"
