@@ -12,7 +12,7 @@ import getpass
 from pathlib import Path
 import datetime
 
-ALLOWED_IDENTITIES = {"tticom", "tticom-gov", "tticom-automation", "tticom-codex", "niall"}
+ALLOWED_IDENTITIES = {"tticom", "tticom-gov", "tticom-automation", "tticom-codex", "niall", "tticom-orca"}
 
 def run_cmd(cmd, cwd=None, check=True):
     res = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)

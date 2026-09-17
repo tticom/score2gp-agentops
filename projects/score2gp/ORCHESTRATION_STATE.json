@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 30,
+  "authority_revision": 31,
   "task": {
     "id": "REC-06",
     "title": "Staff and System Topology",
@@ -36,41 +36,7 @@
     "delivery_action": "pull_request"
   },
   "next_task_proposal": null,
-  "queued_task_proposals": [
-    {
-      "id": "REC-06",
-      "title": "Staff and System Topology",
-      "objective": "Reconstruct pages, reading order, systems, staff regions, notation/TAB pairings and stable identities from observations.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "branch": "feat/rec-06-staff-system-topology",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "prompt": "projects/score2gp/prompts/next/rec-06-staff-system-topology.md",
-      "allowed_paths": [
-        "src/score2gp/recognition/topology.py",
-        "tests/recognition/test_topology.py"
-      ],
-      "acceptance": [
-        "Disconnected systems cannot cross-snap.",
-        "Titles, diagrams and horizontal noise do not become supported staves.",
-        "At least two structurally distinct private scores have stable identities."
-      ],
-      "validation_commands": [
-        "python3 -m pytest tests/recognition/test_topology.py",
-        "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
-      ],
-      "dependencies": ["REC-04", "REC-05"],
-      "stop_conditions": [
-        "disconnected_systems_cross_snap",
-        "unsupported_layout_is_silently_accepted",
-        "topology_assigns_measure_duration_pitch_or_event_semantics"
-      ],
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request"
-    }
-  ],
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
