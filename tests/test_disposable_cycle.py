@@ -255,8 +255,8 @@ def test_controller_retains_failed_cycles_and_always_removes_secrets(controller,
     assert receipt["status"] == "retained"
     head = git(remote, "rev-parse", "refs/heads/feat/example")
     if failure == "validation_exit":
-        assert head == receipt["published_head"]
-        assert json.loads(git(remote, "show", "-s", "--format=%b", head))["validation"][0]["exit_code"] == 1
+        assert "published_head" not in receipt
+        assert head == data["base_sha"]
     else:
         assert head == data["base_sha"]
     assert any(args[1:3] == ["rm", "--force"] for args in state["docker"])
