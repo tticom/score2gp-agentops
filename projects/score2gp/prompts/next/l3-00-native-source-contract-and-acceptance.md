@@ -1,6 +1,6 @@
 # L3-00 — Lesson 3 native source contract and red acceptance
 
-Status: PROPOSED; not executable until promoted in ORCHESTRATION_STATE.json.
+Status: PROMOTED
 Repository: `tticom/score2gp`. Suggested branch: `feat/l3-00-native-acceptance`.
 Role: Developer after bounded Architect/source-contract verification.
 

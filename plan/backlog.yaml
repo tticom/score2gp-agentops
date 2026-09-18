@@ -6,6 +6,7 @@ sprints:
   - id: SPRINT-02
     goal: "Authorize and baseline the first product recognition cycle"
     tasks:
+      - L3-00
       - REC-06
   - id: SPRINT-03
     goal: "Make cycle completion durable before unattended product work"
@@ -42,15 +43,53 @@ tasks:
       merge_commit: ebd56d1876dde5947fda16d7102d90a89d615b66
       head_sha: ce32c7b4e2892791040c13fb65b46ffb80193774
 
-  - id: REC-06
-    title: "Staff and System Topology"
-    status: BLOCKED
-    status_reason: "Awaiting authority promotion and a product baseline containing the assigned topology paths"
+  - id: L3-00
+    title: "Lesson 3 native source contract and red acceptance"
+    status: PROMOTED
     sprint: SPRINT-02
     ordinality: 1
     cardinality: 1
-    priority: 100
+    priority: 200
     depends_on: []
+    blockers:
+      - "REC-04 / product PR #459 is merged; its disposition is a prerequisite already satisfied before this promotion"
+    resource_group: native-l3
+    repository: tticom/score2gp
+    base_branch: main
+    base_sha: eae1afb5d875f6d3f3603c3601865485ca9a3dee
+    branch: feat/l3-00-native-acceptance
+    authority:
+      source_task: L3-00
+      promotion_status: PROMOTED
+    scope:
+      max_files: 4
+      allowed_paths:
+        - scripts/native_slice_acceptance.py
+        - scripts/native_slice_reference.py
+        - tests/test_native_slice_acceptance.py
+        - tests/test_lesson3_native_acceptance.py
+    acceptance:
+      - "A private, source-adjudicated Lesson 3 manifest and red native acceptance receipt exist without committing private artifacts"
+      - "The independent reference reader expands reused records by occurrence and detects mutations and dangling IDs"
+      - "The actual native CLI runs against the original Lesson 3 PDF in an isolated environment and reports the classified baseline result"
+      - "The first source-located divergence identifies exactly one bounded next topology or token seam"
+      - "Reference data cannot be read by generation and missing or stale inputs fail closed"
+    validation:
+      - "python3 -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py"
+      - "python3 scripts/native_slice_acceptance.py --help"
+      - "python3 scripts/artifact_audit.py"
+      - "git diff --check"
+
+  - id: REC-06
+    title: "Staff and System Topology"
+    status: BLOCKED
+    status_reason: "Deferred behind the maintainer-directed L3-00 vertical slice; product baseline and validation toolchain are also absent"
+    sprint: SPRINT-02
+    ordinality: 2
+    cardinality: 1
+    priority: 100
+    depends_on:
+      - L3-00
     resource_group: recognition-topology
     repository: tticom/score2gp
     base_branch: main
@@ -89,7 +128,7 @@ tasks:
     resource_group: agy-control
     repository: tticom/score2gp-agentops
     base_branch: main
-    base_sha: ebd56d1876dde5947fda16d7102d90a89d615b66
+    base_sha: 430aa00b1f5a32cf66a2c8b8bf1e623333bacb2d
     branch: feat/agy-cycle-durable-completion
     scope:
       max_files: 12
