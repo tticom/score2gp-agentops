@@ -36,15 +36,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
 def _required(mapping: dict[str, Any], key: str, context: str) -> Any:
     value = mapping.get(key)
-    if value is None or value == "":
+    if not isinstance(value, str) or not value.strip():
         raise SpecJobError(f"{context} requires {key}")
-    return value
+    return value.strip()
 
 
-def _as_strings(value: Any, context: str) -> list[str]:
-    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
-        raise SpecJobError(f"{context} must be a list of non-empty strings")
-    return list(value)
+def _as_strings(value: Any, context: str, *, allow_empty: bool = False) -> list[str]:
+    if (
+        not isinstance(value, list)
+        or (not allow_empty and not value)
+        or not all(isinstance(item, str) and item.strip() for item in value)
+    ):
+        qualifier = "a list" if allow_empty else "a non-empty list"
+        raise SpecJobError(f"{context} must be {qualifier} of non-empty strings")
+    return [item.strip() for item in value]
 
 
 def validate_manifest(manifest: dict[str, Any]) -> None:
@@ -54,7 +59,7 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
     if not isinstance(job, dict):
         raise SpecJobError("manifest job must be a mapping")
     for key in ("id", "title", "spec", "repository", "base_branch", "integration_branch"):
-        _required(job, key, "job")
+        job[key] = _required(job, key, "job")
     tickets = _required(manifest, "tickets", "manifest")
     if not isinstance(tickets, list) or not tickets:
         raise SpecJobError("manifest tickets must be a non-empty list")
@@ -66,19 +71,20 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
         context = f"ticket[{index}]"
         if not isinstance(ticket, dict):
             raise SpecJobError(f"{context} must be a mapping")
-        ticket_id = str(_required(ticket, "id", context))
+        ticket["id"] = _required(ticket, "id", context)
+        ticket_id = ticket["id"]
         if ticket_id in ids:
             raise SpecJobError(f"duplicate ticket id: {ticket_id}")
         ids.add(ticket_id)
-        for key in ("title", "objective", "status", "blocked_by", "allowed_paths", "acceptance", "validation"):
-            _required(ticket, key, context)
+        for key in ("title", "objective", "status"):
+            ticket[key] = _required(ticket, key, context)
         status = str(ticket["status"]).upper()
         if status not in ACTIVE_STATUSES:
             raise SpecJobError(f"{context} has unsupported status: {ticket['status']}")
-        _as_strings(ticket["blocked_by"], f"{context}.blocked_by")
-        _as_strings(ticket["allowed_paths"], f"{context}.allowed_paths")
-        _as_strings(ticket["acceptance"], f"{context}.acceptance")
-        _as_strings(ticket["validation"], f"{context}.validation")
+        ticket["blocked_by"] = _as_strings(ticket["blocked_by"], f"{context}.blocked_by", allow_empty=True)
+        ticket["allowed_paths"] = _as_strings(ticket["allowed_paths"], f"{context}.allowed_paths")
+        ticket["acceptance"] = _as_strings(ticket["acceptance"], f"{context}.acceptance")
+        ticket["validation"] = _as_strings(ticket["validation"], f"{context}.validation")
         if ticket.get("repository", repository) != repository:
             raise SpecJobError(f"{context}.repository must match job.repository")
         if ticket.get("base_branch", base_branch) != base_branch:
@@ -135,8 +141,8 @@ def resolved_job(manifest: dict[str, Any]) -> dict[str, Any]:
         "blocked": [
             {"id": ticket_id, "blocked_by": ticket["blocked_by"]}
             for ticket_id, ticket in sorted(tickets.items())
-            if str(ticket["status"]).upper() == "READY"
-            and any(str(tickets[blocker]["status"]).upper() not in TERMINAL_STATUSES for blocker in ticket["blocked_by"])
+            if str(ticket["status"]).upper() == "BLOCKED"
+            or any(str(tickets[blocker]["status"]).upper() not in TERMINAL_STATUSES for blocker in ticket["blocked_by"])
         ],
         "remaining": [
             ticket_id

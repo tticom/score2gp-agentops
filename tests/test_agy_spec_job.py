@@ -60,6 +60,22 @@ def test_unknown_blocker_is_rejected() -> None:
         agy_spec_job.validate_manifest(value)
 
 
+@pytest.mark.parametrize("field", ["allowed_paths", "acceptance", "validation"])
+def test_required_contract_lists_must_not_be_empty(field: str) -> None:
+    value = manifest()
+    value["tickets"][0][field] = []
+    with pytest.raises(agy_spec_job.SpecJobError, match="non-empty list"):
+        agy_spec_job.validate_manifest(value)
+
+
+@pytest.mark.parametrize("field", ["id", "title", "objective"])
+def test_required_strings_must_not_be_whitespace(field: str) -> None:
+    value = manifest()
+    value["tickets"][0][field] = "   "
+    with pytest.raises(agy_spec_job.SpecJobError):
+        agy_spec_job.validate_manifest(value)
+
+
 def test_dependency_cycle_is_rejected() -> None:
     value = manifest()
     value["tickets"][0]["status"] = "READY"
@@ -73,3 +89,10 @@ def test_resolved_job_is_planning_output_not_authority() -> None:
     assert output["job"]["integration_branch"] == "codex/job-001"
     assert output["remaining"] == ["T-002"]
     assert output["frontier"][0]["id"] == "T-002"
+
+
+def test_declared_blocked_ticket_is_reported() -> None:
+    value = manifest()
+    value["tickets"][1]["status"] = "BLOCKED"
+    output = agy_spec_job.resolved_job(value)
+    assert output["blocked"] == [{"id": "T-002", "blocked_by": ["T-001"]}]
