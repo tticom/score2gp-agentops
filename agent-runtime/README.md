@@ -174,6 +174,19 @@ an HTTPS destination allowlist cannot restrict actions within an allowed
 service, and the worker can read its injected token.
 
 Host fetch/push and Secret Manager traffic do not traverse the worker proxy.
+
+The interactive shell startup also retrieves the role-scoped GitHub token
+before running governance dispatch, because dispatch uses `gh` to inspect live
+state. This means the only interactive authentication required is `gcloud
+auth login`; the token remains temporary and is never written to `gh`'s
+credential store.
+
+Interactive WSL launches pass the terminal through to the AGY worker for its
+first-run Google sign-in. Unattended launches keep stdin closed and fail if
+AGY authentication has not already been completed in the role-scoped local
+auth directory. AGY print-mode requests allow up to 30 minutes by default;
+override with `SCORE2GP_AGY_PRINT_TIMEOUT` when a bounded task needs a
+different limit.
 The proxy policy therefore constrains worker egress, not all WSL host traffic.
 
 ## Verification and offline utility

@@ -16,7 +16,7 @@ class AdapterError(RuntimeError):
 def diagnostic(result: subprocess.CompletedProcess) -> str:
     detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
     return re.sub(
-        r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*[^\s]+",
+        r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*(?:bearer\s+)?[^\s]+",
         r"\1=[REDACTED]",
         detail,
     )[:500]
@@ -47,8 +47,17 @@ def role_dispatch_environment(role: str) -> dict[str, str]:
 def command_json(command: list[str], cwd: Path, env: dict[str, str]) -> dict:
     result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True)
     if result.returncode:
+        try:
+            failure = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            failure = {}
+        reason = failure.get("reason") if isinstance(failure, dict) else None
+        if not reason:
+            detail = result.stderr.strip() or result.stdout.strip()
+            if detail:
+                reason = detail.splitlines()[-1]
         raise AdapterError(
-            f"governance dispatch failed (exit {result.returncode}): {diagnostic(result)}"
+            reason or f"governance dispatch failed (exit {result.returncode}): {diagnostic(result)}"
         )
     try:
         value = json.loads(result.stdout)
