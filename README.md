@@ -48,6 +48,15 @@ The agent-ops repository evaluates and directs product work, but it does not pro
 
 ## Workflow Model
 
+### Multi-ticket implementation jobs
+
+When a specification spans multiple tickets, create a job manifest from the
+approved spec and ticket graph. Validate its dependency frontier with
+`python3 scripts/agy_spec_job.py <job.yaml> --json`; see
+[`docs/spec-job-orca.md`](docs/spec-job-orca.md). The manifest is planning
+input only. Orca must promote each selected ticket into
+`ORCHESTRATION_STATE.json` before generating a worker assignment.
+
 ### Implementation Agent
 
 The implementation agent receives a scoped implementation prompt from this repository and works inside the ScoreToGP product repository. It must:
