@@ -56,7 +56,7 @@ def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
             return "score2gp_go_bootstrap.py"
         if container_role == "gov":
             return "score2gp_got_bootstrap.py"
-    if linux_user == "tticom-automation":
+    if linux_user in {"tticom-automation", "tticom-orca"}:
         return "score2gp_go_bootstrap.py"
     if linux_user in {"tticom-gov", "tticom-codex", "tticom"}:
         return "score2gp_got_bootstrap.py"
