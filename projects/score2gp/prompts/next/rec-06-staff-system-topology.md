@@ -30,10 +30,13 @@ and stable identities from document observations.
 - Disconnected systems cannot cross-snap across horizontal or vertical boundaries.
 - Titles, headers, diagrams, and horizontal noise primitives do not become supported staves.
 - Competing staff hypotheses remain inspectable rather than silently collapsed.
-- At least two structurally distinct real scores from the approved private corpus have stable identities and valid topology representations.
+- At least two structurally distinct real scores from the approved private corpus (e.g. `Lesson-5.pdf` and `Lesson-6.pdf` in `score2gp-private-fixtures`) have stable identities and valid topology representations.
+- Synthetic behavioural tests as acceptance are banned; tests encoding the implementation are prohibited.
 
 ## Validation
 
 - `python3 -m pytest tests/recognition/test_topology.py`
 - `python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py`
+- Promoted prompt must use the REC-01 topology oracle and include adversarial negative regions from provenance-linked real-source extractions.
+- Real-source unit/contract tests must execute and evaluate in-situ against private fixtures rather than skipping.
 - Full test suite passes without regressions.

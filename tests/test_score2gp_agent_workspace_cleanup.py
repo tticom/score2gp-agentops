@@ -18,6 +18,7 @@ def test_allowed_identities():
     assert "tticom-gov" in ALLOWED_IDENTITIES
     assert "tticom-automation" in ALLOWED_IDENTITIES
     assert "tticom-codex" in ALLOWED_IDENTITIES
+    assert "tticom-orca" in ALLOWED_IDENTITIES
 
 def test_resolve_workspace(monkeypatch, tmp_path):
     monkeypatch.setenv("SCORE2GP_WORKSPACE", str(tmp_path))
