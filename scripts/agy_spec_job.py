@@ -36,8 +36,15 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
 def _required(mapping: dict[str, Any], key: str, context: str) -> Any:
     value = mapping.get(key)
-    if not isinstance(value, str) or not value.strip():
+    if value is None or value == "" or (isinstance(value, str) and not value.strip()):
         raise SpecJobError(f"{context} requires {key}")
+    return value
+
+
+def _required_string(mapping: dict[str, Any], key: str, context: str) -> str:
+    value = _required(mapping, key, context)
+    if not isinstance(value, str):
+        raise SpecJobError(f"{context} requires {key} to be a string")
     return value.strip()
 
 
@@ -59,7 +66,7 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
     if not isinstance(job, dict):
         raise SpecJobError("manifest job must be a mapping")
     for key in ("id", "title", "spec", "repository", "base_branch", "integration_branch"):
-        job[key] = _required(job, key, "job")
+        job[key] = _required_string(job, key, "job")
     tickets = _required(manifest, "tickets", "manifest")
     if not isinstance(tickets, list) or not tickets:
         raise SpecJobError("manifest tickets must be a non-empty list")
@@ -77,7 +84,7 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
             raise SpecJobError(f"duplicate ticket id: {ticket_id}")
         ids.add(ticket_id)
         for key in ("title", "objective", "status"):
-            ticket[key] = _required(ticket, key, context)
+            ticket[key] = _required_string(ticket, key, context)
         status = str(ticket["status"]).upper()
         if status not in ACTIVE_STATUSES:
             raise SpecJobError(f"{context} has unsupported status: {ticket['status']}")
