@@ -89,7 +89,7 @@ tasks:
     resource_group: agy-control
     repository: tticom/score2gp-agentops
     base_branch: main
-    base_sha: ebd56d1876dde5947fda16d7102d90a89d615b66
+    base_sha: 430aa00b1f5a32cf66a2c8b8bf1e623333bacb2d
     branch: feat/agy-cycle-durable-completion
     scope:
       max_files: 12

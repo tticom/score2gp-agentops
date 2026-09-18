@@ -1,36 +1,41 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 31,
+  "authority_revision": 32,
   "task": {
-    "id": "REC-06",
-    "title": "Staff and System Topology",
-    "objective": "Reconstruct pages, reading order, systems, staff regions, notation/TAB pairings and stable identities from observations.",
+    "id": "AGY-002",
+    "title": "Make cycle completion durable and restart-safe",
+    "objective": "Make completed AGY cycles durable and replay-safe so a restart cannot re-execute completed work or lose the completion evidence.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/rec-06-staff-system-topology",
+    "branch": "feat/agy-cycle-durable-completion",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/rec-06-staff-system-topology.md",
+    "prompt": "projects/score2gp/prompts/next/agy-002-durable-cycle-completion.md",
     "allowed_paths": [
-      "src/score2gp/recognition/topology.py",
-      "tests/recognition/test_topology.py"
+      "scripts/agy_cycle.py",
+      "plan/backlog.yaml",
+      "docs/cycle-history/**",
+      "tests/test_agy_cycle.py"
     ],
     "acceptance": [
-      "Disconnected systems cannot cross-snap.",
-      "Titles, diagrams and horizontal noise do not become supported staves.",
-      "At least two structurally distinct private scores have stable identities."
+      "Completing a cycle writes a durable summary with task, cycle, PR, head, merge commit, validation, and timestamp.",
+      "Completion is idempotent and replay-safe.",
+      "A completed task cannot be claimed after ignored runtime records are removed.",
+      "A successor is recorded as prepared but is never automatically claimed.",
+      "Crash and replay behavior is covered by tests."
     ],
     "validation_commands": [
-      "python3 -m pytest tests/recognition/test_topology.py",
-      "python3 -m mypy src/score2gp/recognition/topology.py tests/recognition/test_topology.py"
+      "python3 -m pytest -q tests/test_agy_cycle.py",
+      "git diff --check"
     ],
-    "dependencies": ["REC-04", "REC-05"],
+    "dependencies": ["AGY-001"],
     "stop_conditions": [
-      "disconnected_systems_cross_snap",
-      "unsupported_layout_is_silently_accepted",
-      "topology_assigns_measure_duration_pitch_or_event_semantics"
+      "completion_can_be_replayed_as_new_work",
+      "completion_evidence_is_lost_after_runtime_cleanup",
+      "successor_is_automatically_claimed",
+      "multiple_prs_can_be_attached_to_one_cycle"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"

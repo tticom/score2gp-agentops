@@ -1,6 +1,6 @@
 # REC-06 — Staff and System Topology
 
-Status: PROMOTED
+Status: BLOCKED — not executable until the product baseline contains the assigned topology paths and the required validation toolchain.
 Role: Developer
 Repository: `score2gp`
 
