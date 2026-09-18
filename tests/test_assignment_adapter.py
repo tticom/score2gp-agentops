@@ -147,3 +147,15 @@ def test_command_json_preserves_dispatch_diagnostic(monkeypatch, tmp_path):
     monkeypatch.setattr(adapter.subprocess, "run", run)
     with pytest.raises(adapter.AdapterError, match="gh: not logged in"):
         adapter.command_json(["dispatch"], tmp_path, {})
+
+
+def test_diagnostic_redacts_bearer_authorization_token():
+    result = SimpleNamespace(
+        stderr="request failed: Authorization: Bearer ya29.super-secret-token",
+        stdout="",
+    )
+
+    sanitized = adapter.diagnostic(result)
+
+    assert "ya29.super-secret-token" not in sanitized
+    assert "Authorization=[REDACTED]" in sanitized

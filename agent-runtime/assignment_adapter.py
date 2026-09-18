@@ -16,7 +16,7 @@ class AdapterError(RuntimeError):
 def diagnostic(result: subprocess.CompletedProcess) -> str:
     detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
     return re.sub(
-        r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*[^\s]+",
+        r"(?i)(token|password|secret|authorization|credential)\s*[=:]\s*(?:bearer\s+)?[^\s]+",
         r"\1=[REDACTED]",
         detail,
     )[:500]
