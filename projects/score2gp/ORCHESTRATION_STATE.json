@@ -1,41 +1,44 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 32,
+  "authority_revision": 33,
   "task": {
-    "id": "AGY-002",
-    "title": "Make cycle completion durable and restart-safe",
-    "objective": "Make completed AGY cycles durable and replay-safe so a restart cannot re-execute completed work or lose the completion evidence.",
+    "id": "L3-00",
+    "title": "Lesson 3 native source contract and red acceptance",
+    "objective": "Produce a trustworthy private source manifest and repeatable red end-to-end native acceptance result, with the earliest source-located divergence and one bounded next implementation seam.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "branch": "feat/agy-cycle-durable-completion",
+    "branch": "feat/l3-00-native-acceptance",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/agy-002-durable-cycle-completion.md",
+    "prompt": "projects/score2gp/prompts/next/l3-00-native-source-contract-and-acceptance.md",
     "allowed_paths": [
-      "scripts/agy_cycle.py",
-      "plan/backlog.yaml",
-      "docs/cycle-history/**",
-      "tests/test_agy_cycle.py"
+      "scripts/native_slice_acceptance.py",
+      "scripts/native_slice_reference.py",
+      "tests/test_native_slice_acceptance.py",
+      "tests/test_lesson3_native_acceptance.py"
     ],
     "acceptance": [
-      "Completing a cycle writes a durable summary with task, cycle, PR, head, merge commit, validation, and timestamp.",
-      "Completion is idempotent and replay-safe.",
-      "A completed task cannot be claimed after ignored runtime records are removed.",
-      "A successor is recorded as prepared but is never automatically claimed.",
-      "Crash and replay behavior is covered by tests."
+      "A private, source-adjudicated Lesson 3 manifest and red native acceptance receipt exist without committing private artifacts.",
+      "The independent reference reader expands reused records by occurrence and detects mutations and dangling IDs.",
+      "The actual native CLI runs against the original Lesson 3 PDF in an isolated environment and reports the classified baseline result.",
+      "The first source-located divergence identifies exactly one bounded next topology or token seam.",
+      "Reference data cannot be read by generation and missing or stale inputs fail closed."
     ],
     "validation_commands": [
-      "python3 -m pytest -q tests/test_agy_cycle.py",
+      "python3 -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
+      "python3 scripts/native_slice_acceptance.py --help",
+      "python3 scripts/artifact_audit.py",
       "git diff --check"
     ],
-    "dependencies": ["AGY-001"],
+    "dependencies": ["REC-04"],
     "stop_conditions": [
-      "completion_can_be_replayed_as_new_work",
-      "completion_evidence_is_lost_after_runtime_cleanup",
-      "successor_is_automatically_claimed",
-      "multiple_prs_can_be_attached_to_one_cycle"
+      "source_reference_equivalence_unresolved",
+      "reference_data_leaks_to_generation",
+      "private_artifact_committed",
+      "baseline_refusal_repeated_without_new_divergence",
+      "required_edit_outside_promoted_scope"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
@@ -543,42 +546,6 @@
         "proposal_requires_product_code_change"
       ],
       "reviewer_role": "reviewer",
-      "delivery_action": "pull_request"
-    },
-    {
-      "id": "REC-00A",
-      "title": "Agent Workspace Cleanup Skill",
-      "objective": "Define and add a reusable cleanup skill for agent environments that safely identifies stale worktrees, prunable metadata, generated artifacts, and untracked files across the three agent identities without deleting active or uncommitted work.",
-      "status": "MERGED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "branch": "codex/prepare-rec02-and-workspace-cleanup",
-      "pull_request": 609,
-      "owner_role": "architect",
-      "prompt": "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
-      "allowed_paths": [
-        "projects/score2gp/prompts/next/rec-00a-agent-workspace-cleanup.md",
-        "projects/score2gp/tasks/2026-08-30-agent-workspace-cleanup-skill.md"
-      ],
-      "acceptance": [
-        "A dry-run inventory is deterministic and identity-aware.",
-        "A known stale review worktree is removable while its branch/ref remains.",
-        "A dirty worktree is preserved and reported, not silently removed.",
-        "The cleanup receipt is sufficient to explain and reproduce the decision."
-      ],
-      "validation_commands": [
-        "python3 scripts/score2gp_governance_audit.py",
-        "git diff --check",
-        "dry-run inventory against all three agent environments"
-      ],
-      "dependencies": [
-        "REC-01"
-      ],
-      "stop_conditions": [
-        "active_or_dirty_work_would_be_deleted",
-        "canonical_repository_or_branch_identity_is_ambiguous"
-      ],
-      "reviewer_role": "governance",
       "delivery_action": "pull_request"
     },
     {

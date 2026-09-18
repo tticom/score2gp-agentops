@@ -1,6 +1,6 @@
 # AGY-002 — Durable Cycle Completion and Restart Recovery
 
-Status: PROMOTED
+Status: READY — not executable until separately promoted in ORCHESTRATION_STATE.json.
 Role: Developer
 Repository: `score2gp-agentops`
 
