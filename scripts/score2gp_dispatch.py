@@ -2,7 +2,7 @@
 """Score2GP continuation dispatcher with Orca and legacy compatibility modes.
 
 Orca mode consumes a deterministic live snapshot and emits a bounded assignment.
-Legacy mode retains Linux-user routing during migration only.
+Legacy mode retains host-user routing with an authenticated GitHub fallback.
 """
 from __future__ import annotations
 
@@ -56,11 +56,32 @@ def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
             return "score2gp_go_bootstrap.py"
         if container_role == "gov":
             return "score2gp_got_bootstrap.py"
+        raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
     if linux_user in {"tticom-automation", "tticom-orca"}:
         return "score2gp_go_bootstrap.py"
     if linux_user in {"tticom-gov", "tticom-codex", "tticom"}:
         return "score2gp_got_bootstrap.py"
-    raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
+    # Native sessions share an OS account; use the process's authenticated
+    # GitHub identity, never an environment-supplied role, for this fallback.
+    try:
+        result = subprocess.run(
+            ["gh", "api", "user", "--jq", ".login"],
+            capture_output=True,
+            text=True,
+        )
+    except OSError as error:
+        raise DispatchError("GitHub identity check could not run") from error
+    if result.returncode:
+        raise DispatchError("GitHub identity check failed")
+    login = result.stdout.strip()
+    if login == "tticom-automation":
+        return "score2gp_go_bootstrap.py"
+    if login in {"tticom-gov", "tticom-codex"}:
+        return "score2gp_got_bootstrap.py"
+    raise DispatchError(
+        f"unsupported Score2GP worker identity: {linux_user}; "
+        f"authenticated GitHub identity: {login or '<empty>'}"
+    )
 
 
 def main() -> None:

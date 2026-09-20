@@ -25,10 +25,20 @@ python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
 
 Never substitute the active-task PR when the user named another PR.
 
-Run it from the `score2gp-agentops` repository root. The Linux worker identity
-selects the role: `tticom-automation` routes to author `go`; `tticom-gov` and
-`tticom-codex` route to governance/reviewer `got` under their own isolated
-GitHub identities. Never invoke the
+Run it from the `score2gp-agentops` repository root. Recognised host identities
+retain their routes: `tticom-automation` / `tticom-orca` select author `go`;
+`tticom-gov` / `tticom-codex` / `tticom` select governance/reviewer `got`.
+Container user `agent` still requires `SCORE2GP_AGENT_ROLE=automation|gov`.
+For other host usernames (for example `niall` in a native Windows session),
+direct compatibility dispatch queries `gh api user --jq .login` using the
+process's GitHub credentials, including launcher-isolated `GH_TOKEN`:
+`tticom-automation` selects author `go`, and `tticom-gov` / `tticom-codex`
+select governance/reviewer `got`. Other GitHub logins and authentication
+failures fail closed. Do not spoof OS username variables or use arbitrary
+environment role values to select privileges.
+Explicit PR review requests always select the reviewer bootstrap; downstream
+identity validation, self-review rejection, and exact-head checks still apply.
+Never invoke the
 other role's helper based only on the user's command word. Its JSON `state` and
 `current_review` are authoritative. Do not query GitHub manually, reuse a
 previous handback summary, or reconstruct the state in prose.
