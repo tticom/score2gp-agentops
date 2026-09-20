@@ -2,7 +2,7 @@
 """Score2GP continuation dispatcher with Orca and legacy compatibility modes.
 
 Orca mode consumes a deterministic live snapshot and emits a bounded assignment.
-Legacy mode retains Linux-user routing during migration only.
+Legacy mode retains host-user routing with an authenticated GitHub fallback.
 """
 from __future__ import annotations
 
@@ -42,6 +42,22 @@ def synchronize_agentops_main(
     run_git("merge", "--ff-only", "origin/main")
 
 
+def _authenticated_login() -> str:
+    try:
+        from scripts.score2gp_orca_control import (
+            ControlError,
+            authenticated_github_login,
+        )
+    except ModuleNotFoundError:
+        from score2gp_orca_control import ControlError, authenticated_github_login
+    try:
+        return authenticated_github_login()
+    except OSError as error:
+        raise DispatchError("GitHub identity check could not run") from error
+    except ControlError as error:
+        raise DispatchError(f"GitHub identity check failed: {error}") from error
+
+
 def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
     # If explicit review dispatch was requested, route to the review bootstrap helper.
     if review_pr is not None:
@@ -56,11 +72,22 @@ def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
             return "score2gp_go_bootstrap.py"
         if container_role == "gov":
             return "score2gp_got_bootstrap.py"
+        raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
     if linux_user in {"tticom-automation", "tticom-orca"}:
         return "score2gp_go_bootstrap.py"
     if linux_user in {"tticom-gov", "tticom-codex", "tticom"}:
         return "score2gp_got_bootstrap.py"
-    raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
+    # Native sessions share an OS account; use the process's authenticated
+    # GitHub identity, never an environment-supplied role, for this fallback.
+    login = _authenticated_login()
+    if login == "tticom-automation":
+        return "score2gp_go_bootstrap.py"
+    if login in {"tticom-gov", "tticom-codex"}:
+        return "score2gp_got_bootstrap.py"
+    raise DispatchError(
+        f"unsupported Score2GP worker identity: {linux_user}; "
+        f"authenticated GitHub identity: {login}"
+    )
 
 
 def main() -> None:

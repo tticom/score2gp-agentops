@@ -41,6 +41,13 @@ user is `agent`; the launcher passes `SCORE2GP_AGENT_ROLE=automation|gov`, and
 the router maps that attested role to the corresponding bootstrap while still
 requiring the matching GitHub identity. Never bypass the router by calling the
 other role's helper.
+Native (non-container) sessions whose host username is not a recognised
+worker identity, for example `niall` in a Windows session, are routed by
+querying `gh api user --jq .login` with the process's own GitHub credentials,
+including launcher-isolated `GH_TOKEN`: `tticom-automation` selects author
+`go`, and `tticom-gov` / `tticom-codex` select governance/reviewer `got`. Other
+GitHub logins and authentication failures fail closed. Do not spoof OS username
+variables or use arbitrary environment role values to select privileges.
 Treat its JSON as authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned
