@@ -77,7 +77,7 @@ def test_native_worker_routes_from_authenticated_github(monkeypatch, host, login
                       {"capture_output": True, "text": True})]
 
 
-@pytest.mark.parametrize("login", ["", "niall", "tticom", "tticom-orca", "tticomgov-code"])
+@pytest.mark.parametrize("login", ["niall", "tticom", "tticom-orca", "tticomgov-code"])
 @pytest.mark.parametrize("role", ["automation", "gov"])
 def test_native_worker_rejects_unsupported_login_despite_role(monkeypatch, login, role):
     monkeypatch.setenv("SCORE2GP_AGENT_ROLE", role)
@@ -87,9 +87,16 @@ def test_native_worker_rejects_unsupported_login_despite_role(monkeypatch, login
         select_bootstrap("niall")
 
 
+def test_native_worker_empty_login_is_closed(monkeypatch):
+    monkeypatch.setattr("scripts.score2gp_dispatch.subprocess.run", lambda *a, **k:
+                        SimpleNamespace(returncode=0, stdout="\n"))
+    with pytest.raises(DispatchError, match="GitHub identity check failed"):
+        select_bootstrap("niall")
+
+
 def test_native_worker_authentication_failure_is_closed(monkeypatch):
     monkeypatch.setattr("scripts.score2gp_dispatch.subprocess.run", lambda *a, **k:
-                        SimpleNamespace(returncode=1, stdout="tticom-automation"))
+                        SimpleNamespace(returncode=1, stdout="tticom-automation", stderr=""))
     with pytest.raises(DispatchError, match="GitHub identity check failed"):
         select_bootstrap("niall")
 

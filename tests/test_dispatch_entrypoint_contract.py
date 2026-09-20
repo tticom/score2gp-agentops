@@ -24,12 +24,10 @@ def test_agent_clients_load_executable_got_entrypoint() -> None:
     for name in ("CLAUDE.md", "AGENTS.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
         assert GOT_COMMAND in text
-        if name == "CLAUDE.md":
-            assert "Recognised host identities" in text
-            assert "gh api user --jq .login" in text
-            assert "authentication\nfailures fail closed" in text
-        else:
-            assert "Linux worker identity" in text
+        flat = " ".join(text.split())
+        assert "gh api user --jq .login" in flat
+        assert "authentication failures fail closed" in flat
+        assert "Do not spoof OS username variables" in flat
         assert "never resume" in text.lower()
         assert "REVIEW_CURRENT_HEAD" in text
         assert "PROMOTE_MERGED_TASK" in text
