@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 33,
+  "authority_revision": 34,
   "task": {
     "id": "L3-00",
     "title": "Lesson 3 native source contract and red acceptance",
@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/l3-00-native-acceptance",
-    "pull_request": null,
+    "pull_request": 462,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/l3-00-native-source-contract-and-acceptance.md",
     "allowed_paths": [
