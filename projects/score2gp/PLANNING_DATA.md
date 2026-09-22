@@ -1,6 +1,27 @@
 # Approved Task Queue: score2gp
 
-## Current planning proposal — 2026-09-05
+## Current planning proposal — 2026-09-22: WIN-01 Windows-Native Primary Execution Migration
+
+The maintainer on 2026-09-22 explicitly authorized the preparation of successor task
+`WIN-01` to remove mandatory WSL dependency and establish native Windows as the supported
+primary execution environment for Score2GP development, testing, and governance. See
+[Decision: Windows-Native Primary Execution Migration and WSL Deprecation](decisions/2026-09-22-windows-native-execution-migration.md)
+and [WIN-01 prompt](prompts/next/win-01-windows-native-execution-migration.md).
+
+Status: PROPOSED as `next_task_proposal` in `ORCHESTRATION_STATE.json` (Authority Revision 35).
+Explicitly blocked from execution until active task `L3-00` (PR #462) is reconciled into
+`completed_tasks` and the orchestration authority promotes `WIN-01`.
+
+Key objectives authorized by maintainer:
+1. Remove mandatory WSL execution requirement from Score2GP governance and product workflow.
+2. Define Windows-native canonical workspace and identity/coherency gate.
+3. Replace Linux/WSL-only command, path, Python virtual-environment, and bootstrap assumptions with Windows-compatible equivalents.
+4. Keep WSL optional if practical, but ensure Windows PowerShell and native Python/Git/GitHub CLI are supported.
+5. Update only governance and product files proven necessary by inventory; no changes to product recognition semantics.
+6. Include measurable acceptance criteria, exact allowed paths, validation commands, non-goals, rollback/stop conditions, and a Claude implementation handoff.
+7. Include safeguards against editing one checkout while validating another, direct pushes to main, branch deletion, force-push, or private-fixture leakage.
+
+## Prior planning proposal — 2026-09-05: L3-00 Native Lesson 3 Working Slice
 
 The maintainer requested a native Lesson 3 working slice and preservation of
 the full product requirement. See
