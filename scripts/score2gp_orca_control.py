@@ -70,7 +70,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
     """Capture normalized GitHub facts under the caller's scoped credential."""
     raw = run_json([
         "gh", "pr", "view", str(pull_request), "--repo", repository, "--json",
-        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup",
+        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit",
     ])
     reviews = []
     for review in raw.get("reviews", []):
@@ -132,6 +132,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
             "reviews": reviews,
             "checks": checks,
             "unresolved_threads": sum(not bool(node.get("isResolved")) for node in nodes),
+            "merge_commit": str((raw.get("mergeCommit") or {}).get("oid", "")),
         },
         "protection": {
             "active_rulesets": len(active_rulesets),
@@ -298,7 +299,7 @@ def _completed_review_target(authority: dict[str, Any], live: dict[str, Any]) ->
         task_status = str(task.get("status", "")).upper()
         if branch_id == task_id:
             return deepcopy(task)
-        if task_status in {"COMPLETE", "MERGED", "RESOLVED"}:
+        if task_status in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
             if (pr_num and task.get("pull_request") == pr_num) or (branch and task.get("branch") == branch):
                 return deepcopy(task)
 
@@ -380,31 +381,32 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
                 dispatch_role="governance",
             )
 
-    if declared in {"COMPLETE", "MERGED", "RESOLVED"}:
-        target = _completed_review_target(authority, live)
-        if target is not None:
-            review = current_head_review(pr)
-            if review == "CHANGES_REQUESTED":
+    if declared in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
+        if isinstance(pr, dict) and str(pr.get("state", "")).upper() == "OPEN":
+            target = _completed_review_target(authority, live)
+            if target is not None:
+                review = current_head_review(pr)
+                if review == "CHANGES_REQUESTED":
+                    return result(
+                        "RUNNING",
+                        "current_head_changes_requested",
+                        target,
+                        dispatch_role=target.get("owner_role", "implementation"),
+                    )
+                if review == "NONE":
+                    role = "reviewer" if live.get("control_plane_repair") is True else target.get("reviewer_role", "reviewer")
+                    return result(
+                        "REVIEW_REQUIRED",
+                        "current_head_requires_review",
+                        target,
+                        dispatch_role=role,
+                    )
                 return result(
-                    "RUNNING",
-                    "current_head_changes_requested",
+                    "GOVERNANCE_REQUIRED",
+                    "current_head_review_approved",
                     target,
-                    dispatch_role=target.get("owner_role", "implementation"),
+                    dispatch_role="governance",
                 )
-            if review == "NONE":
-                role = "reviewer" if live.get("control_plane_repair") is True else target.get("reviewer_role", "reviewer")
-                return result(
-                    "REVIEW_REQUIRED",
-                    "current_head_requires_review",
-                    target,
-                    dispatch_role=role,
-                )
-            return result(
-                "GOVERNANCE_REQUIRED",
-                "current_head_review_approved",
-                target,
-                dispatch_role="governance",
-            )
         return result("COMPLETE", "task_declared_complete", task)
 
     if not isinstance(pr, dict):
@@ -553,7 +555,7 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     blockers = active_incidents(authority)
     policy = authority["merge_policy"]
     task = authority["task"]
-    if str(task["status"]).upper() in {"COMPLETE", "MERGED", "RESOLVED"}:
+    if str(task["status"]).upper() in {"COMPLETE", "COMPLETED", "MERGED", "RESOLVED"}:
         target = _completed_review_target(authority, live)
         if target is not None:
             task = target

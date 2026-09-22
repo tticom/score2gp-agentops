@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 34,
+  "authority_revision": 35,
   "task": {
     "id": "L3-00",
     "title": "Lesson 3 native source contract and red acceptance",
@@ -43,7 +43,54 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "WIN-01",
+    "title": "Windows-Native Primary Execution Migration",
+    "objective": "Remove mandatory WSL dependency, establish Windows-native primary execution with PowerShell/Python/Git/gh compatibility, and preserve WSL as an optional secondary environment without altering product recognition semantics.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "feat/win-01-windows-native-execution",
+    "pull_request": null,
+    "owner_role": "governance",
+    "prompt": "projects/score2gp/prompts/next/win-01-windows-native-execution-migration.md",
+    "allowed_paths": [
+      "projects/score2gp/AGENT_CONTROL.md",
+      "projects/score2gp/CLAUDE.md",
+      "CLAUDE.md",
+      "scripts/score2gp_dispatch.py",
+      "scripts/score2gp_go_bootstrap.py",
+      "scripts/score2gp_got_bootstrap.py",
+      "scripts/verify_identity.sh",
+      "scripts/verify_identity.py",
+      "tests/test_score2gp_dispatch.py",
+      "tests/test_score2gp_orchestrator.py"
+    ],
+    "acceptance": [
+      "WSL execution requirement is removed from AGENT_CONTROL.md and replaced with Windows-native primary workspace definition.",
+      "Cross-platform identity gate (PowerShell and Python) verifies Windows environment, host login, Git author, and workspace path.",
+      "Path and virtual environment resolution supports Windows (.venv\\Scripts\\python.exe) alongside Linux/WSL (.venv/bin/python).",
+      "Native PowerShell, Windows Git, and gh CLI execute dispatch, bootstrap, and verification without WSL delegation.",
+      "WSL remains supported as an optional secondary environment.",
+      "Zero changes to product recognition, parsing, ScoreIR, or GP compilation code."
+    ],
+    "validation_commands": [
+      "python3 scripts/score2gp_governance_audit.py",
+      "python3 -m pytest tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "L3-00"
+    ],
+    "stop_conditions": [
+      "product_recognition_semantics_modified",
+      "identity_gate_loosened_or_bypassed",
+      "wsl_compatibility_broken_without_fallback",
+      "unauthorized_cross_repository_writes"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
   "queued_task_proposals": [],
   "incidents": [
     {

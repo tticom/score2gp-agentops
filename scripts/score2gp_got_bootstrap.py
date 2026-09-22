@@ -112,8 +112,10 @@ def main() -> None:
                 pr_data = live.get("pull_request")
                 if not isinstance(pr_data, dict):
                     fail_closed(f"PR #{pr} not found or missing from snapshot")
-                if str(pr_data.get("state", "")).upper() != "OPEN":
+                if explicit_review and str(pr_data.get("state", "")).upper() != "OPEN":
                     fail_closed(f"PR #{pr} is not open (state: {pr_data.get('state')})")
+                elif not explicit_review and str(pr_data.get("state", "")).upper() not in {"OPEN", "MERGED"}:
+                    fail_closed(f"PR #{pr} is neither open nor merged (state: {pr_data.get('state')})")
                 if args.review_head:
                     live_head = pr_data.get("head_sha")
                     if live_head != args.review_head:
