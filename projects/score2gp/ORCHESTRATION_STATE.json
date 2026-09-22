@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 35,
+  "authority_revision": 36,
   "task": {
-    "id": "L3-00",
-    "title": "Lesson 3 native source contract and red acceptance",
-    "objective": "Produce a trustworthy private source manifest and repeatable red end-to-end native acceptance result, with the earliest source-located divergence and one bounded next implementation seam.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "branch": "feat/l3-00-native-acceptance",
-    "pull_request": 462,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/l3-00-native-source-contract-and-acceptance.md",
-    "allowed_paths": [
-      "scripts/native_slice_acceptance.py",
-      "scripts/native_slice_reference.py",
-      "tests/test_native_slice_acceptance.py",
-      "tests/test_lesson3_native_acceptance.py"
-    ],
-    "acceptance": [
-      "A private, source-adjudicated Lesson 3 manifest and red native acceptance receipt exist without committing private artifacts.",
-      "The independent reference reader expands reused records by occurrence and detects mutations and dangling IDs.",
-      "The actual native CLI runs against the original Lesson 3 PDF in an isolated environment and reports the classified baseline result.",
-      "The first source-located divergence identifies exactly one bounded next topology or token seam.",
-      "Reference data cannot be read by generation and missing or stale inputs fail closed."
-    ],
-    "validation_commands": [
-      "python3 -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
-      "python3 scripts/native_slice_acceptance.py --help",
-      "python3 scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": ["REC-04"],
-    "stop_conditions": [
-      "source_reference_equivalence_unresolved",
-      "reference_data_leaks_to_generation",
-      "private_artifact_committed",
-      "baseline_refusal_repeated_without_new_divergence",
-      "required_edit_outside_promoted_scope"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "WIN-01",
     "title": "Windows-Native Primary Execution Migration",
     "objective": "Remove mandatory WSL dependency, establish Windows-native primary execution with PowerShell/Python/Git/gh compatibility, and preserve WSL as an optional secondary environment without altering product recognition semantics.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "branch": "feat/win-01-windows-native-execution",
@@ -91,6 +50,7 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -250,7 +210,9 @@
         "python3 scripts/score2gp_governance_audit.py",
         "python3 -m compileall -q scripts"
       ],
-      "dependencies": ["REC-04"],
+      "dependencies": [
+        "REC-04"
+      ],
       "stop_conditions": [
         "reconciliation_without_exact_live_merge",
         "duplicate_completion_or_active_view_drift",
@@ -693,7 +655,9 @@
         "python3 -m pytest tests/recognition/test_raster.py",
         "python3 -m mypy src/score2gp/recognition/raster.py tests/recognition/test_raster.py"
       ],
-      "dependencies": ["REC-02"],
+      "dependencies": [
+        "REC-02"
+      ],
       "stop_conditions": [
         "vector_observations_mutated_or_overwritten",
         "rendering_non_deterministic"
@@ -739,7 +703,10 @@
         "python3 -m pytest tests/test_assignment_adapter.py tests/test_disposable_cycle.py tests/test_score2gp_orca_control.py tests/test_score2gp_orchestrator.py",
         "python3 -m compileall -q agent-runtime scripts"
       ],
-      "dependencies": ["ORC-03", "REC-05"],
+      "dependencies": [
+        "ORC-03",
+        "REC-05"
+      ],
       "stop_conditions": [
         "author_cycle_completes_without_a_verified_pr",
         "review_identity_or_exact_head_is_ambiguous",
@@ -752,6 +719,53 @@
       "head_sha": "5fb590343a48da5edaf286352dc1ee1938e246fc",
       "reconciled": true,
       "reconciled_at": "2026-09-09T07:55:28Z"
+    },
+    {
+      "id": "L3-00",
+      "title": "Lesson 3 native source contract and red acceptance",
+      "objective": "Produce a trustworthy private source manifest and repeatable red end-to-end native acceptance result, with the earliest source-located divergence and one bounded next implementation seam.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/l3-00-native-acceptance",
+      "pull_request": 462,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/l3-00-native-source-contract-and-acceptance.md",
+      "allowed_paths": [
+        "scripts/native_slice_acceptance.py",
+        "scripts/native_slice_reference.py",
+        "tests/test_native_slice_acceptance.py",
+        "tests/test_lesson3_native_acceptance.py"
+      ],
+      "acceptance": [
+        "A private, source-adjudicated Lesson 3 manifest and red native acceptance receipt exist without committing private artifacts.",
+        "The independent reference reader expands reused records by occurrence and detects mutations and dangling IDs.",
+        "The actual native CLI runs against the original Lesson 3 PDF in an isolated environment and reports the classified baseline result.",
+        "The first source-located divergence identifies exactly one bounded next topology or token seam.",
+        "Reference data cannot be read by generation and missing or stale inputs fail closed."
+      ],
+      "validation_commands": [
+        "python3 -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
+        "python3 scripts/native_slice_acceptance.py --help",
+        "python3 scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "REC-04"
+      ],
+      "stop_conditions": [
+        "source_reference_equivalence_unresolved",
+        "reference_data_leaks_to_generation",
+        "private_artifact_committed",
+        "baseline_refusal_repeated_without_new_divergence",
+        "required_edit_outside_promoted_scope"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "8c2a2d7316aced550c0b292fa2dae8c93b68c3f3",
+      "merge_commit": "1672d5de4560f9fa76913274f9ee41bac46fc36b",
+      "reconciled": true,
+      "reconciled_at": "2026-09-22T22:55:32.996201+00:00"
     }
   ]
 }
