@@ -30,6 +30,7 @@ Key architectural tenets of this decision:
    - `L3-00` (product PR #462, merged on remote `main`) remains the current promoted task until formally reconciled into `completed_tasks`.
    - The successor task `WIN-01` is recorded in `next_task_proposal` with status `PROPOSED`.
    - `WIN-01` is strictly blocked from execution until `L3-00` reconciliation is complete and the governance authority promotes `WIN-01`.
+   - *Update 2026-09-23:* `L3-00` was reconciled and `WIN-01` promoted (PRs #678 and #679). At the maintainer's direction, authority revision 37 reassigns `WIN-01` to the implementation role so `go` can dispatch it, and aligns its allowed paths with the files that carry the WSL mandate.
 
 ## 3. Scope Inventory
 

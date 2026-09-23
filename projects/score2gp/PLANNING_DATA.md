@@ -8,9 +8,8 @@ primary execution environment for Score2GP development, testing, and governance.
 [Decision: Windows-Native Primary Execution Migration and WSL Deprecation](decisions/2026-09-22-windows-native-execution-migration.md)
 and [WIN-01 prompt](prompts/next/win-01-windows-native-execution-migration.md).
 
-Status: PROPOSED as `next_task_proposal` in `ORCHESTRATION_STATE.json` (Authority Revision 35).
-Explicitly blocked from execution until active task `L3-00` (PR #462) is reconciled into
-`completed_tasks` and the orchestration authority promotes `WIN-01`.
+Status: PROMOTED as the active task in `ORCHESTRATION_STATE.json` (Authority Revision 37),
+owned by the implementation role. `L3-00` (PR #462) is reconciled into `completed_tasks`.
 
 Key objectives authorized by maintainer:
 1. Remove mandatory WSL execution requirement from Score2GP governance and product workflow.

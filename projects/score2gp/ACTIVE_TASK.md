@@ -12,7 +12,7 @@
 
 **Pull Request**: TBD
 
-**Owner Role**: governance
+**Owner Role**: implementation
 
 ## Objective
 
@@ -21,18 +21,26 @@ Remove mandatory WSL dependency, establish Windows-native primary execution with
 ## Allowed paths
 
 - `projects/score2gp/AGENT_CONTROL.md`
-- `projects/score2gp/CLAUDE.md`
+- `projects/score2gp/ORCA_WORKFLOW.md`
+- `projects/score2gp/prompts/next/address-current-pr-review.md`
 - `CLAUDE.md`
+- `agent-runtime/README.md`
+- `agent-runtime/policies/README.md`
 - `scripts/score2gp_dispatch.py`
 - `scripts/score2gp_go_bootstrap.py`
 - `scripts/score2gp_got_bootstrap.py`
-- `scripts/verify_identity.sh`
+- `scripts/score2gp_orca_control.py`
 - `scripts/verify_identity.py`
+- `scripts/verify_identity.ps1`
+- `tests/conftest.py`
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
+- `tests/test_score2gp_orca_control.py`
+- `tests/test_verify_identity.py`
 
 ## Validation commands
 
-- `python3 scripts/score2gp_governance_audit.py`
-- `python3 -m pytest tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py`
+- `python scripts/score2gp_governance_audit.py`
+- `python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py`
+- `python -m pytest`
 - `git diff --check`

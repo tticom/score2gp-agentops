@@ -1,9 +1,9 @@
 # WIN-01 — Windows-Native Primary Execution Migration
 
-- **Status**: PROPOSED; explicitly blocked from execution until `L3-00` is reconciled and orchestration authority promotes it.
+- **Status**: PROMOTED (authority revision 37). `L3-00` is reconciled in `completed_tasks`. `ORCHESTRATION_STATE.json` is authoritative for allowed paths and validation commands.
 - **Repository**: `tticom/score2gp-agentops` (governance control plane and scripts)
-- **Suggested Branch**: `feat/win-01-windows-native-execution`
-- **Owner Role**: `governance`
+- **Branch**: `feat/win-01-windows-native-execution`
+- **Owner Role**: `implementation` (dispatched by `go`)
 - **Reviewer Role**: `reviewer`
 - **Delivery Action**: `pull_request`
 - **Prerequisites**: `L3-00` (reconciled in `completed_tasks`)
@@ -16,7 +16,7 @@ On 2026-09-22, the project maintainer (`tticom`) explicitly authorized preparing
 
 The complete rationale and architectural principles are recorded in [Decision: Windows-Native Primary Execution Migration and WSL Deprecation](../../decisions/2026-09-22-windows-native-execution-migration.md).
 
-This task is **not executable** while `L3-00` (PR #462) remains in `task` or until Orca / the governance authority promotes it into active execution.
+`L3-00` (PR #462) is reconciled and this task is promoted as the active task. On 2026-09-23 the maintainer directed that it be made dispatchable to the implementation role via `go`.
 
 ---
 
@@ -45,21 +45,24 @@ The implementation agent executing this task must satisfy these bounded objectiv
 
 ### Governance Repository (`tticom/score2gp-agentops`)
 - `projects/score2gp/AGENT_CONTROL.md`
-- `projects/score2gp/CLAUDE.md`
+- `projects/score2gp/ORCA_WORKFLOW.md`
+- `projects/score2gp/prompts/next/address-current-pr-review.md`
 - `CLAUDE.md`
+- `agent-runtime/README.md`
+- `agent-runtime/policies/README.md`
 - `scripts/score2gp_dispatch.py`
 - `scripts/score2gp_go_bootstrap.py`
 - `scripts/score2gp_got_bootstrap.py`
-- `scripts/verify_identity.sh`
+- `scripts/score2gp_orca_control.py`
 - `scripts/verify_identity.py`
+- `scripts/verify_identity.ps1`
+- `tests/conftest.py` (uses `os.statvfs`, which prevents the suite from starting on native Windows)
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
+- `tests/test_score2gp_orca_control.py`
+- `tests/test_verify_identity.py`
 
-### Product Repository Companion Scope (`tticom/score2gp`)
-*(To be executed via companion PR if needed)*
-- `CLAUDE.md`
-- `scripts/corpus_harness.py`
-- `scripts/agent_verify.py`
+This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. Product-repository changes (`tticom/score2gp`) are out of scope for WIN-01 and require a separate task.
 
 *No file outside these allowed paths may be created, modified, or deleted.*
 
@@ -139,7 +142,8 @@ Ensure it supports `--os-user`, `--home`, `--host-login`, `--git-name`, `--git-e
 Run:
 ```powershell
 python scripts/score2gp_governance_audit.py
-python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py
+python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py
+python -m pytest
 git diff --check
 ```
 
