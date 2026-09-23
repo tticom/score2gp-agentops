@@ -1,71 +1,78 @@
-# WIN-01 — Windows-Native Primary Execution Migration
+# WIN-01 — OS-Agnostic Governance and Dispatch
 
-- **Status**: PROMOTED (authority revision 37). `L3-00` is reconciled in `completed_tasks`. `ORCHESTRATION_STATE.json` is authoritative for allowed paths and validation commands.
-- **Repository**: `tticom/score2gp-agentops` (governance control plane and scripts)
+- **Status**: PROMOTED (authority revision 37). `ORCHESTRATION_STATE.json` is authoritative for allowed paths, acceptance and validation commands.
+- **Repository**: `tticom/score2gp-agentops`
 - **Branch**: `feat/win-01-windows-native-execution`
 - **Owner Role**: `implementation` (dispatched by `go`)
 - **Reviewer Role**: `reviewer`
 - **Delivery Action**: `pull_request`
 - **Prerequisites**: `L3-00` (reconciled in `completed_tasks`)
+- **Followed by**: `WIN-02` (retire the Docker/WSL runtime and shell scripts), `WIN-03` (product repository tooling)
 
 ---
 
 ## 1. Requirement and Authority
 
-On 2026-09-22, the project maintainer (`tticom`) explicitly authorized preparing this successor governance task to **remove WSL as a mandatory prerequisite and make native Windows the supported primary execution environment** for Score2GP development, testing, and governance.
+On 2026-09-23 the maintainer (`tticom`) directed that Score2GP development be
+OS-agnostic, that Docker be discontinued, and that WSL be removed from the
+development environment. Linux remains a deployment and test target. See
+[Decision: OS-Agnostic Development Environment](../../decisions/2026-09-23-os-agnostic-development-environment.md),
+which supersedes tenets 1–2 and §3 of the
+[2026-09-22 decision](../../decisions/2026-09-22-windows-native-execution-migration.md).
 
-The complete rationale and architectural principles are recorded in [Decision: Windows-Native Primary Execution Migration and WSL Deprecation](../../decisions/2026-09-22-windows-native-execution-migration.md).
-
-`L3-00` (PR #462) is reconciled and this task is promoted as the active task. On 2026-09-23 the maintainer directed that it be made dispatchable to the implementation role via `go`.
+This task was originally scoped as "Windows-native primary, WSL optional". It
+is refocused on governance, identity and dispatch. Removing the Docker runtime
+and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
 
 ---
 
 ## 2. Bounded Objectives
 
-The implementation agent executing this task must satisfy these bounded objectives:
+1. **Role from GitHub identity, cross-checked by workspace.**
+   - Resolve the role from `gh api user --jq .login` using `ORCHESTRATION_STATE.json` `roles`.
+   - Cross-check the working directory: a path under `worktrees/auto`, `worktrees/gov` or `worktrees/codex` must belong to `tticom-automation`, `tticomgov-code` or `tticom-codex` respectively.
+   - Fix the missing route: `score2gp_dispatch.py` currently refuses `tticomgov-code` ("unsupported Score2GP worker identity: niall; authenticated GitHub identity: tticomgov-code").
+   - A mismatch, unknown login or failed `gh` call fails closed. OS usernames (`niall`, `agent`, `tticom-gov`, …) and environment variables (`SCORE2GP_AGENT_ROLE`) must never select a role. Remove those paths rather than keeping them as alternatives.
+2. **Remove WSL and Linux-layout mandates from live governance.** Rewrite the WSL Execution Environment Gate, the WSL Edit Coherency Gate and the `/home/<user>` identity/workspace rules in `AGENT_CONTROL.md` as OS-neutral rules:
+   - a workspace root containing `worktrees/{auto,gov,codex}`;
+   - a Workspace Edit Coherency Gate: the edited checkout and the checkout where `git diff` and tests run must be the same absolute path.
 
-1. **Remove Mandatory WSL Requirement**: Eliminate all policy language and gate logic in `projects/score2gp/AGENT_CONTROL.md` that strictly mandates Ubuntu WSL or treats Windows-host execution as an environment boundary failure.
-2. **Define Windows-Native Canonical Workspace**:
-   - Establish standard canonical paths for Windows (e.g. `C:\Users\<user>\work\score2gp-workspace\score2gp` and `...\score2gp-agentops`).
-   - Define a cross-platform **Workspace Edit Coherency Gate** verifying that the editor and test execution commands operate on the identical absolute checkout path.
-3. **Replace Linux-Only Command and Path Assumptions**:
-   - Update Python virtual environment discovery to check `.venv\Scripts\python.exe` (Windows) alongside `.venv/bin/python` (Linux/WSL).
-   - Provide a cross-platform identity gate (`scripts/verify_identity.py` or `.ps1`) verifying OS user, user home, GitHub login, Git author credentials, and workspace path without depending on bash syntax.
-   - Ensure `scripts/score2gp_dispatch.py`, `scripts/score2gp_go_bootstrap.py`, and `scripts/score2gp_got_bootstrap.py` work seamlessly on Windows PowerShell and cmd.
-4. **Retain WSL as Optional**: Ensure Linux/WSL and containerized runners (`agent-runtime/`) continue to function without regressions. WSL is an optional secondary environment, not prohibited.
-5. **Strict File Scope**: Update only the governance and product files proven necessary by inventory. Do not broaden into unrelated product behavior.
-6. **Safeguards Against Coherency and Git Hazards**:
-   - Enforce edit-to-execution worktree matching before any edit.
-   - Retain all prohibitions against direct pushes to `main`, force-pushes, branch deletions, admin bypasses, or self-approvals.
-   - Guarantee private fixture repositories (`score2gp-private-fixtures`) and generated outputs remain untracked and gitignored.
+   Apply the same to `ORCA_WORKFLOW.md`, `WORKFLOW_SKILLS_PROFILE.md`, `got-dispatch.md`, `address-current-pr-review.md` (`.venv/bin/python`), `CLAUDE.md`, `.agents/agents/project-director/agent.json` and `scripts/link_session.py` (WSL UNC path translation). Leave the Docker identity text in `AGENT_CONTROL.md` for `WIN-02`.
+3. **Portable Python and tool resolution.** Resolve `.venv/Scripts/python.exe` or `.venv/bin/python`, and fail cleanly when neither exists. Use `pathlib`; never build paths with `/` string concatenation or assume `python3` exists.
+4. **One Python identity gate.** `scripts/verify_identity.py` checks the GitHub login, global Git `user.name`/`user.email` and the workspace path on any OS. There is no bash or PowerShell identity script.
+5. **Test suite starts everywhere.** `tests/conftest.py` must not call `os.statvfs` where it doesn't exist, and must keep its noexec protection on Linux.
 
 ---
 
 ## 3. Allowed Paths
 
-### Governance Repository (`tticom/score2gp-agentops`)
 - `projects/score2gp/AGENT_CONTROL.md`
 - `projects/score2gp/ORCA_WORKFLOW.md`
+- `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
 - `projects/score2gp/prompts/next/address-current-pr-review.md`
+- `projects/score2gp/prompts/next/got-dispatch.md`
 - `CLAUDE.md`
-- `agent-runtime/README.md`
-- `agent-runtime/policies/README.md`
+- `.agents/agents/project-director/agent.json`
+- `scripts/link_session.py`
 - `scripts/score2gp_dispatch.py`
 - `scripts/score2gp_go_bootstrap.py`
 - `scripts/score2gp_got_bootstrap.py`
 - `scripts/score2gp_orca_control.py`
 - `scripts/verify_identity.py`
-- `scripts/verify_identity.ps1`
-- `tests/conftest.py` (uses `os.statvfs`, which prevents the suite from starting on native Windows)
-- `tests/test_agent_runtime.py` (runs `agent-runtime/scripts/*.sh` directly; explicit Windows skip markers only)
-- `tests/test_agy_cycle.py` (imports POSIX-only `termios`; explicit Windows skip markers only)
-- `tests/test_codex_runtime.py` (runs `agent-runtime/scripts/*.sh` directly; explicit Windows skip markers only)
+- `tests/conftest.py`
+- `tests/test_dispatch_entrypoint_contract.py` (asserts `CLAUDE.md` wording)
+- `tests/test_governance_audit.py` (asserts `AGENT_CONTROL.md` wording)
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
 - `tests/test_score2gp_orca_control.py`
 - `tests/test_verify_identity.py`
 
-This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. The three container-runtime test files belong to the optional WSL/Docker runtime: they may only gain explicit `pytest.mark.skipif(sys.platform == "win32", reason=...)` markers (or a module-level `pytest.importorskip` for `termios`) so the full suite can pass on native Windows. Do not port them, weaken their assertions, or skip tests from `tests/conftest.py`. Product-repository changes (`tticom/score2gp`) are out of scope for WIN-01 and require a separate task.
+This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. Tests may
+change only to follow reworded documents or to cover the new behaviour; never
+delete an identity, privacy or fail-closed assertion without replacing it with
+an equivalent one. Historical records (runs, reports, research, reviews,
+handoffs, earlier decisions) are not rewritten. Product-repository changes are
+`WIN-03`.
 
 *No file outside these allowed paths may be created, modified, or deleted.*
 
@@ -73,82 +80,48 @@ This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. The three 
 
 ## 4. Acceptance Criteria
 
-1. **WSL Mandatory Requirement Removed**: `AGENT_CONTROL.md` no longer requires `uname -s == Linux` or `wsl.exe`. Windows PowerShell (Desktop or 7+) is explicitly documented and supported as primary.
-2. **Cross-Platform Identity Verification**: A Python-based `verify_identity.py` (or PowerShell equivalent) passes on native Windows and Linux/WSL, asserting:
-   - Operating system user and home directory
-   - Remote Git-host login (`gh api user --jq .login`)
-   - Global Git config `user.name` and `user.email`
-   - Canonical workspace root prefix
-3. **Cross-Platform Virtualenv Resolution**: Bootstrap scripts and dispatchers resolve:
-   - Windows: `.venv\Scripts\python.exe`
-   - Linux/WSL: `.venv/bin/python`
-   Failing cleanly if neither is present.
-4. **Workspace Edit Coherency Gate**: A documented procedure and automated check confirm that file edits occurring via IDE/agent tools are visible in the exact git worktree where `git diff` and tests execute.
-5. **Audit and Suite Pass**:
-   - `python3 scripts/score2gp_governance_audit.py` passes with zero violations.
-   - All tests in `tests/test_score2gp_dispatch.py`, `tests/test_score2gp_orchestrator.py`, and `tests/test_score2gp_orca_control.py` pass.
-   - `git diff --check` exits 0.
-6. **Zero Semantic Changes**: Zero lines of product code in `src/score2gp/` are touched. Recognition algorithms, geometry models, schemas, and export logic remain completely unchanged.
+1. The live documents above contain no WSL execution gate, no `/home/<user>` or `/mnt/c` rule and no `.venv/bin`-only instruction.
+2. Role resolution behaves as in §2.1. Tests cover, at minimum:
+   - each of the three logins in its own workspace (allowed);
+   - each login in another identity's workspace (refused);
+   - an unknown login (refused);
+   - a failing `gh` call (refused);
+   - `SCORE2GP_AGENT_ROLE` set to another role (ignored or refused, never obeyed).
+3. Python/virtualenv resolution is portable and fails cleanly when no interpreter is found.
+4. `scripts/verify_identity.py` passes on native Windows and Linux, with tests.
+5. `tests/conftest.py` starts on native Windows and still redirects temp files on a Linux noexec mount.
+6. The governance audit and the targeted tests pass on native Windows and in Linux CI. The full `python -m pytest` passes in Linux CI. The full suite on native Windows is `WIN-02`'s acceptance, because it depends on removing the Docker runtime tests.
+7. Zero changes to product code.
 
 ---
 
 ## 5. Non-Goals
 
-- **Non-goal 1**: Modifying any parser, recognizer, tab alignment, pitch assignment, or ScoreIR compiler logic.
-- **Non-goal 2**: Removing or breaking Linux GitHub Actions CI workflows (`.github/workflows/pylint.yml`).
-- **Non-goal 3**: Changing merge policy: maintainer merge and independent review approval remain strictly required.
-- **Non-goal 4**: Automatic cross-filesystem synchronization or copying files between WSL and Windows directories.
+- Deleting `agent-runtime/`, shell scripts, `legacy/` or Docker references (`WIN-02`).
+- Product-repository changes (`WIN-03`).
+- Changing merge policy: independent review and human-only merge remain required.
 
 ---
 
-## 6. Rollback and Stop Conditions
+## 6. Stop Conditions
 
-Immediate hard stop without write if:
-1. `product_recognition_semantics_modified`: Any product code in `src/score2gp/` is changed.
-2. `identity_gate_loosened_or_bypassed`: Any check for GitHub identity or Git author matching is skipped or disabled.
-3. `cross_checkout_desynchronization`: The working tree being edited does not match the working tree being tested.
-4. `wsl_compatibility_broken_without_fallback`: Changes cause existing Linux CI or container workers to fail.
-5. `private_fixture_leakage`: Any private score, PDF, MusicXML, or generated `.gp` file is staged or committed.
+Stop without writing if:
+
+1. `product_recognition_semantics_modified`
+2. `identity_gate_loosened_or_bypassed`: any GitHub-login or Git-author check is skipped or weakened.
+3. `role_selected_from_environment_or_os_user`: a role can still be chosen by an OS username or environment variable.
+4. `linux_ci_broken`
+5. `unauthorized_cross_repository_writes`
 
 ---
 
-## 7. Claude Implementation Handoff
+## 7. Validation
 
-When `WIN-01` is promoted to active execution, the executing agent (Claude) must follow this exact sequence:
-
-### Step 1: Preflight Verification
-Confirm environment on Windows (or WSL during transition):
-```powershell
-# Windows PowerShell
-python --version
-git --version
-gh auth status
-git status
-```
-
-### Step 2: Implement Cross-Platform Identity Gate
-Create `scripts/verify_identity.py` to replace or supplement `scripts/verify_identity.sh`.
-Ensure it supports `--os-user`, `--home`, `--host-login`, `--git-name`, `--git-email`, and `--repo-prefix` across Windows and Linux.
-
-### Step 3: Update Governance Policy in `AGENT_CONTROL.md`
-- Replace "WSL Execution Environment Gate" with "Primary Windows-Native Execution Environment & Optional WSL Gate".
-- Replace "WSL Edit Coherency Gate" with "Workspace Edit Coherency Gate".
-- Update startup commands to include PowerShell syntax alongside bash.
-
-### Step 4: Update Dispatch and Bootstrap Helpers
-- In `scripts/score2gp_go_bootstrap.py` and `scripts/score2gp_got_bootstrap.py`:
-  Add `.venv\Scripts\python.exe` check when `os.name == 'nt'`.
-- In `scripts/score2gp_dispatch.py`:
-  Ensure cross-platform path handling and Windows identity resolution.
-
-### Step 5: Validate and Audit
-Run:
-```powershell
+```text
 python scripts/score2gp_governance_audit.py
-python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py
-python -m pytest
+python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_verify_identity.py tests/test_dispatch_entrypoint_contract.py tests/test_governance_audit.py
+python -m pytest        # must pass in Linux CI
 git diff --check
 ```
 
-### Step 6: Publish Author Handback
-Publish exact-head handback on the task PR, verify checks, and await independent review.
+Then publish the exact-head author handback on the task PR and await independent review.

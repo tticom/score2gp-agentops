@@ -4,8 +4,8 @@
   "authority_revision": 37,
   "task": {
     "id": "WIN-01",
-    "title": "Windows-Native Primary Execution Migration",
-    "objective": "Remove mandatory WSL dependency, establish Windows-native primary execution with PowerShell/Python/Git/gh compatibility, and preserve WSL as an optional secondary environment without altering product recognition semantics.",
+    "title": "OS-Agnostic Governance and Dispatch",
+    "objective": "Make Score2GP governance, dispatch and validation OS-agnostic: resolve the worker role from the authenticated GitHub login cross-checked against the workspace path, resolve Python and tools portably, and remove WSL, /home and .venv/bin mandates from live governance, without altering product recognition semantics.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
@@ -16,36 +16,37 @@
     "allowed_paths": [
       "projects/score2gp/AGENT_CONTROL.md",
       "projects/score2gp/ORCA_WORKFLOW.md",
+      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
       "projects/score2gp/prompts/next/address-current-pr-review.md",
+      "projects/score2gp/prompts/next/got-dispatch.md",
       "CLAUDE.md",
-      "agent-runtime/README.md",
-      "agent-runtime/policies/README.md",
+      ".agents/agents/project-director/agent.json",
+      "scripts/link_session.py",
       "scripts/score2gp_dispatch.py",
       "scripts/score2gp_go_bootstrap.py",
       "scripts/score2gp_got_bootstrap.py",
       "scripts/score2gp_orca_control.py",
       "scripts/verify_identity.py",
-      "scripts/verify_identity.ps1",
       "tests/conftest.py",
-      "tests/test_agent_runtime.py",
-      "tests/test_agy_cycle.py",
-      "tests/test_codex_runtime.py",
+      "tests/test_dispatch_entrypoint_contract.py",
+      "tests/test_governance_audit.py",
       "tests/test_score2gp_dispatch.py",
       "tests/test_score2gp_orchestrator.py",
       "tests/test_score2gp_orca_control.py",
       "tests/test_verify_identity.py"
     ],
     "acceptance": [
-      "WSL execution requirement is removed from AGENT_CONTROL.md and replaced with Windows-native primary workspace definition.",
-      "Cross-platform identity gate (PowerShell and Python) verifies Windows environment, host login, Git author, and workspace path.",
-      "Path and virtual environment resolution supports Windows (.venv\\Scripts\\python.exe) alongside Linux/WSL (.venv/bin/python).",
-      "Native PowerShell, Windows Git, and gh CLI execute dispatch, bootstrap, and verification without WSL delegation.",
-      "WSL remains supported as an optional secondary environment.",
+      "Live governance documents in allowed_paths contain no WSL execution gate, /home/<user> or /mnt/c path rule, or .venv/bin-only instruction; the workspace is defined relative to a workspace root with worktrees/auto, worktrees/gov and worktrees/codex.",
+      "The worker role is resolved from the authenticated GitHub login using ORCHESTRATION_STATE.json roles and cross-checked against the workspace path; tticomgov-code routes to the governance/reviewer path; a mismatch, unknown login or gh failure fails closed; OS usernames and environment variables never select a role. Tests cover every case, including the negative ones.",
+      "Python and virtualenv resolution is portable (.venv/Scripts/python.exe or .venv/bin/python) and fails cleanly when neither exists.",
+      "scripts/verify_identity.py is the only identity gate, is Python-only, and passes on native Windows and Linux.",
+      "tests/conftest.py starts on native Windows while keeping its noexec protection on Linux.",
+      "The governance audit and the targeted tests pass on native Windows and in Linux CI; the full python -m pytest suite passes in Linux CI. A green full suite on native Windows is WIN-02's acceptance.",
       "Zero changes to product recognition, parsing, ScoreIR, or GP compilation code."
     ],
     "validation_commands": [
       "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py",
+      "python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_verify_identity.py tests/test_dispatch_entrypoint_contract.py tests/test_governance_audit.py",
       "python -m pytest",
       "git diff --check"
     ],
@@ -55,14 +56,113 @@
     "stop_conditions": [
       "product_recognition_semantics_modified",
       "identity_gate_loosened_or_bypassed",
-      "wsl_compatibility_broken_without_fallback",
+      "role_selected_from_environment_or_os_user",
+      "linux_ci_broken",
       "unauthorized_cross_repository_writes"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "WIN-02",
+    "title": "Retire the Docker/WSL Agent Runtime and Shell Scripts",
+    "objective": "Delete the Docker agent runtime and every shell script, make the remaining Python tooling portable, and make the full test suite pass on native Windows and Linux CI.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "feat/win-02-retire-docker-wsl-runtime",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/win-02-retire-docker-wsl-runtime.md",
+    "allowed_paths": [
+      "agent-runtime/",
+      "legacy/",
+      "scripts/agy-cycle",
+      "scripts/agy_cycle.py",
+      "scripts/status.sh",
+      "scripts/capture-pytest.sh",
+      "scripts/capture-developer-diff.sh",
+      "tests/test_agent_runtime.py",
+      "tests/test_agy_cycle.py",
+      "tests/test_assignment_adapter.py",
+      "tests/test_codex_runtime.py",
+      "tests/test_cycle_egress.py",
+      "tests/test_disposable_cycle.py",
+      "tests/test_supervisor.py",
+      "tests/test_governance_audit.py",
+      "README.md",
+      "docs/agy-cycle-roadmap.md",
+      "docs/agy-cycle-v2-plan.md",
+      "projects/score2gp/AGENT_CONTROL.md",
+      ".github/workflows/governance-control-plane.yml"
+    ],
+    "acceptance": [
+      "agent-runtime/, legacy/, scripts/agy-cycle and the three scripts/*.sh helpers are deleted together with the tests that only exercise them; the repository contains no .sh or .ps1 file.",
+      "scripts/agy_cycle.py imports on every OS (no module-level pty/termios) and is run as python scripts/agy_cycle.py; interactive terminal behaviour on Linux is preserved or replaced by a portable equivalent with tests.",
+      "Live code, tests, README and governance documents contain no Docker references; historical records are unchanged.",
+      "python -m pytest passes on native Windows and in Linux CI with no platform skips added to hide failures.",
+      "Zero changes to product recognition, parsing, ScoreIR, or GP compilation code."
+    ],
+    "validation_commands": [
+      "python scripts/score2gp_governance_audit.py",
+      "python -m pytest",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "WIN-01"
+    ],
+    "stop_conditions": [
+      "product_recognition_semantics_modified",
+      "identity_gate_loosened_or_bypassed",
+      "live_caller_of_deleted_runtime_found",
+      "linux_ci_broken",
+      "unauthorized_cross_repository_writes"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "WIN-03",
+      "title": "Product Repository OS-Agnostic Tooling",
+      "objective": "Remove WSL references and POSIX-only virtualenv assumptions from the product repository's tooling and agent guidance.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/win-03-product-os-agnostic-tooling",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/win-03-product-os-agnostic-tooling.md",
+      "allowed_paths": [
+        "scripts/corpus_harness.py",
+        "tests/test_corpus_harness.py",
+        "Makefile",
+        "CLAUDE.md"
+      ],
+      "acceptance": [
+        "scripts/corpus_harness.py resolves the score2gp command from .venv/Scripts or .venv/bin, then PATH, with no WSL wording.",
+        "Makefile resolves the virtualenv Python on Windows and Linux, or documents python -m equivalents for every target.",
+        "CLAUDE.md commands work unchanged on Windows and Linux.",
+        "tests/test_corpus_harness.py covers both virtualenv layouts.",
+        "Zero changes to src/score2gp/."
+      ],
+      "validation_commands": [
+        "python -m pytest tests/test_corpus_harness.py",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "WIN-01"
+      ],
+      "stop_conditions": [
+        "product_recognition_semantics_modified",
+        "private_fixture_leakage",
+        "unauthorized_cross_repository_writes"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",

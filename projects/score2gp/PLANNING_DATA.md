@@ -11,6 +11,14 @@ and [WIN-01 prompt](prompts/next/win-01-windows-native-execution-migration.md).
 Status: PROMOTED as the active task in `ORCHESTRATION_STATE.json` (Authority Revision 37),
 owned by the implementation role. `L3-00` (PR #462) is reconciled into `completed_tasks`.
 
+Update 2026-09-23: the maintainer directed that development be OS-agnostic, Docker be
+discontinued and WSL be removed from development (Linux remains a deployment and test
+target). See [Decision: OS-Agnostic Development Environment](decisions/2026-09-23-os-agnostic-development-environment.md).
+`WIN-01` is refocused as "OS-Agnostic Governance and Dispatch". Its successors are
+`WIN-02` ([retire the Docker/WSL runtime and shell scripts](prompts/next/win-02-retire-docker-wsl-runtime.md),
+`next_task_proposal`) and `WIN-03` ([product repository tooling](prompts/next/win-03-product-os-agnostic-tooling.md),
+`queued_task_proposals`). The objectives below are the original 2026-09-22 list, kept as a record.
+
 Key objectives authorized by maintainer:
 1. Remove mandatory WSL execution requirement from Score2GP governance and product workflow.
 2. Define Windows-native canonical workspace and identity/coherency gate.

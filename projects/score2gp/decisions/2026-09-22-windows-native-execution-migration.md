@@ -4,6 +4,7 @@
 - **Status**: APPROVED by Maintainer (`tticom`)
 - **Authority**: Present Maintainer Direction
 - **Related Tasks**: `L3-00` (PR #462), `WIN-01` (Proposed Successor)
+- **Superseded in part (2026-09-23)**: tenets 1–2 and §3 are replaced by [OS-Agnostic Development Environment](2026-09-23-os-agnostic-development-environment.md). Development is OS-agnostic rather than Windows-primary; Docker and WSL are removed from development. The remaining tenets (coherency gate, no semantic product changes, promotion sequencing) still apply.
 
 ---
 
