@@ -28,7 +28,8 @@ The current system mixes four different concerns:
 - Orchestration: autonomous-continuation, blocker-pivot, role-transition, and
   queue-promotion rules in `AGENT_CONTROL.md`, project-director skills,
   `ACTIVE_TASK.md`, `PLANNING_DATA.md`, and `go/got` prompts.
-- Identity enforcement: Linux user/home checks, per-user clones and GitHub CLI
+- Identity enforcement: GitHub login and workspace-slot checks
+  (`scripts/verify_identity.py`), per-identity clones and GitHub CLI
   stores, Git author checks, dispatcher role selection, GitHub permissions, and
   rulesets.
 - Evidence/quality gates: exact-head formal reviews, handback receipts, review
@@ -70,8 +71,8 @@ time, and later task status cannot implicitly close an incident.
 
 ## Identity model
 
-Separate Linux users are no longer the primary security boundary. Orca may run
-worktrees under the `tticom` WSL user, but each remote action must use a scoped
+Separate OS users are not the security boundary. Orca may run worktrees under
+one shared OS account on Windows or Linux, but each remote action must use a scoped
 GitHub identity authorized for the assignment role. Git author identity is
 provenance, not authorization. Reviewers remain metadata-only. Implementation,
 review, governance, and supervision roles all prohibit merge.
@@ -85,7 +86,7 @@ editing or review authority and must never use admin bypass.
 
 1. Synchronize a clean AgentOps read worktree to `origin/main` and record its SHA.
 2. Capture live PR/check/review/thread/ruleset facts as JSON.
-3. Run `python3 scripts/score2gp_orca_control.py resolve --live <facts.json>`.
+3. Run `python scripts/score2gp_orca_control.py resolve --live <facts.json>`.
 4. Stop on `BLOCKED` or an unknown/error result.
 5. For a dispatchable result, create the role-specific worktree and run
    `assign` with the worker's authenticated GitHub login.
@@ -95,11 +96,11 @@ editing or review authority and must never use admin bypass.
 9. Run `merge-check` immediately before integration. V1 is dry-run only.
 
 Example implementation dispatch after Orca has selected the implementation
-credential profile:
+credential profile (set `GH_CONFIG_DIR` to `<implementation-credential-dir>` in
+the worker's environment first):
 
-```bash
-GH_CONFIG_DIR=<implementation-credential-dir> \
-python3 scripts/score2gp_dispatch.py \
+```text
+python scripts/score2gp_dispatch.py \
   --agentops . --product ../score2gp \
   --orca-role implementation \
   --live <ignored-live-json> \
@@ -159,7 +160,8 @@ obsolete only after this cutover.
   in `AGENT_CONTROL.md` and the project-director skill.
 - Hand-authored `ACTIVE_TASK.md` and prose status vocabulary after it becomes a
   generated view.
-- Role selection based solely on Linux username in `score2gp_dispatch.py`.
+- Role selection by OS username or `SCORE2GP_AGENT_ROLE` in `score2gp_dispatch.py`
+  (removed by `WIN-01`; the role now comes from the GitHub login and workspace).
 
 The audit, evidence gate, review publisher, and handback publisher are not
 obsolete; they should become libraries or commands called by the supervisor and

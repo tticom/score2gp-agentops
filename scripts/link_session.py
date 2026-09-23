@@ -49,19 +49,9 @@ def get_active_run_dir(repo_root):
     os.makedirs(run_dir, exist_ok=True)
     return run_dir
 
-def get_windows_resolvable_target(link_path, target_path):
-    link_path = os.path.abspath(link_path)
-    target_path = os.path.abspath(target_path)
-    if link_path.startswith("/mnt/") and target_path.startswith("/home/"):
-        distro = "Ubuntu-24.04"
-        rel_path = os.path.relpath(target_path, "/")
-        unc_target = f"\\\\wsl.localhost\\{distro}\\{rel_path}"
-        return unc_target.replace("/", "\\")
-    return target_path
-
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 link_session.py <session_brain_dir>", file=sys.stderr)
+        print("Usage: python link_session.py <session_brain_dir>", file=sys.stderr)
         sys.exit(1)
         
     session_dir = os.path.abspath(sys.argv[1])

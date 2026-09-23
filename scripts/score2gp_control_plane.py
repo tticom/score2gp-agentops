@@ -11,18 +11,40 @@ from pathlib import Path
 
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 LOCK_PATTERN = re.compile(r"Required source commit:\s*\n\s*`([0-9a-f]{40})`")
+SKILLS_REPO_NAME = "agentops-claude-skills"
 REQUIRED_SKILLS = {
-    "governed-development-loop": "skills/engineering/governed-development-loop",
-    "identity-safe-git": "skills/engineering/identity-safe-git",
-    "durable-handoff": "skills/productivity/durable-handoff",
-    "code-review": "skills/engineering/code-review",
-    "hard-review": "skills/engineering/hard-review",
-    "devils-advocate-review": "skills/engineering/devils-advocate-review",
+    name: f"skills/{name}"
+    for name in (
+        "governed-development-loop",
+        "identity-safe-git",
+        "durable-handoff",
+        "code-review",
+        "hard-review",
+        "devils-advocate-review",
+    )
 }
+VENV_PYTHON_CANDIDATES = (
+    Path(".venv/Scripts/python.exe"),
+    Path(".venv/bin/python"),
+)
 
 
 class GateError(RuntimeError):
     pass
+
+
+def default_skills_repo(agentops: Path) -> Path:
+    """The skills checkout is the sibling of the AgentOps checkout."""
+    return agentops.resolve().parent / SKILLS_REPO_NAME
+
+
+def resolve_venv_python(repo: Path) -> Path:
+    """Return the repository virtualenv interpreter on Windows or POSIX."""
+    for candidate in VENV_PYTHON_CANDIDATES:
+        interpreter = repo / candidate
+        if interpreter.is_file():
+            return interpreter
+    raise GateError(f"VENV_PYTHON_MISSING {repo}")
 
 
 def git(repo: Path, *args: str, check: bool = True) -> str:
@@ -97,7 +119,7 @@ def materialize_skills_checkout(skills_repo: Path, pin: str) -> Path:
     if not git_succeeds(skills_repo, "merge-base", "--is-ancestor", pin, "origin/main"):
         raise GateError("SKILLS_PIN_NOT_MERGED")
 
-    pins_root = skills_repo.parent / "agy-skills-pins"
+    pins_root = skills_repo.parent / f"{skills_repo.name}-pins"
     checkout = pins_root / pin
     if not checkout.exists():
         pins_root.mkdir(parents=True, exist_ok=True)
@@ -133,7 +155,11 @@ def activate_skills_checkout(
         replacement = installed_root / f".{name}.next"
         if replacement.exists() or replacement.is_symlink():
             replacement.unlink()
-        replacement.symlink_to(source, target_is_directory=True)
+        try:
+            replacement.symlink_to(source, target_is_directory=True)
+        except OSError as error:
+            # Windows needs Developer Mode or a privilege to create symlinks.
+            raise GateError(f"SKILL_LINK_UNSUPPORTED {destination}: {error}") from error
         os.replace(replacement, destination)
 
 
@@ -169,15 +195,22 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--agentops", type=Path, required=True)
     parser.add_argument("--product", type=Path, required=True)
-    parser.add_argument("--skills-repo", type=Path, required=True)
+    parser.add_argument(
+        "--skills-repo",
+        type=Path,
+        help=f"defaults to the {SKILLS_REPO_NAME} checkout beside --agentops",
+    )
     parser.add_argument("--live-pr-head")
     parser.add_argument("--review-worktree", type=Path)
     args = parser.parse_args()
 
-    agentops_sha = sync_main(args.agentops.resolve(), "agentops")
+    agentops = args.agentops.resolve()
+    skills_repo = (args.skills_repo or default_skills_repo(agentops)).resolve()
+    agentops_sha = sync_main(agentops, "agentops")
     product_sha = sync_main(args.product.resolve(), "product")
-    pin = read_skills_pin(args.agentops.resolve())
-    skills_sha = materialize_and_activate_skills(args.skills_repo.resolve(), pin)
+    product_python = resolve_venv_python(args.product.resolve())
+    pin = read_skills_pin(agentops)
+    skills_sha = materialize_and_activate_skills(skills_repo, pin)
 
     review_sha = None
     if args.live_pr_head:
@@ -189,6 +222,7 @@ def main() -> None:
 
     print(f"AGENTOPS_SHA={agentops_sha}")
     print(f"PRODUCT_MAIN_SHA={product_sha}")
+    print(f"PRODUCT_PYTHON={product_python}")
     print(f"SKILLS_SHA={skills_sha}")
     if review_sha:
         print(f"REVIEW_LOCAL_HEAD={review_sha}")

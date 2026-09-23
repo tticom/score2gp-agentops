@@ -20,8 +20,10 @@ from typing import Any
 
 try:
     from scripts.score2gp_orchestrator import advance as advance_orchestration
+    from scripts.verify_identity import IdentityError, github_login
 except ModuleNotFoundError:
     from score2gp_orchestrator import advance as advance_orchestration
+    from verify_identity import IdentityError, github_login
 
 STATES = {
     "BLOCKED",
@@ -623,15 +625,10 @@ def git_head(root: Path) -> str:
 
 
 def authenticated_github_login() -> str:
-    completed = subprocess.run(
-        ["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True
-    )
-    if completed.returncode:
-        raise ControlError(completed.stderr.strip() or "cannot verify GitHub identity")
-    login = completed.stdout.strip()
-    if not login:
-        raise ControlError("GitHub identity is empty")
-    return login
+    try:
+        return github_login()
+    except IdentityError as error:
+        raise ControlError(str(error)) from error
 
 
 def reconcile_task(

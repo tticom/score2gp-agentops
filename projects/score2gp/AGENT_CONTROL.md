@@ -61,41 +61,43 @@ execution of that proposal.
 
 ## Mandatory Startup Protocol
 
-Agents must start from the governance repository owned by their assigned Linux
-identity:
+Development is OS-agnostic: Windows and Linux are equally supported, and no
+rule may require WSL, a particular shell, or a Linux home layout. Every worker
+starts from its own checkout below one workspace root:
 
-- Agy / `tticom-automation`:
-  `/home/tticom-automation/work/score2gp-workspace/score2gp-agentops`
-- Governance worker / `tticom-gov` using Git/GitHub identity `tticomgov-code`:
-  `/home/tticom-gov/work/score2gp-workspace/score2gp-agentops`
-- Independent reviewer / `tticom-codex`:
-  `/home/tticom-codex/work/score2gp-workspace/score2gp-agentops`
+```text
+<workspace-root>/worktrees/auto/score2gp-agentops    tticom-automation (author)
+<workspace-root>/worktrees/gov/score2gp-agentops     tticomgov-code (governance)
+<workspace-root>/worktrees/codex/score2gp-agentops   tticom-codex (independent reviewer)
+```
+
+The product checkout `score2gp` and the skills checkout `agentops-claude-skills`
+are siblings of `score2gp-agentops` in the same `worktrees/<slot>` directory.
+Task worktrees live beside the canonical checkout in that slot.
 
 ## Identity-Isolated Workspace Gate
 
-`tticom-automation`, `tticom-gov`, and `tticom-codex` must use separate Linux
-users, homes, GitHub CLI credential stores, Git identities, and repository
-clones. An agent must never operate from the other identity's home or workspace,
-must never use another identity's clone, and must never copy GitHub credentials
-between homes.
+`tticom-automation`, `tticomgov-code`, and `tticom-codex` must use separate
+GitHub CLI credential stores, Git identities, and repository clones. An agent
+must never operate from the other identity's workspace, must never use another
+identity's clone, and must never copy GitHub credentials between workspaces.
 
-Before any Git, GitHub, filesystem, or task write, prove:
+The identity is the authenticated GitHub login. OS usernames and environment
+variables never select or relax a role. Before any Git, GitHub, filesystem, or
+task write, run from the checkout:
 
-```bash
-test "$(whoami)" = "<assigned-linux-user>"
-test "$HOME" = "/home/<assigned-linux-user>"
-test "$(gh api user --jq .login)" = "<assigned-github-user>"
-test "$(git config --global --get user.name)" = "<assigned-git-user>"
-test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
-case "$(git rev-parse --show-toplevel)" in
-  "$HOME"/work/score2gp-workspace/*) ;;
-  *) exit 1 ;;
-esac
+```text
+python scripts/verify_identity.py
 ```
 
-A mismatch is a hard no-write stop. Do not switch accounts inside another
-user's workspace, use another user's clone, or fall back to maintainer
-credentials.
+It proves, on any OS, that `gh api user --jq .login` returns the login that
+owns the enclosing `worktrees/<auto|gov|codex>` slot, and that the checkout's
+effective Git author and committer are that login with one non-empty email.
+The effective identity (repository config plus `GIT_AUTHOR_*`/`GIT_COMMITTER_*`)
+is checked because one OS account may host several workers with a shared
+global Git config. A failure prints `IDENTITY_GATE_FAILED` and is a hard
+no-write stop. Do not switch accounts inside another identity's workspace, use
+another identity's clone, or fall back to maintainer credentials.
 
 Before any work, run and report:
 
@@ -104,88 +106,51 @@ Before any work, run and report:
 - `git fetch --all --prune`
 - `git log --oneline --decorate --max-count=5`
 
-## WSL Execution Environment Gate
+## Execution Environment
 
-All Score2GP product and governance work must execute in the Ubuntu WSL
-workspace, not in a Windows checkout, PowerShell, Command Prompt, or a
-`/mnt/c` mirror. A Windows-host `wsl.exe` wrapper is allowed only to enter
-the Linux environment; the command it runs must then execute in WSL.
-
-Before reading, writing, or testing, Agy must prove and report that it is in a
-canonical repository or a task-specific WSL worktree below the canonical
-workspace:
-
-```bash
-test "$(uname -s)" = "Linux"
-test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
-case "$(git rev-parse --show-toplevel)" in
-  /home/tticom-automation/work/score2gp-workspace/score2gp-agentops|/home/tticom-automation/work/score2gp-workspace/score2gp-agentops-*) ;;
-  *) exit 1 ;;
-esac
-test -x /home/tticom-automation/work/score2gp-workspace/score2gp/.venv/bin/python
-```
-
-When product work begins, it must similarly prove:
-
-```bash
-test "$(pwd -P)" = "$(git rev-parse --show-toplevel)"
-case "$(git rev-parse --show-toplevel)" in
-  /home/tticom-automation/work/score2gp-workspace/score2gp|/home/tticom-automation/work/score2gp-workspace/score2gp-*) ;;
-  *) exit 1 ;;
-esac
-```
-
-Bare Windows-host `git`, `python`, `gh`, PowerShell, Command Prompt,
-`explorer.exe`, `start`, Windows paths such as `C:\\...`, and
-`/mnt/c` project worktrees are prohibited for Agy. An "Open using..." chooser
-or any attempt to open a project artefact through a Windows application is an
-environment-boundary failure: do not select an app, do not continue the task,
-and report the command and intended file/URI.
-
-If the WSL proof cannot be established, Agy must make no filesystem, Git, or
-GitHub write and stop. It must not compensate by resetting, cleaning, copying,
-or recreating a checkout.
+Use the platform's native Python, Git, and GitHub CLI. Invoke scripts as
+`python scripts/<name>.py`; never assume `python3` exists. A repository
+virtualenv interpreter is `.venv/Scripts/python.exe` on Windows or
+`.venv/bin/python` on POSIX; `score2gp_control_plane.py` resolves whichever
+exists and fails with `VENV_PYTHON_MISSING` when neither does. WSL remains
+usable but is never required.
 
 ### Supported disposable-container identity
 
-The Docker AGY runtime intentionally runs its unprivileged process as
-`agent`/UID 10001 rather than as one of the host worker accounts. This is not a
-host-workspace identity. The launcher must pass
-`SCORE2GP_AGENT_ROLE=automation` or `SCORE2GP_AGENT_ROLE=gov`; the dispatcher
-maps that role to the corresponding author or governance bootstrap and the
-bootstrap still verifies the matching GitHub login. A container without that
-role attestation fails closed.
+The Docker AGY runtime runs its unprivileged process as `agent`/UID 10001
+rather than as a worker identity. It is being retired by `WIN-02`. The
+dispatcher no longer routes on `SCORE2GP_AGENT_ROLE` or on the OS username; a
+container must satisfy the same GitHub-login and workspace gate as any other
+worker, or it fails closed.
 
 The launcher also mounts the source repository's Git administrative directory
 at the absolute path recorded by the disposable worktree's `.git` pointer.
 Without that mount, Git sees a host-only `gitdir` path and the task worktree is
 invalid inside the container.
 
-## WSL Edit Coherency Gate
+## Workspace Edit Coherency Gate
 
-An IDE “Edited” event is not evidence that the canonical WSL worktree changed.
-Before the first write in a task, Agy must prove that its edit mechanism and
-its WSL Git commands address the same checkout.
+An IDE "Edited" event is not evidence that the checkout under test changed.
+Before the first write in a task, the agent must prove that its edit mechanism
+and its Git and test commands address the same absolute checkout.
 
-For each file it intends to change, it must use the canonical WSL environment
-to run:
+For each file it intends to change, from the checkout where tests will run:
 
-```bash
-pwd -P
+```text
 git rev-parse --show-toplevel
 git status --short
 git diff -- <intended-path>
 ```
 
-Immediately after an edit and before staging, it must run the same WSL
-`git diff -- <intended-path>` command. It may stage only the exact intended
-diff displayed from the canonical WSL worktree.
+The printed top level must be the same absolute path the editor writes to.
+Immediately after an edit and before staging, run `git diff -- <intended-path>`
+again from that checkout. Stage only the exact intended diff it displays.
 
-If the editor says a file changed but the WSL diff is empty, or if the path,
+If the editor says a file changed but the diff is empty, or if the path,
 worktree root, or branch differs, the editor is attached to a different
-checkout. Agy must stop without copying, recreating, resetting, cleaning, or
-otherwise synchronizing files between environments. It must report the
-mismatch for human workspace correction.
+checkout. Stop without copying, recreating, resetting, cleaning, or otherwise
+synchronizing files between checkouts, and report the mismatch for human
+workspace correction.
 
 ## Agy Fast Delivery Lane
 
@@ -194,7 +159,7 @@ This section supersedes every conflicting local-preparation or GitHub restrictio
 The installed Score2GP `go` skill is invoked as `/go`; its plain-text
 compatibility aliases are `next` and `go`. It means: read
 `projects/score2gp/prompts/NEXT.md`, then execute the permanent Agy dispatcher
-it names. The dispatcher runs `python3 scripts/score2gp_go_bootstrap.py` to
+it names. The dispatcher runs `python scripts/score2gp_go_bootstrap.py` to
 fetch `origin/main`, synchronize canonical `main` branches, and select the authorised
 task branch before checking GitHub PR state and selecting implementation, PR
 monitoring, review fixes, a review wait, or a post-merge stop. It must never blindly
@@ -207,7 +172,7 @@ GitHub state, and routes to first review, re-review, wait, readiness reporting,
 or post-merge governance. A chat summary alone is never a handback.
 
 Agy may:
-- use authenticated WSL gh as tticom-automation after proving the account and local Git identity;
+- use the authenticated GitHub CLI as tticom-automation after `python scripts/verify_identity.py` proves the account and Git identity;
 - fetch, create a branch beginning agy/, commit, push that branch, and create or update a pull request;
 - run relevant tests and write task-scoped reports or product changes authorized by the current versioned prompt.
 
@@ -256,7 +221,7 @@ Maintainer observations must be incorporated at every stage and must override
 optimistic aggregate diagnostics when they conflict.
 
 This continuation rule does not authorize product implementation by itself,
-permit a second task while a task PR remains open, or weaken identity, WSL,
+permit a second task while a task PR remains open, or weaken identity, workspace,
 privacy, review, branch, or merge gates. It requires the next step to be
 organized and governed; it does not permit ungoverned execution.
 
@@ -269,7 +234,7 @@ the current task must be marked `BLOCKED` by a human or external reviewer.
 Agy must then perform no further filesystem, Git, GitHub, or task work.
 
 Work may resume only after a human or Codex has independently verified both:
-1. the WSL GitHub CLI identifies `tticom-automation` and the local Git identity matches it; and
+1. the GitHub CLI identifies `tticom-automation` and `python scripts/verify_identity.py` passes in its workspace; and
 2. a protected `main` rule requires an independent pull-request approval and
    excludes `tticom-automation` from all bypass permissions.
 
@@ -317,14 +282,14 @@ Agents must then read, in this order:
 Before executing or reviewing a task, read
 `projects/score2gp/SKILLS_LOCK.md` and
 `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`. Verify the installed skills
-resolve to the exact locked `agy-skills` revision.
+resolve to the exact locked `agentops-claude-skills` revision.
 
 Do not update or relink skills during an active Score2GP task. Skills upgrades
-require their own `agy-skills` PR followed by a separate AgentOps lock-update
+require their own `agentops-claude-skills` PR followed by a separate AgentOps lock-update
 PR; they are never an incidental part of product conversion work.
 
 The lock-update PR itself is reviewed through a non-activating bootstrap: prove
-its proposed pin is merged into `agy-skills/main`, materialize that pin in an
+its proposed pin is merged into `agentops-claude-skills/main`, materialize that pin in an
 immutable checkout, and invoke the proposed review skill by its returned exact
 path. The reviewer must not relink installed skills or treat the unmerged
 AgentOps branch as active authority. This exception permits inspection only; it
@@ -421,8 +386,9 @@ If the Developer cannot identify the requirement, approved approach, acceptance 
 
 If product work is involved, agents must also inspect the product repository:
 
-- Agy: `/home/tticom-automation/work/score2gp-workspace/score2gp`
-- Governance: `/home/tticom-gov/work/score2gp-workspace/score2gp`
+- Agy: `<workspace-root>/worktrees/auto/score2gp`
+- Governance: `<workspace-root>/worktrees/gov/score2gp`
+- Independent reviewer: `<workspace-root>/worktrees/codex/score2gp`
 
 The selected path must match the identity-isolated workspace gate above.
 

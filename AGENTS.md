@@ -17,37 +17,36 @@ The author-side `/go` skill (with plain-text compatibility aliases `go` and
 `next`) and the reviewer-side `got` command must execute this identity-aware
 router before any manual inspection:
 
-```bash
-python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
+```text
+python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
 For an explicit PR review request, including `review #N`, `hard review`, or
 `real review`, route the named repository and PR instead of silently falling
 back to the active task:
 
-```bash
-python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
-  --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
+```text
+python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json   --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
 ```
 
-The host Linux worker identity, together with the requested operation, selects
-the role. Plain `go` remains the author continuation for
-`tticom-automation`; an explicit review request (`--review-repo` and
+Use the platform's native `python` on Windows or Linux; never assume `python3`.
+The router selects the role from the authenticated GitHub login, never from the
+host OS identity. It queries `gh api user --jq .login` with the process's own
+GitHub credentials, including launcher-isolated `GH_TOKEN`, and requires that
+login to own the workspace holding the checkout
+(`worktrees/auto` → `tticom-automation`, `worktrees/gov` → `tticomgov-code`,
+`worktrees/codex` → `tticom-codex`) and to match the checkout's Git author and
+committer. Plain `go` in `worktrees/auto` is the author continuation under the
+implementation role; `got` in `worktrees/gov` or `worktrees/codex` runs the
+governance/reviewer bootstrap. An explicit review request (`--review-repo` and
 `--review-pr`) routes any identity granted the reviewer role to the reviewer
 bootstrap, including `tticom-automation`. A reviewer may review any PR it did
 not author. Self-review is always rejected, and reviewer capability never
-grants merge authority. In the supported disposable container, the process
-user is `agent`; the launcher passes `SCORE2GP_AGENT_ROLE=automation|gov`, and
-the router maps that attested role to the corresponding bootstrap while still
-requiring the matching GitHub identity. Never bypass the router by calling the
-other role's helper.
-Native (non-container) sessions whose host username is not a recognised
-worker identity, for example `niall` in a Windows session, are routed by
-querying `gh api user --jq .login` with the process's own GitHub credentials,
-including launcher-isolated `GH_TOKEN`: `tticom-automation` selects author
-`go`, and `tticom-gov` / `tticom-codex` select governance/reviewer `got`. Other
-GitHub logins and authentication failures fail closed. Do not spoof OS username
-variables or use arbitrary environment role values to select privileges.
+grants merge authority. Unknown logins, a login in another identity's
+workspace, and authentication failures fail closed. Do not spoof OS username
+variables or use environment role values such as `SCORE2GP_AGENT_ROLE`; they
+never select privileges. Never bypass the router by calling the other role's
+helper.
 Treat its JSON as authoritative. Never replace it with direct GitHub queries
 or a cached handback. `ADDRESS_CURRENT_PR_REVIEW` means execute
 `projects/score2gp/prompts/next/address-current-pr-review.md` with the returned

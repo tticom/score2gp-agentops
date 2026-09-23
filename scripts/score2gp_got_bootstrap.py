@@ -64,7 +64,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Score2GP Agy `got` Dispatch Bootstrap Helper.")
     parser.add_argument("--product", type=str, default="../score2gp")
     parser.add_argument("--agentops", type=str, default=".")
-    parser.add_argument("--skills-repo", type=str, default="../../agy-skills")
+    parser.add_argument(
+        "--skills-repo",
+        type=Path,
+        help="defaults to the agentops-claude-skills checkout beside --agentops",
+    )
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)

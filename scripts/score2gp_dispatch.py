@@ -2,7 +2,8 @@
 """Score2GP continuation dispatcher with Orca and legacy compatibility modes.
 
 Orca mode consumes a deterministic live snapshot and emits a bounded assignment.
-Legacy mode retains host-user routing with an authenticated GitHub fallback.
+Legacy mode routes by the authenticated GitHub login, cross-checked against the
+workspace that owns the AgentOps checkout and the roles in the authority file.
 """
 from __future__ import annotations
 
@@ -13,6 +14,18 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
+
+try:
+    from scripts.score2gp_control_plane import default_skills_repo
+    from scripts.verify_identity import (
+        IdentityError,
+        verify_git_identity,
+        verify_workspace_login,
+    )
+except ModuleNotFoundError:
+    from score2gp_control_plane import default_skills_repo
+    from verify_identity import IdentityError, verify_git_identity, verify_workspace_login
 
 
 class DispatchError(RuntimeError):
@@ -58,36 +71,45 @@ def _authenticated_login() -> str:
         raise DispatchError(f"GitHub identity check failed: {error}") from error
 
 
-def select_bootstrap(linux_user: str, review_pr: int | None = None) -> str:
-    # If explicit review dispatch was requested, route to the review bootstrap helper.
+def _role_logins(roles: dict[str, Any], role: str) -> set[str]:
+    policy = roles.get(role)
+    if not isinstance(policy, dict):
+        return set()
+    return set(policy.get("github_logins") or [])
+
+
+def select_bootstrap(
+    login: str,
+    agentops: Path,
+    roles: dict[str, Any],
+    review_pr: int | None = None,
+) -> str:
+    """Select the bootstrap for an authenticated login in its own workspace.
+
+    The login must own the workspace containing ``agentops``. An explicit
+    review needs the reviewer role; otherwise the ``auto`` workspace runs the
+    author bootstrap under the implementation role, and the ``gov`` and
+    ``codex`` workspaces run the review/governance bootstrap.
+    """
+    try:
+        slot = verify_workspace_login(login, agentops)
+    except IdentityError as error:
+        raise DispatchError(f"unsupported Score2GP worker identity: {error}") from error
     if review_pr is not None:
+        if login not in _role_logins(roles, "reviewer"):
+            raise DispatchError(f"unsupported Score2GP worker identity: {login} lacks the reviewer role")
         return "score2gp_got_bootstrap.py"
-    # Disposable AGY containers run as the unprivileged `agent` user. The
-    # launcher attests the intended worker role separately; preserve the host
-    # identity path while allowing the containerized role to reach the same
-    # role-specific bootstrap.
-    if linux_user == "agent":
-        container_role = os.environ.get("SCORE2GP_AGENT_ROLE", "")
-        if container_role == "automation":
-            return "score2gp_go_bootstrap.py"
-        if container_role == "gov":
-            return "score2gp_got_bootstrap.py"
-        raise DispatchError(f"unsupported Score2GP worker identity: {linux_user}")
-    if linux_user in {"tticom-automation", "tticom-orca"}:
+    if slot == "auto":
+        if login not in _role_logins(roles, "implementation"):
+            raise DispatchError(
+                f"unsupported Score2GP worker identity: {login} lacks the implementation role"
+            )
         return "score2gp_go_bootstrap.py"
-    if linux_user in {"tticom-gov", "tticom-codex", "tticom"}:
-        return "score2gp_got_bootstrap.py"
-    # Native sessions share an OS account; use the process's authenticated
-    # GitHub identity, never an environment-supplied role, for this fallback.
-    login = _authenticated_login()
-    if login == "tticom-automation":
-        return "score2gp_go_bootstrap.py"
-    if login in {"tticom-gov", "tticom-codex"}:
-        return "score2gp_got_bootstrap.py"
-    raise DispatchError(
-        f"unsupported Score2GP worker identity: {linux_user}; "
-        f"authenticated GitHub identity: {login}"
-    )
+    if login not in _role_logins(roles, "reviewer") | _role_logins(roles, "governance"):
+        raise DispatchError(
+            f"unsupported Score2GP worker identity: {login} lacks the reviewer and governance roles"
+        )
+    return "score2gp_got_bootstrap.py"
 
 
 def main() -> None:
@@ -96,7 +118,11 @@ def main() -> None:
     )
     parser.add_argument("--agentops", default=".")
     parser.add_argument("--product", default="../score2gp")
-    parser.add_argument("--skills-repo", default="../../agy-skills")
+    parser.add_argument(
+        "--skills-repo",
+        type=Path,
+        help="defaults to the agentops-claude-skills checkout beside --agentops",
+    )
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--review-repo")
     parser.add_argument("--review-pr", type=int)
@@ -166,14 +192,26 @@ def main() -> None:
         print(json.dumps(assignment, indent=2, sort_keys=True))
         return
 
-    linux_user = getpass.getuser()
     if (args.review_repo is None) != (args.review_pr is None):
         raise DispatchError("--review-repo and --review-pr must be supplied together")
     agentops = Path(args.agentops).resolve()
     product = Path(args.product).resolve()
-    skills_repo = Path(args.skills_repo).resolve()
+    skills_repo = (args.skills_repo or default_skills_repo(agentops)).resolve()
+    # Prove the identity before any write, then read roles from synced main.
+    login = _authenticated_login()
+    try:
+        verify_workspace_login(login, agentops)
+        verify_git_identity(login, agentops)
+    except IdentityError as error:
+        raise DispatchError(f"identity gate failed: {error}") from error
     synchronize_agentops_main(agentops)
-    helper = agentops / "scripts" / select_bootstrap(linux_user, review_pr=args.review_pr)
+    authority = json.loads(
+        (agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
+    )
+    bootstrap = select_bootstrap(
+        login, agentops, authority.get("roles", {}), review_pr=args.review_pr
+    )
+    helper = agentops / "scripts" / bootstrap
     command = [
         sys.executable,
         os.fspath(helper),
