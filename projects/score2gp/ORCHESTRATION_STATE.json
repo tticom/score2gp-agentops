@@ -20,6 +20,8 @@
       "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
       "projects/score2gp/prompts/next/address-current-pr-review.md",
       "projects/score2gp/prompts/next/got-dispatch.md",
+      "AGENTS.md",
+      "AGENT-RULES.md",
       "CLAUDE.md",
       ".agents/agents/project-director/agent.json",
       "scripts/link_session.py",
@@ -39,12 +41,12 @@
       "tests/test_verify_identity.py"
     ],
     "acceptance": [
-      "Live governance documents in allowed_paths contain no WSL execution gate, /home/<user> or /mnt/c path rule, or .venv/bin-only instruction; the workspace is defined relative to a workspace root with worktrees/auto, worktrees/gov and worktrees/codex.",
+      "Live governance documents in allowed_paths contain no WSL execution gate, /home/<user> or /mnt/c path rule, or .venv/bin-only instruction; the workspace is defined relative to a workspace root with worktrees/auto, worktrees/gov and worktrees/codex. The agent entrypoints AGENTS.md and AGENT-RULES.md use portable python commands (never python3-only) and state that the role comes from the authenticated GitHub login, not the host OS identity; AGENT-RULES.md keeps the product automation mentions the governance audit requires.",
       "The worker role is resolved from the authenticated GitHub login using ORCHESTRATION_STATE.json roles and cross-checked against the workspace path; tticomgov-code routes to the governance/reviewer path; a mismatch, unknown login or gh failure fails closed; OS usernames and environment variables never select a role. Tests cover every case, including the negative ones.",
       "Python and virtualenv resolution is portable (.venv/Scripts/python.exe or .venv/bin/python) and fails cleanly when neither exists.",
       "scripts/verify_identity.py is the only identity gate, is Python-only, and passes on native Windows and Linux.",
       "tests/conftest.py starts on native Windows while keeping its noexec protection on Linux.",
-      "The workflow skills source is tticom/agentops-claude-skills: SKILLS_LOCK.md pins a commit on its main, score2gp_control_plane.py resolves its skills/<name> layout and pin checkouts, the dispatch and bootstrap --skills-repo defaults point to ../../agentops-claude-skills, and live governance documents no longer name agy-skills as the skills source. Pin and missing-skill gates still fail closed, with tests.",
+      "The workflow skills source is tticom/agentops-claude-skills: SKILLS_LOCK.md pins a commit on its main, score2gp_control_plane.py resolves its skills/<name> layout and pin checkouts, the dispatch and bootstrap --skills-repo defaults resolve to the agentops-claude-skills checkout that is a sibling of the running score2gp-agentops checkout (worktrees/<auto|gov|codex>/agentops-claude-skills), with tests for all three layouts, and live governance documents no longer name agy-skills as the skills source. Pin and missing-skill gates still fail closed, with tests.",
       "The governance audit and the targeted tests pass on native Windows and in Linux CI; the full python -m pytest suite passes in Linux CI. A green full suite on native Windows is WIN-02's acceptance.",
       "Zero changes to product recognition, parsing, ScoreIR, or GP compilation code."
     ],

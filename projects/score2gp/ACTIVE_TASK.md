@@ -26,6 +26,8 @@ Make Score2GP governance, dispatch and validation OS-agnostic: resolve the worke
 - `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
 - `projects/score2gp/prompts/next/address-current-pr-review.md`
 - `projects/score2gp/prompts/next/got-dispatch.md`
+- `AGENTS.md`
+- `AGENT-RULES.md`
 - `CLAUDE.md`
 - `.agents/agents/project-director/agent.json`
 - `scripts/link_session.py`

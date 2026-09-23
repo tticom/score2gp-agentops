@@ -38,13 +38,17 @@ and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
    - a Workspace Edit Coherency Gate: the edited checkout and the checkout where `git diff` and tests run must be the same absolute path.
 
    Apply the same to `ORCA_WORKFLOW.md`, `WORKFLOW_SKILLS_PROFILE.md`, `got-dispatch.md`, `address-current-pr-review.md` (`.venv/bin/python`), `CLAUDE.md`, `.agents/agents/project-director/agent.json` and `scripts/link_session.py` (WSL UNC path translation). Leave the Docker identity text in `AGENT_CONTROL.md` for `WIN-02`.
+
+   The root agent entrypoints need the same treatment:
+   - `AGENTS.md` (lines 21-43) runs the router with `python3` and says "the host Linux worker identity … selects the role". Change it to portable `python` commands and to role selection from the authenticated GitHub login, as in §2.1.
+   - `AGENT-RULES.md` line 6 requires `python3 scripts/score2gp_got_bootstrap.py` at session start. Make it portable. It must keep mentioning `agent_verify.py`, `artifact_audit.py` and `pr_body.py`, because `score2gp_governance_audit.py` requires them.
 3. **Portable Python and tool resolution.** Resolve `.venv/Scripts/python.exe` or `.venv/bin/python`, and fail cleanly when neither exists. Use `pathlib`; never build paths with `/` string concatenation or assume `python3` exists.
 4. **One Python identity gate.** `scripts/verify_identity.py` checks the GitHub login, global Git `user.name`/`user.email` and the workspace path on any OS. There is no bash or PowerShell identity script.
 5. **Test suite starts everywhere.** `tests/conftest.py` must not call `os.statvfs` where it doesn't exist, and must keep its noexec protection on Linux.
 6. **Skills source is `agentops-claude-skills`.** The maintainer has replaced `tticom/agy-skills` with `tticom/agentops-claude-skills`.
    - `SKILLS_LOCK.md` pins a full commit on `agentops-claude-skills` `main`.
    - `score2gp_control_plane.py` maps `REQUIRED_SKILLS` to that repository's flat `skills/<name>` layout, not agy-skills' `skills/engineering/...` layout, and materializes pins outside `agy-skills-pins/`.
-   - The `--skills-repo` defaults in `score2gp_dispatch.py` and both bootstrap scripts point to `../../agentops-claude-skills`.
+   - The `--skills-repo` defaults in `score2gp_dispatch.py` and both bootstrap scripts resolve to the `agentops-claude-skills` checkout next to the running `score2gp-agentops` checkout: `worktrees/<auto|gov|codex>/agentops-claude-skills`. Derive it from the agentops path, not the process working directory. `../../agentops-claude-skills` is wrong, because it resolves to `worktrees/agentops-claude-skills`.
    - Update the `AGENT_CONTROL.md` and `WORKFLOW_SKILLS_PROFILE.md` sections that name `agy-skills` as the locked skills source.
    - Keep every pin-mismatch, dirty-checkout and `REQUIRED_SKILL_MISSING` gate fail-closed.
 
@@ -58,6 +62,8 @@ and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
 - `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
 - `projects/score2gp/prompts/next/address-current-pr-review.md`
 - `projects/score2gp/prompts/next/got-dispatch.md`
+- `AGENTS.md`
+- `AGENT-RULES.md`
 - `CLAUDE.md`
 - `.agents/agents/project-director/agent.json`
 - `scripts/link_session.py`
@@ -89,7 +95,7 @@ handoffs, earlier decisions) are not rewritten. Product-repository changes are
 
 ## 4. Acceptance Criteria
 
-1. The live documents above contain no WSL execution gate, no `/home/<user>` or `/mnt/c` rule and no `.venv/bin`-only instruction.
+1. The live documents above contain no WSL execution gate, no `/home/<user>` or `/mnt/c` rule and no `.venv/bin`-only instruction. `AGENTS.md` and `AGENT-RULES.md` use portable `python` commands and describe role selection by GitHub login, not by host OS identity.
 2. Role resolution behaves as in §2.1. Tests cover, at minimum:
    - each of the three logins in its own workspace (allowed);
    - each login in another identity's workspace (refused);
@@ -103,7 +109,8 @@ handoffs, earlier decisions) are not rewritten. Product-repository changes are
    - a valid pin activating the required skills;
    - a pin not on `main` (refused);
    - a dirty pin checkout (refused);
-   - a missing required skill (`REQUIRED_SKILL_MISSING`).
+   - a missing required skill (`REQUIRED_SKILL_MISSING`);
+   - the default skills path resolving to the sibling `agentops-claude-skills` for each of the `auto`, `gov` and `codex` layouts, from a working directory other than the checkout.
 7. The governance audit and the targeted tests pass on native Windows and in Linux CI. The full `python -m pytest` passes in Linux CI. The full suite on native Windows is `WIN-02`'s acceptance, because it depends on removing the Docker runtime tests.
 8. Zero changes to product code.
 
