@@ -1,11 +1,16 @@
 import json
+import sys
 import pytest
 from pathlib import Path
 from types import SimpleNamespace
 
+import shutil
+
 from scripts.score2gp_dispatch import (
     DispatchError,
     _authenticated_login,
+    check_workspace_role,
+    main,
     select_bootstrap,
     synchronize_agentops_main,
 )
@@ -174,3 +179,80 @@ def test_dispatcher_refuses_dirty_checkout_before_fetch() -> None:
     with pytest.raises(DispatchError, match="checkout is dirty"):
         synchronize_agentops_main(Path("/canonical/agentops"), runner=runner)
     assert calls == [["git", "status", "--porcelain"]]
+
+
+@pytest.mark.parametrize(
+    ("slot", "role"),
+    [("auto", "implementation"), ("auto", "architect"),
+     ("gov", "governance"), ("gov", "reviewer"),
+     ("codex", "governance"), ("codex", "reviewer")],
+)
+def test_slot_allows_its_roles(tmp_path, slot, role) -> None:
+    assert check_workspace_role(OWNERS[slot], checkout(tmp_path, slot), role) == slot
+
+
+@pytest.mark.parametrize(
+    ("slot", "role"),
+    [("auto", "reviewer"), ("auto", "governance"),
+     ("gov", "implementation"), ("gov", "architect"),
+     ("codex", "implementation"), ("codex", "architect")],
+)
+def test_slot_refuses_other_roles(tmp_path, slot, role) -> None:
+    with pytest.raises(DispatchError, match=f"worktrees/{slot} may not run the {role} role"):
+        check_workspace_role(OWNERS[slot], checkout(tmp_path, slot), role)
+
+
+@pytest.mark.parametrize("slot", ["auto", "gov", "codex"])
+def test_explicit_review_may_run_reviewer_from_any_slot(tmp_path, slot) -> None:
+    assert check_workspace_role(
+        OWNERS[slot], checkout(tmp_path, slot), "reviewer", explicit_review=True
+    ) == slot
+
+
+def test_explicit_review_does_not_widen_to_implementation(tmp_path) -> None:
+    with pytest.raises(DispatchError, match="may not run the implementation role"):
+        check_workspace_role(
+            "tticom-codex", checkout(tmp_path, "codex"), "implementation", explicit_review=True
+        )
+
+
+def orca_checkout(tmp_path: Path, slot: str) -> Path:
+    agentops = checkout(tmp_path, slot)
+    (agentops / "projects/score2gp").mkdir(parents=True)
+    for name in ("ORCHESTRATION_STATE.json", "ACTIVE_TASK.md"):
+        shutil.copy(REPO / "projects/score2gp" / name, agentops / "projects/score2gp" / name)
+    (tmp_path / "live.json").write_text("{}", encoding="utf-8")
+    return agentops
+
+
+def run_orca_main(monkeypatch, agentops: Path, login: str, role: str) -> None:
+    monkeypatch.setattr("scripts.score2gp_orca_control.authenticated_github_login", lambda: login)
+    monkeypatch.setattr("scripts.score2gp_orca_control.git_head", lambda root: "e" * 40)
+    monkeypatch.setattr(sys, "argv", [
+        "score2gp_dispatch.py", "--agentops", str(agentops), "--orca-role", role,
+        "--live", str(agentops.parents[2] / "live.json"), "--github-login", login,
+    ])
+    main()
+
+
+def test_orca_path_assigns_implementation_in_the_author_workspace(tmp_path, monkeypatch, capsys) -> None:
+    agentops = orca_checkout(tmp_path, "auto")
+    run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
+    assignment = json.loads(capsys.readouterr().out)
+    assert assignment["worker"]["github_login"] == "tticom-automation"
+    assert assignment["worker"]["role"] == "implementation"
+
+
+def test_orca_path_refuses_implementation_in_the_codex_workspace(tmp_path, monkeypatch, capsys) -> None:
+    # tticom-codex holds the implementation role, but its workspace may not run it.
+    agentops = orca_checkout(tmp_path, "codex")
+    with pytest.raises(DispatchError, match="worktrees/codex may not run the implementation role"):
+        run_orca_main(monkeypatch, agentops, "tticom-codex", "implementation")
+    assert capsys.readouterr().out == ""
+
+
+def test_orca_path_refuses_login_in_another_identitys_workspace(tmp_path, monkeypatch, capsys) -> None:
+    agentops = orca_checkout(tmp_path, "gov")
+    with pytest.raises(DispatchError, match="may not operate in worktrees/gov"):
+        run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
+    assert capsys.readouterr().out == ""

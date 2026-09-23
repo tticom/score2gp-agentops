@@ -71,6 +71,29 @@ def _authenticated_login() -> str:
         raise DispatchError(f"GitHub identity check failed: {error}") from error
 
 
+# Roles each workspace slot may run. An explicit review request may run the
+# reviewer role from any slot; self-review is rejected downstream.
+SLOT_ROLES = {
+    "auto": frozenset({"implementation", "architect"}),
+    "gov": frozenset({"governance", "reviewer"}),
+    "codex": frozenset({"governance", "reviewer"}),
+}
+
+
+def check_workspace_role(
+    login: str, agentops: Path, role: str, explicit_review: bool = False
+) -> str:
+    """Require ``login`` to own the slot holding ``agentops`` and the slot to allow ``role``."""
+    try:
+        slot = verify_workspace_login(login, agentops)
+    except IdentityError as error:
+        raise DispatchError(f"unsupported Score2GP worker identity: {error}") from error
+    allowed = SLOT_ROLES[slot] | ({"reviewer"} if explicit_review else set())
+    if role not in allowed:
+        raise DispatchError(f"worktrees/{slot} may not run the {role} role")
+    return slot
+
+
 def _role_logins(roles: dict[str, Any], role: str) -> set[str]:
     policy = roles.get(role)
     if not isinstance(policy, dict):
@@ -179,6 +202,9 @@ def main() -> None:
             raise DispatchError(
                 f"expected GitHub login {args.github_login}, authenticated as {login}"
             )
+        check_workspace_role(
+            login, agentops, args.orca_role, explicit_review=args.review_pr is not None
+        )
         try:
             assignment = build_assignment(
                 authority,

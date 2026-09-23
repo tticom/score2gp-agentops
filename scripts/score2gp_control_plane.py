@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -36,6 +37,49 @@ class GateError(RuntimeError):
 def default_skills_repo(agentops: Path) -> Path:
     """The skills checkout is the sibling of the AgentOps checkout."""
     return agentops.resolve().parent / SKILLS_REPO_NAME
+
+
+def role_policy(authority: dict) -> dict[str, list[str]]:
+    """Derive the review publisher's role policy from the authority roles.
+
+    Maintainers are the supervisor logins; delegated mergers are the
+    merge-controller logins; every other login with any role never merges.
+    """
+    roles = authority.get("roles")
+    if not isinstance(roles, dict):
+        raise GateError("ROLE_POLICY_ROLES_MISSING")
+
+    def logins(role: str) -> set[str]:
+        policy = roles.get(role)
+        return set(policy.get("github_logins") or []) if isinstance(policy, dict) else set()
+
+    reviewers = logins("reviewer")
+    if not reviewers:
+        raise GateError("ROLE_POLICY_NO_REVIEWERS")
+    maintainers = logins("supervisor")
+    delegated = logins("merge_controller") - maintainers
+    everyone = set().union(*(logins(role) for role in roles))
+    return {
+        "reviewers": sorted(reviewers),
+        "never_merge": sorted(everyone - maintainers - delegated),
+        "maintainers": sorted(maintainers),
+        "delegated_mergers": sorted(delegated),
+    }
+
+
+def default_role_policy_path(agentops: Path) -> Path:
+    """The derived policy lives beside, never inside, the AgentOps checkout."""
+    return agentops.resolve().parent / "score2gp-role-policy.json"
+
+
+def write_role_policy(agentops: Path, destination: Path) -> Path:
+    authority = json.loads(
+        (agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
+    )
+    destination.write_text(
+        json.dumps(role_policy(authority), indent=2) + "\n", encoding="utf-8"
+    )
+    return destination
 
 
 def resolve_venv_python(repo: Path) -> Path:
@@ -207,6 +251,9 @@ def main() -> None:
     agentops = args.agentops.resolve()
     skills_repo = (args.skills_repo or default_skills_repo(agentops)).resolve()
     agentops_sha = sync_main(agentops, "agentops")
+    # Written before skills activation so review publication never depends on it.
+    policy_path = write_role_policy(agentops, default_role_policy_path(agentops))
+    print(f"ROLE_POLICY={policy_path}", flush=True)
     product_sha = sync_main(args.product.resolve(), "product")
     product_python = resolve_venv_python(args.product.resolve())
     pin = read_skills_pin(agentops)

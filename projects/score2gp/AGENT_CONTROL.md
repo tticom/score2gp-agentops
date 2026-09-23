@@ -115,6 +115,15 @@ virtualenv interpreter is `.venv/Scripts/python.exe` on Windows or
 exists and fails with `VENV_PYTHON_MISSING` when neither does. WSL remains
 usable but is never required.
 
+Activating the locked skills pin creates directory symlinks under
+`~/.agents/skills`. On Windows that needs Developer Mode or the "Create
+symbolic links" privilege. Without it, `score2gp_control_plane.py` stops with
+`SKILL_LINK_UNSUPPORTED`. It also stops with `SKILL_DESTINATION_NOT_SYMLINK`
+when a skill is installed as a plain directory. Both are fail-closed: enable
+symlinks or relink the skills, and never copy skills into place. The review
+role policy (`ROLE_POLICY=`) is written before this step, so review publication
+does not depend on it.
+
 ### Supported disposable-container identity
 
 The Docker AGY runtime runs its unprivileged process as `agent`/UID 10001

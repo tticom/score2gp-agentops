@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -6,13 +7,16 @@ from scripts.score2gp_control_plane import (
     REQUIRED_SKILLS,
     GateError,
     activate_skills_checkout,
+    default_role_policy_path,
     default_skills_repo,
     materialize_review_head,
     materialize_skills_checkout,
     read_required_skills,
     read_skills_pin,
     resolve_venv_python,
+    role_policy,
     validate_skills_checkout,
+    write_role_policy,
 )
 
 
@@ -238,3 +242,53 @@ def test_activation_without_symlink_support_fails_closed(tmp_path, monkeypatch) 
     monkeypatch.setattr(Path, "symlink_to", refuse)
     with pytest.raises(GateError, match="SKILL_LINK_UNSUPPORTED"):
         activate_skills_checkout(checkout, REQUIRED_SKILLS)
+
+
+REPO = Path(__file__).resolve().parents[1]
+
+
+def test_role_policy_is_derived_from_authority_roles() -> None:
+    authority = json.loads(
+        (REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
+    )
+    policy = role_policy(authority)
+    assert policy["reviewers"] == sorted(authority["roles"]["reviewer"]["github_logins"])
+    assert policy["maintainers"] == sorted(authority["roles"]["supervisor"]["github_logins"])
+    assert policy["delegated_mergers"] == sorted(authority["roles"]["merge_controller"]["github_logins"])
+    assert "tticom-automation" in policy["never_merge"]
+    assert "tticomgov-code" in policy["never_merge"]
+    assert not set(policy["never_merge"]) & set(policy["maintainers"] + policy["delegated_mergers"])
+
+
+def test_role_policy_keeps_mergers_out_of_never_merge() -> None:
+    authority = {"roles": {
+        "reviewer": {"github_logins": ["a", "b"]},
+        "supervisor": {"github_logins": ["owner"]},
+        "merge_controller": {"github_logins": ["bot", "owner"]},
+        "governance": {"github_logins": ["owner", "a"]},
+    }}
+    assert role_policy(authority) == {
+        "reviewers": ["a", "b"],
+        "never_merge": ["a", "b"],
+        "maintainers": ["owner"],
+        "delegated_mergers": ["bot"],
+    }
+
+
+@pytest.mark.parametrize("authority", [{}, {"roles": {"supervisor": {"github_logins": ["x"]}}}])
+def test_role_policy_without_reviewers_fails_closed(authority) -> None:
+    with pytest.raises(GateError, match="ROLE_POLICY_"):
+        role_policy(authority)
+
+
+def test_role_policy_is_written_beside_not_inside_the_checkout(tmp_path) -> None:
+    agentops = tmp_path / "worktrees" / "gov" / "score2gp-agentops"
+    (agentops / "projects/score2gp").mkdir(parents=True)
+    (agentops / "projects/score2gp/ORCHESTRATION_STATE.json").write_text(
+        (REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    destination = default_role_policy_path(agentops)
+    assert destination.parent == agentops.resolve().parent
+    written = json.loads(write_role_policy(agentops, destination).read_text(encoding="utf-8"))
+    assert set(written) == {"reviewers", "never_merge", "maintainers", "delegated_mergers"}

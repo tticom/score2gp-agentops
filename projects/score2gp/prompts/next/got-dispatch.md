@@ -25,6 +25,9 @@ Run `scripts/score2gp_control_plane.py` before dispatch. It must:
 - fetch AgentOps and product remotes;
 - switch clean canonical clones to `main` and fast-forward with `--ff-only`;
 - reread authority only after AgentOps local `main == origin/main`;
+- derive the review publisher's role policy from `ORCHESTRATION_STATE.json`
+  `roles` and print its path as `ROLE_POLICY=` (written beside the checkout,
+  never inside it, and before skills activation);
 - fetch `agentops-claude-skills` (the checkout beside `score2gp-agentops`)
   without switching it to latest main and verify the
   immutable checkout exactly equals the full commit in `SKILLS_LOCK.md`,
@@ -140,6 +143,7 @@ python "<review_publisher_path>" \
   --expected-head <reviewed full head SHA> \
   --level <basic|hard|devils-advocate> \
   --verdict <APPROVE|CHANGES_REQUESTED|CANNOT_VERIFY> \
+  --role-policy <ROLE_POLICY path> \
   --review-body-file <external-formal-review.md> \
   --summary-file <external-pr-summary.md> \
   [--inline-comments-file <external-inline-comments.json>] \
