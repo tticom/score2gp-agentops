@@ -33,6 +33,9 @@ Remove mandatory WSL dependency, establish Windows-native primary execution with
 - `scripts/verify_identity.py`
 - `scripts/verify_identity.ps1`
 - `tests/conftest.py`
+- `tests/test_agent_runtime.py`
+- `tests/test_agy_cycle.py`
+- `tests/test_codex_runtime.py`
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
 - `tests/test_score2gp_orca_control.py`

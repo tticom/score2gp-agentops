@@ -57,12 +57,15 @@ The implementation agent executing this task must satisfy these bounded objectiv
 - `scripts/verify_identity.py`
 - `scripts/verify_identity.ps1`
 - `tests/conftest.py` (uses `os.statvfs`, which prevents the suite from starting on native Windows)
+- `tests/test_agent_runtime.py` (runs `agent-runtime/scripts/*.sh` directly; explicit Windows skip markers only)
+- `tests/test_agy_cycle.py` (imports POSIX-only `termios`; explicit Windows skip markers only)
+- `tests/test_codex_runtime.py` (runs `agent-runtime/scripts/*.sh` directly; explicit Windows skip markers only)
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
 - `tests/test_score2gp_orca_control.py`
 - `tests/test_verify_identity.py`
 
-This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. Product-repository changes (`tticom/score2gp`) are out of scope for WIN-01 and require a separate task.
+This list mirrors `ORCHESTRATION_STATE.json`, which is authoritative. The three container-runtime test files belong to the optional WSL/Docker runtime: they may only gain explicit `pytest.mark.skipif(sys.platform == "win32", reason=...)` markers (or a module-level `pytest.importorskip` for `termios`) so the full suite can pass on native Windows. Do not port them, weaken their assertions, or skip tests from `tests/conftest.py`. Product-repository changes (`tticom/score2gp`) are out of scope for WIN-01 and require a separate task.
 
 *No file outside these allowed paths may be created, modified, or deleted.*
 
