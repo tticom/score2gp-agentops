@@ -41,6 +41,12 @@ and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
 3. **Portable Python and tool resolution.** Resolve `.venv/Scripts/python.exe` or `.venv/bin/python`, and fail cleanly when neither exists. Use `pathlib`; never build paths with `/` string concatenation or assume `python3` exists.
 4. **One Python identity gate.** `scripts/verify_identity.py` checks the GitHub login, global Git `user.name`/`user.email` and the workspace path on any OS. There is no bash or PowerShell identity script.
 5. **Test suite starts everywhere.** `tests/conftest.py` must not call `os.statvfs` where it doesn't exist, and must keep its noexec protection on Linux.
+6. **Skills source is `agentops-claude-skills`.** The maintainer has replaced `tticom/agy-skills` with `tticom/agentops-claude-skills`.
+   - `SKILLS_LOCK.md` pins a full commit on `agentops-claude-skills` `main`.
+   - `score2gp_control_plane.py` maps `REQUIRED_SKILLS` to that repository's flat `skills/<name>` layout, not agy-skills' `skills/engineering/...` layout, and materializes pins outside `agy-skills-pins/`.
+   - The `--skills-repo` defaults in `score2gp_dispatch.py` and both bootstrap scripts point to `../../agentops-claude-skills`.
+   - Update the `AGENT_CONTROL.md` and `WORKFLOW_SKILLS_PROFILE.md` sections that name `agy-skills` as the locked skills source.
+   - Keep every pin-mismatch, dirty-checkout and `REQUIRED_SKILL_MISSING` gate fail-closed.
 
 ---
 
@@ -48,12 +54,14 @@ and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
 
 - `projects/score2gp/AGENT_CONTROL.md`
 - `projects/score2gp/ORCA_WORKFLOW.md`
+- `projects/score2gp/SKILLS_LOCK.md`
 - `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
 - `projects/score2gp/prompts/next/address-current-pr-review.md`
 - `projects/score2gp/prompts/next/got-dispatch.md`
 - `CLAUDE.md`
 - `.agents/agents/project-director/agent.json`
 - `scripts/link_session.py`
+- `scripts/score2gp_control_plane.py`
 - `scripts/score2gp_dispatch.py`
 - `scripts/score2gp_go_bootstrap.py`
 - `scripts/score2gp_got_bootstrap.py`
@@ -62,6 +70,7 @@ and the shell scripts is `WIN-02`; the product repository is `WIN-03`.
 - `tests/conftest.py`
 - `tests/test_dispatch_entrypoint_contract.py` (asserts `CLAUDE.md` wording)
 - `tests/test_governance_audit.py` (asserts `AGENT_CONTROL.md` wording)
+- `tests/test_score2gp_control_plane.py`
 - `tests/test_score2gp_dispatch.py`
 - `tests/test_score2gp_orchestrator.py`
 - `tests/test_score2gp_orca_control.py`
@@ -90,8 +99,13 @@ handoffs, earlier decisions) are not rewritten. Product-repository changes are
 3. Python/virtualenv resolution is portable and fails cleanly when no interpreter is found.
 4. `scripts/verify_identity.py` passes on native Windows and Linux, with tests.
 5. `tests/conftest.py` starts on native Windows and still redirects temp files on a Linux noexec mount.
-6. The governance audit and the targeted tests pass on native Windows and in Linux CI. The full `python -m pytest` passes in Linux CI. The full suite on native Windows is `WIN-02`'s acceptance, because it depends on removing the Docker runtime tests.
-7. Zero changes to product code.
+6. The skills source is `agentops-claude-skills` as in §2.6. Tests cover:
+   - a valid pin activating the required skills;
+   - a pin not on `main` (refused);
+   - a dirty pin checkout (refused);
+   - a missing required skill (`REQUIRED_SKILL_MISSING`).
+7. The governance audit and the targeted tests pass on native Windows and in Linux CI. The full `python -m pytest` passes in Linux CI. The full suite on native Windows is `WIN-02`'s acceptance, because it depends on removing the Docker runtime tests.
+8. Zero changes to product code.
 
 ---
 
@@ -119,7 +133,7 @@ Stop without writing if:
 
 ```text
 python scripts/score2gp_governance_audit.py
-python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_verify_identity.py tests/test_dispatch_entrypoint_contract.py tests/test_governance_audit.py
+python -m pytest tests/test_score2gp_dispatch.py tests/test_score2gp_orchestrator.py tests/test_score2gp_orca_control.py tests/test_verify_identity.py tests/test_dispatch_entrypoint_contract.py tests/test_governance_audit.py tests/test_score2gp_control_plane.py
 python -m pytest        # must pass in Linux CI
 git diff --check
 ```
