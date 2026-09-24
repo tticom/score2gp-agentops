@@ -42,11 +42,10 @@
 - Action: `tticom-automation` implements L3-01 on `feat/l3-01-paired-staff-barline-acceptance`
   in `tticom/score2gp`. A non-author reviewer using `devils-advocate-review` then publishes an
   exact-head APPROVE or REQUEST_CHANGES.
-- Merge after that APPROVE: the maintainer `tticom` merges, or `tticom-codex` or `tticomgov-code`
-  merges under the maintainer's standing 2026-09-24 decision recorded in the report.
-  - Until WIN-04 aligns `roles.merge_controller`, the machine role gate
-    (`scripts/score2gp_control_plane.py::role_policy`) still classes both as never-merge and refuses
-    their merges.
-  - An agent merge therefore rests on the maintainer's recorded decision, not on that gate. The
-    agent must cite the report and the exact reviewed head when it merges.
+- Merge after that APPROVE: the maintainer `tticom` merges.
+  - `roles.merge_controller` is empty, so `scripts/score2gp_control_plane.py::role_policy` classes
+    `tticom-codex` and `tticomgov-code` as never-merge. Neither agent merges until a separate
+    governance change adds them to `merge_controller` and that change is merged.
+  - That change follows WIN-04, which makes `test_role_policy_is_derived_from_authority_roles`
+    compatible with it.
 - Stop condition: any L3-01 stop condition in its prompt; the governance audit failing on `main`.
