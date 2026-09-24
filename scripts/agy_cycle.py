@@ -11,8 +11,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import pty
-import select
 import shlex
 import subprocess
 import sys
@@ -509,10 +507,23 @@ def prompt(root: Path, cycle_id: str) -> str:
 
 
 def run_interactive(root: Path, cycle_id: str, agy_bin: str) -> int:
-    """Run AGY in a real PTY and inject exactly the generated task prompt."""
+    """Run AGY in a real PTY and inject exactly the generated task prompt.
+
+    A PTY exists only on POSIX, so ``pty`` and ``select`` are imported here to
+    keep the module importable on every OS. Elsewhere, print the prompt with
+    ``prompt`` and start the agent yourself.
+    """
     command = shlex.split(agy_bin)
     if not command:
         raise CycleError("AGY command must not be empty")
+    if os.name != "posix":
+        raise CycleError(
+            "interactive run needs a POSIX terminal; on this OS run "
+            "`python scripts/agy_cycle.py prompt CYCLE-ID` and start the agent yourself"
+        )
+    import pty  # pylint: disable=import-outside-toplevel
+    import select  # pylint: disable=import-outside-toplevel
+
     task_prompt = prompt(root, cycle_id).encode("utf-8") + b"\n"
     pid, master = pty.fork()
     if pid == 0:  # pragma: no cover - child process is the external CLI
@@ -544,7 +555,7 @@ def run_interactive(root: Path, cycle_id: str, agy_bin: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="agy-cycle")
+    parser = argparse.ArgumentParser(prog="agy_cycle.py")
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--owner", default=os.environ.get("AGY_CYCLE_OWNER", "local"))
     sub = parser.add_subparsers(dest="command", required=True)

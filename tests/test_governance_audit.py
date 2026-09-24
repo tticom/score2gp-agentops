@@ -465,15 +465,16 @@ def test_active_governance_uses_identity_isolated_workspaces() -> None:
     assert "git config --local --get user." not in automation_skill
 
 
-def test_operational_scripts_default_to_current_linux_home() -> None:
-    for relative_path in [
-        "scripts/status.sh",
-        "scripts/capture-pytest.sh",
-        "scripts/capture-developer-diff.sh",
-    ]:
-        content = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
-        assert "${HOME}/work/score2gp-workspace" in content
-        assert "/home/tticom/work/score2gp-workspace" not in content
+def test_repository_tooling_is_python_only() -> None:
+    shell_scripts = sorted(
+        path.relative_to(PROJECT_ROOT).as_posix()
+        for pattern in ("*.sh", "*.ps1")
+        for path in PROJECT_ROOT.rglob(pattern)
+        if not {".git", ".venv", "work"} & set(path.relative_to(PROJECT_ROOT).parts)
+    )
+    assert shell_scripts == []
+    for retired in ("agent-runtime", "legacy", "scripts/agy-cycle"):
+        assert not (PROJECT_ROOT / retired).exists()
 
 
 def test_next_uses_permanent_role_dispatchers() -> None:

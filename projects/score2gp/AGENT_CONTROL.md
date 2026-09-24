@@ -124,19 +124,6 @@ symlinks or relink the skills, and never copy skills into place. The review
 role policy (`ROLE_POLICY=`) is written before this step, so review publication
 does not depend on it.
 
-### Supported disposable-container identity
-
-The Docker AGY runtime runs its unprivileged process as `agent`/UID 10001
-rather than as a worker identity. It is being retired by `WIN-02`. The
-dispatcher no longer routes on `SCORE2GP_AGENT_ROLE` or on the OS username; a
-container must satisfy the same GitHub-login and workspace gate as any other
-worker, or it fails closed.
-
-The launcher also mounts the source repository's Git administrative directory
-at the absolute path recorded by the disposable worktree's `.git` pointer.
-Without that mount, Git sees a host-only `gitdir` path and the task worktree is
-invalid inside the container.
-
 ## Workspace Edit Coherency Gate
 
 An IDE "Edited" event is not evidence that the checkout under test changed.

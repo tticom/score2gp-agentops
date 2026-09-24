@@ -68,7 +68,8 @@ reviewable history without committing raw logs or private artifacts.
 ### AGY-008 — Compatibility retirement
 
 After two successful real product cycles, retire duplicated `go`/`got`, active
-task reducers, and obsolete Docker execution paths from the normal process.
+task reducers, and obsolete container execution paths from the normal process.
+The container runtime itself was removed by WIN-02.
 
 ## Exit criteria for the roadmap
 
