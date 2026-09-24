@@ -17,13 +17,23 @@
 ## Outcome and scope
 
 - Swapped `task` and `next_task_proposal`: WIN-04 is `PROMOTED` and L3-01 is `PROPOSED`.
-- WIN-04's scope is frozen at promotion with one addition to the #685 proposal:
-  - `tests/test_score2gp_control_plane.py` is added to `allowed_paths`.
-  - A matching acceptance criterion is added: `test_role_policy_is_derived_from_authority_roles`
-    asserts only that `tticom-automation` never merges and that delegated mergers equal the
-    `roles.merge_controller` logins, so it passes whether `merge_controller` is empty or holds
-    [`tticom-codex`, `tticomgov-code`].
-  - The targeted validation command includes that file.
+- WIN-04's scope is frozen at promotion with these additions to the #685 proposal:
+  - `tests/test_score2gp_control_plane.py`, with a matching acceptance criterion:
+    `test_role_policy_is_derived_from_authority_roles` asserts only that `tticom-automation` never
+    merges and that delegated mergers equal the `roles.merge_controller` logins, so it passes
+    whether `merge_controller` is empty or holds [`tticom-codex`, `tticomgov-code`].
+  - Every other live statement of the merge rule, found by a repository search on 2026-09-24:
+    - `.agents/skills/score2gp-project-director/SKILL.md`
+    - `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
+    - `projects/score2gp/prompts/next/got-dispatch.md`
+    - `skills/score2gp-pr-hard-review.md`
+    - `skills/score2gp-task-orchestration.md`
+    - `tests/test_dispatch_entrypoint_contract.py`, whose
+      `test_reviewer_and_merge_role_firewalls_are_explicit` asserts the old wording.
+  - The merge-rule acceptance criterion now covers all of these. Leaving any of them out would
+    leave contradictory rules or force an out-of-scope edit.
+  - The targeted validation command includes both test files.
+  - Historical programmes, prompts and records are not in scope.
 - `merge_policy` is unchanged here; #686 already set it to 1. `roles.merge_controller` is unchanged (empty).
 - Changed paths: `ORCHESTRATION_STATE.json`, `ACTIVE_TASK.md`, this handoff.
 

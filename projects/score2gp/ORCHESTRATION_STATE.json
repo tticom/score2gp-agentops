@@ -21,12 +21,18 @@
       "projects/score2gp/AGENT_CONTROL.md",
       "tests/test_governance_audit.py",
       "tests/test_score2gp_dispatch.py",
-      "tests/test_score2gp_control_plane.py"
+      "tests/test_score2gp_control_plane.py",
+      ".agents/skills/score2gp-project-director/SKILL.md",
+      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
+      "projects/score2gp/prompts/next/got-dispatch.md",
+      "skills/score2gp-pr-hard-review.md",
+      "skills/score2gp-task-orchestration.md",
+      "tests/test_dispatch_entrypoint_contract.py"
     ],
     "acceptance": [
       "docs/agy-cycle.md documents only commands that exist (python scripts/agy_cycle.py) or is deleted if agy_cycle.py is unused.",
       "go-dispatch.md names agentops-claude-skills, consistent with SKILLS_LOCK.md, as the skills source.",
-      "AGENTS.md, CLAUDE.md and AGENT_CONTROL.md state that tticom-codex and tticomgov-code may merge after a non-author exact-head APPROVE and that tticom-automation never merges.",
+      "Every live statement of the merge rule (AGENTS.md, CLAUDE.md, AGENT_CONTROL.md, WORKFLOW_SKILLS_PROFILE.md, prompts/next/got-dispatch.md, skills/score2gp-pr-hard-review.md, skills/score2gp-task-orchestration.md and .agents/skills/score2gp-project-director/SKILL.md) states that tticom-automation never merges and that tticom-codex and tticomgov-code may merge only in a separate operation, while listed in roles.merge_controller, after a non-author exact-head APPROVE; tests/test_dispatch_entrypoint_contract.py asserts that rule instead of the old per-PR instruction wording.",
       "test_repository_tooling_is_python_only checks tracked files, with a negative control that a tracked .sh file still fails.",
       "The test_orca_path_* tests use a self-contained fixture authority and pass when the live task is COMPLETED.",
       "tests/test_score2gp_control_plane.py::test_role_policy_is_derived_from_authority_roles asserts only that tticom-automation is never-merge and that delegated mergers equal roles.merge_controller logins, so it passes both with merge_controller empty and with [tticom-codex, tticomgov-code].",
@@ -34,7 +40,7 @@
     ],
     "validation_commands": [
       "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py tests/test_score2gp_control_plane.py",
+      "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py",
       "python -m pytest",
       "git diff --check"
     ],
