@@ -77,20 +77,32 @@
       "projects/score2gp/templates/AGENT_TASK_TEMPLATE.md",
       "skills/score2gp-pr-hard-review.md",
       "skills/score2gp-task-orchestration.md",
-      "skills/score2gp-project-director.md"
+      "skills/score2gp-project-director.md",
+      "README.md",
+      "docs/agy-cycle-v2-plan.md",
+      "projects/score2gp/SIMPLE_AGENT_PROCESS.md",
+      "scripts/score2gp_orchestrator.py",
+      "scripts/score2gp_publish_review.py",
+      "scripts/score2gp_governance_audit.py",
+      "tests/test_score2gp_orchestrator.py",
+      "tests/test_governance_audit.py",
+      "tests/test_score2gp_publish_review.py",
+      ".github/workflows/governance-control-plane.yml"
     ],
     "acceptance": [
-      "A merge executor merges only on verify_merge_gate ALLOW computed from fresh live state, using gh pr merge --match-head-commit with the reviewed head, never --admin, and reads the merge back into a receipt; any DENY, error, head change or bypass capability fails closed.",
-      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, and bypass capability.",
+      "A merge executor merges only on a verify_merge_gate ALLOW computed from fresh live state: it posts the score2gp/merge-gate commit status on the exact reviewed head and runs gh pr merge --match-head-commit with that head, never --admin, and records a read-back receipt; any DENY, error, head change or bypass capability fails closed.",
+      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, bypass capability, and a ruleset that does not require score2gp/merge-gate.",
+      "Exclusive path: the executor denies unless the live main ruleset requires the score2gp/merge-gate status (preventive control), and the governance audit fails when a PR merged by a merge_controller login lacks a matching executor receipt for the merged head (detective control); each control has a negative test shown to fail with the control disabled.",
       "Required checks are evaluated per repository (tticom/score2gp: test; tticom/score2gp-agentops: deterministic-control-plane).",
       "The path for non-task governance PRs is explicit and tested and cannot bypass the approval, check or thread requirements.",
-      "role_policy classes tticom-automation as never-merge; tticom-codex and tticomgov-code are delegated mergers only after governance fills roles.merge_controller, which it does when promoting or reconciling this task, not in the implementation PR.",
-      "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63 and historical records are unchanged.",
+      "Human-merge states in code (AWAIT_HUMAN_MERGE, human_merge, READY_FOR_HUMAN_MERGE) are renamed or redefined consistently across every producer, consumer, doc and test.",
+      "role_policy is ready for roles.merge_controller to hold tticom-codex and tticomgov-code; governance fills it when promoting or reconciling GOV-01, after the maintainer confirms the score2gp/merge-gate ruleset requirement, not in the implementation PR.",
+      "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63, other tasks' prompts, plans and historical records are unchanged.",
       "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
     ],
     "validation_commands": [
       "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py",
+      "python -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py tests/test_score2gp_publish_review.py",
       "python -m pytest",
       "git diff --check"
     ],
