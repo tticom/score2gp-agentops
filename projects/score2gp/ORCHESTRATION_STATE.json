@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 39,
+  "authority_revision": 40,
   "task": {
     "id": "WIN-03",
     "title": "Product Repository OS-Agnostic Tooling",
     "objective": "Remove WSL references and POSIX-only virtualenv assumptions from the product repository's tooling and agent guidance.",
-    "status": "PROMOTED",
+    "status": "COMPLETED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/win-03-product-os-agnostic-tooling",
@@ -40,7 +40,10 @@
       "unauthorized_cross_repository_writes"
     ],
     "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
+    "delivery_action": "pull_request",
+    "head_sha": "9e2e2a1b9aea38128e2f53229ebf6a9bb2968c31",
+    "merge_commit": "71535f381584615a96667d026ef5a579c4c356d5",
+    "reconciled": true
   },
   "next_task_proposal": {
     "id": "L3-01",
@@ -990,6 +993,50 @@
       "reconciled": true,
       "reconciled_at": "2026-09-24T09:11:27.438411+00:00",
       "governance_note": "Merged by tticom while PROPOSED (never promoted) and over a tticomgov-code CHANGES_REQUESTED / CANNOT_VERIFY review; see projects/score2gp/reports/2026-09-24-win-01-win-02-out-of-policy-merges.md."
+    },
+    {
+      "id": "WIN-03",
+      "title": "Product Repository OS-Agnostic Tooling",
+      "objective": "Remove WSL references and POSIX-only virtualenv assumptions from the product repository's tooling and agent guidance.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/win-03-product-os-agnostic-tooling",
+      "pull_request": 463,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/win-03-product-os-agnostic-tooling.md",
+      "allowed_paths": [
+        "scripts/corpus_harness.py",
+        "tests/test_corpus_harness.py",
+        "Makefile",
+        "CLAUDE.md"
+      ],
+      "acceptance": [
+        "scripts/corpus_harness.py resolves the score2gp command from .venv/Scripts or .venv/bin, then PATH, with no WSL wording.",
+        "Makefile resolves the virtualenv Python on Windows and Linux, or documents python -m equivalents for every target.",
+        "CLAUDE.md commands work unchanged on Windows and Linux.",
+        "tests/test_corpus_harness.py covers both virtualenv layouts.",
+        "Zero changes to src/score2gp/."
+      ],
+      "validation_commands": [
+        "python -m pytest tests/test_corpus_harness.py",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "WIN-01"
+      ],
+      "stop_conditions": [
+        "product_recognition_semantics_modified",
+        "private_fixture_leakage",
+        "unauthorized_cross_repository_writes"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "9e2e2a1b9aea38128e2f53229ebf6a9bb2968c31",
+      "merge_commit": "71535f381584615a96667d026ef5a579c4c356d5",
+      "reconciled": true,
+      "reconciled_at": "2026-09-24T10:40:37.413518+00:00"
     }
   ]
 }
