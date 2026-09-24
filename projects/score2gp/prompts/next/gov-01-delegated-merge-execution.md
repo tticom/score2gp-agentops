@@ -1,6 +1,6 @@
 # GOV-01 — Delegated merge execution through the merge gate (audited)
 
-- **Status**: PROPOSED. Not executable until governance promotes it.
+- **Status**: PROMOTED (the `task` in `ORCHESTRATION_STATE.json`, authority revision 44). Executable by the implementation role.
 - **Repository**: `tticom/score2gp-agentops`
 - **Branch**: `feat/gov-01-delegated-merge-execution`
 - **Owner Role**: `implementation`
