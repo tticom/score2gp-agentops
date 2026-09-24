@@ -217,24 +217,67 @@ def test_explicit_review_does_not_widen_to_implementation(tmp_path) -> None:
         )
 
 
-def live_authority() -> dict:
-    return json.loads(
-        (REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
-    )
-
-
-def orca_checkout(tmp_path: Path, slot: str, authority: dict | None = None) -> Path:
-    # A self-contained authority whose active task is a promoted implementation
-    # task, so these tests do not depend on the live task's current status.
-    fixture = copy.deepcopy(authority if authority is not None else live_authority())
-    fixture["task"] = {
-        **fixture["task"],
+# A fixed, minimal authority for the orca_path routing tests. It never reads the
+# repository's live ORCHESTRATION_STATE.json, so live task, role, incident or
+# policy changes cannot make these assertions pass or fail.
+ORCA_FIXTURE_AUTHORITY = {
+    "schema_version": 2,
+    "project": "score2gp",
+    "authority_revision": 1,
+    "task": {
         "id": "ORCA-FIXTURE",
+        "title": "Orca routing fixture task",
+        "objective": "Exercise orca_path workspace and role routing.",
         "status": "PROMOTED",
-        "owner_role": "implementation",
+        "repository": "tticom/score2gp",
+        "base_branch": "main",
         "branch": "feat/orca-fixture",
         "pull_request": None,
-    }
+        "owner_role": "implementation",
+        "prompt": "projects/score2gp/prompts/next/orca-fixture.md",
+        "allowed_paths": ["src/fixture.py"],
+        "acceptance": ["Routing is exercised."],
+        "validation_commands": ["python -m pytest"],
+        "dependencies": [],
+        "stop_conditions": [],
+        "reviewer_role": "reviewer",
+        "delivery_action": "pull_request",
+    },
+    "next_task_proposal": None,
+    "queued_task_proposals": [],
+    "incidents": [],
+    "roles": {
+        # tticom-codex holds the implementation role, but its workspace may not run it.
+        "implementation": {
+            "github_logins": ["tticom-automation", "tticom-codex"],
+            "allowed_actions": ["edit", "test", "commit", "push_task_branch", "publish_handback"],
+            "forbidden_actions": ["review", "approve", "merge", "governance_edit"],
+        },
+        "reviewer": {
+            "github_logins": ["tticom-codex", "tticomgov-code", "tticom-automation"],
+            "allowed_actions": ["inspect", "test", "publish_review"],
+        },
+        "governance": {
+            "github_logins": ["tticomgov-code", "tticom"],
+            "allowed_actions": ["governance_edit", "publish_governance_review", "promote_task"],
+        },
+        "supervisor": {"github_logins": ["tticom"], "allowed_actions": ["dispatch"]},
+        "merge_controller": {"github_logins": [], "allowed_actions": ["verify_merge_gate"]},
+    },
+    "merge_policy": {
+        "required_checks": ["test"],
+        "minimum_approvals": 1,
+        "require_governance_go": True,
+        "require_reviewed_head": True,
+        "require_resolved_threads": True,
+        "allow_admin_bypass": False,
+    },
+    "completed_tasks": [],
+}
+
+
+def orca_checkout(tmp_path: Path, slot: str) -> Path:
+    fixture = copy.deepcopy(ORCA_FIXTURE_AUTHORITY)
     agentops = checkout(tmp_path, slot)
     project = agentops / "projects/score2gp"
     project.mkdir(parents=True)
@@ -263,11 +306,21 @@ def test_orca_path_assigns_implementation_in_the_author_workspace(tmp_path, monk
 
 
 def test_orca_path_does_not_depend_on_the_live_task_status(tmp_path, monkeypatch, capsys) -> None:
-    completed = live_authority()
-    completed["task"]["status"] = "COMPLETED"
-    agentops = orca_checkout(tmp_path, "auto", completed)
+    # Perturb the external live authority: point REPO at a copy whose task is
+    # COMPLETED (the state that broke CI on #684). Routing must not change.
+    live = json.loads((REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8"))
+    live["task"]["status"] = "COMPLETED"
+    fake_repo = tmp_path / "live-repo"
+    (fake_repo / "projects/score2gp").mkdir(parents=True)
+    (fake_repo / "projects/score2gp/ORCHESTRATION_STATE.json").write_text(json.dumps(live), encoding="utf-8")
+    monkeypatch.setattr(sys.modules[__name__], "REPO", fake_repo)
+
+    agentops = orca_checkout(tmp_path, "auto")
+    written = json.loads((agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8"))
+    assert written == ORCA_FIXTURE_AUTHORITY
     run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
     assignment = json.loads(capsys.readouterr().out)
+    assert assignment["worker"]["github_login"] == "tticom-automation"
     assert assignment["worker"]["role"] == "implementation"
 
 
