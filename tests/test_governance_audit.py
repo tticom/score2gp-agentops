@@ -465,16 +465,49 @@ def test_active_governance_uses_identity_isolated_workspaces() -> None:
     assert "git config --local --get user." not in automation_skill
 
 
-def test_repository_tooling_is_python_only() -> None:
-    shell_scripts = sorted(
-        path.relative_to(PROJECT_ROOT).as_posix()
-        for pattern in ("*.sh", "*.ps1")
-        for path in PROJECT_ROOT.rglob(pattern)
-        if not {".git", ".venv", "work"} & set(path.relative_to(PROJECT_ROOT).parts)
+RETIRED_PATHS = ("agent-runtime", "legacy", "scripts/agy-cycle")
+
+
+def _tracked_files() -> list[str]:
+    output = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=PROJECT_ROOT, capture_output=True, check=True
+    ).stdout.decode("utf-8")
+    return [path for path in output.split("\0") if path]
+
+
+def _non_python_tooling(tracked: list[str]) -> list[str]:
+    return sorted(
+        path
+        for path in tracked
+        if path.endswith((".sh", ".ps1"))
+        or any(path == retired or path.startswith(retired + "/") for retired in RETIRED_PATHS)
     )
-    assert shell_scripts == []
-    for retired in ("agent-runtime", "legacy", "scripts/agy-cycle"):
-        assert not (PROJECT_ROOT / retired).exists()
+
+
+def test_repository_tooling_is_python_only() -> None:
+    # Tracked files only: untracked local leftovers (e.g. an old agent-runtime/
+    # directory in a long-lived worktree) are not repository content.
+    assert _non_python_tooling(_tracked_files()) == []
+
+
+def test_python_only_check_flags_tracked_shell_and_retired_paths() -> None:
+    tracked = [
+        "scripts/tool.py",
+        "scripts/run.sh",
+        "tools/setup.ps1",
+        "agent-runtime/cycle.py",
+        "legacy",
+        "scripts/agy-cycle",
+        "scripts/agy_cycle.py",
+        "docs/agent-runtime-notes.md",
+    ]
+    assert _non_python_tooling(tracked) == [
+        "agent-runtime/cycle.py",
+        "legacy",
+        "scripts/agy-cycle",
+        "scripts/run.sh",
+        "tools/setup.ps1",
+    ]
 
 
 def test_next_uses_permanent_role_dispatchers() -> None:

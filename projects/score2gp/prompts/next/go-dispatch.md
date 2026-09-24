@@ -19,8 +19,9 @@ not the user-facing command because it bypasses the role-selection boundary.
 Before task dispatch, it must also run the shared control-plane gate against
 the skills source repository. This gate fetches and fast-forwards only clean
 canonical `main` branches, materializes the exact immutable skills pin, and
-atomically activates the required skill links. It must never silently update
-to `agy-skills/main`.
+atomically activates the required skill links. The skills source is
+`tticom/agentops-claude-skills`, pinned in `projects/score2gp/SKILLS_LOCK.md`;
+it must never silently update to that repository's `main`.
 
 The helper enforces the required state transitions:
 1. **Identity & Cleanliness**: Proves `tticom-automation` identity and verifies both repositories are clean before switching. Fails closed on dirty or unexpected state.
