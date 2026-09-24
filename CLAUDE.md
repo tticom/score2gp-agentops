@@ -12,30 +12,30 @@ The commands below are compatibility entrypoints for direct non-Orca runs.
 For any request to continue, advance, run the next command, `go`, `got`, or
 `next`, the first task action must be:
 
-```bash
-python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
+```text
+python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json
 ```
 
 For an explicit PR review request, route the exact repository and number:
 
-```bash
-python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json \
-  --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
+```text
+python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json   --review-repo <owner/repo> --review-pr <number> [--review-level <level>]
 ```
 
 Never substitute the active-task PR when the user named another PR.
 
-Run it from the `score2gp-agentops` repository root. Recognised host identities
-retain their routes: `tticom-automation` / `tticom-orca` select author `go`;
-`tticom-gov` / `tticom-codex` / `tticom` select governance/reviewer `got`.
-Container user `agent` still requires `SCORE2GP_AGENT_ROLE=automation|gov`.
-For other host usernames (for example `niall` in a native Windows session),
-direct compatibility dispatch queries `gh api user --jq .login` using the
-process's GitHub credentials, including launcher-isolated `GH_TOKEN`:
-`tticom-automation` selects author `go`, and `tticom-gov` / `tticom-codex`
-select governance/reviewer `got`. Other GitHub logins and authentication
-failures fail closed. Do not spoof OS username variables or use arbitrary
-environment role values to select privileges.
+Run it from the `score2gp-agentops` checkout with the platform's native
+`python` (Windows or Linux; never assume `python3`). The role comes from the
+authenticated GitHub login, not the host OS identity: the router queries
+`gh api user --jq .login` using the process's GitHub credentials, including
+launcher-isolated `GH_TOKEN`, and requires that login to own the workspace
+holding the checkout and to match its Git author and committer.
+`worktrees/auto` belongs to `tticom-automation`, which selects author `go`;
+`worktrees/gov` belongs to `tticomgov-code` and `worktrees/codex` to
+`tticom-codex`, which select governance/reviewer `got`. Unknown logins, a login
+in another identity's workspace, and authentication failures fail closed. Do
+not spoof OS username variables or use environment role values such as
+`SCORE2GP_AGENT_ROLE`; they never select privileges.
 Explicit PR review requests always select the reviewer bootstrap; downstream
 identity validation, self-review rejection, and exact-head checks still apply.
 Never invoke the

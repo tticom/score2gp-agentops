@@ -3,17 +3,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 COMMAND = (
-    "python3 scripts/score2gp_dispatch.py "
+    "python scripts/score2gp_dispatch.py "
     "--product ../score2gp --agentops . --json"
 )
 GOT_COMMAND = COMMAND
+# The project-director skill is outside WIN-01's scope and still names python3.
+PROJECT_DIRECTOR_COMMAND = "python3 " + COMMAND.removeprefix("python ")
 
 
 def test_agent_clients_load_executable_go_entrypoint() -> None:
     for name in ("CLAUDE.md", "AGENTS.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
         assert COMMAND in text
-        assert "tticom-gov" in text
+        assert "python3 scripts/" not in text
+        assert "tticomgov-code" in text
         assert "ADDRESS_CURRENT_PR_REVIEW" in text
         assert "MERGED_AWAITING_GOVERNANCE_PROMOTION" in text
         assert "next_action" in text
@@ -28,6 +31,8 @@ def test_agent_clients_load_executable_got_entrypoint() -> None:
         assert "gh api user --jq .login" in flat
         assert "authentication failures fail closed" in flat
         assert "Do not spoof OS username variables" in flat
+        assert "never from the host OS identity" in flat or "not the host OS identity" in flat
+        assert "worktrees/codex" in flat
         assert "never resume" in text.lower()
         assert "REVIEW_CURRENT_HEAD" in text
         assert "PROMOTE_MERGED_TASK" in text
@@ -39,12 +44,12 @@ def test_agy_project_skill_forbids_manual_state_reconstruction() -> None:
     text = (
         ROOT / ".agents/skills/score2gp-project-director/SKILL.md"
     ).read_text(encoding="utf-8")
-    assert COMMAND in text
+    assert PROJECT_DIRECTOR_COMMAND in text
     assert "Do not manually query GitHub" in text
     assert "A status-only response is a dispatcher failure" in " ".join(text.split())
     assert "MERGED_AWAITING_GOVERNANCE_PROMOTION" in text
     assert "Only `EXECUTE_PROMPT`, `ADDRESS_CURRENT_PR_REVIEW`, and `PUBLISH_AGY_HANDBACK` authorize work" in text
-    assert GOT_COMMAND in text
+    assert PROJECT_DIRECTOR_COMMAND in text
     assert "`REVIEW_CURRENT_HEAD`" in text
     assert "`PROMOTE_MERGED_TASK`" in text
     assert "`PROMOTE_RESOLVED_TASK`" in text
@@ -71,7 +76,8 @@ def test_got_dispatch_uses_pinned_tiered_skills_and_shared_publisher() -> None:
     assert "real review` means `devils-advocate-review" in text
     assert "synthetic/data-free evidence" in text
     assert "mandatory summary comment" in text
-    assert 'python3 "<review_publisher_path>"' in text
+    assert 'python "<review_publisher_path>"' in text
+    assert "python3" not in text
     assert "$HOME/.agents/skills/code-review/scripts/publish_review.py" not in text
     assert "scripts/score2gp_publish_review.py" not in text
 
@@ -99,7 +105,8 @@ def test_reviewer_and_merge_role_firewalls_are_explicit() -> None:
 
 def test_skills_lock_pins_merged_tiered_review_revision() -> None:
     lock = (ROOT / "projects/score2gp/SKILLS_LOCK.md").read_text(encoding="utf-8")
-    assert "439404f7342f4e324147efb6b0276f698fbf2bdb" in lock
-    assert "https://github.com/tticom/agy-skills/pull/14" in lock
+    assert "Repository: `https://github.com/tticom/agentops-claude-skills`" in lock
+    assert "`4fc96725f20910b57717c50bd06dc0cc0fba7ec4`" in lock
+    assert "b90d4a9f43034b3196fa6b915fd95c8c89ecb11a" not in lock
     assert "`hard-review`" in lock
     assert "`devils-advocate-review`" in lock

@@ -2,16 +2,15 @@
 
 ## Source
 
-- Repository: `https://github.com/tticom/agy-skills`
+- Repository: `https://github.com/tticom/agentops-claude-skills`
 - Required source commit:
-  `439404f7342f4e324147efb6b0276f698fbf2bdb`
-- Introduction PR: `https://github.com/tticom/agy-skills/pull/2`
-- Review hardening PRs:
-  `https://github.com/tticom/agy-skills/pull/4`,
-  `https://github.com/tticom/agy-skills/pull/5`, and
-  `https://github.com/tticom/agy-skills/pull/6`
-- Reviewer-role firewall and tiered review PR:
-  `https://github.com/tticom/agy-skills/pull/14`
+  `4fc96725f20910b57717c50bd06dc0cc0fba7ec4`
+- Includes: `https://github.com/tticom/agentops-claude-skills/pull/4` (review
+  publisher reads inline comments back from the pull request comment list).
+- Replaces: `https://github.com/tticom/agy-skills` (last pinned at
+  `439404f7342f4e324147efb6b0276f698fbf2bdb`), by maintainer direction on
+  2026-09-23, adopted under `WIN-01`.
+- Layout: each skill lives at `skills/<name>/SKILL.md`.
 
 Required skills:
 
@@ -25,12 +24,13 @@ Required skills:
 ## Activation gate
 
 This lock becomes active only after the required source commit is contained in
-the merged history of `agy-skills/main`. Before then, this AgentOps PR may be
+the merged history of `agentops-claude-skills/main`. Before then, this AgentOps PR may be
 reviewed but must not be merged or used to authorise product work.
 
 For each agent identity:
 
-1. use that identity's own `agy-skills` clone;
+1. use that identity's own `agentops-claude-skills` clone, the sibling of its
+   `score2gp-agentops` checkout in `worktrees/<auto|gov|codex>`;
 2. fetch the repository;
 3. check out the required source commit in a detached, read-only worktree or
    a local tag that resolves exactly to it;
@@ -48,7 +48,7 @@ Score2GP implementation or review loop.
 
 Upgrade only between tasks:
 
-1. review and merge an `agy-skills` PR;
+1. review and merge an `agentops-claude-skills` PR;
 2. validate the new skills independently;
 3. update this lock in a separate AgentOps PR;
 4. activate it only after that AgentOps PR merges;

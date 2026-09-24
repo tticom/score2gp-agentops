@@ -16,11 +16,9 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 
 ### Agy author
 
-- OS user/home: `tticom-automation` / `/home/tticom-automation`
+- Workspace slot: `<workspace-root>/worktrees/auto`
 - GitHub and Git name: `tticom-automation`
 - Git email: `tticomautomation@gmail.com`
-- Workspace prefix:
-  `/home/tticom-automation/work/score2gp-workspace`
 - Branches: only the pattern authorised by the active prompt
 - May push the authorised branch and create/update its PR
 - May not self-approve, merge, auto-merge, bypass protection, force-push, or
@@ -28,10 +26,9 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 
 ### Governance worker
 
-- OS user/home: `tticom-gov` / `/home/tticom-gov`
+- Workspace slot: `<workspace-root>/worktrees/gov`
 - GitHub and Git name: `tticomgov-code`
 - Git email: `tticomgov@gmail.com`
-- Workspace prefix: `/home/tticom-gov/work/score2gp-workspace`
 - Uses separate clones and credential store
 - May publish independent review metadata or, in a separate authoring run,
   bounded governance PRs
@@ -39,10 +36,9 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 
 ### Independent Codex reviewer
 
-- OS user/home: `tticom-codex` / `/home/tticom-codex`
+- Workspace slot: `<workspace-root>/worktrees/codex`
 - GitHub and Git name: `tticom-codex` (and `tticom-automation` when authoring Architect decisions)
 - Git email: `tticom-codex@users.noreply.github.com`
-- Workspace prefix: `/home/tticom-codex/work/score2gp-workspace`
 - During review may publish only formal reviews, inline review comments, and
   the mandatory PR summary comment
 - May not modify the reviewed repository or author fixes in the review run
@@ -55,7 +51,9 @@ reviewer role may review any PR it did not author, including
 never be mixed in one run. An identity or role mismatch is a no-write stop.
 
 An identity mismatch is a no-write stop. Never switch accounts inside the
-other identity's workspace.
+other identity's workspace. `python scripts/verify_identity.py` proves the
+GitHub login, workspace slot, and Git author on any OS; the OS username is not
+part of the identity.
 
 ## Skill composition
 
@@ -110,15 +108,16 @@ may never weaken it. The phrases `real review`, `devil's advocate`, and
 Both `go` and `got` automatically fetch and fast-forward only clean canonical
 `main` branches with `--ff-only`. They never pull or merge an arbitrary task
 branch. Both verify the immutable `SKILLS_LOCK.md` commit from a pinned
-checkout; neither silently adopts `agy-skills/main`. When a newly merged lock
+checkout; neither silently adopts `agentops-claude-skills/main`. When a newly merged lock
 names a new commit, the gate fetches that exact object, creates its immutable
 pin worktree, and atomically repoints all six required skill symlinks.
-It never changes the mutable `agy-skills` source branch.
+It never changes the mutable `agentops-claude-skills` source branch. Pins are
+materialized under `agentops-claude-skills-pins/` beside the skills checkout.
 
 A PR that changes `SKILLS_LOCK.md` is the bootstrap boundary. Review it with the
 currently active control plane, but load its proposed review skill directly from
 an immutable checkout only after proving the proposed pin is contained in
-`agy-skills/origin/main`. Return `review_skills_mode=proposed-pin-isolated` and
+`agentops-claude-skills/origin/main`. Return `review_skills_mode=proposed-pin-isolated` and
 the exact `review_skill_path` and `review_publisher_path`. Both paths must
 resolve below the same immutable checkout. Do not activate that pin or repoint installed
 links until the AgentOps lock PR itself merges.
@@ -161,9 +160,9 @@ Passing tests or file creation alone never proves conversion correctness.
 
 ## Repository ownership
 
-### `agy-skills`
+### `agentops-claude-skills`
 
-Owns reusable execution, identity, Git, review, and handoff mechanics.
+Replaces `agy-skills` as the skills source. Owns reusable execution, identity, Git, review, and handoff mechanics.
 
 ### `score2gp-agentops`
 

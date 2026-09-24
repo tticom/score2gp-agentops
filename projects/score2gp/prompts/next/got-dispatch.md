@@ -9,14 +9,12 @@ Prove one complete, non-mixed reviewer profile. Any identity granted the
 reviewer role may use this path, including `tticom-automation` when it is not
 the PR author:
 
-- Linux `tticom-gov`, GitHub/Git `tticomgov-code`, workspace
-  `/home/tticom-gov/work/score2gp-workspace`; or
-- Linux `tticom-codex`, GitHub/Git `tticom-codex`, workspace
-  `/home/tticom-codex/work/score2gp-workspace`; or
-- Linux `tticom-automation`, GitHub/Git `tticom-automation`, workspace
-  `/home/tticom-automation/work/score2gp-workspace`.
+- GitHub/Git `tticomgov-code`, workspace `<workspace-root>/worktrees/gov`; or
+- GitHub/Git `tticom-codex`, workspace `<workspace-root>/worktrees/codex`; or
+- GitHub/Git `tticom-automation`, workspace `<workspace-root>/worktrees/auto`.
 
-Cross-profile credentials or paths fail closed. Read
+`python scripts/verify_identity.py` proves the profile on any OS; the OS
+username is not part of it. Cross-profile credentials or paths fail closed. Read
 `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the Reviewer skill, `REVIEW_RULES.md`,
 `PR_REVIEW_TEMPLATE.md`, and `PR_EVIDENCE_CONTRACT.md`. Require stable `Task`,
 `Status`, `Assigned Identity`, `Repository`, `PR Branch`, and
@@ -27,7 +25,11 @@ Run `scripts/score2gp_control_plane.py` before dispatch. It must:
 - fetch AgentOps and product remotes;
 - switch clean canonical clones to `main` and fast-forward with `--ff-only`;
 - reread authority only after AgentOps local `main == origin/main`;
-- fetch `agy-skills` without switching it to latest main and verify the
+- derive the review publisher's role policy from `ORCHESTRATION_STATE.json`
+  `roles` and print its path as `ROLE_POLICY=` (written beside the checkout,
+  never inside it, and before skills activation);
+- fetch `agentops-claude-skills` (the checkout beside `score2gp-agentops`)
+  without switching it to latest main and verify the
   immutable checkout exactly equals the full commit in `SKILLS_LOCK.md`,
   materializing and atomically activating that exact pin when the merged lock
   changes;
@@ -72,7 +74,7 @@ local task state, chat, and issue comments do not count.
   review: require `review_local_head == pr.headRefOid`, work only in the
   returned detached `review_worktree`, and invoke `review_skill` from the exact
   returned `review_skill_path`. For a lock-changing AgentOps PR, use the
-  proposed pin only when it is already contained in `agy-skills/origin/main`;
+  proposed pin only when it is already contained in `agentops-claude-skills/origin/main`;
   materialize it immutably as `proposed-pin-isolated` and never activate or
   relink it before the AgentOps PR merges. The dispatcher selects the minimum
   review level from live
@@ -134,13 +136,14 @@ DEVILS_ADVOCATE reviews also include the required disconfirmation record,
 provenance ledger, fixture-coupling result, and external evidence packet.
 Publish through the pinned shared guarded publisher:
 
-```bash
-python3 "<review_publisher_path>" \
+```text
+python "<review_publisher_path>" \
   --repo <Repository> \
   --pr <PR number> \
   --expected-head <reviewed full head SHA> \
   --level <basic|hard|devils-advocate> \
   --verdict <APPROVE|CHANGES_REQUESTED|CANNOT_VERIFY> \
+  --role-policy <ROLE_POLICY path> \
   --review-body-file <external-formal-review.md> \
   --summary-file <external-pr-summary.md> \
   [--inline-comments-file <external-inline-comments.json>] \

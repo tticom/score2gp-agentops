@@ -450,9 +450,12 @@ def test_active_governance_uses_identity_isolated_workspaces() -> None:
     control = (PROJECT_ROOT / "projects/score2gp/AGENT_CONTROL.md").read_text(
         encoding="utf-8"
     )
-    assert "/home/tticom-automation/work/score2gp-workspace" in control
-    assert "/home/tticom-gov/work/score2gp-workspace" in control
-    assert "must never operate from the other identity's home" in control
+    for slot in ("worktrees/auto", "worktrees/gov", "worktrees/codex"):
+        assert f"<workspace-root>/{slot}/score2gp-agentops" in control
+    assert "must never operate from the other identity's workspace" in control
+    assert "python scripts/verify_identity.py" in control
+    for forbidden in ("/home/tticom-", "/mnt/c", "uname -s", "WSL Execution Environment Gate"):
+        assert forbidden not in control
 
     automation_skill = (
         PROJECT_ROOT / ".agents/skills/score2gp-project-director/SKILL.md"

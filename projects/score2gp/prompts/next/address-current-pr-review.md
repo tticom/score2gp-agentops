@@ -23,18 +23,20 @@ report. Never guess a PR from recency, author, branch naming, or sidebar state.
 
 ## Identity and Environment
 
-1. Work only in the canonical Ubuntu WSL workspace named by project controls.
+1. Work only in the identity's own checkout under
+   `<workspace-root>/worktrees/auto`, on Windows or Linux.
 2. Read `AGENT_CONTROL.md`, `ACTIVE_TASK.md`, the applicable Developer skill,
    the original task prompt, and every unresolved item at `Review Findings`.
 3. Switch GitHub CLI to the task's authorised implementation identity. For
    Score2GP Agy work:
 
-```bash
+```text
 gh auth switch --hostname github.com --user tticom-automation
-test "$(gh api user --jq .login)" = "tticom-automation"
+python scripts/verify_identity.py
 ```
 
-4. Set and verify the same repository-local Git identity.
+4. `verify_identity.py` must pass: it proves the GitHub login owns the
+   workspace and matches the checkout's Git author and committer.
 5. Require clean product and governance worktrees. Fetch without destructive
    reset, clean, branch deletion, force-push, or history rewriting.
 
@@ -70,11 +72,15 @@ test "$(gh api user --jq .login)" = "tticom-automation"
 
 Run:
 
-```bash
-.venv/bin/python -m pytest
-.venv/bin/python -m score2gp.cli export-schema --out schemas
-.venv/bin/python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json
-.venv/bin/python scripts/artifact_audit.py
+Use the product virtualenv interpreter, `<venv-python>`:
+`.venv/Scripts/python.exe` on Windows or `.venv/bin/python` on POSIX
+(`score2gp_control_plane.py` reports it as `PRODUCT_PYTHON`).
+
+```text
+<venv-python> -m pytest
+<venv-python> -m score2gp.cli export-schema --out schemas
+<venv-python> -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json
+<venv-python> scripts/artifact_audit.py
 git diff --check origin/main...HEAD
 git diff --exit-code -- schemas
 git ls-files fixtures/private work
