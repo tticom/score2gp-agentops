@@ -1,7 +1,0 @@
-*
-!.dockerignore
-!Dockerfile
-!codex.Dockerfile
-!entrypoint.sh
-!github-askpass.sh
-!requirements.txt

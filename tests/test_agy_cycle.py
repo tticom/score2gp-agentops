@@ -304,3 +304,17 @@ def test_multi_round_review_fix_lifecycle(tmp_path: Path, monkeypatch: pytest.Mo
     completed = agy_cycle.complete_cycle(root, cid, "worker")
     assert completed["state"] == "COMPLETE"
     assert not (root / ".agy" / "cycles" / "T-001.claim").exists()
+
+
+def test_module_imports_without_posix_terminal_modules() -> None:
+    # pty and select only exist on POSIX; importing them at module level broke Windows.
+    assert "pty" not in vars(agy_cycle)
+    assert "select" not in vars(agy_cycle)
+
+
+def test_run_interactive_fails_cleanly_without_posix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(agy_cycle.os, "name", "nt")
+    with pytest.raises(agy_cycle.CycleError, match="POSIX terminal"):
+        agy_cycle.run_interactive(tmp_path, "CYCLE-ID", "agy")

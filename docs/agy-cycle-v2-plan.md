@@ -35,7 +35,7 @@ The operator-facing process is intentionally smaller:
 - Orca calls deterministic commands and consumes JSON results;
 - one task, one branch, one worktree, and one PR per cycle;
 - resetting a stuck cycle is one command;
-- Docker is optional and not required for normal execution.
+- tooling is Python only and runs unchanged on Windows and Linux.
 
 ## Lifecycle
 
@@ -88,10 +88,10 @@ Writable controller state is never shared between cycles.
 The controller commands are deliberately explicit:
 
 ```bash
-scripts/agy-cycle transition CYCLE-ID VALIDATING
-scripts/agy-cycle validate CYCLE-ID
-scripts/agy-cycle open-pr CYCLE-ID --repository ORG/REPO
-scripts/agy-cycle verify-pr CYCLE-ID
+python scripts/agy_cycle.py transition CYCLE-ID VALIDATING
+python scripts/agy_cycle.py validate CYCLE-ID
+python scripts/agy_cycle.py open-pr CYCLE-ID --repository ORG/REPO
+python scripts/agy_cycle.py verify-pr CYCLE-ID
 ```
 
 The first command creates no external side effect; `validate` writes a receipt;
@@ -101,9 +101,9 @@ the live PR again before review or merge decisions.
 ## Repair
 
 ```bash
-scripts/agy-cycle status CYCLE-ID
-scripts/agy-cycle reset CYCLE-ID FAILED
-scripts/agy-cycle reset CYCLE-ID READY
+python scripts/agy_cycle.py status CYCLE-ID
+python scripts/agy_cycle.py reset CYCLE-ID FAILED
+python scripts/agy_cycle.py reset CYCLE-ID READY
 ```
 
 If the transition logic itself is wrong, the human changes only
