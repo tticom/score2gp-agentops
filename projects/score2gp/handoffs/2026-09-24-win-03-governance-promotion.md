@@ -43,17 +43,19 @@
 
 ## Risks and comments
 
-- The incident is `RESOLVED` only on the premise that `tticom` personally performed
-  both merges. The maintainer's merge of this PR is the confirmation; if that
-  premise is false, do not merge (see the report).
-- PR 463 needs a second approval under `merge_policy.minimum_approvals: 2`.
+- The incident is `RESOLVED` on the maintainer's explicit confirmation, recorded in
+  the report's "Maintainer confirmation and decision" section, that `tticom`
+  personally performed both merges.
+- The maintainer's merge decision (one non-author approval, after which the
+  two-approval gate may be overridden; codex and gov may merge, automation may not)
+  is not yet reflected in `merge_policy` or `CLAUDE.md`.
+- PR 463: review `5302662429` (tticom-codex) requested changes at `ef1fbb7`
+  (`CLAUDE.md:41` uses `&&`, which Windows PowerShell 5.1 rejects).
 
 ## Next authorised action
 
-- Action: after this PR merges, a reviewer other than the PR 463 author
-  (`tticom-automation`) and the existing approver (`tticomgov-code`), i.e.
-  `tticom-codex`, reviews PR 463 at exact head
-  `ef1fbb75ebe31a610789bcd2e8bf479c538fcf2f` through the dispatcher's explicit
-  review route. The maintainer then decides the merge.
+- Action: `tticom-automation` addresses review `5302662429` on PR 463. A
+  non-author reviewer then approves the new exact head, and `tticom-codex` or
+  `tticomgov-code` merges it.
 - Stop condition: PR 463 head changes, the incident premise is disputed, or the
   governance audit fails on `main`.

@@ -26,13 +26,27 @@ This reconciliation (authority revision 38) records WIN-01 and WIN-02 as
 `COMPLETED` from live PR facts, with a `governance_note` on each, and promotes
 the already-queued WIN-03 with its open PR 463.
 
-The incident is recorded `RESOLVED` on the basis that `tticom` is the
-maintainer and performed both merges deliberately. **The maintainer's merge of
-this reconciliation PR is that confirmation.** If either merge was not
-performed personally by the maintainer (for example, by an agent holding
-`tticom` credentials, as in `2026-07-20-unauthorized-agy-merge-incident.md`),
-do not merge this PR; the incident must instead be reopened as `OPEN` and
-credential containment applied before any further dispatch.
+The incident is recorded `RESOLVED` on the maintainer's explicit confirmation
+below. Neither merge was an agent acting with `tticom` credentials (compare
+`2026-07-20-unauthorized-agy-merge-incident.md`), so no credential containment
+is required.
+
+## Maintainer confirmation and decision (2026-09-24)
+
+Requested by review `5302695196` (tticom-codex, CHANGES_REQUESTED at
+`47b2dc6a69a26342ed68e338ab7e775f6d963ef6`). On 2026-09-24, in the session
+that authored this PR, the maintainer `tticom` answered "yes" to "Did you
+personally merge #681 and #682 from the `tticom` account?" and stated:
+
+1. `tticom-codex` and `tticomgov-code` may merge; `tticom-automation` may not.
+2. Every task must be reviewed and must receive an approval.
+3. The two-approval gate exists to stop rogue merges; once a non-author
+   approval has been given, the gate may be overridden.
+4. Standing permission to proceed with the full task list.
+
+`merge_policy` in `ORCHESTRATION_STATE.json` and the `CLAUDE.md` merge rules
+still describe the stricter policy. Aligning them with this decision is left
+to a separate governance task; this reconciliation does not change them.
 
 ## Carried-over non-blocking findings
 
