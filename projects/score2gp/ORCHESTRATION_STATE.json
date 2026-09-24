@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 45,
+  "authority_revision": 46,
   "task": {
-    "id": "GOV-02",
-    "title": "Isolate governance-audit tests from the live receipt audit",
-    "objective": "Make the main()-level governance-audit tests independent of whether live authority enables the GOV-01 receipt audit, without changing audit behaviour, so governance can set merge_policy.executor_audit_since.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "branch": "feat/gov-02-receipt-audit-test-isolation",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/gov-02-receipt-audit-test-isolation.md",
-    "allowed_paths": [
-      "tests/test_governance_audit.py",
-      "scripts/score2gp_governance_audit.py"
-    ],
-    "acceptance": [
-      "Every main()-level test in tests/test_governance_audit.py controls the receipt-audit step (step 6) explicitly and does not depend on live merge_policy or roles.",
-      "A main()-level test shows a receipt-audit violation fails the audit, and another shows step 6 is skipped when executor_audit_since is unset.",
-      "The full suite passes both with the repository's authority and with a temporary authority copy that sets merge_policy.executor_audit_since and roles.merge_controller (demonstrated in the PR, e.g. by a test or a documented run).",
-      "Receipt-audit semantics, the merge executor and all merge rules are unchanged.",
-      "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_governance_audit.py",
-      "python -m pytest",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "GOV-01"
-    ],
-    "stop_conditions": [
-      "receipt_audit_semantics_changed",
-      "test_weakened_to_pass",
-      "linux_ci_broken"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
-  },
-  "next_task_proposal": {
     "id": "L3-01",
     "title": "Paired-staff barline acceptance for the Lesson 3 first system",
     "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/l3-01-paired-staff-barline-acceptance",
@@ -55,13 +16,16 @@
     "allowed_paths": [
       "src/score2gp/pdf.py",
       "tests/test_paired_staff_barline_acceptance.py",
-      "tests/test_lesson3_native_acceptance.py"
+      "tests/test_lesson3_native_acceptance.py",
+      "tests/test_pdf.py",
+      "tests/test_npg_05_irregular_layout_real.py"
     ],
     "acceptance": [
       "A notation-staff (partner) candidate that is a note stem is rejected with a named rejection reason recorded in details; a genuine paired barline is still accepted.",
       "Through production code on the original Lesson 3 PDF, page 1 system 1 yields exactly the 4 adjudicated boundaries and 3 bar boxes.",
       "Production system topology on the whole original PDF reproduces 23 systems of [15, 22, 19, 10] = 66 measures, or each remaining divergence is reported by exact system and count; the criterion is not relaxed.",
-      "tests/test_barline_recovery.py and tests/test_pdf.py pass unchanged; other private real-source results are unchanged or every difference is explained.",
+      "tests/test_barline_recovery.py passes unchanged. tests/test_pdf.py passes with no change other than the evidence-backed Lesson-5 and Lesson-6 re-pins permitted by the re-pinning criterion below; every other assertion in it is unchanged. Other private real-source results are unchanged or every difference is explained.",
+      "Real-source tests whose expected values encoded the stem over-segmentation are re-pinned only where the change is explained by reference evidence: tests/test_pdf.py Lesson-5/Lesson-6 counts and tests/test_npg_05_irregular_layout_real.py (which assumes Lesson-7 system 1 has 9 TAB bars). Each re-pin cites the reference GP MasterBar count (Lesson-3 66, Lesson-4 79, Lesson-5 43, Lesson-6 72, Lesson-7 50) and the before/after detected measures; no assertion is removed or loosened beyond what the corrected topology requires, and remaining shortfalls (for example Lesson-5's undetected third system on page 3) are recorded, not hidden.",
       "Synthetic tests cover a stem-only partner candidate, a genuine paired barline and a TAB-missed barline recovered through the partner path, with a negative control showing the new test fails when the new check is disabled.",
       "The L3-00 coordinator re-run shows the first-system barline divergence resolved and reports the next earliest divergence; the baseline pin is updated to that exact classification, not weakened.",
       "Generation still cannot read the reference and artifact_audit.py passes; no private musical content, coordinates or generated artifacts are committed."
@@ -86,6 +50,7 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -228,7 +193,8 @@
       "tticom/score2gp-agentops": [
         "deterministic-control-plane"
       ]
-    }
+    },
+    "executor_audit_since": "2026-09-24T18:16:59Z"
   },
   "completed_tasks": [
     {
@@ -1122,6 +1088,49 @@
       "merge_commit": "0a442eb2af4d58a9c542fd580766cb7ec58f1303",
       "reconciled": true,
       "reconciled_at": "2026-09-24T18:18:27.602943+00:00"
+    },
+    {
+      "id": "GOV-02",
+      "title": "Isolate governance-audit tests from the live receipt audit",
+      "objective": "Make the main()-level governance-audit tests independent of whether live authority enables the GOV-01 receipt audit, without changing audit behaviour, so governance can set merge_policy.executor_audit_since.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "feat/gov-02-receipt-audit-test-isolation",
+      "pull_request": 693,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/gov-02-receipt-audit-test-isolation.md",
+      "allowed_paths": [
+        "tests/test_governance_audit.py",
+        "scripts/score2gp_governance_audit.py"
+      ],
+      "acceptance": [
+        "Every main()-level test in tests/test_governance_audit.py controls the receipt-audit step (step 6) explicitly and does not depend on live merge_policy or roles.",
+        "A main()-level test shows a receipt-audit violation fails the audit, and another shows step 6 is skipped when executor_audit_since is unset.",
+        "The full suite passes both with the repository's authority and with a temporary authority copy that sets merge_policy.executor_audit_since and roles.merge_controller (demonstrated in the PR, e.g. by a test or a documented run).",
+        "Receipt-audit semantics, the merge executor and all merge rules are unchanged.",
+        "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python scripts/score2gp_governance_audit.py",
+        "python -m pytest tests/test_governance_audit.py",
+        "python -m pytest",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-01"
+      ],
+      "stop_conditions": [
+        "receipt_audit_semantics_changed",
+        "test_weakened_to_pass",
+        "linux_ci_broken"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "6cfec8457236e2479743efb3faf44ef2ac4bdde0",
+      "merge_commit": "4913b1e02e4acea8bb97056f5b66f009fad10143",
+      "reconciled": true,
+      "reconciled_at": "2026-09-24T18:48:10.767681+00:00"
     }
   ]
 }

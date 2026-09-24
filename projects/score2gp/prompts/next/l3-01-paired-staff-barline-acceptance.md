@@ -1,6 +1,6 @@
 # L3-01 — Paired-staff barline acceptance for the Lesson 3 first system
 
-- **Status**: PROPOSED (`next_task_proposal`). Not executable until governance promotes it.
+- **Status**: PROMOTED (the `task` in `ORCHESTRATION_STATE.json`, authority revision 46). Executable by the implementation role.
 - **Repository**: `tticom/score2gp`
 - **Branch**: `feat/l3-01-paired-staff-barline-acceptance`
 - **Owner Role**: `implementation`
@@ -51,6 +51,11 @@ Allowed paths:
 - `tests/test_paired_staff_barline_acceptance.py`: new focused tests.
 - `tests/test_lesson3_native_acceptance.py`: only to re-pin `test_baseline_red_is_verified_and_exactly_classified` to the new exact red classification. It must not be weakened (see L3-00 PR, pre-submit challenge 4).
 
+- `tests/test_pdf.py` and `tests/test_npg_05_irregular_layout_real.py`: only to re-pin expectations
+  that encoded the stem over-segmentation, justified against reference GP measure counts. These
+  were added at promotion (authority revision 46) after a read-only probe of the H2 fix. It gives
+  Lesson 3 66/66 and Lesson 7 50/50 measures, against 131 and 121 before.
+
 No change to the acceptance coordinator, the reference reader, the IR, the
 writer, the CLI, dependencies or governance. No private musical content,
 coordinates or generated artifacts may be committed.
@@ -60,7 +65,7 @@ coordinates or generated artifacts may be committed.
 1. A partner candidate that is a notation-staff note stem is rejected with a named rejection reason recorded in `details`. A genuine paired barline is still accepted.
 2. Lesson 3 page 1 system 1, run through production code on the original PDF, gives exactly the 4 adjudicated boundaries and 3 bar boxes.
 3. Production system topology on the whole original PDF reproduces 23 systems of `[15, 22, 19, 10]` = 66 measures. If not, report each remaining divergence by exact system and count; do not relax this criterion.
-4. Existing barline-recovery tests (`tests/test_barline_recovery.py`, `tests/test_pdf.py`) pass unchanged. Other private real-source tests, such as Lessons 5 and 6, are unchanged or any difference is explained.
+4. `tests/test_barline_recovery.py` passes unchanged. `tests/test_pdf.py` passes with no change other than the evidence-backed Lesson 5 and Lesson 6 re-pins allowed by the re-pinning criterion in `ORCHESTRATION_STATE.json`; every other assertion in it stays unchanged. Other private real-source results are unchanged or every difference is explained.
 5. Synthetic tests cover a stem-only partner candidate, a genuine paired barline, and a TAB-missed barline recovered through the partner path. A negative control shows that the new test fails when the new check is disabled.
 6. Re-running the L3-00 coordinator on the original PDF shows the first-system barline divergence resolved and reports the next earliest divergence. The baseline pin is updated to that exact classification, and the product may still be red.
 7. Generation still cannot read the reference, and `artifact_audit.py` passes.
