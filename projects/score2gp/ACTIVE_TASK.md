@@ -4,7 +4,7 @@
 
 **Task**: WIN-03 — Product Repository OS-Agnostic Tooling
 
-**Status**: PROMOTED
+**Status**: COMPLETED
 
 **Repository**: tticom/score2gp
 
