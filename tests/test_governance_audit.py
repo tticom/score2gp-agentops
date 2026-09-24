@@ -42,6 +42,23 @@ def test_architecture_task_uses_declared_agentops_repository() -> None:
     assert branch == "agy/cr04c-final-event-duration-consistency-architecture"
 
 
+@pytest.fixture(autouse=True)
+def isolate_receipt_audit(request, monkeypatch):
+    """GOV-02: main()-level tests must not depend on whether live authority enables step 6.
+
+    The delegated-merge receipt audit is disabled by default. A test that exercises the real
+    audit requests the ``real_receipt_audit`` fixture to opt out.
+    """
+    if "real_receipt_audit" in request.fixturenames:
+        return
+    monkeypatch.setattr(score2gp_governance_audit, "audit_delegated_merges", lambda authority, gh_json=None: [])
+
+
+@pytest.fixture
+def real_receipt_audit():
+    """Opt out of ``isolate_receipt_audit`` to exercise the real receipt audit."""
+
+
 class RecordedSubprocessRunner:
     def __init__(self, stdout="[]", returncode=0, stderr=""):
         self.stdout = stdout
@@ -766,14 +783,14 @@ def _fake_gh(merged_by="tticom-codex", receipt_head="a" * 40, receipt_merge="m" 
     return gh_json, calls
 
 
-def test_merge_receipt_audit_is_inactive_without_a_cutoff_or_controllers() -> None:
+def test_merge_receipt_audit_is_inactive_without_a_cutoff_or_controllers(real_receipt_audit) -> None:
     gh_json, calls = _fake_gh()
     assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(since=""), gh_json) == []
     assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(controllers=()), gh_json) == []
     assert calls == []
 
 
-def test_merge_receipt_audit_passes_a_matching_receipt_and_queries_both_repositories() -> None:
+def test_merge_receipt_audit_passes_a_matching_receipt_and_queries_both_repositories(real_receipt_audit) -> None:
     gh_json, calls = _fake_gh()
     assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json) == []
     listed = [args[3] for args in calls if args[:2] == ["pr", "list"]]
@@ -781,7 +798,7 @@ def test_merge_receipt_audit_passes_a_matching_receipt_and_queries_both_reposito
     assert all("merged:>=2026-09-25" in args for args in calls if args[:2] == ["pr", "list"])
 
 
-def test_merge_receipt_audit_flags_a_delegated_merge_with_a_mismatched_receipt() -> None:
+def test_merge_receipt_audit_flags_a_delegated_merge_with_a_mismatched_receipt(real_receipt_audit) -> None:
     gh_json, _ = _fake_gh(receipt_head="c" * 40)
     violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json)
     assert violations == [
@@ -789,7 +806,7 @@ def test_merge_receipt_audit_flags_a_delegated_merge_with_a_mismatched_receipt()
     ]
 
 
-def test_merge_receipt_audit_fails_closed_when_github_is_unavailable() -> None:
+def test_merge_receipt_audit_fails_closed_when_github_is_unavailable(real_receipt_audit) -> None:
     gh_json, _ = _fake_gh(fail=True)
     violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json)
     assert len(violations) == 2
@@ -816,21 +833,21 @@ def _many_merges_gh(count, unreceipted_position):
     return gh_json
 
 
-def test_merge_receipt_audit_covers_merges_beyond_the_first_two_hundred() -> None:
+def test_merge_receipt_audit_covers_merges_beyond_the_first_two_hundred(real_receipt_audit) -> None:
     violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), _many_merges_gh(250, 201))
     assert violations == [
         "tticom/score2gp#201 merged by delegated login tticom-codex without a matching merge-executor receipt"
     ]
 
 
-def test_merge_receipt_audit_fails_closed_when_the_merged_list_may_be_truncated() -> None:
+def test_merge_receipt_audit_fails_closed_when_the_merged_list_may_be_truncated(real_receipt_audit) -> None:
     limit = score2gp_governance_audit.MERGE_AUDIT_PR_LIMIT
     violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), _many_merges_gh(limit, 0))
     assert len(violations) == 1
     assert "reached the query limit" in violations[0] and "tticom/score2gp" in violations[0]
 
 
-def test_merge_receipt_audit_flags_a_merge_with_no_merger_identity() -> None:
+def test_merge_receipt_audit_flags_a_merge_with_no_merger_identity(real_receipt_audit) -> None:
     def gh_json(args):
         if args[:2] == ["pr", "list"]:
             return [{"number": 9, "mergedBy": None, "headRefOid": "a" * 40, "mergeCommit": {"oid": "m" * 40}}] \
@@ -856,7 +873,7 @@ def test_gh_json_stream_parses_real_cli_page_shapes(stdout, expected) -> None:
     assert score2gp_governance_audit.parse_gh_json_stream(stdout) == expected
 
 
-def test_merge_receipt_audit_reads_receipts_from_multi_page_comment_output(monkeypatch) -> None:
+def test_merge_receipt_audit_reads_receipts_from_multi_page_comment_output(monkeypatch, real_receipt_audit) -> None:
     # Drive the default gh adapter with CLI-shaped stdout: a receipt on the second comment page.
     from scripts.score2gp_orca_control import format_merge_receipt
 
@@ -879,3 +896,77 @@ def test_merge_receipt_audit_reads_receipts_from_multi_page_comment_output(monke
     monkeypatch.setattr(score2gp_governance_audit.subprocess, "run", fake_run)
     assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority()) == []
     assert any(c[1] == "api" for c in seen)
+
+
+# --- GOV-02: step 6 at the main() level, independent of live authority ---
+
+def _run_main_with_other_steps_passing(monkeypatch, authority=None, gh_stdout=None):
+    """Run main() with steps 1-5 passing and an OPEN active-task PR; return (exit code, gh calls)."""
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files))
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+    monkeypatch.delenv("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE", raising=False)
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(read_data="""# Active Task
+**Status**: APPROVED
+**PR Branch**: `feat/gov-02-fixture`
+**Repository**: tticom/score2gp-agentops
+""")()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+    if authority is not None:
+        monkeypatch.setattr(score2gp_governance_audit, "load_authority", lambda path: authority)
+    runner = RecordedSubprocessRunner(stdout=gh_stdout or json.dumps([{"number": 425, "state": "OPEN"}]))
+    monkeypatch.setattr(subprocess, "run", runner)
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    return raised.value.code, runner.calls
+
+
+def test_main_fails_when_the_receipt_audit_reports_a_violation(monkeypatch, capsys) -> None:
+    violation = "tticom/score2gp#7 merged by delegated login tticom-codex without a matching merge-executor receipt"
+    monkeypatch.setattr(score2gp_governance_audit, "audit_delegated_merges", lambda authority, gh_json=None: [violation])
+    code, _ = _run_main_with_other_steps_passing(monkeypatch)
+    assert code == 1
+    assert violation in capsys.readouterr().out
+
+
+def test_main_skips_the_receipt_audit_when_no_cutoff_is_set(monkeypatch, real_receipt_audit) -> None:
+    authority = _merge_audit_authority(since="")
+    code, calls = _run_main_with_other_steps_passing(monkeypatch, authority=authority)
+    assert code == 0
+    assert [call[:3] for call in calls] == [["gh", "pr", "list"]]  # only step 4's active-task lookup
+    assert "--head" in calls[0]
+
+
+def test_main_runs_the_receipt_audit_when_the_cutoff_is_set(monkeypatch, capsys, real_receipt_audit) -> None:
+    # With a cut-off and controllers, main() really queries merged PRs in both repositories.
+    # The recorded gh stub returns a merged PR with no merger identity, which must fail closed.
+    authority = _merge_audit_authority(since="2026-09-24T18:16:59Z")
+    code, calls = _run_main_with_other_steps_passing(monkeypatch, authority=authority)
+    assert code == 1
+    merged_queries = [c for c in calls if "--state" in c and c[c.index("--state") + 1] == "merged"]
+    assert [c[c.index("--repo") + 1] for c in merged_queries] == ["tticom/score2gp", "tticom/score2gp-agentops"]
+    assert "has no merger identity" in capsys.readouterr().out
+
+
+def test_suite_isolation_holds_when_live_authority_enables_the_receipt_audit(monkeypatch, capsys) -> None:
+    # The GOV-02 defect: live authority with executor_audit_since and merge_controller set must not
+    # change a main()-level test that is about another step. isolate_receipt_audit guarantees this.
+    authority = _merge_audit_authority(since="2026-09-24T18:16:59Z")
+    code, calls = _run_main_with_other_steps_passing(monkeypatch, authority=authority)
+    assert code == 0
+    assert len(calls) == 1
+    assert "GOVERNANCE AUDIT PASS" in capsys.readouterr().out
