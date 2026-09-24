@@ -1237,3 +1237,31 @@ def test_receipt_audit_fails_closed_on_missing_merger_identity(merged_by) -> Non
     assert audit_merge_receipts([pr], ["tticom-codex"]) == [
         "tticom/score2gp#7 has no merger identity; cannot verify it against merge-executor receipts"
     ]
+
+
+# --- GOV-01 review 5307639542: the task PR number binds the task path ---
+
+def test_executor_never_merges_a_different_pr_on_the_task_branch() -> None:
+    config = executor_authority()
+    assert config["task"]["pull_request"] == 441
+    before = open_pr()
+    before["pull_request"]["number"] = 442
+    gh = FakeGitHub(before)
+    with pytest.raises(ControlError, match="pull_request_mismatch"):
+        execute_merge(config, "tticom/score2gp", 442, "merge-app", capture=gh.capture, run=gh.run)
+    assert gh.commands == []
+
+
+def test_task_pr_without_a_recorded_number_is_not_number_bound() -> None:
+    config = executor_authority()
+    config["task"]["pull_request"] = None
+    facts = open_pr()
+    facts["pull_request"]["number"] = 442
+    assert "pull_request_mismatch" not in verify_merge_gate(config, gated(facts, config=config))["failures"]
+
+
+def test_governance_pr_path_is_not_bound_to_the_task_pr_number() -> None:
+    facts = open_pr(AGENTOPS_REPOSITORY, "governance/promote-x")
+    facts["pull_request"]["number"] = 999
+    decision = verify_merge_gate(executor_authority(), gated(facts))
+    assert decision["decision"] == "ALLOW", decision["failures"]

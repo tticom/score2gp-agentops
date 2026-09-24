@@ -624,6 +624,9 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append("branch_mismatch")
         if repository != str(task["repository"]):
             failures.append("repository_mismatch")
+        task_pr = _parse_strict_positive_int(task.get("pull_request"))
+        if task_pr is not None and _parse_strict_positive_int(pr.get("number")) != task_pr:
+            failures.append("pull_request_mismatch")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):
