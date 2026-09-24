@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: L3-01 — Paired-staff barline acceptance for the Lesson 3 first system
+**Task**: WIN-04 — Post-migration governance hygiene and merge-rule alignment
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/l3-01-paired-staff-barline-acceptance`
+**PR Branch**: `feat/win-04-post-migration-governance-hygiene`
 
 **Pull Request**: TBD
 
@@ -16,18 +16,22 @@
 
 ## Objective
 
-Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.
+Remove stale agy-cycle and agy-skills references, restate live merge rules to the maintainer's 2026-09-24 decision, and decouple governance tests from live authority and untracked files.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `tests/test_paired_staff_barline_acceptance.py`
-- `tests/test_lesson3_native_acceptance.py`
+- `docs/agy-cycle.md`
+- `projects/score2gp/prompts/next/go-dispatch.md`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `projects/score2gp/AGENT_CONTROL.md`
+- `tests/test_governance_audit.py`
+- `tests/test_score2gp_dispatch.py`
+- `tests/test_score2gp_control_plane.py`
 
 ## Validation commands
 
-- `python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py`
-- `python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py`
+- `python scripts/score2gp_governance_audit.py`
+- `python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py tests/test_score2gp_control_plane.py`
 - `python -m pytest`
-- `python scripts/artifact_audit.py`
 - `git diff --check`
