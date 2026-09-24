@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 40,
+  "authority_revision": 41,
   "task": {
-    "id": "WIN-03",
-    "title": "Product Repository OS-Agnostic Tooling",
-    "objective": "Remove WSL references and POSIX-only virtualenv assumptions from the product repository's tooling and agent guidance.",
-    "status": "COMPLETED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "branch": "feat/win-03-product-os-agnostic-tooling",
-    "pull_request": 463,
-    "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/win-03-product-os-agnostic-tooling.md",
-    "allowed_paths": [
-      "scripts/corpus_harness.py",
-      "tests/test_corpus_harness.py",
-      "Makefile",
-      "CLAUDE.md"
-    ],
-    "acceptance": [
-      "scripts/corpus_harness.py resolves the score2gp command from .venv/Scripts or .venv/bin, then PATH, with no WSL wording.",
-      "Makefile resolves the virtualenv Python on Windows and Linux, or documents python -m equivalents for every target.",
-      "CLAUDE.md commands work unchanged on Windows and Linux.",
-      "tests/test_corpus_harness.py covers both virtualenv layouts.",
-      "Zero changes to src/score2gp/."
-    ],
-    "validation_commands": [
-      "python -m pytest tests/test_corpus_harness.py",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "WIN-01"
-    ],
-    "stop_conditions": [
-      "product_recognition_semantics_modified",
-      "private_fixture_leakage",
-      "unauthorized_cross_repository_writes"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "head_sha": "9e2e2a1b9aea38128e2f53229ebf6a9bb2968c31",
-    "merge_commit": "71535f381584615a96667d026ef5a579c4c356d5",
-    "reconciled": true
-  },
-  "next_task_proposal": {
     "id": "L3-01",
     "title": "Paired-staff barline acceptance for the Lesson 3 first system",
     "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/l3-01-paired-staff-barline-acceptance",
@@ -90,54 +47,53 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "queued_task_proposals": [
-    {
-      "id": "WIN-04",
-      "title": "Post-migration governance hygiene and merge-rule alignment",
-      "objective": "Remove stale agy-cycle and agy-skills references, restate live merge rules to the maintainer's 2026-09-24 decision, and decouple governance tests from live authority and untracked files.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "branch": "feat/win-04-post-migration-governance-hygiene",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "prompt": "projects/score2gp/prompts/next/win-04-post-migration-governance-hygiene.md",
-      "allowed_paths": [
-        "docs/agy-cycle.md",
-        "projects/score2gp/prompts/next/go-dispatch.md",
-        "AGENTS.md",
-        "CLAUDE.md",
-        "projects/score2gp/AGENT_CONTROL.md",
-        "tests/test_governance_audit.py",
-        "tests/test_score2gp_dispatch.py"
-      ],
-      "acceptance": [
-        "docs/agy-cycle.md documents only commands that exist (python scripts/agy_cycle.py) or is deleted if agy_cycle.py is unused.",
-        "go-dispatch.md names agentops-claude-skills, consistent with SKILLS_LOCK.md, as the skills source.",
-        "AGENTS.md, CLAUDE.md and AGENT_CONTROL.md state that tticom-codex and tticomgov-code may merge after a non-author exact-head APPROVE and that tticom-automation never merges.",
-        "test_repository_tooling_is_python_only checks tracked files, with a negative control that a tracked .sh file still fails.",
-        "The test_orca_path_* tests use a self-contained fixture authority and pass when the live task is COMPLETED.",
-        "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python scripts/score2gp_governance_audit.py",
-        "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py",
-        "python -m pytest",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "WIN-03"
-      ],
-      "stop_conditions": [
-        "identity_gate_loosened_or_bypassed",
-        "historical_record_rewritten",
-        "linux_ci_broken",
-        "unauthorized_cross_repository_writes"
-      ],
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "WIN-04",
+    "title": "Post-migration governance hygiene and merge-rule alignment",
+    "objective": "Remove stale agy-cycle and agy-skills references, restate live merge rules to the maintainer's 2026-09-24 decision, and decouple governance tests from live authority and untracked files.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "branch": "feat/win-04-post-migration-governance-hygiene",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "prompt": "projects/score2gp/prompts/next/win-04-post-migration-governance-hygiene.md",
+    "allowed_paths": [
+      "docs/agy-cycle.md",
+      "projects/score2gp/prompts/next/go-dispatch.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "projects/score2gp/AGENT_CONTROL.md",
+      "tests/test_governance_audit.py",
+      "tests/test_score2gp_dispatch.py"
+    ],
+    "acceptance": [
+      "docs/agy-cycle.md documents only commands that exist (python scripts/agy_cycle.py) or is deleted if agy_cycle.py is unused.",
+      "go-dispatch.md names agentops-claude-skills, consistent with SKILLS_LOCK.md, as the skills source.",
+      "AGENTS.md, CLAUDE.md and AGENT_CONTROL.md state that tticom-codex and tticomgov-code may merge after a non-author exact-head APPROVE and that tticom-automation never merges.",
+      "test_repository_tooling_is_python_only checks tracked files, with a negative control that a tracked .sh file still fails.",
+      "The test_orca_path_* tests use a self-contained fixture authority and pass when the live task is COMPLETED.",
+      "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python scripts/score2gp_governance_audit.py",
+      "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py",
+      "python -m pytest",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "WIN-03"
+    ],
+    "stop_conditions": [
+      "identity_gate_loosened_or_bypassed",
+      "historical_record_rewritten",
+      "linux_ci_broken",
+      "unauthorized_cross_repository_writes"
+    ],
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -264,7 +220,7 @@
     "required_checks": [
       "test"
     ],
-    "minimum_approvals": 2,
+    "minimum_approvals": 1,
     "require_governance_go": true,
     "require_reviewed_head": true,
     "require_resolved_threads": true,
