@@ -552,6 +552,52 @@ def validate_assignment(
         raise ControlError("assignment is stale or does not match current authority/live state")
 
 
+AGENTOPS_REPOSITORY = "tticom/score2gp-agentops"
+# Non-task PRs that carry governance or architect work in the AgentOps repository.
+# They are evaluated without a task-branch match but with every other requirement.
+GOVERNANCE_PR_BRANCH_PREFIXES = ("governance/", "architect/")
+MERGE_RECEIPT_MARKER = "<!-- score2gp-merge-receipt -->"
+
+
+def required_checks_for(policy: dict[str, Any], repository: str) -> list[str]:
+    """Checks required for a repository; a per-repository map overrides the default list."""
+    by_repository = policy.get("required_checks_by_repository")
+    if isinstance(by_repository, dict) and repository in by_repository:
+        return [str(name) for name in by_repository[repository]]
+    return [str(name) for name in policy["required_checks"]]
+
+
+def is_governance_pr(repository: str, head_branch: str) -> bool:
+    return repository == AGENTOPS_REPOSITORY and head_branch.startswith(GOVERNANCE_PR_BRANCH_PREFIXES)
+
+
+def _independent_approvals(authority: dict[str, Any], pr: dict[str, Any]) -> set[str]:
+    """Exact-head APPROVED reviews from reviewer-role logins other than the PR author."""
+    head = str(pr.get("head_sha", ""))
+    author = str(pr.get("author", ""))
+    reviewers = set(authority["roles"].get("reviewer", {}).get("github_logins") or [])
+    latest: dict[str, str] = {}
+    for review in pr.get("reviews", []):
+        if str(review.get("head_sha", "")) == head and review.get("author"):
+            latest[str(review["author"])] = str(review.get("state", "")).upper()
+    return {
+        login
+        for login, state in latest.items()
+        if state == "APPROVED" and login != author and (not reviewers or login in reviewers)
+    }
+
+
+def derive_governance_go(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
+    """Maintainer decision 2026-09-24: an exact-head APPROVE from a non-author reviewer is the GO."""
+    pr = live.get("pull_request") or {}
+    head = str(pr.get("head_sha", ""))
+    approvals = _independent_approvals(authority, pr)
+    go = bool(head) and current_head_review(pr) == "APPROVED" and len(approvals) >= int(
+        authority["merge_policy"]["minimum_approvals"]
+    )
+    return {"decision": "GO" if go else "NO_GO", "reviewed_head_sha": head if go else ""}
+
+
 def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any]:
     validate_authority(authority)
     blockers = active_incidents(authority)
@@ -562,28 +608,29 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
         if target is not None:
             task = target
     pr = live.get("pull_request") or {}
+    repository = str((live.get("snapshot") or {}).get("repository") or task["repository"])
+    head_branch = str(pr.get("head_branch", ""))
+    governance_pr = is_governance_pr(repository, head_branch)
     failures: list[str] = []
     if blockers:
         failures.append("active_incident")
     if str(pr.get("state", "")).upper() != "OPEN":
         failures.append("pr_not_open")
-    if str(pr.get("head_branch", "")) != str(task["branch"]):
-        failures.append("branch_mismatch")
+    if not governance_pr:
+        if head_branch != str(task["branch"]):
+            failures.append("branch_mismatch")
+        if repository != str(task["repository"]):
+            failures.append("repository_mismatch")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):
         failures.append("reviewed_head_mismatch")
     if current_head_review(pr) != "APPROVED":
         failures.append("current_head_not_approved")
-    approvals = {
-        str(r.get("author", ""))
-        for r in pr.get("reviews", [])
-        if str(r.get("head_sha", "")) == head and str(r.get("state", "")).upper() == "APPROVED"
-    }
-    if len(approvals) < int(policy["minimum_approvals"]):
+    if len(_independent_approvals(authority, pr)) < int(policy["minimum_approvals"]):
         failures.append("insufficient_independent_approvals")
     checks = {str(c.get("name")): str(c.get("conclusion", "")).upper() for c in pr.get("checks", [])}
-    for required in policy["required_checks"]:
+    for required in required_checks_for(policy, repository):
         if checks.get(required) != "SUCCESS":
             failures.append(f"required_check_not_success:{required}")
     if policy["require_resolved_threads"] and int(pr.get("unresolved_threads", 0)) != 0:
@@ -593,6 +640,8 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     controller_login = str(live.get("merge_controller_login", ""))
     if controller_login not in authority["roles"]["merge_controller"]["github_logins"]:
         failures.append("merge_controller_identity_not_configured")
+    if controller_login and controller_login == str(pr.get("author", "")):
+        failures.append("merge_controller_is_pr_author")
     if bool(live.get("admin_bypass", False)):
         failures.append("admin_bypass_forbidden")
     if int(live.get("protection", {}).get("active_rulesets", 0)) < 1:
@@ -602,12 +651,125 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
     return {
         "schema_version": 1,
         "decision": "ALLOW" if not failures else "DENY",
-        "repository": task["repository"],
-        "pull_request": task.get("pull_request"),
+        "repository": repository,
+        "pull_request": pr.get("number") if governance_pr else task.get("pull_request", pr.get("number")),
         "head_sha": head or None,
+        "governance_pr": governance_pr,
         "failures": failures,
         "dry_run": True,
     }
+
+
+def format_merge_receipt(receipt: dict[str, Any]) -> str:
+    return (
+        f"{MERGE_RECEIPT_MARKER}\n"
+        "Merged by the Score2GP merge executor after a fresh merge-gate ALLOW.\n\n"
+        "```json\n" + json.dumps(receipt, indent=2, sort_keys=True) + "\n```\n"
+    )
+
+
+def parse_merge_receipts(comments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Parse receipt comments ({"author": login, "body": text}); records who posted each."""
+    receipts = []
+    for comment in comments:
+        body = str(comment.get("body", "")).replace("\r\n", "\n")
+        if not body.startswith(MERGE_RECEIPT_MARKER):
+            continue
+        match = re.search(r"```json\n(.*?)\n```", body, re.DOTALL)
+        if not match:
+            continue
+        try:
+            value = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            value["posted_by"] = str(comment.get("author", ""))
+            receipts.append(value)
+    return receipts
+
+
+def execute_merge(
+    authority: dict[str, Any],
+    repository: str,
+    pull_request: int,
+    login: str,
+    *,
+    capture=None,
+    run=None,
+) -> dict[str, Any]:
+    """Merge one PR only on a fresh gate ALLOW, pinned to the exact reviewed head.
+
+    This is the sanctioned agent merge path. It is not exclusive: the maintainer
+    accepted on 2026-09-24 that delegated credentials can technically merge
+    outside it, and relies on the receipt audit to detect that afterwards.
+    """
+    capture = capture or capture_live_state
+    run = run or (lambda command: subprocess.run(command, capture_output=True, text=True))
+    live = capture(repository, pull_request)
+    live["governance"] = derive_governance_go(authority, live)
+    live["merge_controller_login"] = login
+    gate = verify_merge_gate(authority, live)
+    head = str(live["pull_request"].get("head_sha", ""))
+    if gate["decision"] != "ALLOW":
+        raise ControlError(f"merge gate DENY for {repository}#{pull_request}: {', '.join(gate['failures'])}")
+    if len(head) != 40:
+        raise ControlError("merge gate ALLOW without a 40-character head")
+    merged = run([
+        "gh", "pr", "merge", str(pull_request), "--repo", repository,
+        "--merge", "--match-head-commit", head,
+    ])
+    if merged.returncode:
+        raise ControlError(f"gh pr merge failed for {repository}#{pull_request}: {merged.stderr.strip()}")
+    after = capture(repository, pull_request)
+    after_pr = after.get("pull_request") or {}
+    if str(after_pr.get("state", "")).upper() != "MERGED":
+        raise ControlError(f"{repository}#{pull_request} is not MERGED after the merge command")
+    if str(after_pr.get("head_sha", "")) != head:
+        raise ControlError(f"{repository}#{pull_request} merged head differs from the gated head")
+    merge_commit = str(after_pr.get("merge_commit", ""))
+    if len(merge_commit) != 40:
+        raise ControlError(f"{repository}#{pull_request} has no 40-character merge commit")
+    receipt = {
+        "schema_version": 1,
+        "repository": repository,
+        "pull_request": pull_request,
+        "head_sha": head,
+        "merge_commit": merge_commit,
+        "merged_by": login,
+        "gate": {"decision": gate["decision"], "failures": gate["failures"]},
+        "merged_at": datetime.now(timezone.utc).isoformat(),
+    }
+    posted = run([
+        "gh", "pr", "comment", str(pull_request), "--repo", repository,
+        "--body", format_merge_receipt(receipt),
+    ])
+    if posted.returncode:
+        raise ControlError(f"merged {repository}#{pull_request} but failed to post the receipt: {posted.stderr.strip()}")
+    return receipt
+
+
+def audit_merge_receipts(merged_prs: list[dict[str, Any]], controllers: list[str]) -> list[str]:
+    """Detective control: every merge by a delegated login needs a matching executor receipt."""
+    violations = []
+    delegated = set(controllers)
+    for pr in merged_prs:
+        merged_by = str(pr.get("merged_by", ""))
+        if merged_by not in delegated:
+            continue
+        label = f"{pr.get('repository')}#{pr.get('number')}"
+        matching = [
+            receipt
+            for receipt in pr.get("receipts", [])
+            if receipt.get("head_sha") == pr.get("head_sha")
+            and receipt.get("merge_commit") == pr.get("merge_commit")
+            and receipt.get("merged_by") == merged_by
+            and receipt.get("posted_by") == merged_by
+        ]
+        if not matching:
+            violations.append(
+                f"{label} merged by delegated login {merged_by} without a matching merge-executor receipt"
+            )
+    return violations
 
 
 def git_head(root: Path) -> str:
@@ -732,7 +894,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "reconcile"),
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -746,6 +908,15 @@ def main() -> None:
         if not args.repository or args.pull_request is None:
             raise ControlError("snapshot requires --repository and --pull-request")
         print(json.dumps(capture_live_state(args.repository, args.pull_request), indent=2, sort_keys=True))
+        return
+    if args.command == "merge":
+        if not args.repository or args.pull_request is None:
+            raise ControlError("merge requires --repository and --pull-request")
+        login = authenticated_github_login()
+        if args.github_login and args.github_login != login:
+            raise ControlError(f"expected GitHub login {args.github_login}, authenticated as {login}")
+        receipt = execute_merge(load_json(args.authority), args.repository, args.pull_request, login)
+        print(json.dumps(receipt, indent=2, sort_keys=True))
         return
     if args.live is None:
         raise ControlError(f"{args.command} requires --live")

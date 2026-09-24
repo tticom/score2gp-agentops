@@ -23,6 +23,68 @@ except ModuleNotFoundError:
         PR_LIFECYCLE_TASK_STATUSES,
     )
 
+MERGE_AUDIT_REPOSITORIES = ("tticom/score2gp", "tticom/score2gp-agentops")
+
+
+def collect_delegated_merges(authority, repositories=MERGE_AUDIT_REPOSITORIES, gh_json=None):
+    """Merged PRs since merge_policy.executor_audit_since, with their parsed receipts.
+
+    Returns (merged_prs, errors). Any GitHub failure is an error, so the audit
+    fails closed instead of silently skipping the detective control.
+    """
+    try:
+        from scripts.score2gp_orca_control import parse_merge_receipts
+    except ModuleNotFoundError:
+        from score2gp_orca_control import parse_merge_receipts
+
+    def default_gh_json(args):
+        res = subprocess.run(["gh", *args], capture_output=True, text=True)
+        if res.returncode != 0:
+            raise RuntimeError(res.stderr.strip() or "gh failed")
+        return json.loads(res.stdout or "null")
+
+    gh_json = gh_json or default_gh_json
+    since = str(authority.get("merge_policy", {}).get("executor_audit_since", ""))
+    merged_prs, errors = [], []
+    for repository in repositories:
+        try:
+            prs = gh_json([
+                "pr", "list", "--repo", repository, "--state", "merged", "--limit", "200",
+                "--search", f"merged:>={since}", "--json", "number,mergedBy,headRefOid,mergeCommit",
+            ]) or []
+            for pr in prs:
+                comments = gh_json(["api", "--paginate", f"repos/{repository}/issues/{pr['number']}/comments"]) or []
+                merged_prs.append({
+                    "repository": repository,
+                    "number": pr["number"],
+                    "merged_by": (pr.get("mergedBy") or {}).get("login", ""),
+                    "head_sha": pr.get("headRefOid", ""),
+                    "merge_commit": (pr.get("mergeCommit") or {}).get("oid", ""),
+                    "receipts": parse_merge_receipts([
+                        {"author": (c.get("user") or {}).get("login", ""), "body": c.get("body", "")}
+                        for c in comments
+                    ]),
+                })
+        except Exception as error:  # noqa: BLE001 - any failure must fail the audit closed
+            errors.append(f"Unable to audit merge receipts for {repository}: {error}")
+    return merged_prs, errors
+
+
+def audit_delegated_merges(authority, gh_json=None):
+    """Detective control for GOV-01 (maintainer-accepted audited risk, 2026-09-24)."""
+    try:
+        from scripts.score2gp_orca_control import audit_merge_receipts
+    except ModuleNotFoundError:
+        from score2gp_orca_control import audit_merge_receipts
+
+    since = authority.get("merge_policy", {}).get("executor_audit_since")
+    controllers = authority.get("roles", {}).get("merge_controller", {}).get("github_logins") or []
+    if not since or not controllers:
+        return []
+    merged_prs, errors = collect_delegated_merges(authority, gh_json=gh_json)
+    return errors + audit_merge_receipts(merged_prs, controllers)
+
+
 def run_cmd(args):
     try:
         res = subprocess.run(args, capture_output=True, text=True, check=True)
@@ -262,6 +324,14 @@ def main():
                     violations.append(
                         f"Run record {path} claims APPROVED review verdict but lacks a valid numeric or GitHub node Review ID citation."
                     )
+
+    # 6. Detective control: delegated merges must carry a matching merge-executor receipt.
+    authority_path = "projects/score2gp/ORCHESTRATION_STATE.json"
+    if os.path.exists(authority_path) and os.environ.get("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE") != "1":
+        try:
+            violations.extend(audit_delegated_merges(load_authority(authority_path)))
+        except Exception as error:  # noqa: BLE001 - fail closed
+            violations.append(f"Cannot audit delegated merges: {error}")
 
     if violations:
         print("\n=== GOVERNANCE AUDIT FAIL ===")

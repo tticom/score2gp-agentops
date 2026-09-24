@@ -93,12 +93,16 @@ def test_reviewer_and_merge_role_firewalls_are_explicit() -> None:
         encoding="utf-8"
     )
     for text in (profile, control, overlay):
-        assert "`tticom-automation` and `tticom-gov`" in text
-        assert "never merge" in text
-        assert "`tticom-codex`" in text
-        assert "explicit instruction" in text
-        assert "PR number" in text
-        assert "full head SHA" in text
+        # GOV-01 (maintainer decision 2026-09-24): merges only through the merge executor.
+        assert "`tticom-automation` never merges" in text
+        assert "`tticom-codex`" in text and "`tticomgov-code`" in text
+        assert "merge executor" in text
+        assert "`roles.merge_controller`" in text
+        assert "separate operation" in text
+        # The per-PR maintainer instruction rule was replaced.
+        assert "PR number, and reviewed full head SHA" not in text
+    # The accepted residual risk is stated where the rule is defined.
+    assert "not an enforced one" in control
     assert "review metadata only" in overlay
     assert "Never edit source, tests" in overlay
 

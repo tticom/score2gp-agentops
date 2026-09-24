@@ -1,6 +1,6 @@
 ---
 name: score2gp-project-director
-description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, prepare external-merge handoffs, and minimise routine human interaction.
+description: Use when running unattended Score2GP autonomous development cycles in Antigravity or Codex: verify live score2gp and score2gp-agentops state, coordinate Architect/Developer/Reviewer transitions, perform continuation and blocker-pivot audits, prepare merge handoffs (merge executor or maintainer), and minimise routine human interaction.
 ---
 
 # Project Director Skill — Autonomous Continuation Governor
@@ -51,17 +51,17 @@ Verify live state. Do not trust previous agent summaries unless the repositories
 1. Read `projects/score2gp/AGENT_CONTROL.md`.
 2. Read `projects/score2gp/ACTIVE_TASK.md`.
 3. Execute the active task using its authorised role.
-4. If the task is Architect/governance work, complete the document/review and prepare any resulting governance PR for external merge.
-5. If the task is Developer/product work, complete the product PR, explicitly dispatch `devils-advocate-review` against its exact live head, then perform the required governance review and external-merge handoff. Do not treat a generic Reviewer or hard-review verdict as a substitute for the implementation-loop gate.
-6. After an external maintainer merges the required PRs, pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
+4. If the task is Architect/governance work, complete the document/review and prepare any resulting governance PR for merge (merge executor or maintainer).
+5. If the task is Developer/product work, complete the product PR, explicitly dispatch `devils-advocate-review` against its exact live head, then perform the required governance review and merge handoff. Do not treat a generic Reviewer or hard-review verdict as a substitute for the implementation-loop gate.
+6. After the required PRs are merged (merge executor or maintainer), pull `main`, reread `ACTIVE_TASK.md`, and continue into the next task.
 7. Stop only when a real stop condition is met and no credible pivot or continuation exists.
 
 When the active task opts into
 `programmes/2026-07-18-unattended-consecutive-loop-protocol.md`, run the full
 Developer -> explicit `devils-advocate-review` -> Developer rework loop ->
-explicit `devils-advocate-review` -> external-merge handoff cycle. A failed review is a rework or pivot event, not a request for
-routine maintainer direction. Agy never performs the merge or a governance
-promotion that depends on it.
+explicit `devils-advocate-review` -> merge handoff cycle. A failed review is a rework or pivot event, not a request for
+routine maintainer direction. Agy (`tticom-automation`) never performs the
+merge or a governance promotion that depends on it.
 
 ## Role transitions are not stop points
 
@@ -96,7 +96,7 @@ The Project Director may:
 - inspect both repos;
 - create governance docs, reviews, and active-task updates;
 - write Antigravity prompts;
-- prepare clean governance/product PRs for external merge and record the exact
+- prepare clean governance/product PRs for merge (merge executor or maintainer) and record the exact
   head SHA, validation, risks, and blocked dependent task;
 - use public fixtures and approved private/local fixture repositories for interrogation.
 

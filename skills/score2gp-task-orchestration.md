@@ -2,7 +2,7 @@
 
 ## Purpose
 Supervise agentic development across `tticom/score2gp` and `tticom/score2gp-agentops` using a safe, evidence-driven loop. 
-This skill is for orchestration, governance updates, task promotion, and agent prompt generation. It must not directly merge code or bypass human review.
+This skill is for orchestration, governance updates, task promotion, and agent prompt generation. It must not merge except through the merge executor, and must not bypass review.
 
 ## Core Rule
 Never trust self-reports. Verify live repository state, changed files, commits, and PR status before advancing work.
@@ -15,7 +15,7 @@ Never trust self-reports. Verify live repository state, changed files, commits, 
 5. Developer implements one task on one branch using standard Tier B (compressed loop) default.
 6. PR is opened.
 7. Explicitly dispatch `devils-advocate-review` for the exact implementation PR head. The Devil's-Advocate Reviewer performs conformance and readiness review, starts from `CANNOT_VERIFY`, attacks the strongest false-success modes, and publishes the formal verdict.
-8. Human merges only after the exact-head `devils-advocate-review` passes. A `code-review` or `hard-review` approval without the explicit Devil's-Advocate verdict is insufficient for the implementation loop.
+8. The merge executor or the maintainer merges only after the exact-head `devils-advocate-review` passes. A `code-review` or `hard-review` approval without the explicit Devil's-Advocate verdict is insufficient for the implementation loop.
 9. Governance records completion in run records and promotes the next smallest safe task from `PLANNING_DATA.md` to `ACTIVE_TASK.md` when the repo is clean.
 10. Repeat.
 
@@ -29,7 +29,7 @@ The output of the bootstrap script reconstructs the status across both repositor
 ## Branch & Workflow Rules
 - No direct commits to `main`.
 - One task, one branch, one PR unless explicitly stacked.
-- Agents must never merge to `main`. Human merge is required.
+- `tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge to `main` only through the merge executor, in a separate operation, while listed in `roles.merge_controller`, and never a PR they authored; otherwise the maintainer merges.
 - Do not let agents start the next product implementation until the governance PR defining the task is merged.
 - **Branch check, switch, and creation workflow**:
   - Always check the current checked-out branch before making modifications.
@@ -90,7 +90,7 @@ Reporting format:
 After a product PR is merged:
 1. Verify the merge live.
 2. Record the merge commit in run records.
-3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be bundled into a normal governance PR or handled through the approved branch/PR/human-merge path. Under all circumstances, direct commits to main are strictly prohibited.
+3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be bundled into a normal governance PR or handled through the approved branch/PR/merge path (merge executor or maintainer). Under all circumstances, direct commits to main are strictly prohibited.
 4. Promote the next task from `PLANNING_DATA.md` to `ACTIVE_TASK.md`. Ensure repository is clean before starting.
 5. Run `python scripts/score2gp_governance_audit.py` to ensure no stale tasks or privacy violations exist in the governance repo.
 

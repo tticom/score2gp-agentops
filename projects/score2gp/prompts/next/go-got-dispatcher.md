@@ -13,7 +13,8 @@ Review governance PR `https://github.com/tticom/score2gp-agentops/pull/383`.
 ## Scope
 
 Governance documentation and tests only. Preserve identity separation,
-one-task/one-PR discipline, human-only merging, evidence contracts, and the
+one-task/one-PR discipline, merging only through the merge executor or by the
+maintainer, evidence contracts, and the
 rule that candidates are not authority.
 
 ## Acceptance
@@ -23,7 +24,7 @@ rule that candidates are not authority.
 - Agy cannot replay a merged original prompt.
 - Codex cannot review without a handback pinned to the live head.
 - Review fixes remain on the existing PR.
-- Approval stops at the human merge gate.
+- Approval stops at the merge gate (merge executor or maintainer).
 - Merge routes Codex to governance promotion, not product implementation.
 - Governance tests cover these invariants.
 

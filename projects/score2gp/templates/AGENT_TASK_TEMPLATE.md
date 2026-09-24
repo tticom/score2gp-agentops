@@ -15,9 +15,9 @@ Valid statuses:
 - `IN_PROGRESS`: Agents are working inside the approved task boundary.
 - `PR_OPEN`: A task PR exists. Agents may continue review, fixes, tests, follow-up commits, and re-review on the same branch/PR.
 - `CHANGES_REQUESTED`: Reviewer found issues. Developer may fix them on the same branch/PR without new human approval.
-- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met. Agents must stop before merge.
+- `READY_FOR_HUMAN_MERGE` (historical name): Reviewer says acceptance criteria are met. Ready for the merge executor or the maintainer; authors and reviewers stop.
 - `BLOCKED`: Human decision is required.
-- `DONE`: Only after human merge or explicit human closure.
+- `DONE`: Only after a verified merge (merge executor or maintainer) or explicit maintainer closure.
 
 ## Permission Tier
 
@@ -29,7 +29,7 @@ Allowed values:
 - Tier 1: Local Research / Documentation Only
 - Tier 2: Branch and PR Work
 
-Tier 2 allows creating a branch, committing, pushing, and opening a PR. Merges and branch deletion remain strictly human-only.
+Tier 2 allows creating a branch, committing, pushing, and opening a PR. Branch deletion is maintainer-only; merges happen only through the merge executor (delegated `roles.merge_controller` logins) or by the maintainer.
     
 ## Validation Permission
 

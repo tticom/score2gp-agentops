@@ -56,7 +56,7 @@ the still-present incident heading could be treated as an eternal block.
 | Worktrees, sequencing, parallel research, worker lifecycle, handoffs | Orca supervisor |
 | Implementation or evidence collection | Bounded worker |
 | Semantic acceptance and adversarial disconfirmation | Independent reviewer/governor |
-| Mechanical merge eligibility and exact-head merge | Dedicated non-LLM merge controller |
+| Mechanical merge eligibility and exact-head merge | Merge executor (`score2gp_orca_control.py merge`) run by a delegated `roles.merge_controller` login; audited, not exclusive |
 | Main protection, approval enforcement, bypass restrictions | GitHub rulesets/permissions |
 
 Orca is not a policy authority and cannot override a `BLOCKED` result. Workers
@@ -74,13 +74,19 @@ time, and later task status cannot implicitly close an incident.
 Separate OS users are not the security boundary. Orca may run worktrees under
 one shared OS account on Windows or Linux, but each remote action must use a scoped
 GitHub identity authorized for the assignment role. Git author identity is
-provenance, not authorization. Reviewers remain metadata-only. Implementation,
-review, governance, and supervision roles all prohibit merge.
+provenance, not authorization. Reviewers remain metadata-only. No role merges
+inside its implementation, review, governance or supervision run; merging is a
+separate merge-controller operation.
 
-The merge-controller login is deliberately empty in v1. No merge can pass
-until a GitHub App or similarly non-interactive, least-privilege identity is
-configured in both the policy and GitHub. The controller must have no product
-editing or review authority and must never use admin bypass.
+The merge executor (`python scripts/score2gp_orca_control.py merge`) merges only
+on a fresh `verify_merge_gate` ALLOW, only the exact reviewed head, never with
+admin bypass, and posts a receipt. Only logins in `roles.merge_controller`
+(`tticom-codex`, `tticomgov-code` once governance lists them) may run it, never
+on a PR they authored; `tticom-automation` never merges. On 2026-09-24 the
+maintainer declined a separate GitHub App credential and accepted that this is
+audited, not exclusive: delegated credentials can technically merge outside the
+executor, and the governance audit flags any delegated merge without a matching
+executor receipt.
 
 ## Orca invocation contract
 
@@ -146,9 +152,11 @@ obsolete only after this cutover.
 4. State cutover: make the JSON task/incident model the only authored authority;
    generate `ACTIVE_TASK.md` as a human view. Convert queues to non-executable
    planning data. Make `go/got` thin compatibility wrappers around this CLI.
-5. Merge-controller pilot: install a least-privilege GitHub App, add its login
-   to policy, give it merge-only workflow permission without bypass, require a
-   signed/immutable governance decision artifact, and test stale-head races.
+5. Merge controller: GOV-01 delivered an audited merge executor for delegated
+   `roles.merge_controller` logins with stale-head protection
+   (`--match-head-commit`) and receipt auditing. A least-privilege GitHub App
+   remains the option for making merges exclusive; the maintainer declined it on
+   2026-09-24.
 6. Retirement: after successful shadow/pilot evidence, remove duplicated state
    resolution from the old bootstraps and autonomous dispatcher prose.
 

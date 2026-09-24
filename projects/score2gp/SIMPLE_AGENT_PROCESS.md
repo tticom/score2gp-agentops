@@ -10,8 +10,10 @@ assignment, handoffs, validation, review retries, and console status.
 5. Only those terminal states are shown to the human.
 
 Roles grant capabilities per assignment. A Gov worker may implement governance
-code or review product code; a developer may not review its own change; no
-agent merges. These are capability checks, not permanent role restrictions.
+code or review product code; a developer may not review its own change;
+`tticom-automation` never merges, and delegated merge-controller logins merge
+only through the merge executor. These are capability checks, not permanent
+role restrictions.
 
 Every step emits `STATUS`, `HANDOFF`, or `NEXT` lines. A run that is alive emits
 a progress line at least every 60 seconds. A run never ends with only a cycle
@@ -21,7 +23,7 @@ Terminal output is one of:
 
 ```text
 STATUS APPROVED
-NEXT human merge or stop
+NEXT merge (merge executor or maintainer) or stop
 ```
 
 ```text

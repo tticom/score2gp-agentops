@@ -83,9 +83,15 @@ through the exact immutable `review_publisher_path` returned alongside
 `review_skill_path`; never substitute the installed `$HOME/.agents` copy. A
 chat-only or status-only response is a dispatcher failure.
 
-`tticom-automation` and `tticom-gov` never merge. `tticom-codex` may merge only
-in a separate operation after a current explicit instruction from `tticom`
-naming the exact repository, PR number, and reviewed full head SHA.
+`tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge only
+through the merge executor (`python scripts/score2gp_orca_control.py merge
+--repository <owner/repo> --pull-request <n>`), in a separate operation and never
+in the reviewer run, only while listed in `roles.merge_controller`, and only a
+PR they did not author that has a formal APPROVE at its exact live head from a
+non-author reviewer. The maintainer `tticom` may also merge. The executor is the
+sanctioned path, not an enforced one: the maintainer accepted on 2026-09-24 that
+delegated credentials can technically merge outside it, and the governance
+audit flags any delegated merge without a matching executor receipt.
 This `got` state is separate from the action-authorizing states for `go`.
 `PROMOTE_MERGED_TASK` authorizes and requires verifying the merge on remote
 main, synchronizing product and governance mains, rereading `ACTIVE_TASK.md`,

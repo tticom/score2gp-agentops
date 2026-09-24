@@ -15,6 +15,9 @@ from pathlib import Path
 from typing import Any
 
 
+# Historical identifiers kept for compatibility (GOV-01, 2026-09-24): AWAIT_HUMAN_MERGE and
+# the human_merge lifecycle state mean "ready for merge by the merge executor
+# (score2gp_orca_control.py merge) or the maintainer", not "a human must merge".
 ACTIONS = {
     "EXECUTE_ASSIGNMENT",
     "REMEDIATE_CURRENT_PR",

@@ -52,7 +52,7 @@ def authority() -> dict:
                 "forbidden_actions": ["merge"],
             },
             "reviewer": {
-                "github_logins": ["reviewer"],
+                "github_logins": ["reviewer", "reviewer-a", "reviewer-b"],
                 "allowed_actions": ["publish_review"],
                 "forbidden_actions": ["edit", "merge"],
             },
@@ -932,3 +932,273 @@ def test_reconcile_task_fails_closed_on_unmerged_or_mismatched_pr() -> None:
     }
     with pytest.raises(ControlError, match="reconciliation requires a 40-character merge_commit"):
         reconcile_task(config, bad_sha_facts)
+
+
+# --- GOV-01: sanctioned merge executor, per-repository checks, governance PRs, receipt audit ---
+
+from scripts.score2gp_orca_control import (  # noqa: E402
+    AGENTOPS_REPOSITORY,
+    audit_merge_receipts,
+    derive_governance_go,
+    execute_merge,
+    format_merge_receipt,
+    parse_merge_receipts,
+    required_checks_for,
+)
+
+HEAD = "a" * 40
+MERGE_COMMIT = "m" * 40
+
+
+def executor_authority() -> dict:
+    config = authority()
+    config["merge_policy"]["minimum_approvals"] = 1
+    config["merge_policy"]["required_checks_by_repository"] = {
+        "tticom/score2gp": ["test"],
+        AGENTOPS_REPOSITORY: ["deterministic-control-plane"],
+    }
+    config["roles"]["merge_controller"]["github_logins"] = ["merge-app"]
+    return config
+
+
+def open_pr(repository: str = "tticom/score2gp", branch: str = "feat/task-108", author: str = "worker") -> dict:
+    check = "test" if repository == "tticom/score2gp" else "deterministic-control-plane"
+    return {
+        "snapshot": {"repository": repository},
+        "pull_request": {
+            "number": 441,
+            "state": "OPEN",
+            "head_branch": branch,
+            "head_sha": HEAD,
+            "author": author,
+            "reviews": [{"author": "reviewer-a", "state": "APPROVED", "head_sha": HEAD}],
+            "checks": [{"name": check, "conclusion": "SUCCESS"}],
+            "unresolved_threads": 0,
+            "merge_commit": "",
+        },
+        "protection": {"active_rulesets": 1, "current_user_can_bypass": False},
+        "admin_bypass": False,
+    }
+
+
+def gated(facts: dict, login: str = "merge-app", config: dict | None = None) -> dict:
+    facts = deepcopy(facts)
+    facts["governance"] = derive_governance_go(config or executor_authority(), facts)
+    facts["merge_controller_login"] = login
+    return facts
+
+
+def test_executor_gate_allows_a_non_author_exact_head_approval() -> None:
+    decision = verify_merge_gate(executor_authority(), gated(open_pr()))
+    assert decision["decision"] == "ALLOW", decision["failures"]
+
+
+def test_required_checks_are_per_repository() -> None:
+    config = executor_authority()
+    assert required_checks_for(config["merge_policy"], AGENTOPS_REPOSITORY) == ["deterministic-control-plane"]
+    assert required_checks_for(config["merge_policy"], "tticom/score2gp") == ["test"]
+    assert required_checks_for(authority()["merge_policy"], AGENTOPS_REPOSITORY) == ["test"]
+    facts = gated(open_pr(AGENTOPS_REPOSITORY, "governance/promote-x"))
+    decision = verify_merge_gate(config, facts)
+    assert decision["decision"] == "ALLOW", decision["failures"]
+    assert "required_check_not_success:test" not in decision["failures"]
+    facts["pull_request"]["checks"] = []
+    assert "required_check_not_success:deterministic-control-plane" in verify_merge_gate(config, facts)["failures"]
+
+
+def test_governance_pr_skips_only_the_task_branch_match() -> None:
+    decision = verify_merge_gate(executor_authority(), gated(open_pr(AGENTOPS_REPOSITORY, "architect/propose-y")))
+    assert decision["decision"] == "ALLOW", decision["failures"]
+    assert decision["governance_pr"] is True
+    # The same branch prefix in the product repository gets no governance path.
+    product = verify_merge_gate(executor_authority(), gated(open_pr("tticom/score2gp", "governance/promote-x")))
+    assert "branch_mismatch" in product["failures"]
+
+
+@pytest.mark.parametrize(
+    ("mutation", "failure"),
+    [
+        (lambda x: x["pull_request"].update(reviews=[]), "insufficient_independent_approvals"),
+        (lambda x: x["pull_request"]["checks"].clear(), "required_check_not_success:deterministic-control-plane"),
+        (lambda x: x["pull_request"].update(unresolved_threads=2), "unresolved_review_threads"),
+        (lambda x: x["pull_request"]["reviews"].append(
+            {"author": "reviewer-b", "state": "CHANGES_REQUESTED", "head_sha": HEAD}), "current_head_not_approved"),
+    ],
+)
+def test_governance_pr_path_keeps_approval_check_and_thread_requirements(mutation, failure) -> None:
+    facts = open_pr(AGENTOPS_REPOSITORY, "governance/promote-x")
+    mutation(facts)
+    assert failure in verify_merge_gate(executor_authority(), gated(facts))["failures"]
+
+
+def test_repository_mismatch_is_denied_for_task_prs() -> None:
+    facts = gated(open_pr("tticom/other-repo"))
+    assert "repository_mismatch" in verify_merge_gate(executor_authority(), facts)["failures"]
+
+
+def test_author_and_non_reviewer_approvals_do_not_count() -> None:
+    facts = open_pr(author="worker")
+    facts["pull_request"]["reviews"] = [
+        {"author": "worker", "state": "APPROVED", "head_sha": HEAD},
+        {"author": "outsider", "state": "APPROVED", "head_sha": HEAD},
+    ]
+    decision = verify_merge_gate(executor_authority(), gated(facts))
+    assert "insufficient_independent_approvals" in decision["failures"]
+    assert "governance_go_missing" in decision["failures"]
+
+
+def test_self_authored_pr_cannot_be_merged_by_its_author() -> None:
+    config = executor_authority()
+    facts = gated(open_pr(author="merge-app"), login="merge-app", config=config)
+    assert "merge_controller_is_pr_author" in verify_merge_gate(config, facts)["failures"]
+
+
+def test_governance_go_requires_a_current_non_author_approval() -> None:
+    config = executor_authority()
+    assert derive_governance_go(config, open_pr()) == {"decision": "GO", "reviewed_head_sha": HEAD}
+    stale = open_pr()
+    stale["pull_request"]["reviews"][0]["head_sha"] = "b" * 40
+    assert derive_governance_go(config, stale)["decision"] == "NO_GO"
+
+
+class FakeGitHub:
+    """Records every gh command; the merge result and post-merge state are scripted."""
+
+    def __init__(self, before: dict, after: dict | None = None, merge_returncode: int = 0, comment_returncode: int = 0):
+        self.captures = [before, after]
+        self.commands: list[list[str]] = []
+        self.merge_returncode = merge_returncode
+        self.comment_returncode = comment_returncode
+
+    def capture(self, repository: str, pull_request: int) -> dict:
+        return deepcopy(self.captures.pop(0))
+
+    def run(self, command: list[str]):
+        self.commands.append(command)
+        code = self.merge_returncode if command[:3] == ["gh", "pr", "merge"] else self.comment_returncode
+        return subprocess.CompletedProcess(command, code, "", "simulated failure" if code else "")
+
+    def merge_commands(self) -> list[list[str]]:
+        return [c for c in self.commands if c[:3] == ["gh", "pr", "merge"]]
+
+
+def merged_state(head: str = HEAD, merge_commit: str = MERGE_COMMIT) -> dict:
+    after = open_pr()
+    after["pull_request"].update(state="MERGED", head_sha=head, merge_commit=merge_commit)
+    return after
+
+
+def test_executor_merges_exact_head_and_posts_a_receipt() -> None:
+    gh = FakeGitHub(open_pr(), merged_state())
+    receipt = execute_merge(executor_authority(), "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert gh.merge_commands() == [[
+        "gh", "pr", "merge", "441", "--repo", "tticom/score2gp", "--merge", "--match-head-commit", HEAD,
+    ]]
+    assert all("--admin" not in command for command in gh.commands)
+    assert receipt["head_sha"] == HEAD and receipt["merge_commit"] == MERGE_COMMIT and receipt["merged_by"] == "merge-app"
+    comment = gh.commands[-1]
+    assert comment[:3] == ["gh", "pr", "comment"]
+    assert parse_merge_receipts([{"author": "merge-app", "body": comment[-1]}])[0]["merge_commit"] == MERGE_COMMIT
+
+
+@pytest.mark.parametrize(
+    ("mutation", "login", "failure"),
+    [
+        (lambda x: x["pull_request"].update(reviews=[{"author": "reviewer-a", "state": "APPROVED", "head_sha": "b" * 40}]),
+         "merge-app", "current_head_not_approved"),
+        (lambda x: None, "tticom-codex", "merge_controller_identity_not_configured"),
+        (lambda x: x["pull_request"].update(author="merge-app"), "merge-app", "merge_controller_is_pr_author"),
+        (lambda x: x["protection"].update(current_user_can_bypass=True), "merge-app", "merge_controller_can_bypass_ruleset"),
+        (lambda x: x.update(admin_bypass=True), "merge-app", "admin_bypass_forbidden"),
+        (lambda x: x["pull_request"]["checks"].clear(), "merge-app", "required_check_not_success:test"),
+        (lambda x: x["pull_request"].update(unresolved_threads=1), "merge-app", "unresolved_review_threads"),
+        (lambda x: x["pull_request"].update(head_branch="feat/other"), "merge-app", "branch_mismatch"),
+        (lambda x: x["pull_request"].update(state="CLOSED"), "merge-app", "pr_not_open"),
+        (lambda x: x["protection"].update(active_rulesets=0), "merge-app", "active_main_ruleset_missing"),
+    ],
+)
+def test_executor_never_merges_on_deny(mutation, login: str, failure: str) -> None:
+    before = open_pr()
+    mutation(before)
+    gh = FakeGitHub(before)
+    with pytest.raises(ControlError, match=failure):
+        execute_merge(executor_authority(), "tticom/score2gp", 441, login, capture=gh.capture, run=gh.run)
+    assert gh.commands == []
+
+
+def test_executor_never_merges_during_an_active_incident() -> None:
+    config = executor_authority()
+    config["incidents"] = [{"id": "incident-1", "status": "OPEN", "opened_by": "report.md"}]
+    gh = FakeGitHub(open_pr())
+    with pytest.raises(ControlError, match="active_incident"):
+        execute_merge(config, "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert gh.commands == []
+
+
+def test_head_change_between_gate_and_merge_fails_closed_without_a_receipt() -> None:
+    # GitHub refuses --match-head-commit when the head moved after the gate.
+    gh = FakeGitHub(open_pr(), merge_returncode=1)
+    with pytest.raises(ControlError, match="gh pr merge failed"):
+        execute_merge(executor_authority(), "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert [c[:3] for c in gh.commands] == [["gh", "pr", "merge"]]
+
+
+def test_merged_head_differing_from_the_gated_head_fails_closed() -> None:
+    gh = FakeGitHub(open_pr(), merged_state(head="c" * 40))
+    with pytest.raises(ControlError, match="merged head differs"):
+        execute_merge(executor_authority(), "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert not any(c[:3] == ["gh", "pr", "comment"] for c in gh.commands)
+
+
+def test_merge_that_did_not_complete_fails_closed() -> None:
+    gh = FakeGitHub(open_pr(), open_pr())
+    with pytest.raises(ControlError, match="not MERGED"):
+        execute_merge(executor_authority(), "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+
+
+def receipt_for(head: str = HEAD, merge_commit: str = MERGE_COMMIT, merged_by: str = "tticom-codex",
+                posted_by: str | None = None) -> dict:
+    body = format_merge_receipt({"head_sha": head, "merge_commit": merge_commit, "merged_by": merged_by})
+    return parse_merge_receipts([{"author": posted_by or merged_by, "body": body}])[0]
+
+
+def delegated_merge(receipts: list[dict] | None = None) -> dict:
+    return {
+        "repository": "tticom/score2gp", "number": 7, "merged_by": "tticom-codex",
+        "head_sha": HEAD, "merge_commit": MERGE_COMMIT,
+        "receipts": [receipt_for()] if receipts is None else receipts,
+    }
+
+
+def test_receipt_audit_accepts_a_matching_executor_receipt() -> None:
+    assert audit_merge_receipts([delegated_merge()], ["tticom-codex", "tticomgov-code"]) == []
+
+
+@pytest.mark.parametrize(
+    "receipts",
+    [
+        [],
+        [receipt_for(head="c" * 40)],
+        [receipt_for(merge_commit="d" * 40)],
+        [receipt_for(merged_by="tticomgov-code")],
+        [receipt_for(posted_by="tticom-automation")],
+    ],
+    ids=["missing", "wrong-head", "wrong-merge-commit", "wrong-merger", "posted-by-another-login"],
+)
+def test_receipt_audit_flags_delegated_merges_without_a_matching_receipt(receipts) -> None:
+    violations = audit_merge_receipts([delegated_merge(receipts)], ["tticom-codex", "tticomgov-code"])
+    assert violations == [
+        "tticom/score2gp#7 merged by delegated login tticom-codex without a matching merge-executor receipt"
+    ]
+
+
+def test_receipt_audit_ignores_merges_by_non_delegated_logins() -> None:
+    maintainer_merge = dict(delegated_merge([]), merged_by="tticom")
+    assert audit_merge_receipts([maintainer_merge], ["tticom-codex", "tticomgov-code"]) == []
+
+
+def test_non_receipt_comments_are_not_parsed_as_receipts() -> None:
+    assert parse_merge_receipts([
+        {"author": "tticom-codex", "body": "LGTM"},
+        {"author": "tticom-codex", "body": "note\n<!-- score2gp-merge-receipt -->\n```json\n{}\n```"},
+    ]) == []

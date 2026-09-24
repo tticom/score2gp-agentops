@@ -73,6 +73,7 @@ def normalize_verdict(verdict: str) -> tuple[str, str, str]:
     if normalized in {"NEEDS_CHANGES", "REQUEST_CHANGES", "CHANGES_REQUESTED"}:
         return "CHANGES_REQUESTED", "REQUEST_CHANGES", "AWAITING_AGY_FIXES"
     if normalized in {"APPROVE", "APPROVED"}:
+        # Historical identifier (GOV-01): ready for the merge executor or the maintainer.
         return "APPROVED", "APPROVE", "READY_FOR_HUMAN_MERGE"
     raise ReviewPublishError(
         "unsupported verdict; use needs changes, CHANGES_REQUESTED, or APPROVED"

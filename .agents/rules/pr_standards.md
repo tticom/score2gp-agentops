@@ -16,10 +16,11 @@ Whenever any agent creates or opens a Pull Request (via `gh pr create`, CLI scri
 3. **Pre-flight Field Verification**:
    - Before executing `gh pr create`, agents MUST verify that `--title` and `--body` (or `--body-file`) parameters are explicitly defined with populated, non-default content.
 
-4. **Prohibition on Merging Pull Requests**:
-   - Agents MUST NEVER merge a Pull Request under any circumstances.
-   - Prohibited actions include running `gh pr merge`, merging PR branches directly into `main`, or triggering automated merges.
-   - Merging Pull Requests is strictly reserved for human maintainers or designated governance processes.
+4. **Merging Pull Requests only through the merge executor**:
+   - `tticom-automation` MUST NEVER merge a Pull Request.
+   - `tticom-codex` and `tticomgov-code` may merge only through the merge executor (`python scripts/score2gp_orca_control.py merge --repository <owner/repo> --pull-request <n>`), only while listed in `roles.merge_controller`, only a PR they did not author, and only after a formal APPROVE at its exact live head from a non-author reviewer. Never merge in the reviewer run.
+   - Prohibited: a direct `gh pr merge`, `--admin` or any bypass, merging PR branches directly into `main`, or triggering automated merges outside the executor.
+   - The maintainer `tticom` may also merge. The executor is the sanctioned path, not an enforced one: the maintainer accepted on 2026-09-24 that delegated credentials can technically merge outside it, and the governance audit flags any delegated merge without a matching executor receipt.
 
 5. **Test Writing and Isolation Standards (Banned Synthetic-Only Mocks)**:
    - Every code modification MUST be verified by **both** an in-situ integration test (running against a real private fixture PDF, e.g., `Lesson-5.pdf` or `Lesson-6.pdf`) and an isolated unit test (using small public/synthetic inputs *if and only if* doing so adds isolated coverage value).

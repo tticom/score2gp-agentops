@@ -55,8 +55,9 @@ the same head. Reviews from all other accounts are ignored.
   `PUBLISH_AGY_HANDBACK`. Reconstruct, publish, and read back the exact-head author handback receipt before entering governance review.
 - Open PR with exact-head author handback comment and without formal review:
   report `AWAITING_GOVERNANCE_REVIEW`.
-- Open PR with current-head `APPROVED`: report `READY_FOR_HUMAN_MERGE` and
-  stop. Never merge.
+- Open PR with current-head `APPROVED`: report `READY_FOR_HUMAN_MERGE`
+  (historical name: ready for the merge executor or the maintainer) and stop.
+  `tticom-automation` never merges.
 - Conflicting checks, comments, reviews, or threads: report the exact conflict.
 - Merged PR: verify the merge on remote main. Do not rerun `Original Prompt`,
   delete the branch, or start a candidate follow-up. Report
