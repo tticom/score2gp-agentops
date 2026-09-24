@@ -72,7 +72,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
     """Capture normalized GitHub facts under the caller's scoped credential."""
     raw = run_json([
         "gh", "pr", "view", str(pull_request), "--repo", repository, "--json",
-        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit",
+        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit,mergedBy",
     ])
     reviews = []
     for review in raw.get("reviews", []):
@@ -135,6 +135,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
             "checks": checks,
             "unresolved_threads": sum(not bool(node.get("isResolved")) for node in nodes),
             "merge_commit": str((raw.get("mergeCommit") or {}).get("oid", "")),
+            "merged_by": str((raw.get("mergedBy") or {}).get("login", "")),
         },
         "protection": {
             "active_rulesets": len(active_rulesets),
@@ -735,6 +736,12 @@ def execute_merge(
     merge_commit = str(after_pr.get("merge_commit", ""))
     if len(merge_commit) != 40:
         raise ControlError(f"{repository}#{pull_request} has no 40-character merge commit")
+    actual_merger = str(after_pr.get("merged_by", ""))
+    if actual_merger != login:
+        raise ControlError(
+            f"{repository}#{pull_request} was merged by {actual_merger or 'an unknown login'}, not {login}; "
+            "no receipt posted"
+        )
     receipt = {
         "schema_version": 1,
         "repository": repository,

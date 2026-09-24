@@ -1084,9 +1084,9 @@ class FakeGitHub:
         return [c for c in self.commands if c[:3] == ["gh", "pr", "merge"]]
 
 
-def merged_state(head: str = HEAD, merge_commit: str = MERGE_COMMIT) -> dict:
+def merged_state(head: str = HEAD, merge_commit: str = MERGE_COMMIT, merged_by: str = "merge-app") -> dict:
     after = open_pr()
-    after["pull_request"].update(state="MERGED", head_sha=head, merge_commit=merge_commit)
+    after["pull_request"].update(state="MERGED", head_sha=head, merge_commit=merge_commit, merged_by=merged_by)
     return after
 
 
@@ -1265,3 +1265,34 @@ def test_governance_pr_path_is_not_bound_to_the_task_pr_number() -> None:
     facts["pull_request"]["number"] = 999
     decision = verify_merge_gate(executor_authority(), gated(facts))
     assert decision["decision"] == "ALLOW", decision["failures"]
+
+
+# --- GOV-01 review 5308044291: the receipt names GitHub's actual merger ---
+
+@pytest.mark.parametrize("actual_merger", ["outsider", "tticom", ""])
+def test_executor_posts_no_receipt_when_another_login_merged(actual_merger: str) -> None:
+    gh = FakeGitHub(open_pr(), merged_state(merged_by=actual_merger))
+    with pytest.raises(ControlError, match="no receipt posted"):
+        execute_merge(executor_authority(), "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert not any(c[:3] == ["gh", "pr", "comment"] for c in gh.commands)
+
+
+def test_live_capture_records_githubs_merger_login(monkeypatch) -> None:
+    raw = {
+        "number": 441, "state": "MERGED", "headRefName": "feat/task-108", "headRefOid": HEAD,
+        "baseRefName": "main", "author": {"login": "worker"}, "reviews": [], "statusCheckRollup": [],
+        "mergeCommit": {"oid": MERGE_COMMIT}, "mergedBy": {"login": "tticom-codex"},
+    }
+    threads = {"data": {"repository": {"pullRequest": {"reviewThreads": {
+        "nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}}
+    responses = iter([raw, threads, [], ])
+    requested = []
+
+    def fake_run_json(command):
+        requested.append(command)
+        return next(responses)
+
+    monkeypatch.setattr("scripts.score2gp_orca_control.run_json", fake_run_json)
+    snapshot = capture_live_state("tticom/score2gp", 441)
+    assert snapshot["pull_request"]["merged_by"] == "tticom-codex"
+    assert "mergedBy" in requested[0][requested[0].index("--json") + 1]
