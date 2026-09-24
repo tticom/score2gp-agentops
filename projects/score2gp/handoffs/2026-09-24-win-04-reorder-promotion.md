@@ -30,12 +30,18 @@
     - `skills/score2gp-task-orchestration.md`
     - `tests/test_dispatch_entrypoint_contract.py`, whose
       `test_reviewer_and_merge_role_firewalls_are_explicit` asserts the old wording.
+  - WIN-04's own prompt, `prompts/next/win-04-post-migration-governance-hygiene.md`, which
+    `task.prompt` references and which is therefore live. Governance aligned it in this PR with
+    the promoted status, the full merge-rule inventory and the conditional `merge_controller`
+    rule, and it is in `allowed_paths` (review `5304697361`).
   - The merge-rule acceptance criterion now covers all of these. Leaving any of them out would
     leave contradictory rules or force an out-of-scope edit.
   - The targeted validation command includes both test files.
-  - Historical programmes, prompts and records are not in scope.
+  - Historical programmes, records, and prompts for other tasks that are not live merge-rule
+    statements are not in scope.
 - `merge_policy` is unchanged here; #686 already set it to 1. `roles.merge_controller` is unchanged (empty).
-- Changed paths: `ORCHESTRATION_STATE.json`, `ACTIVE_TASK.md`, this handoff.
+- Changed paths: `ORCHESTRATION_STATE.json`, `ACTIVE_TASK.md`,
+  `prompts/next/win-04-post-migration-governance-hygiene.md`, this handoff.
 
 ## Notes carried forward for L3-01
 

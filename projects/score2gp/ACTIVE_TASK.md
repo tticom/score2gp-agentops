@@ -34,6 +34,7 @@ Remove stale agy-cycle and agy-skills references, restate live merge rules to th
 - `skills/score2gp-pr-hard-review.md`
 - `skills/score2gp-task-orchestration.md`
 - `tests/test_dispatch_entrypoint_contract.py`
+- `projects/score2gp/prompts/next/win-04-post-migration-governance-hygiene.md`
 
 ## Validation commands
 
