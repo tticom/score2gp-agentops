@@ -1,11 +1,12 @@
+import copy
 import json
 import sys
 import pytest
 from pathlib import Path
 from types import SimpleNamespace
 
-import shutil
 
+from scripts.score2gp_orchestrator import render_active_task
 from scripts.score2gp_dispatch import (
     DispatchError,
     _authenticated_login,
@@ -216,11 +217,29 @@ def test_explicit_review_does_not_widen_to_implementation(tmp_path) -> None:
         )
 
 
-def orca_checkout(tmp_path: Path, slot: str) -> Path:
+def live_authority() -> dict:
+    return json.loads(
+        (REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
+    )
+
+
+def orca_checkout(tmp_path: Path, slot: str, authority: dict | None = None) -> Path:
+    # A self-contained authority whose active task is a promoted implementation
+    # task, so these tests do not depend on the live task's current status.
+    fixture = copy.deepcopy(authority if authority is not None else live_authority())
+    fixture["task"] = {
+        **fixture["task"],
+        "id": "ORCA-FIXTURE",
+        "status": "PROMOTED",
+        "owner_role": "implementation",
+        "branch": "feat/orca-fixture",
+        "pull_request": None,
+    }
     agentops = checkout(tmp_path, slot)
-    (agentops / "projects/score2gp").mkdir(parents=True)
-    for name in ("ORCHESTRATION_STATE.json", "ACTIVE_TASK.md"):
-        shutil.copy(REPO / "projects/score2gp" / name, agentops / "projects/score2gp" / name)
+    project = agentops / "projects/score2gp"
+    project.mkdir(parents=True)
+    (project / "ORCHESTRATION_STATE.json").write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+    (project / "ACTIVE_TASK.md").write_text(render_active_task(fixture), encoding="utf-8")
     (tmp_path / "live.json").write_text("{}", encoding="utf-8")
     return agentops
 
@@ -240,6 +259,15 @@ def test_orca_path_assigns_implementation_in_the_author_workspace(tmp_path, monk
     run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
     assignment = json.loads(capsys.readouterr().out)
     assert assignment["worker"]["github_login"] == "tticom-automation"
+    assert assignment["worker"]["role"] == "implementation"
+
+
+def test_orca_path_does_not_depend_on_the_live_task_status(tmp_path, monkeypatch, capsys) -> None:
+    completed = live_authority()
+    completed["task"]["status"] = "COMPLETED"
+    agentops = orca_checkout(tmp_path, "auto", completed)
+    run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
+    assignment = json.loads(capsys.readouterr().out)
     assert assignment["worker"]["role"] == "implementation"
 
 
