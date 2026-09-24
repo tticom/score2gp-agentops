@@ -50,7 +50,7 @@ git log --oneline --decorate --max-count=8
 ## Autonomous loop
 
 1. Execute the task in `ACTIVE_TASK.md`.
-2. Validate, commit, push, open PR, and merge when clean if the current run policy allows autonomous merges.
+2. Validate, commit, push and open the PR. Merging happens only through the merge executor (a delegated `roles.merge_controller` login that did not author the PR) or by the maintainer.
 3. Complete the required review/governance task.
 4. Perform a continuation audit.
 5. Promote the next credible task or prove no safe continuation exists.

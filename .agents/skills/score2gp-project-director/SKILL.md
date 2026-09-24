@@ -37,7 +37,8 @@ mandatory marked PR summary. Reviewer mode is review-metadata-only: never edit
 the reviewed repository, branch, PR body, task state, prompt, report, or
 evidence artifact. A status-only response is a dispatcher failure.
 
-`READY_FOR_HUMAN_MERGE` and `AWAITING_AGY_FIXES` are report-and-stop states.
+`READY_FOR_HUMAN_MERGE` (historical name: ready for the merge executor or the
+maintainer) and `AWAITING_AGY_FIXES` are report-and-stop states.
 `PROMOTE_MERGED_TASK` and `PROMOTE_RESOLVED_TASK` authorize and require the
 post-merge continuation described below; a status-only response is a dispatcher
 failure.
@@ -83,10 +84,11 @@ Apply the project-specific rules in AgentOps:
 - private inputs remain local and ignored;
 - runtime provenance is required for conversion claims;
 - Agy may publish its authorised branch/PR but may not self-approve or merge;
-- `tticom-automation` and `tticom-gov` may never merge;
-- `tticom-codex` may merge only in a separate operation after a current explicit
-  instruction from `tticom` naming the exact repository, PR number, and
-  reviewed full head SHA;
+- `tticom-automation` may never merge;
+- `tticom-codex` and `tticomgov-code` may merge only through the merge executor
+  (`python scripts/score2gp_orca_control.py merge`), in a separate operation,
+  while listed in `roles.merge_controller`, and only a PR they did not author
+  with a non-author exact-head APPROVE; the maintainer `tticom` may also merge;
 - once you have raised a PR, you must expect a review;
 - review runs may change review metadata only and must leave the reviewed
   worktree clean;

@@ -64,9 +64,11 @@ Never edit source, tests, fixtures, prompts, reports, task state, PR bodies,
 branches, commits, refs, or evidence artifacts while reviewing. Never implement
 a fix or process improvement in the reviewed repository.
 
-`tticom-automation` and `tticom-gov` never merge. `tticom-codex` may merge
-only in a separate operation after a current explicit instruction from
-`tticom` naming the exact repository, PR number, and reviewed full head SHA.
+`tticom-automation` never merges, and the reviewer never merges in the review
+run. `tticom-codex` and `tticomgov-code` may merge only through the
+merge executor, in a separate operation, while listed in `roles.merge_controller`,
+and only a PR they did not author with a formal APPROVE at its exact live head
+from a non-author reviewer. The maintainer `tticom` may also merge.
 
 ## Publication & Mandatory PR Commenting
 

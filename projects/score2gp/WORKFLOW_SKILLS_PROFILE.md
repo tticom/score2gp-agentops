@@ -32,7 +32,9 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 - Uses separate clones and credential store
 - May publish independent review metadata or, in a separate authoring run,
   bounded governance PRs
-- May never modify a reviewed PR branch or merge any PR
+- May never modify a reviewed PR branch, and never merges in a review or
+  authoring run. May merge only through the merge executor, in a separate
+  operation, while listed in `roles.merge_controller`, and never a PR it authored
 
 ### Independent Codex reviewer
 
@@ -42,10 +44,12 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 - During review may publish only formal reviews, inline review comments, and
   the mandatory PR summary comment
 - May not modify the reviewed repository or author fixes in the review run
-- May merge only in a separate operation after a current explicit instruction
-  from `tticom` naming the exact repository, PR number, and reviewed full head SHA
+- May merge only through the merge executor, in a separate operation, while
+  listed in `roles.merge_controller`, and never a PR it authored
 
-`tticom-automation` and `tticom-gov` never merge. Any identity with the
+`tticom-automation` never merges. Merges by `tticom-codex` and `tticomgov-code`
+are audited, not exclusive: the governance audit flags any delegated merge
+without a matching executor receipt (maintainer decision, 2026-09-24). Any identity with the
 reviewer role may review any PR it did not author, including
 `tticom-automation`; review and implementation/governance-authoring roles must
 never be mixed in one run. An identity or role mismatch is a no-write stop.

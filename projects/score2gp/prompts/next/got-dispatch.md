@@ -115,7 +115,8 @@ local task state, chat, and issue comments do not count.
   prompts, reports, tasks, PR bodies, commits, or branches while reviewing.
 - Current-head review requests changes: report `AWAITING_AGY_FIXES`.
 - Current-head review approves: verify checks and threads, report
-  `READY_FOR_HUMAN_MERGE`, and stop. Never merge.
+  `READY_FOR_HUMAN_MERGE` (historical name: ready for the merge executor or the
+  maintainer), and stop. Never merge in the review run.
 - Formal agent review without the exact selected-level marked summary: report
   `REVIEW_PUBLICATION_INCOMPLETE`. Publish or repair only that missing review
   metadata, re-query GitHub, and stop; do not rerun the review, change the
@@ -161,8 +162,9 @@ Do not substitute a chat verdict, committed report, task-state edit, or PR-body
 rewrite for review metadata. A publisher failure is a hard stop. Re-query and
 prove the formal review, any inline findings, and mandatory summary comment
 exist on the exact head. Finally prove the review worktree is still clean.
-`tticom-gov` and `tticom-automation` never merge. `tticom-codex` requires a
-separate current exact-PR maintainer instruction before any merge operation.
+`tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge only
+through the merge executor, in a separate operation, while listed in
+`roles.merge_controller`, and never a PR they authored.
 
 Repeated `got` with unchanged remote inputs creates no new task or duplicate
 review.

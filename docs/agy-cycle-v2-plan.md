@@ -83,7 +83,9 @@ Writable controller state is never shared between cycles.
 - **AGY/implementation** edits the assigned worktree and runs validation.
 - **Orca** claims work, invokes commands, and collects machine-readable facts.
 - **Reviewer** receives a detached read-only worktree and an exact PR head.
-- **Human/integration authority** decides merge; workers never merge.
+- **Merge** happens only through the merge executor (`score2gp_orca_control.py merge`,
+  delegated `roles.merge_controller` logins) or by the maintainer; workers
+  (`tticom-automation`) never merge.
 
 The controller commands are deliberately explicit:
 

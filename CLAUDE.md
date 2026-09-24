@@ -48,7 +48,8 @@ previous handback summary, or reconstruct the state in prose.
   `current_review.id`, `current_review.commit_id`, and `current_review.body`.
 - `PUBLISH_AGY_HANDBACK`: reconstruct, publish, and read back the author
   handback receipt for the exact live head, then report `AWAITING_GOVERNANCE_REVIEW`.
-- `AWAITING_GOVERNANCE_REVIEW` or `READY_FOR_HUMAN_MERGE`: report and stop.
+- `AWAITING_GOVERNANCE_REVIEW` or `READY_FOR_HUMAN_MERGE` (historical name: ready
+  for the merge executor or the maintainer): report and stop.
 - `MERGED_AWAITING_GOVERNANCE_PROMOTION`: report and stop. Do not rerun,
   re-verify, summarize, or otherwise continue the completed product task.
   Report the returned `next_action` directing governance to run `got`.
@@ -75,14 +76,20 @@ a prior managed task.
 - `REVIEW_PUBLICATION_INCOMPLETE`: reconcile the missing marked summary for the
   existing exact-head formal review, verify it remotely, and stop. Do not rerun
   the review or create a replacement verdict.
-- `READY_FOR_HUMAN_MERGE`: report and stop.
+- `READY_FOR_HUMAN_MERGE`: report and stop. Merging is a separate executor operation.
 - `AWAITING_AGY_FIXES`: report the current exact-head findings and stop.
 - `PROMOTE_MERGED_TASK` / `PROMOTE_RESOLVED_TASK`: verify merged main and prepare the next governance
   promotion. A status-only response is a dispatcher failure; historical
   reviews must not override `MERGED`.
 
-`tticom-automation` and `tticom-gov` never merge. `tticom-codex` may merge only
-after a separate current explicit instruction from `tticom` naming the exact
-repository, PR number, and reviewed full head SHA.
+`tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge only
+through the merge executor (`python scripts/score2gp_orca_control.py merge
+--repository <owner/repo> --pull-request <n>`), in a separate operation and never
+in the reviewer run, only while listed in `roles.merge_controller`, and only a
+PR they did not author that has a formal APPROVE at its exact live head from a
+non-author reviewer. The maintainer `tticom` may also merge. The executor is the
+sanctioned path, not an enforced one: the maintainer accepted on 2026-09-24 that
+delegated credentials can technically merge outside it, and the governance
+audit flags any delegated merge without a matching executor receipt.
 
 Read `AGENT-RULES.md` and the selected role skill for all other work.

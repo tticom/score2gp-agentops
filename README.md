@@ -157,7 +157,8 @@ python scripts/agy_cycle.py transition CYCLE-ID REVIEW_REQUIRED
 
 The PR head must be read back and match the recorded SHA before review or merge
 readiness. Reviewers use an exact-head, read-only worktree. Review fixes remain
-on the same branch and PR. After a human merge, reconciliation is explicit:
+on the same branch and PR. After the merge (by the merge executor or the
+maintainer), reconciliation is explicit:
 
 ```bash
 python scripts/agy_cycle.py transition CYCLE-ID APPROVED

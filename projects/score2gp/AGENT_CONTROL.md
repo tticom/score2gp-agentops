@@ -19,7 +19,7 @@ The interface is side-effect-free and idempotent. It returns exactly one of:
 - `EXECUTE_ASSIGNMENT`
 - `REMEDIATE_CURRENT_PR`
 - `AWAIT_REVIEW`
-- `AWAIT_HUMAN_MERGE`
+- `AWAIT_HUMAN_MERGE` (historical name: ready for the merge executor or the maintainer)
 - `REQUEST_MUSICAL_ADJUDICATION`
 - `PROPOSE_NEXT_TASK`
 - `BLOCKED`
@@ -183,10 +183,15 @@ publishes review metadata only and never corrects the reviewed branch, PR body,
 task state, report, prompt, or evidence artifact. Any identity granted the
 reviewer role may review any independently authored PR, including a governance
 PR; the only identity restriction is that no identity may review its own PR.
-`tticom-automation` and `tticom-gov` never merge; `tticom-codex` never merges
-in the reviewer run.
-`tticom-codex` may merge only in a separate operation after a current explicit instruction
-from `tticom` naming the exact repository, PR number, and reviewed full head SHA.
+`tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge only
+through the merge executor (`python scripts/score2gp_orca_control.py merge
+--repository <owner/repo> --pull-request <n>`), in a separate operation and never
+in the reviewer run, only while listed in `roles.merge_controller`, and only a
+PR they did not author that has a formal APPROVE at its exact live head from a
+non-author reviewer. The maintainer `tticom` may also merge. The executor is the
+sanctioned path, not an enforced one: the maintainer accepted on 2026-09-24 that
+delegated credentials can technically merge outside it, and the governance
+audit flags any delegated merge without a matching executor receipt.
 
 ## Continuous Forward Motion and Real-World Validation
 
@@ -292,7 +297,7 @@ AgentOps branch as active authority. This exception permits inspection only; it
 does not authorize task execution or repository mutation.
 
 The PR Evidence Contract is an author-side gate. It does not replace the
-adversarial Reviewer role or human merge requirement. Its purpose is to make
+adversarial Reviewer role or the merge gate. Its purpose is to make
 the exact claims, proof, limits, and remaining unknowns inspectable in one
 review pass before a PR is opened.
 
@@ -467,7 +472,7 @@ Durable product architecture, parser design, diagnostics design, fixture plans, 
 
 Agents may update task-tracking files only for the approved task, and only to reflect accurate state.
 
-A task must not be marked `DONE` until the human has actually merged the PR and it has been verified on main.
+A task must not be marked `DONE` until the PR has actually been merged (by the merge executor or the maintainer) and verified on main.
 
 ## Status Model
 
@@ -478,9 +483,9 @@ Statuses must strictly distinguish:
 - `IN_PROGRESS`: Agents are working inside the approved task boundary.
 - `PR_OPEN`: A task PR exists. Agents may continue review, fixes, tests, follow-up commits, and re-review on the same branch/PR.
 - `CHANGES_REQUESTED`: Reviewer found issues. Developer may fix them on the same branch/PR without new human approval.
-- `READY_FOR_HUMAN_MERGE`: Reviewer says acceptance criteria are met and all Codex comments on the PR are addressed. Agents must stop before merge.
+- `READY_FOR_HUMAN_MERGE` (historical name): Reviewer says acceptance criteria are met and all Codex comments on the PR are addressed. The PR is ready for the merge executor or the maintainer; authors and reviewers stop, and any merge is a separate executor operation.
 - `BLOCKED`: Human decision is required.
-- `DONE`: Only after human merge or explicit human closure.
+- `DONE`: Only after a verified merge (merge executor or maintainer) or explicit maintainer closure.
 
 ## Task Scope and Exploration
 
@@ -522,16 +527,14 @@ Agents operate under the following role boundaries during team operation:
 Agents must not push directly to `main`, force-push, run `git reset --hard`, run
 `git clean` with deletion flags, delete branches, bypass failing checks, approve
 their own PR, or expand scope without authority. Reviewer mode permits review
-metadata only. `tticom-automation` and `tticom-gov` must never attempt a merge.
+metadata only. `tticom-automation` must never attempt a merge.
 
-### Human-Only Operations
+### Maintainer-Only Operations
 
-Only the human maintainer or a separately operated external release integrator
-may merge a PR, approve scope expansion, accept a known failing-check risk, or
-explicitly close/abandon a task without merge. `tticom-automation` and
-`tticom-gov` have no merge exception. `tticom-codex` may merge only after a
-separate current explicit `tticom` instruction naming the exact repository, PR
-number, and reviewed full head SHA.
+Only the maintainer may approve scope expansion, accept a known failing-check
+risk, or explicitly close/abandon a task without merge. Merging follows the
+merge-executor rule above: `tticom-automation` never merges, and
+`tticom-codex` / `tticomgov-code` merge only through the executor.
 
 ## Product Boundaries
 

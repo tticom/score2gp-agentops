@@ -735,3 +735,147 @@ def test_review_id_accepts_rest_numeric_and_graphql_node_ids() -> None:
     assert not score2gp_governance_audit.has_valid_review_id(
         "**Review Verdict**: APPROVED (Review ID `looks-good`)"
     )
+
+
+# --- GOV-01 detective control: delegated merges need a matching merge-executor receipt ---
+
+def _merge_audit_authority(since="2026-09-25", controllers=("tticom-codex", "tticomgov-code")):
+    return {
+        "merge_policy": {"executor_audit_since": since},
+        "roles": {"merge_controller": {"github_logins": list(controllers)}},
+    }
+
+
+def _fake_gh(merged_by="tticom-codex", receipt_head="a" * 40, receipt_merge="m" * 40, fail=False):
+    from scripts.score2gp_orca_control import format_merge_receipt
+
+    calls = []
+
+    def gh_json(args):
+        calls.append(args)
+        if fail:
+            raise RuntimeError("HTTP 401")
+        if args[:2] == ["pr", "list"]:
+            if args[3] != "tticom/score2gp":
+                return []
+            return [{"number": 7, "mergedBy": {"login": merged_by}, "headRefOid": "a" * 40,
+                     "mergeCommit": {"oid": "m" * 40}}]
+        body = format_merge_receipt({"head_sha": receipt_head, "merge_commit": receipt_merge, "merged_by": merged_by})
+        return [{"user": {"login": merged_by}, "body": body}]
+
+    return gh_json, calls
+
+
+def test_merge_receipt_audit_is_inactive_without_a_cutoff_or_controllers() -> None:
+    gh_json, calls = _fake_gh()
+    assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(since=""), gh_json) == []
+    assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(controllers=()), gh_json) == []
+    assert calls == []
+
+
+def test_merge_receipt_audit_passes_a_matching_receipt_and_queries_both_repositories() -> None:
+    gh_json, calls = _fake_gh()
+    assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json) == []
+    listed = [args[3] for args in calls if args[:2] == ["pr", "list"]]
+    assert listed == ["tticom/score2gp", "tticom/score2gp-agentops"]
+    assert all("merged:>=2026-09-25" in args for args in calls if args[:2] == ["pr", "list"])
+
+
+def test_merge_receipt_audit_flags_a_delegated_merge_with_a_mismatched_receipt() -> None:
+    gh_json, _ = _fake_gh(receipt_head="c" * 40)
+    violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json)
+    assert violations == [
+        "tticom/score2gp#7 merged by delegated login tticom-codex without a matching merge-executor receipt"
+    ]
+
+
+def test_merge_receipt_audit_fails_closed_when_github_is_unavailable() -> None:
+    gh_json, _ = _fake_gh(fail=True)
+    violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json)
+    assert len(violations) == 2
+    assert all(v.startswith("Unable to audit merge receipts for ") and "HTTP 401" in v for v in violations)
+
+
+# --- GOV-01 review 5307413925: exhaustive collection, merger identity, gh page shapes ---
+
+def _many_merges_gh(count, unreceipted_position):
+    from scripts.score2gp_orca_control import format_merge_receipt
+
+    def gh_json(args):
+        if args[:2] == ["pr", "list"]:
+            if args[3] != "tticom/score2gp":
+                return []
+            return [{"number": n, "mergedBy": {"login": "tticom-codex"}, "headRefOid": "a" * 40,
+                     "mergeCommit": {"oid": f"{n:040d}"}} for n in range(1, count + 1)]
+        number = int(args[-1].rsplit("/", 2)[-2])
+        if number == unreceipted_position:
+            return []
+        body = format_merge_receipt({"head_sha": "a" * 40, "merge_commit": f"{number:040d}", "merged_by": "tticom-codex"})
+        return [{"user": {"login": "tticom-codex"}, "body": body}]
+
+    return gh_json
+
+
+def test_merge_receipt_audit_covers_merges_beyond_the_first_two_hundred() -> None:
+    violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), _many_merges_gh(250, 201))
+    assert violations == [
+        "tticom/score2gp#201 merged by delegated login tticom-codex without a matching merge-executor receipt"
+    ]
+
+
+def test_merge_receipt_audit_fails_closed_when_the_merged_list_may_be_truncated() -> None:
+    limit = score2gp_governance_audit.MERGE_AUDIT_PR_LIMIT
+    violations = score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), _many_merges_gh(limit, 0))
+    assert len(violations) == 1
+    assert "reached the query limit" in violations[0] and "tticom/score2gp" in violations[0]
+
+
+def test_merge_receipt_audit_flags_a_merge_with_no_merger_identity() -> None:
+    def gh_json(args):
+        if args[:2] == ["pr", "list"]:
+            return [{"number": 9, "mergedBy": None, "headRefOid": "a" * 40, "mergeCommit": {"oid": "m" * 40}}] \
+                if args[3] == "tticom/score2gp" else []
+        return []
+
+    assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority(), gh_json) == [
+        "tticom/score2gp#9 has no merger identity; cannot verify it against merge-executor receipts"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("stdout", "expected"),
+    [
+        ('[{"a": 1}]\n[{"a": 2}]\n', [{"a": 1}, {"a": 2}]),      # --paginate: one array per page
+        ('[[{"a": 1}], [{"a": 2}]]', [{"a": 1}, {"a": 2}]),      # --paginate --slurp
+        ('{"login": "x"}', {"login": "x"}),                      # single object
+        ("", None),
+    ],
+    ids=["paginate-pages", "slurp", "object", "empty"],
+)
+def test_gh_json_stream_parses_real_cli_page_shapes(stdout, expected) -> None:
+    assert score2gp_governance_audit.parse_gh_json_stream(stdout) == expected
+
+
+def test_merge_receipt_audit_reads_receipts_from_multi_page_comment_output(monkeypatch) -> None:
+    # Drive the default gh adapter with CLI-shaped stdout: a receipt on the second comment page.
+    from scripts.score2gp_orca_control import format_merge_receipt
+
+    receipt = format_merge_receipt({"head_sha": "a" * 40, "merge_commit": "m" * 40, "merged_by": "tticom-codex"})
+    pages = json.dumps([[{"user": {"login": "tticom-automation"}, "body": "handback"}],
+                        [{"user": {"login": "tticom-codex"}, "body": receipt}]])
+    merged = json.dumps([{"number": 7, "mergedBy": {"login": "tticom-codex"}, "headRefOid": "a" * 40,
+                          "mergeCommit": {"oid": "m" * 40}}])
+    seen = []
+
+    def fake_run(command, capture_output, text):
+        seen.append(command)
+        if command[1:3] == ["pr", "list"]:
+            stdout = merged if command[4] == "tticom/score2gp" else "[]"
+        else:
+            assert "--slurp" in command
+            stdout = pages
+        return subprocess.CompletedProcess(command, 0, stdout, "")
+
+    monkeypatch.setattr(score2gp_governance_audit.subprocess, "run", fake_run)
+    assert score2gp_governance_audit.audit_delegated_merges(_merge_audit_authority()) == []
+    assert any(c[1] == "api" for c in seen)

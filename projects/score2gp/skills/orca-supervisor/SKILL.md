@@ -45,6 +45,8 @@ or resolver disagreement. Orca prompts cannot override a deterministic denial.
 
 ## Merge boundary
 
-Run `merge-check` only after semantic review and governance `GO`. The current
-controller is dry-run-only. A supervisor, worker, reviewer, or governor must
-never perform the merge.
+Run `merge-check` only after semantic review and governance `GO`. `merge-check`
+is dry-run-only. The only sanctioned agent merge is the separate `merge` command
+(`score2gp_orca_control.py merge`), run by a `roles.merge_controller` login that
+did not author the PR. A supervisor or worker never merges, and no reviewer or
+governor merges inside its review run.

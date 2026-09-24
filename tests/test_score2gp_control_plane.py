@@ -256,8 +256,21 @@ def test_role_policy_is_derived_from_authority_roles() -> None:
     assert policy["maintainers"] == sorted(authority["roles"]["supervisor"]["github_logins"])
     assert policy["delegated_mergers"] == sorted(authority["roles"]["merge_controller"]["github_logins"])
     assert "tticom-automation" in policy["never_merge"]
-    assert "tticomgov-code" in policy["never_merge"]
+    assert "tticom-automation" not in policy["delegated_mergers"]
     assert not set(policy["never_merge"]) & set(policy["maintainers"] + policy["delegated_mergers"])
+
+
+def test_role_policy_delegates_merge_only_to_merge_controller_logins() -> None:
+    authority = json.loads(
+        (REPO / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
+    )
+    for controllers in ([], ["tticom-codex", "tticomgov-code"]):
+        authority["roles"]["merge_controller"]["github_logins"] = controllers
+        policy = role_policy(authority)
+        assert policy["delegated_mergers"] == sorted(controllers)
+        assert "tticom-automation" in policy["never_merge"]
+        for login in ("tticom-codex", "tticomgov-code"):
+            assert (login in policy["never_merge"]) is (login not in controllers)
 
 
 def test_role_policy_keeps_mergers_out_of_never_merge() -> None:
