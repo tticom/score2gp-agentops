@@ -1,76 +1,41 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 44,
+  "authority_revision": 45,
   "task": {
-    "id": "GOV-01",
-    "title": "Delegated merge execution through the merge gate (audited)",
-    "objective": "Let tticom-codex and tticomgov-code merge through a sanctioned executor that runs verify_merge_gate on fresh live state and merges the exact reviewed head, detect any delegated merge without a matching executor receipt, and restate every live human-only merge rule; the maintainer accepted on 2026-09-24 that exclusivity is audited, not enforced.",
+    "id": "GOV-02",
+    "title": "Isolate governance-audit tests from the live receipt audit",
+    "objective": "Make the main()-level governance-audit tests independent of whether live authority enables the GOV-01 receipt audit, without changing audit behaviour, so governance can set merge_policy.executor_audit_since.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/gov-01-delegated-merge-execution",
+    "branch": "feat/gov-02-receipt-audit-test-isolation",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/gov-01-delegated-merge-execution.md",
+    "prompt": "projects/score2gp/prompts/next/gov-02-receipt-audit-test-isolation.md",
     "allowed_paths": [
-      "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_control_plane.py",
-      "tests/test_score2gp_orca_control.py",
-      "tests/test_score2gp_control_plane.py",
-      "tests/test_dispatch_entrypoint_contract.py",
-      ".agents/rules/pr_standards.md",
-      ".agents/skills/score2gp-project-director/SKILL.md",
-      "AGENTS.md",
-      "CLAUDE.md",
-      "projects/score2gp/AGENT_CONTROL.md",
-      "projects/score2gp/ORCA_WORKFLOW.md",
-      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
-      "projects/score2gp/prompts/next/got-dispatch.md",
-      "projects/score2gp/prompts/next/go-dispatch.md",
-      "projects/score2gp/prompts/next/go-got-dispatcher.md",
-      "projects/score2gp/skills/orca-supervisor/SKILL.md",
-      "projects/score2gp/skills/project-director/SKILL.md",
-      "projects/score2gp/templates/AGENT_TASK_TEMPLATE.md",
-      "skills/score2gp-pr-hard-review.md",
-      "skills/score2gp-task-orchestration.md",
-      "skills/score2gp-project-director.md",
-      "README.md",
-      "docs/agy-cycle-v2-plan.md",
-      "projects/score2gp/SIMPLE_AGENT_PROCESS.md",
-      "scripts/score2gp_orchestrator.py",
-      "scripts/score2gp_publish_review.py",
-      "scripts/score2gp_governance_audit.py",
-      "tests/test_score2gp_orchestrator.py",
       "tests/test_governance_audit.py",
-      "tests/test_score2gp_publish_review.py",
-      ".github/workflows/governance-control-plane.yml"
+      "scripts/score2gp_governance_audit.py"
     ],
     "acceptance": [
-      "A merge executor merges only on a verify_merge_gate ALLOW computed from fresh live state, runs gh pr merge --match-head-commit with the exact reviewed head, never --admin, and records a read-back receipt (gate decision, reviewed head, merge commit, merging login); any DENY, error, head change or bypass capability fails closed.",
-      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, and bypass capability.",
-      "Detective control under the maintainer's 2026-09-24 accepted residual risk: the governance audit fails when a PR merged by a merge_controller login has no executor receipt, a receipt for a different head, or a receipt whose merge commit differs from the actual merge commit; each case has a negative test shown to fail with the check disabled. No preventive exclusivity is claimed: docs and skills call the executor the only sanctioned path and state that delegated credentials can technically merge outside it or forge a receipt.",
-      "Required checks are evaluated per repository (tticom/score2gp: test; tticom/score2gp-agentops: deterministic-control-plane).",
-      "The path for non-task governance PRs is explicit and tested and cannot bypass the approval, check or thread requirements.",
-      "Human-merge states in code (AWAIT_HUMAN_MERGE, human_merge, READY_FOR_HUMAN_MERGE) are renamed or redefined consistently across every producer, consumer, doc and test.",
-      "role_policy is ready for roles.merge_controller to hold tticom-codex and tticomgov-code; governance fills it when reconciling GOV-01 after its merge, not in the implementation PR.",
-      "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63, other tasks' prompts, plans and historical records are unchanged.",
+      "Every main()-level test in tests/test_governance_audit.py controls the receipt-audit step (step 6) explicitly and does not depend on live merge_policy or roles.",
+      "A main()-level test shows a receipt-audit violation fails the audit, and another shows step 6 is skipped when executor_audit_since is unset.",
+      "The full suite passes both with the repository's authority and with a temporary authority copy that sets merge_policy.executor_audit_since and roles.merge_controller (demonstrated in the PR, e.g. by a test or a documented run).",
+      "Receipt-audit semantics, the merge executor and all merge rules are unchanged.",
       "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
     ],
     "validation_commands": [
       "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py tests/test_score2gp_publish_review.py",
+      "python -m pytest tests/test_governance_audit.py",
       "python -m pytest",
       "git diff --check"
     ],
     "dependencies": [
-      "WIN-04"
+      "GOV-01"
     ],
     "stop_conditions": [
-      "identity_gate_loosened_or_bypassed",
-      "merge_without_gate_allow",
-      "admin_bypass_used",
-      "historical_record_rewritten",
+      "receipt_audit_semantics_changed",
+      "test_weakened_to_pass",
       "linux_ci_broken"
     ],
     "reviewer_role": "reviewer",
@@ -231,7 +196,10 @@
       ]
     },
     "merge_controller": {
-      "github_logins": [],
+      "github_logins": [
+        "tticom-codex",
+        "tticomgov-code"
+      ],
       "allowed_actions": [
         "verify_merge_gate",
         "merge_exact_head"
@@ -252,7 +220,15 @@
     "require_governance_go": true,
     "require_reviewed_head": true,
     "require_resolved_threads": true,
-    "allow_admin_bypass": false
+    "allow_admin_bypass": false,
+    "required_checks_by_repository": {
+      "tticom/score2gp": [
+        "test"
+      ],
+      "tticom/score2gp-agentops": [
+        "deterministic-control-plane"
+      ]
+    }
   },
   "completed_tasks": [
     {
@@ -1068,6 +1044,84 @@
       "merge_commit": "0f5074c23e01a779e5862b3990abfe13c364528b",
       "reconciled": true,
       "reconciled_at": "2026-09-24T15:55:09.321621+00:00"
+    },
+    {
+      "id": "GOV-01",
+      "title": "Delegated merge execution through the merge gate (audited)",
+      "objective": "Let tticom-codex and tticomgov-code merge through a sanctioned executor that runs verify_merge_gate on fresh live state and merges the exact reviewed head, detect any delegated merge without a matching executor receipt, and restate every live human-only merge rule; the maintainer accepted on 2026-09-24 that exclusivity is audited, not enforced.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "feat/gov-01-delegated-merge-execution",
+      "pull_request": 691,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/gov-01-delegated-merge-execution.md",
+      "allowed_paths": [
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_control_plane.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_control_plane.py",
+        "tests/test_dispatch_entrypoint_contract.py",
+        ".agents/rules/pr_standards.md",
+        ".agents/skills/score2gp-project-director/SKILL.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "projects/score2gp/AGENT_CONTROL.md",
+        "projects/score2gp/ORCA_WORKFLOW.md",
+        "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
+        "projects/score2gp/prompts/next/got-dispatch.md",
+        "projects/score2gp/prompts/next/go-dispatch.md",
+        "projects/score2gp/prompts/next/go-got-dispatcher.md",
+        "projects/score2gp/skills/orca-supervisor/SKILL.md",
+        "projects/score2gp/skills/project-director/SKILL.md",
+        "projects/score2gp/templates/AGENT_TASK_TEMPLATE.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+        "skills/score2gp-project-director.md",
+        "README.md",
+        "docs/agy-cycle-v2-plan.md",
+        "projects/score2gp/SIMPLE_AGENT_PROCESS.md",
+        "scripts/score2gp_orchestrator.py",
+        "scripts/score2gp_publish_review.py",
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_score2gp_orchestrator.py",
+        "tests/test_governance_audit.py",
+        "tests/test_score2gp_publish_review.py",
+        ".github/workflows/governance-control-plane.yml"
+      ],
+      "acceptance": [
+        "A merge executor merges only on a verify_merge_gate ALLOW computed from fresh live state, runs gh pr merge --match-head-commit with the exact reviewed head, never --admin, and records a read-back receipt (gate decision, reviewed head, merge commit, merging login); any DENY, error, head change or bypass capability fails closed.",
+        "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, and bypass capability.",
+        "Detective control under the maintainer's 2026-09-24 accepted residual risk: the governance audit fails when a PR merged by a merge_controller login has no executor receipt, a receipt for a different head, or a receipt whose merge commit differs from the actual merge commit; each case has a negative test shown to fail with the check disabled. No preventive exclusivity is claimed: docs and skills call the executor the only sanctioned path and state that delegated credentials can technically merge outside it or forge a receipt.",
+        "Required checks are evaluated per repository (tticom/score2gp: test; tticom/score2gp-agentops: deterministic-control-plane).",
+        "The path for non-task governance PRs is explicit and tested and cannot bypass the approval, check or thread requirements.",
+        "Human-merge states in code (AWAIT_HUMAN_MERGE, human_merge, READY_FOR_HUMAN_MERGE) are renamed or redefined consistently across every producer, consumer, doc and test.",
+        "role_policy is ready for roles.merge_controller to hold tticom-codex and tticomgov-code; governance fills it when reconciling GOV-01 after its merge, not in the implementation PR.",
+        "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63, other tasks' prompts, plans and historical records are unchanged.",
+        "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python scripts/score2gp_governance_audit.py",
+        "python -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py tests/test_score2gp_orchestrator.py tests/test_governance_audit.py tests/test_score2gp_publish_review.py",
+        "python -m pytest",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "WIN-04"
+      ],
+      "stop_conditions": [
+        "identity_gate_loosened_or_bypassed",
+        "merge_without_gate_allow",
+        "admin_bypass_used",
+        "historical_record_rewritten",
+        "linux_ci_broken"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "9d721675241b934d2c1f176889c24164560d37c6",
+      "merge_commit": "0a442eb2af4d58a9c542fd580766cb7ec58f1303",
+      "reconciled": true,
+      "reconciled_at": "2026-09-24T18:18:27.602943+00:00"
     }
   ]
 }
