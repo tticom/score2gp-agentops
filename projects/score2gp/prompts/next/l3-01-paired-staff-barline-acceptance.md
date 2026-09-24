@@ -1,6 +1,6 @@
 # L3-01 — Paired-staff barline acceptance for the Lesson 3 first system
 
-- **Status**: PROPOSED (`next_task_proposal`). Not executable until governance promotes it.
+- **Status**: PROMOTED (the `task` in `ORCHESTRATION_STATE.json`, authority revision 46). Executable by the implementation role.
 - **Repository**: `tticom/score2gp`
 - **Branch**: `feat/l3-01-paired-staff-barline-acceptance`
 - **Owner Role**: `implementation`
@@ -50,6 +50,11 @@ Allowed paths:
 - `src/score2gp/pdf.py`: only the partner-staff candidate selection and inheritance block, and helpers it calls.
 - `tests/test_paired_staff_barline_acceptance.py`: new focused tests.
 - `tests/test_lesson3_native_acceptance.py`: only to re-pin `test_baseline_red_is_verified_and_exactly_classified` to the new exact red classification. It must not be weakened (see L3-00 PR, pre-submit challenge 4).
+
+- `tests/test_pdf.py` and `tests/test_npg_05_irregular_layout_real.py`: only to re-pin expectations
+  that encoded the stem over-segmentation, justified against reference GP measure counts. These
+  were added at promotion (authority revision 46) after a read-only probe of the H2 fix. It gives
+  Lesson 3 66/66 and Lesson 7 50/50 measures, against 131 and 121 before.
 
 No change to the acceptance coordinator, the reference reader, the IR, the
 writer, the CLI, dependencies or governance. No private musical content,

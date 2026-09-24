@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: GOV-02 — Isolate governance-audit tests from the live receipt audit
+**Task**: L3-01 — Paired-staff barline acceptance for the Lesson 3 first system
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/gov-02-receipt-audit-test-isolation`
+**PR Branch**: `feat/l3-01-paired-staff-barline-acceptance`
 
 **Pull Request**: TBD
 
@@ -16,16 +16,20 @@
 
 ## Objective
 
-Make the main()-level governance-audit tests independent of whether live authority enables the GOV-01 receipt audit, without changing audit behaviour, so governance can set merge_policy.executor_audit_since.
+Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.
 
 ## Allowed paths
 
-- `tests/test_governance_audit.py`
-- `scripts/score2gp_governance_audit.py`
+- `src/score2gp/pdf.py`
+- `tests/test_paired_staff_barline_acceptance.py`
+- `tests/test_lesson3_native_acceptance.py`
+- `tests/test_pdf.py`
+- `tests/test_npg_05_irregular_layout_real.py`
 
 ## Validation commands
 
-- `python scripts/score2gp_governance_audit.py`
-- `python -m pytest tests/test_governance_audit.py`
+- `python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py`
+- `python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py`
 - `python -m pytest`
+- `python scripts/artifact_audit.py`
 - `git diff --check`
