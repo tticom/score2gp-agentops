@@ -4,8 +4,8 @@
   "authority_revision": 42,
   "task": {
     "id": "WIN-04",
-    "title": "Post-migration governance hygiene and merge-rule alignment",
-    "objective": "Remove stale agy-cycle and agy-skills references, restate live merge rules to the maintainer's 2026-09-24 decision, and decouple governance tests from live authority and untracked files.",
+    "title": "Post-migration governance hygiene and test decoupling",
+    "objective": "Remove stale agy-cycle and agy-skills references, and decouple governance tests from live authority and untracked files. Agent merge authority is out of scope and belongs to a separate governance task.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
@@ -16,32 +16,20 @@
     "allowed_paths": [
       "docs/agy-cycle.md",
       "projects/score2gp/prompts/next/go-dispatch.md",
-      "AGENTS.md",
-      "CLAUDE.md",
-      "projects/score2gp/AGENT_CONTROL.md",
       "tests/test_governance_audit.py",
-      "tests/test_score2gp_dispatch.py",
-      "tests/test_score2gp_control_plane.py",
-      ".agents/skills/score2gp-project-director/SKILL.md",
-      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
-      "projects/score2gp/prompts/next/got-dispatch.md",
-      "skills/score2gp-pr-hard-review.md",
-      "skills/score2gp-task-orchestration.md",
-      "tests/test_dispatch_entrypoint_contract.py",
-      "projects/score2gp/prompts/next/win-04-post-migration-governance-hygiene.md"
+      "tests/test_score2gp_dispatch.py"
     ],
     "acceptance": [
       "docs/agy-cycle.md documents only commands that exist (python scripts/agy_cycle.py) or is deleted if agy_cycle.py is unused.",
       "go-dispatch.md names agentops-claude-skills, consistent with SKILLS_LOCK.md, as the skills source.",
-      "Every live statement of the merge rule (AGENTS.md, CLAUDE.md, AGENT_CONTROL.md, WORKFLOW_SKILLS_PROFILE.md, prompts/next/got-dispatch.md, skills/score2gp-pr-hard-review.md, skills/score2gp-task-orchestration.md, .agents/skills/score2gp-project-director/SKILL.md and this task's prompt, prompts/next/win-04-post-migration-governance-hygiene.md) states that tticom-automation never merges and that tticom-codex and tticomgov-code may merge only in a separate operation, while listed in roles.merge_controller, after a non-author exact-head APPROVE; tests/test_dispatch_entrypoint_contract.py asserts that rule instead of the old per-PR instruction wording.",
       "test_repository_tooling_is_python_only checks tracked files, with a negative control that a tracked .sh file still fails.",
       "The test_orca_path_* tests use a self-contained fixture authority and pass when the live task is COMPLETED.",
-      "tests/test_score2gp_control_plane.py::test_role_policy_is_derived_from_authority_roles asserts only that tticom-automation is never-merge and that delegated mergers equal roles.merge_controller logins, so it passes both with merge_controller empty and with [tticom-codex, tticomgov-code].",
+      "No live statement of merge authority changes; merge authority is a separate governance task.",
       "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
     ],
     "validation_commands": [
       "python scripts/score2gp_governance_audit.py",
-      "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py",
+      "python -m pytest tests/test_governance_audit.py tests/test_score2gp_dispatch.py",
       "python -m pytest",
       "git diff --check"
     ],

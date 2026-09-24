@@ -2,43 +2,34 @@
 
 ## Authority
 
-- Promoted task: `WIN-04` - Post-migration governance hygiene and merge-rule alignment (`PROMOTED`)
+- Promoted task: `WIN-04` - Post-migration governance hygiene and test decoupling (`PROMOTED`)
 - Next proposal: `L3-01` - Paired-staff barline acceptance for the Lesson 3 first system
   (`PROMOTED` -> `PROPOSED`, otherwise unchanged)
 - Authority source: `projects/score2gp/ORCHESTRATION_STATE.json` (authority revision 41 -> 42)
 - Base: `main` at `c8207b545e6da8371e216f1ef75cbfa1502bd5cd`. That is #686, which promoted L3-01 and
   set `merge_policy.minimum_approvals` to 1, merged at reviewed head
   `194f3ba083956a78eb2a0467541b0a4feda79311`.
-- Ordering: on 2026-09-24 the maintainer `tticom` directed that WIN-04 goes before L3-01, so agent
-  merge authority is aligned before product work continues. L3-01 had no branch, PR or work
-  started, so returning it to `PROPOSED` discards nothing.
+- Ordering: on 2026-09-24 the maintainer `tticom` directed that WIN-04 goes before L3-01.
+  L3-01 had no branch, PR or work started, so returning it to `PROPOSED` discards nothing.
 - Governance publisher: `tticomgov-code` from `worktrees/gov`
 
 ## Outcome and scope
 
 - Swapped `task` and `next_task_proposal`: WIN-04 is `PROMOTED` and L3-01 is `PROPOSED`.
-- WIN-04's scope is frozen at promotion with these additions to the #685 proposal:
-  - `tests/test_score2gp_control_plane.py`, with a matching acceptance criterion:
-    `test_role_policy_is_derived_from_authority_roles` asserts only that `tticom-automation` never
-    merges and that delegated mergers equal the `roles.merge_controller` logins, so it passes
-    whether `merge_controller` is empty or holds [`tticom-codex`, `tticomgov-code`].
-  - Every other live statement of the merge rule, found by a repository search on 2026-09-24:
-    - `.agents/skills/score2gp-project-director/SKILL.md`
-    - `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
-    - `projects/score2gp/prompts/next/got-dispatch.md`
-    - `skills/score2gp-pr-hard-review.md`
-    - `skills/score2gp-task-orchestration.md`
-    - `tests/test_dispatch_entrypoint_contract.py`, whose
-      `test_reviewer_and_merge_role_firewalls_are_explicit` asserts the old wording.
-  - WIN-04's own prompt, `prompts/next/win-04-post-migration-governance-hygiene.md`, which
-    `task.prompt` references and which is therefore live. Governance aligned it in this PR with
-    the promoted status, the full merge-rule inventory and the conditional `merge_controller`
-    rule, and it is in `allowed_paths` (review `5304697361`).
-  - The merge-rule acceptance criterion now covers all of these. Leaving any of them out would
-    leave contradictory rules or force an out-of-scope edit.
-  - The targeted validation command includes both test files.
-  - Historical programmes, records, and prompts for other tasks that are not live merge-rule
-    statements are not in scope.
+- Merge authority is removed from WIN-04. The #685 proposal had WIN-04 restate the live merge
+  rules. Reviews `5304697361` and `5304867520` showed that about 18 live documents encode
+  human-only or non-LLM merging, including:
+  - `.agents/rules/pr_standards.md`
+  - `AGENT_CONTROL.md` (`READY_FOR_HUMAN_MERGE`, and `DONE` only after a human merge)
+  - `ORCA_WORKFLOW.md` (a dedicated non-LLM merge controller)
+  - several skills and templates
+  On 2026-09-24 the maintainer therefore directed that agent merge authority become a **separate
+  governance task**, with a complete inventory and agents merging only through the mechanical gate.
+- WIN-04's scope is frozen at promotion as: `docs/agy-cycle.md`,
+  `projects/score2gp/prompts/next/go-dispatch.md`, `tests/test_governance_audit.py` and
+  `tests/test_score2gp_dispatch.py`. Its title, objective, acceptance and validation are narrowed
+  to match, and it has an explicit acceptance criterion that no statement of merge authority changes.
+- Governance aligned WIN-04's live prompt with this promotion and scope.
 - `merge_policy` is unchanged here; #686 already set it to 1. `roles.merge_controller` is unchanged (empty).
 - Changed paths: `ORCHESTRATION_STATE.json`, `ACTIVE_TASK.md`,
   `prompts/next/win-04-post-migration-governance-hygiene.md`, this handoff.
@@ -56,10 +47,7 @@
 
 - Action: `tticom-automation` implements WIN-04 on `feat/win-04-post-migration-governance-hygiene`
   in `tticom/score2gp-agentops`. A non-author reviewer then publishes an exact-head APPROVE or
-  REQUEST_CHANGES.
-- Merge: the maintainer `tticom` merges.
-  - `roles.merge_controller` is empty, so `scripts/score2gp_control_plane.py::role_policy` classes
-    `tticom-codex` and `tticomgov-code` as never-merge. Neither agent merges until a separate
-    governance change adds them to `merge_controller` and that change is merged.
-  - That change follows WIN-04's merge, together with WIN-04's reconciliation and L3-01's promotion.
+  REQUEST_CHANGES, and the maintainer `tticom` merges.
+- Separately, an architect proposes the agent merge-authority governance task. It is not promoted
+  by this PR.
 - Stop condition: any WIN-04 stop condition; the governance audit failing on `main`.
