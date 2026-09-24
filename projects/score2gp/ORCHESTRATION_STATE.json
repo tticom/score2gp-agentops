@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 42,
+  "authority_revision": 43,
   "task": {
     "id": "WIN-04",
     "title": "Post-migration governance hygiene and test decoupling",
@@ -46,51 +46,114 @@
     "delivery_action": "pull_request"
   },
   "next_task_proposal": {
-    "id": "L3-01",
-    "title": "Paired-staff barline acceptance for the Lesson 3 first system",
-    "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
+    "id": "GOV-01",
+    "title": "Delegated merge execution through the mechanical merge gate",
+    "objective": "Let tticom-codex and tticomgov-code merge only through an executor that runs verify_merge_gate on fresh live state and merges the exact reviewed head, and restate every live human-only merge rule to that executor-only rule.",
     "status": "PROPOSED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/l3-01-paired-staff-barline-acceptance",
+    "branch": "feat/gov-01-delegated-merge-execution",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
+    "prompt": "projects/score2gp/prompts/next/gov-01-delegated-merge-execution.md",
     "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "tests/test_paired_staff_barline_acceptance.py",
-      "tests/test_lesson3_native_acceptance.py"
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_control_plane.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_control_plane.py",
+      "tests/test_dispatch_entrypoint_contract.py",
+      ".agents/rules/pr_standards.md",
+      ".agents/skills/score2gp-project-director/SKILL.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "projects/score2gp/AGENT_CONTROL.md",
+      "projects/score2gp/ORCA_WORKFLOW.md",
+      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
+      "projects/score2gp/prompts/next/got-dispatch.md",
+      "projects/score2gp/prompts/next/go-dispatch.md",
+      "projects/score2gp/prompts/next/go-got-dispatcher.md",
+      "projects/score2gp/skills/orca-supervisor/SKILL.md",
+      "projects/score2gp/skills/project-director/SKILL.md",
+      "projects/score2gp/templates/AGENT_TASK_TEMPLATE.md",
+      "skills/score2gp-pr-hard-review.md",
+      "skills/score2gp-task-orchestration.md",
+      "skills/score2gp-project-director.md"
     ],
     "acceptance": [
-      "A notation-staff (partner) candidate that is a note stem is rejected with a named rejection reason recorded in details; a genuine paired barline is still accepted.",
-      "Through production code on the original Lesson 3 PDF, page 1 system 1 yields exactly the 4 adjudicated boundaries and 3 bar boxes.",
-      "Production system topology on the whole original PDF reproduces 23 systems of [15, 22, 19, 10] = 66 measures, or each remaining divergence is reported by exact system and count; the criterion is not relaxed.",
-      "tests/test_barline_recovery.py and tests/test_pdf.py pass unchanged; other private real-source results are unchanged or every difference is explained.",
-      "Synthetic tests cover a stem-only partner candidate, a genuine paired barline and a TAB-missed barline recovered through the partner path, with a negative control showing the new test fails when the new check is disabled.",
-      "The L3-00 coordinator re-run shows the first-system barline divergence resolved and reports the next earliest divergence; the baseline pin is updated to that exact classification, not weakened.",
-      "Generation still cannot read the reference and artifact_audit.py passes; no private musical content, coordinates or generated artifacts are committed."
+      "A merge executor merges only on verify_merge_gate ALLOW computed from fresh live state, using gh pr merge --match-head-commit with the reviewed head, never --admin, and reads the merge back into a receipt; any DENY, error, head change or bypass capability fails closed.",
+      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, and bypass capability.",
+      "Required checks are evaluated per repository (tticom/score2gp: test; tticom/score2gp-agentops: deterministic-control-plane).",
+      "The path for non-task governance PRs is explicit and tested and cannot bypass the approval, check or thread requirements.",
+      "role_policy classes tticom-automation as never-merge; tticom-codex and tticomgov-code are delegated mergers only after governance fills roles.merge_controller, which it does when promoting or reconciling this task, not in the implementation PR.",
+      "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63 and historical records are unchanged.",
+      "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
     ],
     "validation_commands": [
-      "python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py",
-      "python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
+      "python scripts/score2gp_governance_audit.py",
+      "python -m pytest tests/test_score2gp_orca_control.py tests/test_score2gp_control_plane.py tests/test_dispatch_entrypoint_contract.py",
       "python -m pytest",
-      "python scripts/artifact_audit.py",
       "git diff --check"
     ],
     "dependencies": [
-      "L3-00"
+      "WIN-04"
     ],
     "stop_conditions": [
-      "reference_data_leaks_to_generation",
-      "private_artifact_committed",
-      "required_edit_outside_promoted_scope",
-      "acceptance_weakened_to_match_output",
-      "existing_barline_recovery_regressed"
+      "identity_gate_loosened_or_bypassed",
+      "merge_without_gate_allow",
+      "admin_bypass_used",
+      "historical_record_rewritten",
+      "linux_ci_broken"
     ],
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "queued_task_proposals": [],
+  "queued_task_proposals": [
+    {
+      "id": "L3-01",
+      "title": "Paired-staff barline acceptance for the Lesson 3 first system",
+      "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/l3-01-paired-staff-barline-acceptance",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "tests/test_paired_staff_barline_acceptance.py",
+        "tests/test_lesson3_native_acceptance.py"
+      ],
+      "acceptance": [
+        "A notation-staff (partner) candidate that is a note stem is rejected with a named rejection reason recorded in details; a genuine paired barline is still accepted.",
+        "Through production code on the original Lesson 3 PDF, page 1 system 1 yields exactly the 4 adjudicated boundaries and 3 bar boxes.",
+        "Production system topology on the whole original PDF reproduces 23 systems of [15, 22, 19, 10] = 66 measures, or each remaining divergence is reported by exact system and count; the criterion is not relaxed.",
+        "tests/test_barline_recovery.py and tests/test_pdf.py pass unchanged; other private real-source results are unchanged or every difference is explained.",
+        "Synthetic tests cover a stem-only partner candidate, a genuine paired barline and a TAB-missed barline recovered through the partner path, with a negative control showing the new test fails when the new check is disabled.",
+        "The L3-00 coordinator re-run shows the first-system barline divergence resolved and reports the next earliest divergence; the baseline pin is updated to that exact classification, not weakened.",
+        "Generation still cannot read the reference and artifact_audit.py passes; no private musical content, coordinates or generated artifacts are committed."
+      ],
+      "validation_commands": [
+        "python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py",
+        "python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
+        "python -m pytest",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "L3-00"
+      ],
+      "stop_conditions": [
+        "reference_data_leaks_to_generation",
+        "private_artifact_committed",
+        "required_edit_outside_promoted_scope",
+        "acceptance_weakened_to_match_output",
+        "existing_barline_recovery_regressed"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
