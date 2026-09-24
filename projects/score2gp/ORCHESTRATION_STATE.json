@@ -47,8 +47,8 @@
   },
   "next_task_proposal": {
     "id": "GOV-01",
-    "title": "Delegated merge execution through the mechanical merge gate",
-    "objective": "Let tticom-codex and tticomgov-code merge only through an executor that runs verify_merge_gate on fresh live state and merges the exact reviewed head, and restate every live human-only merge rule to that executor-only rule.",
+    "title": "Delegated merge execution through the merge gate (audited)",
+    "objective": "Let tticom-codex and tticomgov-code merge through a sanctioned executor that runs verify_merge_gate on fresh live state and merges the exact reviewed head, detect any delegated merge without a matching executor receipt, and restate every live human-only merge rule; the maintainer accepted on 2026-09-24 that exclusivity is audited, not enforced.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
@@ -90,13 +90,13 @@
       ".github/workflows/governance-control-plane.yml"
     ],
     "acceptance": [
-      "A merge executor merges only on a verify_merge_gate ALLOW computed from fresh live state: it posts the score2gp/merge-gate commit status on the exact reviewed head and runs gh pr merge --match-head-commit with that head, never --admin, and records a read-back receipt; any DENY, error, head change or bypass capability fails closed.",
-      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, bypass capability, and a ruleset that does not require score2gp/merge-gate.",
-      "Exclusive path: the executor denies unless the live main ruleset requires the score2gp/merge-gate status (preventive control), and the governance audit fails when a PR merged by a merge_controller login lacks a matching executor receipt for the merged head (detective control); each control has a negative test shown to fail with the control disabled.",
+      "A merge executor merges only on a verify_merge_gate ALLOW computed from fresh live state, runs gh pr merge --match-head-commit with the exact reviewed head, never --admin, and records a read-back receipt (gate decision, reviewed head, merge commit, merging login); any DENY, error, head change or bypass capability fails closed.",
+      "Tests cover every gate DENY reason, a head change between gate and merge, a stale review, a login outside roles.merge_controller, a self-authored PR, and bypass capability.",
+      "Detective control under the maintainer's 2026-09-24 accepted residual risk: the governance audit fails when a PR merged by a merge_controller login has no executor receipt, a receipt for a different head, or a receipt whose merge commit differs from the actual merge commit; each case has a negative test shown to fail with the check disabled. No preventive exclusivity is claimed: docs and skills call the executor the only sanctioned path and state that delegated credentials can technically merge outside it or forge a receipt.",
       "Required checks are evaluated per repository (tticom/score2gp: test; tticom/score2gp-agentops: deterministic-control-plane).",
       "The path for non-task governance PRs is explicit and tested and cannot bypass the approval, check or thread requirements.",
       "Human-merge states in code (AWAIT_HUMAN_MERGE, human_merge, READY_FOR_HUMAN_MERGE) are renamed or redefined consistently across every producer, consumer, doc and test.",
-      "role_policy is ready for roles.merge_controller to hold tticom-codex and tticomgov-code; governance fills it when promoting or reconciling GOV-01, after the maintainer confirms the score2gp/merge-gate ruleset requirement, not in the implementation PR.",
+      "role_policy is ready for roles.merge_controller to hold tticom-codex and tticomgov-code; governance fills it when reconciling GOV-01 after its merge, not in the implementation PR.",
       "A repository search finds no remaining live human-only or unconditional agent merge rule; AGENT-RULES.md:63, other tasks' prompts, plans and historical records are unchanged.",
       "The governance audit, full python -m pytest in Linux CI and git diff --check pass."
     ],

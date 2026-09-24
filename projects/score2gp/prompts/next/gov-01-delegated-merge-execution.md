@@ -1,4 +1,4 @@
-# GOV-01 — Delegated merge execution through the mechanical merge gate
+# GOV-01 — Delegated merge execution through the merge gate (audited)
 
 - **Status**: PROPOSED. Not executable until governance promotes it.
 - **Repository**: `tticom/score2gp-agentops`
@@ -19,6 +19,17 @@ On 2026-09-24 the maintainer also directed that agent merges happen **only throu
 merge gate**, not by an agent's discretion, and that this is a separate task with a complete inventory
 of the live human-only merge rules (#687).
 
+**Accepted residual risk (maintainer decision, 2026-09-24).** Review `5306302334` showed that no
+repository-enforced control can bind a merge to the executor while delegated agents hold their own
+merge-capable credentials. A required status posted with the same credentials can be forged or
+reused. The maintainer was offered a separate GitHub App credential held outside agent reach, and
+chose instead to **accept the audited risk**:
+- Delegated logins can technically merge outside the executor, or forge an executor receipt.
+- The governance audit detects a missing or mismatched receipt after the merge.
+- The audit does not prevent a merge and cannot detect a well-forged receipt.
+
+This task must state that residual risk plainly. It must not claim that the merge path is exclusive.
+
 ## 2. Gaps in the current gate (`scripts/score2gp_orca_control.py::verify_merge_gate`)
 
 1. It is dry-run only (`"dry_run": True`). Nothing executes an exact-head merge.
@@ -31,24 +42,18 @@ of the live human-only merge rules (#687).
 ## 3. Objectives
 
 1. **Merge executor.** Add one, for example `score2gp_orca_control.py merge`. It captures fresh live
-   state, runs `verify_merge_gate`, and only on `ALLOW` does two things:
-   - posts a `score2gp/merge-gate` commit status of `success` on the exact reviewed head;
-   - runs `gh pr merge --merge --match-head-commit <reviewed head>` as the authenticated merge-controller login.
-
-   It then reads the merge back and records a receipt: a marked PR comment with the gate result,
-   the head, the merge commit and the merging login. Any DENY, error, head change or bypass capability
-   fails closed. It never uses `--admin`.
-2. **Exclusive merge path.** A delegated login must not be able to complete a merge outside the
-   executor. Two controls enforce this:
-   - **Preventive.** The maintainer adds `score2gp/merge-gate` as a required status check in both
-     repositories' `main` rulesets. The executor reads the live ruleset and returns `DENY`
-     (`merge_gate_status_not_required`) if that requirement is missing. A direct `gh pr merge` by
-     any login is then blocked by GitHub until a gate `ALLOW` has posted the status on that exact head.
-     A push after the status is posted creates a new head without it.
-   - **Detective.** The governance audit and the agentops CI check every PR merged into either `main`
-     after GOV-01 by a login in `roles.merge_controller`. Each must have a matching executor receipt
-     for the merged head. A missing or mismatched receipt fails the audit, and the task documents how
-     governance records the resulting `OPEN` incident, which blocks dispatch.
+   state, runs `verify_merge_gate`, and only on `ALLOW` runs
+   `gh pr merge --merge --match-head-commit <reviewed head>` as the authenticated merge-controller login.
+   It then reads the merge back and records a receipt: a marked PR comment with the gate decision,
+   the reviewed head, the merge commit and the merging login. Any DENY, error, head change or bypass
+   capability fails closed. It never uses `--admin`. The executor is the only **sanctioned** agent
+   merge path; the documents and skills say so.
+2. **Detective control (the accepted-risk safeguard).** The governance audit, and the agentops CI
+   where GitHub access allows it, check every PR merged into either `main` after GOV-01's cut-off by
+   a login in `roles.merge_controller`. Each must have an executor receipt whose head equals the
+   merged PR's head and whose merge commit equals the actual merge commit. A missing or mismatched
+   receipt fails the audit. The task documents how governance then records an `OPEN` incident, which
+   blocks dispatch. No preventive exclusivity is claimed (see the accepted residual risk in §1).
 3. **Per-repository required checks.** `tticom/score2gp` requires `test`;
    `tticom/score2gp-agentops` requires `deterministic-control-plane`.
 4. **Governance-PR path.** Define which non-task PRs the gate may evaluate (governance promotions and
@@ -56,8 +61,7 @@ of the live human-only merge rules (#687).
    governance GO. They must not relax the approval, check or thread requirements.
 5. **`role_policy` readiness.** Make `role_policy`, its tests and the executor ready for
    `roles.merge_controller` to hold `tticom-codex` and `tticomgov-code`. **Governance** fills that
-   field when it promotes or reconciles this task, and only after the maintainer confirms the
-   `score2gp/merge-gate` ruleset requirement is active. The implementation PR does not edit
+   field when it reconciles this task after its merge. The implementation PR does not edit
    `ORCHESTRATION_STATE.json`. An identity never merges a PR it authored, and never in its reviewer run.
 6. **Human-only merge semantics in code and states.** These now mean "ready for the merge executor
    or the maintainer":
@@ -109,17 +113,16 @@ scope. Do not edit outside it. Historical records are not rewritten: `handoffs/`
 
 ## 5. Acceptance
 
-- The executor merges only on a gate `ALLOW` computed from fresh live state. It posts
-  `score2gp/merge-gate` and merges only the exact reviewed head. Tests cover every DENY reason, a head
-  change between the gate and the merge, a stale review, a login outside `merge_controller`, a
-  self-authored PR, bypass capability, and a ruleset that does not require `score2gp/merge-gate`.
-  It never passes `--admin`.
-- **Exclusive path.**
-  - A test shows that a delegated login's merge without the executor is refused: `gh pr merge` fails
-    because of the required `score2gp/merge-gate` status, simulated at the `gh` boundary.
-  - A negative control shows the governance audit fails when a PR merged by a `merge_controller` login
-    has no matching executor receipt, or a receipt for a different head.
-  - Each of these tests must be shown to fail when its control is disabled.
+- The executor merges only on a gate `ALLOW` computed from fresh live state, and only the exact
+  reviewed head. Tests cover every DENY reason, a head change between the gate and the merge, a stale
+  review, a login outside `merge_controller`, a self-authored PR, and bypass capability. It never
+  passes `--admin`.
+- **Detective control.** Negative tests show the governance audit fails when a PR merged by a
+  `merge_controller` login has no executor receipt, a receipt for a different head, or a receipt whose
+  merge commit differs from the actual merge commit. Each test must be shown to fail when the check
+  is disabled.
+- **No exclusivity claim.** The prompt, docs and skills describe the executor as the only sanctioned
+  path, not an enforced one. They state the maintainer-accepted residual risk from §1.
 - Each repository's required checks are evaluated correctly. An agentops PR is not denied for lacking `test`.
 - The governance-PR path is explicit and tested. A non-task PR cannot use it to bypass the approval, check or thread requirements.
 - After governance fills `merge_controller`, `role_policy` classes only `tticom-automation` as never-merge among the agent logins.
