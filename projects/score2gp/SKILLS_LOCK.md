@@ -4,7 +4,9 @@
 
 - Repository: `https://github.com/tticom/agentops-claude-skills`
 - Required source commit:
-  `b90d4a9f43034b3196fa6b915fd95c8c89ecb11a`
+  `4fc96725f20910b57717c50bd06dc0cc0fba7ec4`
+- Includes: `https://github.com/tticom/agentops-claude-skills/pull/4` (review
+  publisher reads inline comments back from the pull request comment list).
 - Replaces: `https://github.com/tticom/agy-skills` (last pinned at
   `439404f7342f4e324147efb6b0276f698fbf2bdb`), by maintainer direction on
   2026-09-23, adopted under `WIN-01`.
