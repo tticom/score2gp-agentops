@@ -84,6 +84,7 @@ def live(reviews=None) -> dict:
             "number": 441,
             "state": "OPEN",
             "head_branch": "feat/task-108",
+            "base_branch": "main",
             "head_sha": "a" * 40,
             "reviews": reviews or [],
             "checks": [{"name": "test", "conclusion": "SUCCESS"}],
@@ -969,6 +970,7 @@ def open_pr(repository: str = "tticom/score2gp", branch: str = "feat/task-108", 
             "number": 441,
             "state": "OPEN",
             "head_branch": branch,
+            "base_branch": "main",
             "head_sha": HEAD,
             "author": author,
             "reviews": [{"author": "reviewer-a", "state": "APPROVED", "head_sha": HEAD}],
@@ -1202,3 +1204,36 @@ def test_non_receipt_comments_are_not_parsed_as_receipts() -> None:
         {"author": "tticom-codex", "body": "LGTM"},
         {"author": "tticom-codex", "body": "note\n<!-- score2gp-merge-receipt -->\n```json\n{}\n```"},
     ]) == []
+
+
+# --- GOV-01 review 5307413925: base branch and merger identity ---
+
+@pytest.mark.parametrize(
+    ("repository", "branch"),
+    [(AGENTOPS_REPOSITORY, "governance/misc"), ("tticom/score2gp", "feat/task-108")],
+    ids=["governance-pr", "task-pr"],
+)
+def test_executor_never_merges_a_pr_that_does_not_target_main(repository: str, branch: str) -> None:
+    before = open_pr(repository, branch)
+    before["pull_request"]["base_branch"] = "scratch"
+    gh = FakeGitHub(before)
+    with pytest.raises(ControlError, match="base_branch_mismatch"):
+        execute_merge(executor_authority(), repository, 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert gh.commands == []
+
+
+def test_task_pr_must_target_the_task_base_branch() -> None:
+    config = executor_authority()
+    config["task"]["base_branch"] = "release"
+    assert "base_branch_mismatch" in verify_merge_gate(config, gated(open_pr(), config=config))["failures"]
+    facts = open_pr()
+    facts["pull_request"]["base_branch"] = "release"
+    assert "base_branch_mismatch" not in verify_merge_gate(config, gated(facts, config=config))["failures"]
+
+
+@pytest.mark.parametrize("merged_by", [None, "", "   ", 42])
+def test_receipt_audit_fails_closed_on_missing_merger_identity(merged_by) -> None:
+    pr = dict(delegated_merge([]), merged_by=merged_by)
+    assert audit_merge_receipts([pr], ["tticom-codex"]) == [
+        "tticom/score2gp#7 has no merger identity; cannot verify it against merge-executor receipts"
+    ]

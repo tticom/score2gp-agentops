@@ -616,6 +616,9 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
         failures.append("active_incident")
     if str(pr.get("state", "")).upper() != "OPEN":
         failures.append("pr_not_open")
+    expected_base = "main" if governance_pr else str(task.get("base_branch") or "main")
+    if str(pr.get("base_branch", "")) != expected_base:
+        failures.append("base_branch_mismatch")
     if not governance_pr:
         if head_branch != str(task["branch"]):
             failures.append("branch_mismatch")
@@ -753,10 +756,13 @@ def audit_merge_receipts(merged_prs: list[dict[str, Any]], controllers: list[str
     violations = []
     delegated = set(controllers)
     for pr in merged_prs:
-        merged_by = str(pr.get("merged_by", ""))
+        label = f"{pr.get('repository')}#{pr.get('number')}"
+        merged_by = pr.get("merged_by")
+        if not isinstance(merged_by, str) or not merged_by.strip():
+            violations.append(f"{label} has no merger identity; cannot verify it against merge-executor receipts")
+            continue
         if merged_by not in delegated:
             continue
-        label = f"{pr.get('repository')}#{pr.get('number')}"
         matching = [
             receipt
             for receipt in pr.get("receipts", [])

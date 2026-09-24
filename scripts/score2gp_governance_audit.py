@@ -24,6 +24,38 @@ except ModuleNotFoundError:
     )
 
 MERGE_AUDIT_REPOSITORIES = ("tticom/score2gp", "tticom/score2gp-agentops")
+# gh pr list pages internally up to --limit. A result that reaches the limit may be
+# truncated, so the audit fails closed rather than silently skipping later merges.
+MERGE_AUDIT_PR_LIMIT = 1000
+
+
+def parse_gh_json_stream(text):
+    """Parse gh output that may hold several JSON documents (one per --paginate page).
+
+    Lists are flattened into one list; a single non-list document is returned as-is.
+    """
+    decoder = json.JSONDecoder()
+    values, index, text = [], 0, text or ""
+    while True:
+        while index < len(text) and text[index].isspace():
+            index += 1
+        if index >= len(text):
+            break
+        value, index = decoder.raw_decode(text, index)
+        values.append(value)
+    if not values:
+        return None
+    if len(values) == 1 and not isinstance(values[0], list):
+        return values[0]
+    flattened = []
+    for value in values:
+        if isinstance(value, list):
+            # --slurp wraps pages in an outer array: [[page1...], [page2...]]
+            for item in value:
+                flattened.extend(item if isinstance(item, list) else [item])
+        else:
+            flattened.append(value)
+    return flattened
 
 
 def collect_delegated_merges(authority, repositories=MERGE_AUDIT_REPOSITORIES, gh_json=None):
@@ -41,7 +73,7 @@ def collect_delegated_merges(authority, repositories=MERGE_AUDIT_REPOSITORIES, g
         res = subprocess.run(["gh", *args], capture_output=True, text=True)
         if res.returncode != 0:
             raise RuntimeError(res.stderr.strip() or "gh failed")
-        return json.loads(res.stdout or "null")
+        return parse_gh_json_stream(res.stdout)
 
     gh_json = gh_json or default_gh_json
     since = str(authority.get("merge_policy", {}).get("executor_audit_since", ""))
@@ -49,15 +81,23 @@ def collect_delegated_merges(authority, repositories=MERGE_AUDIT_REPOSITORIES, g
     for repository in repositories:
         try:
             prs = gh_json([
-                "pr", "list", "--repo", repository, "--state", "merged", "--limit", "200",
+                "pr", "list", "--repo", repository, "--state", "merged", "--limit", str(MERGE_AUDIT_PR_LIMIT),
                 "--search", f"merged:>={since}", "--json", "number,mergedBy,headRefOid,mergeCommit",
             ]) or []
+            if len(prs) >= MERGE_AUDIT_PR_LIMIT:
+                raise RuntimeError(
+                    f"{len(prs)} merged PRs since {since} reached the query limit {MERGE_AUDIT_PR_LIMIT}; "
+                    "the list may be truncated"
+                )
             for pr in prs:
-                comments = gh_json(["api", "--paginate", f"repos/{repository}/issues/{pr['number']}/comments"]) or []
+                comments = gh_json([
+                    "api", "--paginate", "--slurp", f"repos/{repository}/issues/{pr['number']}/comments",
+                ]) or []
+                merged_by = pr.get("mergedBy")
                 merged_prs.append({
                     "repository": repository,
                     "number": pr["number"],
-                    "merged_by": (pr.get("mergedBy") or {}).get("login", ""),
+                    "merged_by": merged_by.get("login") if isinstance(merged_by, dict) else None,
                     "head_sha": pr.get("headRefOid", ""),
                     "merge_commit": (pr.get("mergeCommit") or {}).get("oid", ""),
                     "receipts": parse_merge_receipts([
