@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 50,
+  "authority_revision": 51,
   "task": {
     "id": "PLAN-01",
     "title": "Single coherent backlog, with research tasks per requirement",

@@ -22,5 +22,5 @@ Use this workflow to audit investigation branches, synthesize overlapping diagno
 
 3. **Publish to Master Recovery Branch & Submit GitHub PR Review**:
    - Create a clean master recovery branch in `score2gp-agentops`.
-   - Commit and push the consolidated report and recovery programme backlog.
+   - Commit and push the consolidated report; record follow-up work as task authority backlog items.
    - Submit formal review verdict (`gh pr review <PR_NUMBER> --approve -F <REVIEW_FILE>`).

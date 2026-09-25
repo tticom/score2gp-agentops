@@ -1,6 +1,6 @@
 ---
 name: score2gp-remediation-governance
-description: Governing the master remediation backlog for E2E PDF-to-GP conversion failures. Enforces the ban on synthetic tests, mandates real-world in-situ testing on private fixtures, and governs task promotions for barline inheritance, page indexing, and digit over-merging.
+description: Governing E2E PDF-to-GP conversion-failure remediation, whose tasks live in the task authority's backlog. Enforces the ban on synthetic tests, mandates real-world in-situ testing on private fixtures, and governs task promotions for barline inheritance, page indexing, and digit over-merging.
 ---
 
 # Score2GP Remediation Governance Skill
@@ -22,7 +22,7 @@ This skill provides specific rules and checks for executing the Milestone 6 conv
 * **No Unlabelled Synthesis**: Missing TAB remains absent or ambiguous. Any optimizer is separately researched, provenance-labelled, and never observed arranger fingering.
 
 ### 3. Workflow & Promotions
-* Load the conversion-recovery programme, dependency backlog, and director skill before the older M6 backlog.
+* Load the task authority's backlog (`ORCHESTRATION_STATE.json`; the conversion-recovery programme and M6 backlog files were retired by PLAN-01) and the director skill.
 * Do not promote M6 skeletons until the architecture review accepts their assumptions, files, and oracle.
 * Maintain sequentially incrementing page measure indexing. Revert any commit that resets `next_bar_index` to 1 on page change.
 

@@ -54,7 +54,7 @@ Reviewer:
 - Must ensure that all comments raised by Codex on the PR are addressed before claiming that the PR is ready for review.
 
 Orchestrator:
-- Must maintain the queue state and dependency graph.
+- Must maintain the task authority's backlog state and dependency graph (`ORCHESTRATION_STATE.json`).
 - Must decide whether the next action is feature work, cleanup, rebase, close duplicate PRs, or architecture redesign.
 - Must not keep feeding developers when the active blocker is branch hygiene or a design gap.
 
