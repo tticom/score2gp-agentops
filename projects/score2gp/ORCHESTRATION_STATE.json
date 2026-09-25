@@ -1,57 +1,130 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 46,
+  "authority_revision": 48,
   "task": {
-    "id": "L3-01",
-    "title": "Paired-staff barline acceptance for the Lesson 3 first system",
-    "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
+    "id": "PLAN-01",
+    "title": "Single coherent backlog, with research tasks per requirement",
+    "objective": "Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every planned item from every current planning source absorbed or dispositioned, every requirement traced to items, a dispatchable research task per requirement below ACCEPTED, and the superseded backlog sources removed.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "branch": "feat/l3-01-paired-staff-barline-acceptance",
     "pull_request": null,
     "owner_role": "implementation",
-    "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/plan-01-single-coherent-backlog",
+    "prompt": "projects/score2gp/prompts/next/plan-01-single-coherent-backlog.md",
     "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "tests/test_paired_staff_barline_acceptance.py",
-      "tests/test_lesson3_native_acceptance.py",
-      "tests/test_pdf.py",
-      "tests/test_npg_05_irregular_layout_real.py"
+      "projects/score2gp/ORCHESTRATION_STATE.json",
+      "projects/score2gp/ACTIVE_TASK.md",
+      "projects/score2gp/PLANNING_DATA.md",
+      "projects/score2gp/tasks/**",
+      "projects/score2gp/programmes/**",
+      "plan/**",
+      ".agy/**",
+      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+      "README.md",
+      "projects/score2gp/README.md",
+      "projects/score2gp/requirements/**",
+      "projects/score2gp/prompts/next/res-*.md",
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_orchestrator.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py",
+      "scripts/agy_cycle.py",
+      "scripts/agy_spec_job.py",
+      "docs/agy-cycle.md",
+      "docs/agy-cycle-roadmap.md",
+      "docs/agy-cycle-v2-plan.md",
+      "docs/spec-job-orca.md",
+      "requirements-agy-cycle.txt",
+      "tests/test_agy_cycle.py",
+      "tests/test_agy_spec_job.py",
+      "projects/score2gp/plans/**",
+      "projects/score2gp/AGENT_CONTROL.md",
+      "projects/score2gp/ORCA_WORKFLOW.md",
+      "projects/score2gp/skills/**",
+      "skills/**",
+      "projects/prompts/**",
+      ".agents/agents/project-director/agent.json",
+      "projects/score2gp/prompts/*.md",
+      "docs/**",
+      "tests/test_governance_audit.py",
+      "tests/test_single_backlog.py",
+      "projects/score2gp/prompts/next/agy-*.md"
     ],
     "acceptance": [
-      "A notation-staff (partner) candidate that is a note stem is rejected with a named rejection reason recorded in details; a genuine paired barline is still accepted.",
-      "Through production code on the original Lesson 3 PDF, page 1 system 1 yields exactly the 4 adjudicated boundaries and 3 bar boxes.",
-      "Production system topology on the whole original PDF reproduces 23 systems of [15, 22, 19, 10] = 66 measures, or each remaining divergence is reported by exact system and count; the criterion is not relaxed.",
-      "tests/test_barline_recovery.py passes unchanged. tests/test_pdf.py passes with no change other than the evidence-backed Lesson-5 and Lesson-6 re-pins permitted by the re-pinning criterion below; every other assertion in it is unchanged. Other private real-source results are unchanged or every difference is explained.",
-      "Real-source tests whose expected values encoded the stem over-segmentation are re-pinned only where the change is explained by reference evidence: tests/test_pdf.py Lesson-5/Lesson-6 counts and tests/test_npg_05_irregular_layout_real.py (which assumes Lesson-7 system 1 has 9 TAB bars). Each re-pin cites the reference GP MasterBar count (Lesson-3 66, Lesson-4 79, Lesson-5 43, Lesson-6 72, Lesson-7 50) and the before/after detected measures; no assertion is removed or loosened beyond what the corrected topology requires, and remaining shortfalls (for example Lesson-5's undetected third system on page 3) are recorded, not hidden.",
-      "Synthetic tests cover a stem-only partner candidate, a genuine paired barline and a TAB-missed barline recovered through the partner path, with a negative control showing the new test fails when the new check is disabled.",
-      "The L3-00 coordinator re-run shows the first-system barline divergence resolved and reports the next earliest divergence; the baseline pin is updated to that exact classification, not weakened.",
-      "Generation still cannot read the reference and artifact_audit.py passes; no private musical content, coordinates or generated artifacts are committed."
+      "ORCHESTRATION_STATE.json holds every planned item as a proposal or a backlog item; a test validates the backlog schema, rejects duplicate IDs, unknown dependencies and cycles, and computes the ready frontier.",
+      "Every requirement below VERIFIED is referenced by at least one item, and every requirement below ACCEPTED has a RES- research task with a prompt file; a test enforces both.",
+      "The PR includes a supersession table giving every item of every current planning source a disposition: absorbed, superseded, done or dropped.",
+      "No live file directs work into, or claims to be, a backlog or queue other than ORCHESTRATION_STATE.json and its generated view; a test runs the search oracle and fails on any match outside five literal exemption classes, each with a reason: (a) dated record directories projects/score2gp/{runs,reviews,research,reports,decisions,handoffs,archive,audits}/**; (b) prompts of completed_tasks and numbered legacy prompts prompts/next/[0-9][0-9][0-9][0-9]-*.md; (c) docs/cycle-preparation-history/**; (d) by name, the PLAN-01 and GOV-03 prompts; (e) by name, ORCHESTRATION_STATE.json, ACTIVE_TASK.md and the oracle test file.",
+      "TASK_RECORDING_CONVENTION.md and the governance README describe one method with no contradictory rules.",
+      "Dispatcher resolution for the current task is unchanged (characterization test).",
+      "python -m pytest and the governance audit pass; git diff --check is clean."
     ],
     "validation_commands": [
-      "python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py",
-      "python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
       "python -m pytest",
-      "python scripts/artifact_audit.py",
+      "python scripts/score2gp_governance_audit.py",
+      "python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json",
       "git diff --check"
     ],
     "dependencies": [
-      "L3-00"
+      "tticom/score2gp-agentops#695"
     ],
     "stop_conditions": [
-      "reference_data_leaks_to_generation",
-      "private_artifact_committed",
-      "required_edit_outside_promoted_scope",
-      "acceptance_weakened_to_match_output",
-      "existing_barline_recovery_regressed"
-    ],
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request"
+      "source_item_unaccounted",
+      "dispatcher_behaviour_changed_for_current_task",
+      "product_edit_required",
+      "repository_deletion_required",
+      "requirement_without_backlog_item"
+    ]
   },
   "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "queued_task_proposals": [
+    {
+      "id": "GOV-03",
+      "title": "Active-task PR discovery and fail-closed binding",
+      "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/gov-03-active-task-pr-discovery",
+      "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
+      "allowed_paths": [
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_dispatch.py",
+        "tests/test_governance_audit.py"
+      ],
+      "acceptance": [
+        "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
+        "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
+        "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
+        "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
+        "Disabling discovery makes the replay test fail.",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_gate_weakened",
+        "role_boundary_changed",
+        "product_edit_required"
+      ]
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -1131,6 +1204,58 @@
       "merge_commit": "4913b1e02e4acea8bb97056f5b66f009fad10143",
       "reconciled": true,
       "reconciled_at": "2026-09-24T18:48:10.767681+00:00"
+    },
+    {
+      "id": "L3-01",
+      "title": "Paired-staff barline acceptance for the Lesson 3 first system",
+      "objective": "Stop notation-staff note stems being inherited as system barlines so the Lesson 3 first system yields exactly its 4 adjudicated boundaries and 3 bar boxes, without regressing existing TAB-missed barline recovery.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "branch": "feat/l3-01-paired-staff-barline-acceptance",
+      "pull_request": 464,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "tests/test_paired_staff_barline_acceptance.py",
+        "tests/test_lesson3_native_acceptance.py",
+        "tests/test_pdf.py",
+        "tests/test_npg_05_irregular_layout_real.py"
+      ],
+      "acceptance": [
+        "A notation-staff (partner) candidate that is a note stem is rejected with a named rejection reason recorded in details; a genuine paired barline is still accepted.",
+        "Through production code on the original Lesson 3 PDF, page 1 system 1 yields exactly the 4 adjudicated boundaries and 3 bar boxes.",
+        "Production system topology on the whole original PDF reproduces 23 systems of [15, 22, 19, 10] = 66 measures, or each remaining divergence is reported by exact system and count; the criterion is not relaxed.",
+        "tests/test_barline_recovery.py passes unchanged. tests/test_pdf.py passes with no change other than the evidence-backed Lesson-5 and Lesson-6 re-pins permitted by the re-pinning criterion below; every other assertion in it is unchanged. Other private real-source results are unchanged or every difference is explained.",
+        "Real-source tests whose expected values encoded the stem over-segmentation are re-pinned only where the change is explained by reference evidence: tests/test_pdf.py Lesson-5/Lesson-6 counts and tests/test_npg_05_irregular_layout_real.py (which assumes Lesson-7 system 1 has 9 TAB bars). Each re-pin cites the reference GP MasterBar count (Lesson-3 66, Lesson-4 79, Lesson-5 43, Lesson-6 72, Lesson-7 50) and the before/after detected measures; no assertion is removed or loosened beyond what the corrected topology requires, and remaining shortfalls (for example Lesson-5's undetected third system on page 3) are recorded, not hidden.",
+        "Synthetic tests cover a stem-only partner candidate, a genuine paired barline and a TAB-missed barline recovered through the partner path, with a negative control showing the new test fails when the new check is disabled.",
+        "The L3-00 coordinator re-run shows the first-system barline divergence resolved and reports the next earliest divergence; the baseline pin is updated to that exact classification, not weakened.",
+        "Generation still cannot read the reference and artifact_audit.py passes; no private musical content, coordinates or generated artifacts are committed."
+      ],
+      "validation_commands": [
+        "python -m pytest tests/test_paired_staff_barline_acceptance.py tests/test_barline_recovery.py tests/test_pdf.py",
+        "python -m pytest tests/test_native_slice_acceptance.py tests/test_lesson3_native_acceptance.py",
+        "python -m pytest",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "L3-00"
+      ],
+      "stop_conditions": [
+        "reference_data_leaks_to_generation",
+        "private_artifact_committed",
+        "required_edit_outside_promoted_scope",
+        "acceptance_weakened_to_match_output",
+        "existing_barline_recovery_regressed"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "f06cfa08a8a84840e44cc5f1fac6464a0d67b423",
+      "merge_commit": "1143a05bf5328df7de81c001b0db29c746021133",
+      "reconciled": true,
+      "reconciled_at": "2026-09-25T18:25:25.156271+00:00"
     }
   ]
 }
