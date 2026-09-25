@@ -1258,5 +1258,1455 @@
       "reconciled": true,
       "reconciled_at": "2026-09-25T18:25:25.156271+00:00"
     }
+  ],
+  "backlog": [
+    {
+      "id": "RES-REQ-0005",
+      "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
+      "requirements": [
+        "REQ-0005"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 1,
+      "depends_on": [],
+      "notes": "Prompt: prompts/next/res-req-0005-explained-shortfall-reporting.md. Maintainer: knowing why a feature could not be converted is crucial."
+    },
+    {
+      "id": "SHORT-01",
+      "title": "Shortfall record for every refused, degraded or dropped feature (kind, location, reason code, evidence, disposition); no silent gap",
+      "requirements": [
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 12,
+      "depends_on": [
+        "RES-REQ-0005"
+      ],
+      "notes": "Builds on the stable per-stage warning codes and build-ir failure sidecars."
+    },
+    {
+      "id": "SHORT-02",
+      "title": "User-facing shortfall report: what was not converted, where, and why",
+      "requirements": [
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 13,
+      "depends_on": [
+        "SHORT-01"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "SHORT-03",
+      "title": "Best-effort output: render everything that can be converted correctly and label every gap, without weakening strict refusal",
+      "requirements": [
+        "REQ-0005",
+        "REQ-0001:U11"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 14,
+      "depends_on": [
+        "SHORT-01"
+      ],
+      "notes": "Design decided by RES-REQ-0005 (mode, per-measure gating or a separate partial artifact)."
+    },
+    {
+      "id": "SHORT-04",
+      "title": "Aggregate shortfall records across runs and sources, ranked by reason, private-safe, to drive the backlog",
+      "requirements": [
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 15,
+      "depends_on": [
+        "SHORT-01"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "OUT-01",
+      "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets; remove invented tags and their tests",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11 (OUT-01); version_adapter.py findings in REQ-0002 §5."
+    },
+    {
+      "id": "CP-06",
+      "title": "Stop tests writing into the private corpus (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json); use tmp_path",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [],
+      "notes": "Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs."
+    },
+    {
+      "id": "FND-06",
+      "title": "Quarantine by exact ID, or fix, the 16 known Windows host test failures, with linked records",
+      "requirements": [
+        "REQ-0001:U14",
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 4,
+      "depends_on": [],
+      "notes": "Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25)."
+    },
+    {
+      "id": "CP-07",
+      "title": "Reconcile the stale review contract: rules require REVIEW_CURRENT_HEAD with review_skill_path/review_publisher_path, but the dispatcher emits only Orca assignments since WIN-01",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 5,
+      "depends_on": [],
+      "notes": "Reviewers refuse or work around it (2026-09-25). Either the assignment carries the pinned paths or the rules change."
+    },
+    {
+      "id": "CP-08",
+      "title": "Durable headless review launcher: versioned, OS-agnostic Python tooling triggered after each exact-head handback",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 6,
+      "depends_on": [
+        "CP-07"
+      ],
+      "notes": "Working pattern from 2026-09-25: launcher-side dispatcher and git-metadata writes as the reviewer identity; process-scoped GH_TOKEN; detached exact-head worktree with venv and corpus copy; SKILLS_LOCK checkout; Codex with Claude fallback on usage limits; multi-process tests run outside the sandbox."
+    },
+    {
+      "id": "RES-REQ-0002",
+      "title": "Research to take REQ-0002 to ACCEPTED: answer Q3-Q4, capture GP8/GP7 evidence (OUT-00 scope), confirm GP8 re-save behaviour for GP7",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 7,
+      "depends_on": [],
+      "notes": "Prompt: prompts/next/res-req-0002-pluggable-gp-output-targets.md"
+    },
+    {
+      "id": "RES-REQ-0003",
+      "title": "Research to take REQ-0003 to ACCEPTED: mechanical dependency licence audit and PDF-library options (pymupdf AGPL vs permissive, fidelity comparison)",
+      "requirements": [
+        "REQ-0003"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 8,
+      "depends_on": [],
+      "notes": "Prompt: prompts/next/res-req-0003-dependency-licence-compatibility.md"
+    },
+    {
+      "id": "PROV-01",
+      "title": "Record runtime provenance on every conversion: wire RuntimeProvenanceRecord into score2gp convert and add product SHA and dirty state to convert-report.json",
+      "requirements": [
+        "REQ-0004"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 9,
+      "depends_on": [],
+      "notes": "FS-01 (score2gp#409) implemented the record but only the private smoke scripts use it; FS-02 required SHA/runtime in convert-report."
+    },
+    {
+      "id": "NPG-06A",
+      "title": "One production GPIF serializer: remove the pytest-conditional writer branch (gpif.py:149)",
+      "requirements": [
+        "REQ-0001:U13"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 10,
+      "depends_on": [],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01."
+    },
+    {
+      "id": "FND-02",
+      "title": "Replace silent ScoreIR clamps with rejecting validators (ir.py:99,268,516-528; gpif.py:833)",
+      "requirements": [
+        "REQ-0001:U13",
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 11,
+      "depends_on": [],
+      "notes": "Contradicts the L3 'no note clamping' gate; target limits belong in capability checks (ADR-008)."
+    },
+    {
+      "id": "FND-03",
+      "title": "One independent oracle: extend the stdlib reader to repeats/endings, sections, chord diagrams, grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes; compare normalized play order; retire or rewire scripts/oracle.py",
+      "requirements": [
+        "REQ-0001:U13",
+        "REQ-0001:U09"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 12,
+      "depends_on": [],
+      "notes": "Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral."
+    },
+    {
+      "id": "FND-04",
+      "title": "Durable, adjudicated, hash-pinned oracle manifests for the private acceptance sources, loadable in CI",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 13,
+      "depends_on": [
+        "FND-03"
+      ],
+      "notes": "Absorbs NPG-00B (Lesson 5 field manifest). The L3 manifest currently lives only in ignored work/."
+    },
+    {
+      "id": "FND-05",
+      "title": "Acceptance reproducible on CI: a cross-platform isolation provider, not only windows-file-lock",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 14,
+      "depends_on": [
+        "FND-04"
+      ],
+      "notes": "Reviewers get HARNESS_REFUSED/ISOLATION_NOT_ENFORCED outside the author's host."
+    },
+    {
+      "id": "QA-01",
+      "title": "Test-adequacy verification: requirement-to-test traceability, mutation testing of changed code, mandatory negative controls, no expected values copied from production output; a reviewer skill reporting adequacy separately from pass/fail",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/agentops-claude-skills",
+      "status": "NEEDS_DETAIL",
+      "priority": 15,
+      "depends_on": [],
+      "notes": "Maintainer question 2026-09-25."
+    },
+    {
+      "id": "GOV-04",
+      "title": "Reconcile ACCEPTANCE_TARGETS.md thresholds (>90%/>95%) with the L3 exact-match gates; make result channels the canonical receipt schema",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 16,
+      "depends_on": [],
+      "notes": "Maintainer decision."
+    },
+    {
+      "id": "FND-07",
+      "title": "Reconcile product docs (README milestone, release-contract, workflow, sidecar-workflow, TESTING, limitations) with the native direction",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 19,
+      "depends_on": [],
+      "notes": "The product README still says 'eventually GP7'; the release contract assumes a MusicXML sidecar."
+    },
+    {
+      "id": "DEC-01",
+      "title": "Decide: wrap legacy pdf.py topology behind the REC-02 DocumentTopology contract, or build REC-06..08 fresh",
+      "requirements": [
+        "REQ-0001:U02"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 20,
+      "depends_on": [],
+      "notes": "Architect recommendation: wrap first (TOP-01) to avoid a double migration."
+    },
+    {
+      "id": "DEC-02",
+      "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
+      "requirements": [
+        "REQ-0001:U04"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 21,
+      "depends_on": [],
+      "notes": "Maintainer 2026-09-25: 'Position is the TAB's super power'."
+    },
+    {
+      "id": "DEC-03",
+      "title": "One ADR register location (governance ARCHITECTURE_DECISIONS.md) and migrate product doc/architecture/decisions",
+      "requirements": [
+        "control-plane:records"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 22,
+      "depends_on": [],
+      "notes": "Architect role cannot edit product; governance owns ADRs (governance README)."
+    },
+    {
+      "id": "REC-06",
+      "title": "Staff and system topology",
+      "requirements": [
+        "REQ-0001:U01",
+        "REQ-0001:U02"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 23,
+      "depends_on": [
+        "DEC-01"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-06. Absorbs NPG-03A, CRP-03, TOP-01 (contract seam)."
+    },
+    {
+      "id": "TOP-02",
+      "title": "One shared primitive recogniser for noteheads, stems and beams (painted-contour, visibility-at-contact), used by topology and rhythm; retire duplicate detectors",
+      "requirements": [
+        "REQ-0001:U02",
+        "REQ-0001:U03"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 24,
+      "depends_on": [
+        "REC-06"
+      ],
+      "notes": "Absorbs CR-10. L3-01 follow-ups: later-paint occlusion; filled staff line under a tangential contact (approval 5319369584)."
+    },
+    {
+      "id": "REC-07",
+      "title": "Physical divisions and measure topology",
+      "requirements": [
+        "REQ-0001:U02",
+        "REQ-0001:U09"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 25,
+      "depends_on": [
+        "REC-06"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-07. Absorbs NPG-03B (future direction), CRP-02 follow-on."
+    },
+    {
+      "id": "REC-08",
+      "title": "Page-continuous topology",
+      "requirements": [
+        "REQ-0001:U02"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 26,
+      "depends_on": [
+        "REC-07"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-08. Absorbs TOP-05, CRP-03."
+    },
+    {
+      "id": "REC-09",
+      "title": "TAB token evidence",
+      "requirements": [
+        "REQ-0001:U04"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 27,
+      "depends_on": [
+        "REC-06"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-09. Absorbs TAB-01, M6-4."
+    },
+    {
+      "id": "NPG-04A",
+      "title": "One rational meter utility replacing fixed 4/4/3840 capacity; printed meter/tempo/key evidence",
+      "requirements": [
+        "REQ-0001:U06"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 28,
+      "depends_on": [],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-04A). Absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate."
+    },
+    {
+      "id": "NPG-04B",
+      "title": "Explicit canonical master measures, track bars, voices, beats, rhythms with a v0.1 adapter",
+      "requirements": [
+        "REQ-0001:U12"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 29,
+      "depends_on": [
+        "NPG-04A"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-04B)."
+    },
+    {
+      "id": "REC-10",
+      "title": "Rhythm evidence",
+      "requirements": [
+        "REQ-0001:U03"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 30,
+      "depends_on": [
+        "TOP-02"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-10. Absorbs RHY-01, NPG-04C future."
+    },
+    {
+      "id": "NPG-05A",
+      "title": "Pitch lane: clef, key, accidentals with carry/reset, ledger lines, written vs sounding pitch",
+      "requirements": [
+        "REQ-0001:U03"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 31,
+      "depends_on": [
+        "NPG-04B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-05A). Absorbs RHY-02."
+    },
+    {
+      "id": "REC-11",
+      "title": "Recognition graph assembler",
+      "requirements": [
+        "REQ-0001:U11"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 32,
+      "depends_on": [
+        "REC-08",
+        "REC-09",
+        "REC-10"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-11."
+    },
+    {
+      "id": "REC-12",
+      "title": "Constrained semantic resolver (bounded per measure)",
+      "requirements": [
+        "REQ-0001:U03",
+        "REQ-0001:U11"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 33,
+      "depends_on": [
+        "REC-11",
+        "NPG-05A"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-12. Absorbs FUS-01."
+    },
+    {
+      "id": "REC-13",
+      "title": "MusicalDocument to ScoreIR compiler seam",
+      "requirements": [
+        "REQ-0001:U12"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 34,
+      "depends_on": [
+        "REC-12",
+        "NPG-04B"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-13. Absorbs CMP-01."
+    },
+    {
+      "id": "NATIVE-01",
+      "title": "Native CLI route under --require-precise-timing that does not inherit build_ir_from_tabraw_only; no stale output on failure",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 35,
+      "depends_on": [
+        "REC-13"
+      ],
+      "notes": "From plans/2026-09-05-lesson3-native-working-slice.md §5 and plan §4 (lines 207-221). Absorbs FUS-02."
+    },
+    {
+      "id": "NPG-06B",
+      "title": "Deterministic MasterBar/Bar/Voice/Beat/Note/Rhythm allocation and GP semantic mapping",
+      "requirements": [
+        "REQ-0001:U13"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 36,
+      "depends_on": [
+        "NPG-06A",
+        "NPG-05A"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06B). Absorbs CMP-02."
+    },
+    {
+      "id": "NPG-06C",
+      "title": "Package writer hardening and independent Level 1-3 validators",
+      "requirements": [
+        "REQ-0001:U13"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 37,
+      "depends_on": [
+        "NPG-06B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06C)."
+    },
+    {
+      "id": "NPG-06D",
+      "title": "Guitar Pro 8 open/play/save/reopen protocol and independent-parser harness",
+      "requirements": [
+        "REQ-0001:U13"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 38,
+      "depends_on": [
+        "NPG-06C"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06D). Absorbs VER-01. Only GP8 is available (maintainer, 2026-09-25)."
+    },
+    {
+      "id": "L3-02",
+      "title": "First complete Lesson 3 system through the CLI to GP with independent comparison and an early GP8 check",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 39,
+      "depends_on": [
+        "NATIVE-01",
+        "NPG-06C"
+      ],
+      "notes": "Checkpoint 'First complete system' in plans/2026-09-05-lesson3-native-working-slice.md §5."
+    },
+    {
+      "id": "L3-03",
+      "title": "Feature-complete Lesson 3 first page",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 40,
+      "depends_on": [
+        "L3-02"
+      ],
+      "notes": "Checkpoint in plans/2026-09-05-lesson3-native-working-slice.md §5."
+    },
+    {
+      "id": "L3-04",
+      "title": "Complete four-page Lesson 3 document",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 41,
+      "depends_on": [
+        "L3-03",
+        "REC-08"
+      ],
+      "notes": "Checkpoint in plans/2026-09-05-lesson3-native-working-slice.md §5."
+    },
+    {
+      "id": "VER-02",
+      "title": "Anti-overfitting controls: rename, strip metadata, translate/scale, permute observation order; identical semantics",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 42,
+      "depends_on": [
+        "NATIVE-01"
+      ],
+      "notes": "From plans/2026-09-05-lesson3-native-working-slice.md §5 (anti-overfitting and adversarial controls)."
+    },
+    {
+      "id": "L3-NATIVE",
+      "title": "Lesson 3 native acceptance: clean isolated repeated runs, independent comparison, GP8 round trip, adversarial review",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 43,
+      "depends_on": [
+        "L3-04",
+        "NPG-06D",
+        "VER-02"
+      ],
+      "notes": "Final checkpoint in plans/2026-09-05-lesson3-native-working-slice.md §5; gates in plan §3."
+    },
+    {
+      "id": "NPG-05B",
+      "title": "TAB/pitch reconciliation; bounded capo- and chord-aware fingering only for notation-only notes; observed TAB always wins",
+      "requirements": [
+        "REQ-0001:U04",
+        "REQ-0001:U05"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 44,
+      "depends_on": [
+        "REC-09",
+        "NPG-05A",
+        "DEC-02"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-05B). Absorbs TAB-02."
+    },
+    {
+      "id": "NPG-05C",
+      "title": "Attach chord symbols, lyrics, dynamics, articulations, ornaments and guitar techniques, with a capability table",
+      "requirements": [
+        "REQ-0001:U07",
+        "REQ-0001:U08"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 45,
+      "depends_on": [
+        "REC-10",
+        "NPG-05B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-05C). Absorbs SYM-01, SYM-02, CR-07 follow-on."
+    },
+    {
+      "id": "NPG-03C",
+      "title": "Track labels, instrument candidates, string count, tuning, capo and partial capo from explicit evidence",
+      "requirements": [
+        "REQ-0001:U05"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 46,
+      "depends_on": [
+        "REC-06",
+        "NPG-01C"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-03C)."
+    },
+    {
+      "id": "NPG-01A",
+      "title": "Typed ConversionOptions, track selectors, strictness and target-profile options",
+      "requirements": [
+        "REQ-0001:U10",
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 47,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-01A)."
+    },
+    {
+      "id": "NPG-01B",
+      "title": "Versioned InstrumentProfile catalogue and custom profile validation",
+      "requirements": [
+        "REQ-0001:U05"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 48,
+      "depends_on": [
+        "NPG-01A"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-01B)."
+    },
+    {
+      "id": "NPG-01C",
+      "title": "Pure field resolver (PDF > parameter > default) and resolution report",
+      "requirements": [
+        "REQ-0001:U10"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 49,
+      "depends_on": [
+        "NPG-01B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-01C)."
+    },
+    {
+      "id": "NPG-00C",
+      "title": "Record blank-score/track packages per supported Guitar Pro version (GP8 available) and approve Score2GP defaults v1",
+      "requirements": [
+        "REQ-0001:U10",
+        "REQ-0002"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 50,
+      "depends_on": [],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-00C)."
+    },
+    {
+      "id": "NPG-00D",
+      "title": "Approve supported input classes, target GP versions, refusal posture and capability matrix",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0002"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 51,
+      "depends_on": [
+        "NPG-00C",
+        "RES-REQ-0002"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-00D)."
+    },
+    {
+      "id": "GOV-08",
+      "title": "Held-out source policy: which sources are never used for development or re-pinning",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 52,
+      "depends_on": [],
+      "notes": "L6 was designated held-out but L3-01 re-pinned L5/L6/L7; designate a fresh held-out set."
+    },
+    {
+      "id": "BRD-01",
+      "title": "Barline kinds and meanings: repeats with alternate endings, double and final barlines (Ex 2 Hands Up; baseline 17 detected measures vs 11)",
+      "requirements": [
+        "REQ-0001:U09"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 53,
+      "depends_on": [
+        "REC-07",
+        "FND-03"
+      ],
+      "notes": "Maintainer requirement 2026-09-25. NPG-04D implementation retained provisionally."
+    },
+    {
+      "id": "BRD-02",
+      "title": "Technique breadth from Can't Find My Way Home (chord diagrams, grace notes, ties, tuplet, slides, HOPO, bends, vibrato, accents, mute)",
+      "requirements": [
+        "REQ-0001:U03",
+        "REQ-0001:U08"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 54,
+      "depends_on": [
+        "NPG-05C",
+        "FND-03"
+      ],
+      "notes": "Maintainer: reproducing it would be 'a significant milestone'."
+    },
+    {
+      "id": "MSG-01",
+      "title": "Native acceptance for Lessons 4, 5 and 7 (same publisher)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 55,
+      "depends_on": [
+        "L3-NATIVE",
+        "FND-04"
+      ],
+      "notes": "Absorbs TOP-03 (L4 77/79, L5 35/43 including the missing page-3 system)."
+    },
+    {
+      "id": "TOP-04",
+      "title": "Fragmented staff-line reconstruction with bounded repair (L6: 21/72)",
+      "requirements": [
+        "REQ-0001:U02",
+        "REQ-0001:U11"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 56,
+      "depends_on": [
+        "REC-06"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "MSG-02",
+      "title": "Held-out qualification (another publisher plus the held-out set)",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 57,
+      "depends_on": [
+        "MSG-01",
+        "GOV-08"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "MSG-03",
+      "title": "Other engravers with references (Derek Trucks BB King, Melodic Soloing Masterclass, GP-printed PDFs)",
+      "requirements": [
+        "REQ-0001:U01"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 58,
+      "depends_on": [
+        "MSG-01"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "MSG-04",
+      "title": "Refusal precision on reference-less PDFs: zero false success, every refusal located and explained",
+      "requirements": [
+        "REQ-0001:U11",
+        "REQ-0001:U14",
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 59,
+      "depends_on": [
+        "NATIVE-01"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "REC-14",
+      "title": "Shadow mode, calibration, cutover and legacy retirement for the recognition lanes",
+      "requirements": [
+        "REQ-0001:U12",
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 60,
+      "depends_on": [
+        "REC-13",
+        "L3-NATIVE"
+      ],
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-14. Absorbs the 0056 legacy-removal skeleton."
+    },
+    {
+      "id": "NPG-07A",
+      "title": "Redistributable public feature corpus with independently authored fact manifests",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 60,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-07A)."
+    },
+    {
+      "id": "NPG-07B",
+      "title": "Per-input-class native qualification plus sanitised private qualification",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 61,
+      "depends_on": [
+        "NPG-07A",
+        "MSG-02"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-07B)."
+    },
+    {
+      "id": "NPG-08A",
+      "title": "Route supported PDF classes to native conversion by default",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 62,
+      "depends_on": [
+        "NPG-07B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-08A)."
+    },
+    {
+      "id": "NPG-08B",
+      "title": "Migrate CLI/help/setup/workflow/telemetry to the native contract",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0004"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 63,
+      "depends_on": [
+        "NPG-08A"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-08B)."
+    },
+    {
+      "id": "NPG-09A",
+      "title": "Remove the Audiveris runtime, configuration, packaging and Java requirements",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 64,
+      "depends_on": [
+        "NPG-08B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-09A)."
+    },
+    {
+      "id": "NPG-09B",
+      "title": "Remove or rename stale Audiveris-only documentation and provenance",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 65,
+      "depends_on": [
+        "NPG-09A"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-09B)."
+    },
+    {
+      "id": "NPG-09C",
+      "title": "Independent adversarial Audiveris-retirement review",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 66,
+      "depends_on": [
+        "NPG-09B"
+      ],
+      "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-09C)."
+    },
+    {
+      "id": "OUT-00",
+      "title": "Evidence and research for output targets: GP8/GP7 reference and blank files, per-version limits, licensing, application access",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 70,
+      "depends_on": [
+        "RES-REQ-0002"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11."
+    },
+    {
+      "id": "OUT-02",
+      "title": "Target interface and registry (ADR-008); current GPIF-ZIP writer as the first target; bolt-on test target",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 71,
+      "depends_on": [
+        "NPG-06A",
+        "FND-02",
+        "NPG-04B"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11. Absorbs TSK-103 and TSK-301."
+    },
+    {
+      "id": "OUT-03",
+      "title": "Capability matrix, negotiation and degradation report",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 72,
+      "depends_on": [
+        "OUT-02",
+        "OUT-00"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11."
+    },
+    {
+      "id": "OUT-04",
+      "title": "gp8 target (GP8 profile of the GPIF-ZIP family)",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 73,
+      "depends_on": [
+        "OUT-03",
+        "OUT-00"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11."
+    },
+    {
+      "id": "OUT-05",
+      "title": "gp7 target; released only with a real Guitar Pro 7 round trip",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 74,
+      "depends_on": [
+        "OUT-04"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11."
+    },
+    {
+      "id": "OUT-06",
+      "title": "GP5 binary target and independent reader (deferred by maintainer decision)",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "IDEA",
+      "priority": 75,
+      "depends_on": [
+        "OUT-03"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11. Deferred 2026-09-25."
+    },
+    {
+      "id": "OUT-07",
+      "title": "GP6 .gpx target (BCFZ/BCFS container plus GP6 profile) (deferred by maintainer decision)",
+      "requirements": [
+        "REQ-0002"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "IDEA",
+      "priority": 76,
+      "depends_on": [
+        "OUT-03"
+      ],
+      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11. Deferred 2026-09-25."
+    },
+    {
+      "id": "DEC-04",
+      "title": "PDF acquisition library decision (Artifex licence or permissive replacement)",
+      "requirements": [
+        "REQ-0003"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_RESEARCH",
+      "priority": 77,
+      "depends_on": [
+        "RES-REQ-0003"
+      ],
+      "notes": "Before release; best before acquisition consolidation."
+    },
+    {
+      "id": "CP-01",
+      "title": "Governance repository cleanup of superseded record directories (runs, reviews, handoffs, decisions, archive, audits, unreferenced prompts/next), keeping anything a live document cites",
+      "requirements": [
+        "control-plane:records"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 80,
+      "depends_on": [],
+      "notes": "Decided in the 2026-09-25 project review."
+    },
+    {
+      "id": "CP-02",
+      "title": "Skills consolidation: one skills repository loaded from .agents; mine agy-skills, then delete it with explicit maintainer confirmation",
+      "requirements": [
+        "control-plane:skills"
+      ],
+      "kind": "governance",
+      "repository": "tticom/agentops-claude-skills",
+      "status": "NEEDS_DETAIL",
+      "priority": 81,
+      "depends_on": [],
+      "notes": "Maintainer direction 2026-09-25; repository deletion needs explicit confirmation at that step."
+    },
+    {
+      "id": "CP-03",
+      "title": "Workspace layout: single instances of private-fixtures, agentops and claude-skills linked by junction into identity worktrees; products in isolated worktrees",
+      "requirements": [
+        "control-plane:workspace"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 82,
+      "depends_on": [],
+      "notes": "Maintainer direction 2026-09-25."
+    },
+    {
+      "id": "CP-04",
+      "title": "Remove AI artifacts from product repositories (CLAUDE.md, AGENTS.md, HANDOFF.md, docs/agents, docs/agentops.md) once a workspace-level replacement loads from the control plane",
+      "requirements": [
+        "control-plane:workspace"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 83,
+      "depends_on": [
+        "CP-03"
+      ],
+      "notes": "Maintainer direction 2026-09-25."
+    },
+    {
+      "id": "CP-09",
+      "title": "Retire the AGY runtime: scripts/agy_cycle.py, agy_spec_job.py, requirements-agy-cycle.txt and their CI steps",
+      "requirements": [
+        "control-plane:records"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 84,
+      "depends_on": [],
+      "notes": "Done by PLAN-01 if the CI-scope amendment merges first; otherwise the follow-up."
+    },
+    {
+      "id": "GOV-06",
+      "title": "Contract test between the dispatch state tables (go-dispatch.md, CLAUDE.md) and the resolver's states and reasons",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 85,
+      "depends_on": [
+        "CP-07"
+      ],
+      "notes": "Architect research 2026-09-25."
+    },
+    {
+      "id": "TSK-101",
+      "title": "score2gp-core API exports and versioned schema",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-core",
+      "status": "IDEA",
+      "priority": 100,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-102",
+      "title": "score2gp-vector-parser interface contract",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "IDEA",
+      "priority": 101,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-104",
+      "title": "Migrate the score2gp CLI onto score2gp-core and score2gp-exporter",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "IDEA",
+      "priority": 102,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-302",
+      "title": "Sibelius-optimised MusicXML exporter (as an output target under ADR-008)",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-exporter",
+      "status": "IDEA",
+      "priority": 103,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-303",
+      "title": "Round-trip export validator across .gp and .musicxml",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-exporter",
+      "status": "IDEA",
+      "priority": 104,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-401",
+      "title": "Audio/video loader and DSP feature extraction (audio-to-TAB vision)",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-audio",
+      "status": "IDEA",
+      "priority": 105,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-402",
+      "title": "DTW alignment of audio onsets to the score timeline",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-audio",
+      "status": "IDEA",
+      "priority": 106,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-403",
+      "title": "SyncManifest/SyncPoint timestamped playback metadata",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-audio",
+      "status": "IDEA",
+      "priority": 107,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-404",
+      "title": "Audio-to-score alignment verification suite",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-audio",
+      "status": "IDEA",
+      "priority": 108,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-501",
+      "title": "InteractivePlaybackManifest schema for synchronized video TAB",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-exporter",
+      "status": "IDEA",
+      "priority": 109,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-502",
+      "title": "Real-time playback stream exporter",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-exporter",
+      "status": "IDEA",
+      "priority": 110,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-503",
+      "title": "Synthetic HTML5 video player fixture proving synchronized TAB playback",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-exporter",
+      "status": "IDEA",
+      "priority": 111,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-601",
+      "title": "score2gp-cloud conversion gateway",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-cloud",
+      "status": "IDEA",
+      "priority": 112,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-602",
+      "title": "Remote URL audio/video extractor with privacy sanitisation",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-cloud",
+      "status": "IDEA",
+      "priority": 113,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-603",
+      "title": "Async conversion job queue and API keys",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-cloud",
+      "status": "IDEA",
+      "priority": 114,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "TSK-604",
+      "title": "Billing and subscription tiers",
+      "requirements": [
+        "programme:multimodal"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-cloud",
+      "status": "IDEA",
+      "priority": 115,
+      "depends_on": [],
+      "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    }
   ]
 }

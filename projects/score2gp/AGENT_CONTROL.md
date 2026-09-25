@@ -274,7 +274,7 @@ Agents must then read, in this order:
 2. `projects/score2gp/AGENT_PR_READINESS.md`
 3. `projects/score2gp/PR_EVIDENCE_CONTRACT.md` before creating or revising a PR
 4. `projects/score2gp/ACTIVE_TASK.md`
-5. `projects/score2gp/PLANNING_DATA.md`
+5. `projects/score2gp/ORCHESTRATION_STATE.json` (the task authority, including the single `backlog`)
 6. `projects/score2gp/TASK_RECORDING_CONVENTION.md`
 7. Relevant task template(s) under `projects/score2gp/templates/`
 

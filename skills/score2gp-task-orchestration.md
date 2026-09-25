@@ -16,7 +16,7 @@ Never trust self-reports. Verify live repository state, changed files, commits, 
 6. PR is opened.
 7. Explicitly dispatch `devils-advocate-review` for the exact implementation PR head. The Devil's-Advocate Reviewer performs conformance and readiness review, starts from `CANNOT_VERIFY`, attacks the strongest false-success modes, and publishes the formal verdict.
 8. The merge executor or the maintainer merges only after the exact-head `devils-advocate-review` passes. A `code-review` or `hard-review` approval without the explicit Devil's-Advocate verdict is insufficient for the implementation loop.
-9. Governance records completion in run records and promotes the next smallest safe task from `PLANNING_DATA.md` to `ACTIVE_TASK.md` when the repo is clean.
+9. Governance records completion in run records and promotes the next smallest safe task from the authority's `backlog` (`ORCHESTRATION_STATE.json`), regenerating `ACTIVE_TASK.md` when the repo is clean.
 10. Repeat.
 
 ## Mandatory Pre-flight Checks
@@ -91,7 +91,7 @@ After a product PR is merged:
 1. Verify the merge live.
 2. Record the merge commit in run records.
 3. Update `ACTIVE_TASK.md` to reflect the completed state. If running in default Tier B, a standalone governance PR is not required for completion bookkeeping; it can be bundled into a normal governance PR or handled through the approved branch/PR/merge path (merge executor or maintainer). Under all circumstances, direct commits to main are strictly prohibited.
-4. Promote the next task from `PLANNING_DATA.md` to `ACTIVE_TASK.md`. Ensure repository is clean before starting.
+4. Promote the next task from the `backlog` in `ORCHESTRATION_STATE.json`, regenerating `ACTIVE_TASK.md`. Ensure repository is clean before starting.
 5. Run `python scripts/score2gp_governance_audit.py` to ensure no stale tasks or privacy violations exist in the governance repo.
 
 ## Score2GP-Specific Safety Rules

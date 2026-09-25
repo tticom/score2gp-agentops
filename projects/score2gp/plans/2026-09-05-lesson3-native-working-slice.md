@@ -346,7 +346,7 @@ permission to start the rest of the checkpoints.
 
 Local planning branch: `codex/lesson3-native-working-slice-plan`, based on the
 AgentOps SHA recorded above. The captured scope is this plan, the L3-00 prompt,
-and pointers in `ACTIVE_PLAN.md` and `PLANNING_DATA.md`. No feature-branch remote
+and pointers in `ACTIVE_PLAN.md` and the planning file of the time (since replaced by the authority's `backlog`). No feature-branch remote
 or planning PR has been published in this authoring task. Product and machine
 authority are unchanged. The local commit containing these paths is the exact
 planning handoff revision; implementation must repin live state on promotion.

@@ -5,7 +5,7 @@
 **PRIORITY PROGRAMME — planning only.** The maintainer designated this as the
 next programme priority on 2026-08-19. This document is not itself an
 executable task, does not change `ACTIVE_PLAN.md`, `ACTIVE_TASK.md`,
-`prompts/NEXT.md`, or the approved task queue, and does not authorize product
+`prompts/NEXT.md`, or the task authority, and does not authorize product
 code changes. Governance must activate the programme and promote each
 implementation slice separately through the Score2GP workflow; each slice then
 requires independent exact-head review before merge.

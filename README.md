@@ -48,14 +48,14 @@ The agent-ops repository evaluates and directs product work, but it does not pro
 
 ## Workflow Model
 
-### Multi-ticket implementation jobs
+### Single task authority and backlog
 
-When a specification spans multiple tickets, create a job manifest from the
-approved spec and ticket graph. Validate its dependency frontier with
-`python3 scripts/agy_spec_job.py <job.yaml> --json`; see
-[`docs/spec-job-orca.md`](docs/spec-job-orca.md). The manifest is planning
-input only. Orca must promote each selected ticket into
-`ORCHESTRATION_STATE.json` before generating a worker assignment.
+All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
+- the active `task`;
+- promotable proposals (`next_task_proposal`, `queued_task_proposals`);
+- the `backlog` of items not yet detailed enough to promote.
+
+Every item cites the requirement it delivers (`projects/score2gp/requirements/`). `scripts/score2gp_orca_control.py` validates the backlog and computes the ready frontier (`ready_frontier`). Governance promotes from that frontier, and `ACTIVE_TASK.md` is the generated view. No other file is a queue or backlog: `tests/test_single_backlog.py` enforces this.
 
 ### Implementation Agent
 
@@ -106,88 +106,3 @@ Project-specific governance lives under `projects/score2gp/`:
 ## Privacy Rule
 
 Private assets remain private and must never be committed. Private benchmark names may be referenced as benchmark rungs, but files, images, PDFs, exports, or derived confidential data must stay outside version control.
-
-## AGY Cycle v2 Operation
-
-The supported delivery process is a deterministic, one-task/one-PR AGY cycle.
-The full design and comparison with the earlier integrated PR lifecycle are in
-[`docs/agy-cycle-v2-plan.md`](docs/agy-cycle-v2-plan.md).
-
-### Source of truth
-
-- [`.agy/flow.yaml`](.agy/flow.yaml) defines lifecycle transitions and hard
-  limits. It is the one file a human edits when the state flow is wrong.
-- [`plan/backlog.yaml`](plan/backlog.yaml) defines sprints, tasks, ordering,
-  dependencies, cardinality, scope, acceptance, and validation.
-- `.agy/cycles/` contains ignored runtime records and atomic claim locks.
-- [`docs/cycle-preparation-history/`](docs/cycle-preparation-history/) records
-  repository baselines, readiness checks, blockers, and unblock decisions for
-  each prepared cycle.
-
-`ACTIVE_TASK.md` and `ORCHESTRATION_STATE.json` are compatibility views only;
-they are not separately authored during an AGY Cycle.
-
-### Normal cycle
-
-From the repository root:
-
-```bash
-python -m pip install -r requirements-agy-cycle.txt
-python scripts/agy_cycle.py claim
-python scripts/agy_cycle.py next CYCLE-ID
-python scripts/agy_cycle.py run CYCLE-ID
-python scripts/agy_cycle.py status CYCLE-ID
-```
-
-`run` starts the configured interactive AGY CLI in a PTY and injects the bounded
-task prompt. AGY edits only the assigned worktree; it does not select another
-task, change lifecycle state, open a second PR, or merge.
-
-The controller/orchestrator then performs explicit transitions and attaches the
-single PR:
-
-```bash
-python scripts/agy_cycle.py transition CYCLE-ID IMPLEMENTING
-python scripts/agy_cycle.py transition CYCLE-ID VALIDATING
-python scripts/agy_cycle.py validate CYCLE-ID
-python scripts/agy_cycle.py open-pr CYCLE-ID --repository ORG/REPO
-python scripts/agy_cycle.py verify-pr CYCLE-ID
-python scripts/agy_cycle.py transition CYCLE-ID REVIEW_REQUIRED
-```
-
-The PR head must be read back and match the recorded SHA before review or merge
-readiness. Reviewers use an exact-head, read-only worktree. Review fixes remain
-on the same branch and PR. After the merge (by the merge executor or the
-maintainer), reconciliation is explicit:
-
-```bash
-python scripts/agy_cycle.py transition CYCLE-ID APPROVED
-python scripts/agy_cycle.py transition CYCLE-ID MERGE_READY
-python scripts/agy_cycle.py reconcile CYCLE-ID
-python scripts/agy_cycle.py reconcile CYCLE-ID
-```
-
-The second reconciliation call is intentionally safe and demonstrates
-idempotence. Successor tasks are prepared only; they are never implicitly
-started.
-
-### Concurrent cycles and repair
-
-Task claims are atomic. Independent tasks can run simultaneously because each
-cycle has a unique lease, branch, worktree, runtime directory, and PR. Declare
-`resource_group` in the backlog when two tasks must not edit the same area at
-the same time.
-
-To repair a stuck cycle:
-
-```bash
-python scripts/agy_cycle.py status CYCLE-ID
-python scripts/agy_cycle.py reset CYCLE-ID FAILED
-python scripts/agy_cycle.py reset CYCLE-ID READY
-```
-
-`run` needs a POSIX terminal. On Windows, print the prompt with
-`python scripts/agy_cycle.py prompt CYCLE-ID` and start the agent yourself.
-
-Isolation comes from disposable worktrees, explicit allowed paths, sanitized
-Git configuration, isolated runtime records, and read-only reviewer worktrees.

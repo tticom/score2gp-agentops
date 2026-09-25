@@ -193,6 +193,92 @@ def validate_authority(authority: dict[str, Any]) -> None:
                     f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
                 )
             active_branches[branch] = tid
+    validate_backlog(authority)
+
+
+BACKLOG_KINDS = {"research", "implementation", "governance", "decision"}
+BACKLOG_STATUSES = {"IDEA", "NEEDS_RESEARCH", "NEEDS_DETAIL", "READY", "PROMOTED", "DONE", "DROPPED"}
+BACKLOG_TERMINAL = {"DONE", "DROPPED"}
+BACKLOG_REQUIRED = ("id", "title", "requirements", "kind", "repository", "status", "priority", "depends_on", "notes")
+TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}
+
+
+def _known_task_ids(authority: dict[str, Any]) -> dict[str, str]:
+    """Every task ID the authority knows, mapped to its status (active, proposed, queued or completed)."""
+    known: dict[str, str] = {}
+    for t in [authority.get("task"), authority.get("next_task_proposal"), *authority.get("queued_task_proposals", []),
+              *authority.get("completed_tasks", [])]:
+        if isinstance(t, dict) and t.get("id"):
+            known[str(t["id"])] = str(t.get("status", "")).upper()
+    return known
+
+
+def validate_backlog(authority: dict[str, Any]) -> None:
+    """Validate the light ``backlog`` list: schema, unique IDs, known dependencies and no cycles.
+
+    Items not yet detailed enough to promote live here; promotion converts one to the full proposal
+    schema. Dependencies may name backlog items or any task the authority knows.
+    """
+    backlog = authority.get("backlog", [])
+    if not isinstance(backlog, list):
+        raise ControlError("authority backlog must be a list")
+    tasks = _known_task_ids(authority)
+    ids: set[str] = set()
+    for item in backlog:
+        if not isinstance(item, dict):
+            raise ControlError("backlog items must be objects")
+        missing = [f for f in BACKLOG_REQUIRED if f not in item]
+        if missing:
+            raise ControlError(f"backlog item {item.get('id', '?')} fields missing: {', '.join(missing)}")
+        iid = str(item["id"])
+        if not iid or iid in ids or iid in tasks:
+            raise ControlError(f"backlog item ID {iid!r} is empty or duplicated")
+        ids.add(iid)
+        if item["kind"] not in BACKLOG_KINDS:
+            raise ControlError(f"backlog item {iid} has unsupported kind {item['kind']!r}")
+        if item["status"] not in BACKLOG_STATUSES:
+            raise ControlError(f"backlog item {iid} has unsupported status {item['status']!r}")
+        if not isinstance(item["priority"], int) or isinstance(item["priority"], bool) or item["priority"] < 1:
+            raise ControlError(f"backlog item {iid} priority must be a positive integer")
+        if not isinstance(item["requirements"], list) or not item["requirements"]:
+            raise ControlError(f"backlog item {iid} must cite at least one requirement or control-plane need")
+        if not isinstance(item["depends_on"], list):
+            raise ControlError(f"backlog item {iid} depends_on must be a list")
+    graph = {str(i["id"]): [str(d) for d in i["depends_on"]] for i in backlog}
+    for iid, deps in graph.items():
+        for dep in deps:
+            if dep not in graph and dep not in tasks:
+                raise ControlError(f"backlog item {iid} depends on unknown item {dep}")
+    state: dict[str, int] = {}
+
+    def visit(node: str, path: list[str]) -> None:
+        if state.get(node) == 2:
+            return
+        if state.get(node) == 1:
+            raise ControlError(f"backlog dependency cycle: {' -> '.join([*path, node])}")
+        state[node] = 1
+        for dep in graph.get(node, []):
+            visit(dep, [*path, node])
+        state[node] = 2
+
+    for node in graph:
+        visit(node, [])
+
+
+def ready_frontier(authority: dict[str, Any]) -> list[dict[str, Any]]:
+    """Backlog items that could be promoted now: READY, with every dependency terminal, by priority."""
+    validate_backlog(authority)
+    backlog = authority.get("backlog", [])
+    status = {str(i["id"]): str(i["status"]) for i in backlog}
+    tasks = _known_task_ids(authority)
+
+    def terminal(dep: str) -> bool:
+        if dep in status:
+            return status[dep] in BACKLOG_TERMINAL
+        return tasks.get(dep, "") in TERMINAL_TASK_STATUSES
+
+    frontier = [i for i in backlog if i["status"] == "READY" and all(terminal(str(d)) for d in i["depends_on"])]
+    return sorted(frontier, key=lambda i: (i["priority"], str(i["id"])))
 
 
 def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) -> None:
