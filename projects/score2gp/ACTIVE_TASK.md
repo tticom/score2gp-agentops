@@ -57,6 +57,7 @@ Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every plann
 - `tests/test_governance_audit.py`
 - `tests/test_single_backlog.py`
 - `projects/score2gp/prompts/next/agy-*.md`
+- `.github/workflows/governance-control-plane.yml`
 
 ## Validation commands
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 48,
+  "authority_revision": 49,
   "task": {
     "id": "PLAN-01",
     "title": "Single coherent backlog, with research tasks per requirement",
@@ -52,7 +52,8 @@
       "docs/**",
       "tests/test_governance_audit.py",
       "tests/test_single_backlog.py",
-      "projects/score2gp/prompts/next/agy-*.md"
+      "projects/score2gp/prompts/next/agy-*.md",
+      ".github/workflows/governance-control-plane.yml"
     ],
     "acceptance": [
       "ORCHESTRATION_STATE.json holds every planned item as a proposal or a backlog item; a test validates the backlog schema, rejects duplicate IDs, unknown dependencies and cycles, and computes the ready frontier.",
