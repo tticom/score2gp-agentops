@@ -80,6 +80,13 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
   - workspace layout: single instances of private-fixtures, agentops and claude-skills, linked by junction into identity worktrees; product repositories in isolated worktrees;
   - removal of AI artifacts from product repositories (`CLAUDE.md`, `AGENTS.md`, `HANDOFF.md`, `docs/agents/`, `docs/agentops.md`), but only after a workspace-level replacement is loaded from the linked control plane;
   - a **test-adequacy verification** capability (below).
+  - **stale review contract.** `CLAUDE.md` and `AGENTS.md` require the reviewer dispatcher to return `REVIEW_CURRENT_HEAD` with `review_skill`, `review_skill_path` and `review_publisher_path`. Since WIN-01 (2026-09-23) the dispatcher emits only Orca `score2gp_bounded_worker` assignments, which have none of those fields. Reviewers correctly refuse. The contract and the implementation must be reconciled: either the assignment carries the pinned skill and publisher paths, or the rules change. Observed 2026-09-25;
+  - **durable headless review launcher.** Unattended reviews must not depend on an interactive session. On this host the Codex workspace-write sandbox protects `.git` and cannot be elevated headlessly (`0xC0000142`), and cannot read the Windows keyring. A working pattern exists (2026-09-25):
+    - run the reviewer dispatcher and every git-metadata write outside the sandbox, as the reviewer identity;
+    - pass a process-scoped `GH_TOKEN`;
+    - hand Codex a detached review worktree at the exact head and the SKILLS_LOCK skills checkout;
+    - Codex only inspects, tests and publishes.
+    It lives only in a session scratchpad. Make it versioned, OS-agnostic (Python) tooling, triggered automatically after each exact-head author handback. The maintainer does not want to request reviews.
 - **Decisions to record:**
   - reconcile ADR-006 and product ADR-0004 into one ADR. Maintainer (2026-09-25): observed TAB positions are authoritative ("Position is the TAB's super power"). Inference applies only to notation-only notes, is labelled with provenance, and never overrides TAB;
   - one ADR register location;
