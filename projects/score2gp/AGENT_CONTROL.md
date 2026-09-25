@@ -274,7 +274,7 @@ Agents must then read, in this order:
 2. `projects/score2gp/AGENT_PR_READINESS.md`
 3. `projects/score2gp/PR_EVIDENCE_CONTRACT.md` before creating or revising a PR
 4. `projects/score2gp/ACTIVE_TASK.md`
-5. `projects/score2gp/ORCHESTRATION_STATE.json` (the task authority, including the single `backlog`)
+5. `projects/score2gp/ORCHESTRATION_STATE.json` (the task authority; the authority's `backlog` holds planned work)
 6. `projects/score2gp/TASK_RECORDING_CONVENTION.md`
 7. Relevant task template(s) under `projects/score2gp/templates/`
 
@@ -397,9 +397,9 @@ and read:
 
 `AGENTS.md`
 
-## Planning Data (the task authority's backlog)
+## Unpromoted Work (the task authority's backlog)
 
-The task authority's `backlog` is non-executable planning data. The JSON task/incident model is the only authored authority. Agents must not execute an authority backlog item or automatically promote one without Orca Control Plane dispatch.
+The task authority's `backlog` is non-executable. The JSON task/incident model is the only authored authority. Agents must not execute an authority backlog item or automatically promote one without Orca Control Plane dispatch.
 
 ## Permission Tiers
 

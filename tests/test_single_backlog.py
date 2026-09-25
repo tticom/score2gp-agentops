@@ -92,6 +92,41 @@ def test_the_normal_authority_path_rejects_an_unregistered_requirement() -> None
         orca.validate_authority(a)
 
 
+def _paired_mutation_copy(tmp_path: Path, register_row: bool) -> Path:
+    """A copy of the authority whose backlog and registered_requirements both gain REQ-9999."""
+    a = authority()
+    a["registered_requirements"].append("REQ-9999")
+    a["backlog"].append(backlog_item("NEW-1", requirements=["REQ-9999"]))
+    path = tmp_path / "ORCHESTRATION_STATE.json"
+    path.write_text(json.dumps(a), encoding="utf-8")
+    (tmp_path / "requirements").mkdir()
+    register = (AUTHORITY_PATH.parent / "requirements" / "README.md").read_text(encoding="utf-8")
+    if register_row:
+        register += "\n| REQ-9999 | Test requirement | `PROPOSED` | test | none |\n"
+    (tmp_path / "requirements" / "README.md").write_text(register, encoding="utf-8")
+    return path
+
+
+def test_the_loading_boundary_rejects_a_snapshot_edited_without_the_register(tmp_path: Path) -> None:
+    # Review 5323059011: editing registered_requirements alongside the citation must not legitimise it.
+    from scripts import score2gp_orchestrator as orchestrator
+
+    path = _paired_mutation_copy(tmp_path, register_row=False)
+    orca.validate_authority(json.loads(path.read_text(encoding="utf-8")))  # the snapshot alone is self-consistent
+    with pytest.raises(orca.ControlError, match="differs from the requirements register"):
+        orca.load_json(path)
+    with pytest.raises(orchestrator.OrchestrationError, match="differs from the requirements register"):
+        orchestrator.load_authority(path)
+
+
+def test_the_loading_boundary_accepts_a_requirement_added_to_the_register(tmp_path: Path) -> None:
+    from scripts import score2gp_orchestrator as orchestrator
+
+    path = _paired_mutation_copy(tmp_path, register_row=True)
+    assert orca.load_json(path)["registered_requirements"][-1] == "REQ-9999"
+    assert orchestrator.load_authority(path)["backlog"][-1]["id"] == "NEW-1"
+
+
 def test_the_normal_authority_path_refuses_a_backlog_without_its_register_record() -> None:
     a = authority()
     a.pop("registered_requirements")
@@ -174,19 +209,28 @@ LEGACY_QUEUE = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue")
 # Any planning-container wording. A line that uses it must also refer to the task authority, so that a
 # new, differently worded queue claim ("this document is the product backlog", "add the next task to a
 # separate planning queue") fails however it is phrased.
-CONTAINER = re.compile(r"\b(backlogs?|queues?|queued|queueing|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?|planning (?:file|document|data))\b", re.I)
+CONTAINER = re.compile(r"\b(backlogs?|queues?|queued|queueing|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?|planning (?:files?|documents?|data))\b", re.I)
 AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
 # Queues that are product features or GitHub mechanisms, not task queues.
 NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue\b", re.I)
 
 
-# A qualifier naming an alternative container is a claim even beside a mention of the authority:
+# A qualifier naming an alternative container is a claim even when the authority is also mentioned:
 # "keep a separate team backlog", "another queue".
 ALTERNATIVE_CONTAINER = re.compile(
     r"\b(?:separate|another|second|additional|parallel|private|personal|team|own|extra|shadow|local)\s+(?:[\w-]+\s+){0,2}"
     r"(?:backlogs?|queues?|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?)\b", re.I)
-# Clauses are judged separately, so an authority mention in one clause cannot excuse another.
-CLAUSE_BREAK = re.compile(r"[;.:!?]\s|\s[-\u2013\u2014]\s")
+# Every container mention must be *bound* to the task authority by explicit grammar. Mentioning the
+# authority elsewhere on the line, in whatever clause or with whatever conjunction, does not bind it.
+AUTHORITY_TERM = r"(?:(?:task\s+)?authority|`?ORCHESTRATION_STATE(?:\.json)?`?)"
+BOUND_BEFORE = re.compile(AUTHORITY_TERM + r"(?:'s)?\s+(?:[\w`-]+\s+){0,2}`{0,2}$", re.I)          # "the authority's non-executable backlog"
+BOUND_CODE = re.compile(r"\bauthority(?:\.get\(|\[)[\"']$")                                             # authority.get("backlog"), authority['backlog']
+BOUND_AFTER = re.compile(r"^\s*(?:[\w`-]+\s+){0,3}(?:in|of|from|within|is)\s+(?:the\s+)?" + AUTHORITY_TERM, re.I)  # "backlog in ORCHESTRATION_STATE.json"
+
+
+def _bound_to_authority(text: str, match: re.Match) -> bool:
+    before, after = text[max(0, match.start() - 80):match.start()], text[match.end():match.end() + 80]
+    return bool(BOUND_BEFORE.search(before) or BOUND_CODE.search(before) or BOUND_AFTER.search(after))
 
 
 def claims_a_queue(line: str) -> bool:
@@ -195,7 +239,7 @@ def claims_a_queue(line: str) -> bool:
     text = NON_TASK_QUEUE.sub("", line)
     if ALTERNATIVE_CONTAINER.search(text):
         return True
-    return any(CONTAINER.search(clause) and not AUTHORITY_REFERENCE.search(clause) for clause in CLAUSE_BREAK.split(text))
+    return any(not _bound_to_authority(text, m) for m in CONTAINER.finditer(text))
 
 
 EXEMPT_CLASSES = {
@@ -260,6 +304,14 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Keep a separate team backlog in NOTES.md; task authority stays in ORCHESTRATION_STATE.json.",
     "Track fixes in our own queue beside the task authority.",
     "The task authority is canonical - but log ideas in the planning document too.",
+    # Review 5323059011: a conjunction instead of a separator must not help.
+    "Keep a backlog for urgent tasks in NOTES.md while the task authority tracks routine work.",
+    "Use a backlog beside the task authority for quick fixes.",
+    # A field name is not bound by its backticks alone, and a plural planning file is still one.
+    "Keep a `backlog` in NOTES.md.",
+    "Record ideas in the planning files as well as the authority.",
+    "notes.get(\"backlog\")",
+    "The authority holds routine items and a queue in SLACK.md holds the rest.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == ["projects/score2gp/new-plan.md"]
@@ -268,6 +320,10 @@ def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
 @pytest.mark.parametrize("text", [
     "Promote the next item from the task authority's backlog.",
     "The backlog in ORCHESTRATION_STATE.json is the only planned-work record.",
+    "Record it as an authority backlog item.",
+    "Items not yet detailed live in the authority's `backlog` field.",
+    "items = authority.get(\"backlog\", [])",
+    "print(authority['backlog'])",
     "Implement an async conversion job queue for the cloud service.",
 ])
 def test_references_to_the_authority_and_product_queues_are_not_claims(text) -> None:

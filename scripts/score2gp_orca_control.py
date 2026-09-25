@@ -55,6 +55,8 @@ def load_json(path: Path) -> dict[str, Any]:
         raise ControlError(f"cannot load JSON from {path}: {error}") from error
     if not isinstance(value, dict):
         raise ControlError(f"expected JSON object in {path}")
+    if Path(path).name == "ORCHESTRATION_STATE.json":
+        check_registered_requirements(value, Path(path))
     return value
 
 
@@ -221,8 +223,22 @@ def registered_requirements(authority: dict[str, Any]) -> set[str] | None:
         return None
     recorded = authority.get("registered_requirements")
     if not isinstance(recorded, list) or not recorded or not all(isinstance(r, str) and REQUIREMENT_ID.match(r) for r in recorded):
-        raise ControlError("authority registered_requirements must list the registered REQ-NNNN IDs when a backlog is present")
+        raise ControlError("authority registered_requirements must list the registered REQ-NNNN IDs when the authority's backlog is non-empty")
     return set(recorded)
+
+
+def check_registered_requirements(authority: dict[str, Any], authority_path: Path) -> None:
+    """At the loading boundary: the authority's backlog cites only requirements in the real register.
+
+    The authority's ``registered_requirements`` snapshot must equal the register beside it, so a citation
+    cannot be legitimised by editing the snapshot alone.
+    """
+    if not authority.get("backlog"):
+        return
+    register = register_requirement_ids(authority_path)
+    if registered_requirements(authority) != register:
+        raise ControlError("authority registered_requirements differs from the requirements register")
+    validate_backlog(authority, register)
 
 
 def register_requirement_ids(authority_path: Path) -> set[str]:
@@ -234,7 +250,7 @@ def register_requirement_ids(authority_path: Path) -> set[str]:
 
 
 def _known_task_ids(authority: dict[str, Any]) -> dict[str, str]:
-    """Every task ID the authority knows, mapped to its status (active, proposed, queued or completed)."""
+    """Every task ID the authority knows, mapped to its status: active, proposed, awaiting promotion or completed."""
     known: dict[str, str] = {}
     for t in [authority.get("task"), authority.get("next_task_proposal"), *authority.get("queued_task_proposals", []),
               *authority.get("completed_tasks", [])]:
@@ -247,7 +263,7 @@ def validate_backlog(authority: dict[str, Any], known_requirements: set[str] | N
     """Validate the authority's light ``backlog`` list: field types, unique IDs, references, dependencies and cycles.
 
     Items not yet detailed enough to promote live here; promotion converts one to the full proposal
-    schema. Dependencies may name backlog items or any task the authority knows. When the register's
+    schema. Dependencies may name the authority's backlog items or any other task it knows. When the register's
     ``known_requirements`` are given, every cited requirement must be registered.
     """
     items = authority.get("backlog", [])
@@ -1064,9 +1080,7 @@ def main() -> None:
         return
     if args.command == "frontier":
         authority = load_json(args.authority)
-        validate_backlog(authority, register_requirement_ids(args.authority))
-        if registered_requirements(authority) != register_requirement_ids(args.authority):
-            raise ControlError("authority registered_requirements differs from the requirements register")
+        check_registered_requirements(authority, args.authority)
         print(json.dumps([{k: i[k] for k in ("id", "priority", "kind", "repository", "title")} for i in ready_frontier(authority)], indent=2))
         return
     if args.live is None:

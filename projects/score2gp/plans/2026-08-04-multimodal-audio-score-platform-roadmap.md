@@ -72,7 +72,7 @@ timeline
 
 ## Task Promotion Protocol (task authority)
 
-Each task is recorded in the `backlog` of `projects/score2gp/ORCHESTRATION_STATE.json` (the single task authority) and promoted by governance; `ACTIVE_TASK.md` is its generated view. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:
+Each task is recorded in the task authority's `backlog` (`projects/score2gp/ORCHESTRATION_STATE.json`) and promoted by governance; `ACTIVE_TASK.md` is its generated view. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:
 
 ```bash
 python3 scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json

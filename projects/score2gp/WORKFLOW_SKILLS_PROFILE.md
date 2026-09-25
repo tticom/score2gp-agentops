@@ -5,9 +5,9 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 
 ## Authority
 
-- Canonical authority: `projects/score2gp/ACTIVE_TASK.md`
+- Canonical authority: `projects/score2gp/ORCHESTRATION_STATE.json` (generated view: `ACTIVE_TASK.md`)
 - Fast-lane prompt pointer: `projects/score2gp/prompts/NEXT.md`
-- Informative only (never the task authority), including queues, plans, reports, research, handoffs, task lists, and
+- Informative only (never the task authority), including plans, reports, research, handoffs, and
   suggested next candidates
 - Concurrency: one active task and one task PR
 - Product work requires its predecessor governance promotion to be merged

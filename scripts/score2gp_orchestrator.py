@@ -207,6 +207,16 @@ def load_authority(path: str | Path) -> dict[str, Any]:
         raise OrchestrationError(f"cannot load authority from {authority_path}: {error}") from error
     if not isinstance(value, dict):
         raise OrchestrationError("authority must be a JSON object")
+    # Same loading-boundary rule as score2gp_orca_control.load_json: the authority's backlog citations must
+    # be in the real requirements register. Imported here because score2gp_orca_control imports this module.
+    try:
+        from scripts.score2gp_orca_control import ControlError, check_registered_requirements
+    except ModuleNotFoundError:
+        from score2gp_orca_control import ControlError, check_registered_requirements
+    try:
+        check_registered_requirements(value, authority_path)
+    except ControlError as error:
+        raise OrchestrationError(str(error)) from error
     return value
 
 

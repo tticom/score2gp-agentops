@@ -134,7 +134,7 @@ second Orca state engine. Every change to task authority must update both
 
 After shadow runs prove equivalence, replace `ACTIVE_TASK.md` with a generated
 human view, retire autonomous continuation/pivot rules, and reduce `go/got` to
-thin adapters that call the same resolver. Planning files outside the authority become records,
+thin adapters that call the same resolver. Earlier planning records become history,
 not executable dispatch inputs. The old bootstrap state reducers become
 obsolete only after this cutover.
 

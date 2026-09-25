@@ -33,7 +33,7 @@ This directory contains the canonical agent-governance, review rubrics, prompt t
 Durable agent state for ScoreToGP lives here in `score2gp-agentops`, not in the product repository. [`TASK_RECORDING_CONVENTION.md`](TASK_RECORDING_CONVENTION.md) defines the single method:
 
 - **Requirements:** [`requirements/`](requirements/).
-- **Task authority and the single backlog:** [`ORCHESTRATION_STATE.json`](ORCHESTRATION_STATE.json), with the generated view [`ACTIVE_TASK.md`](ACTIVE_TASK.md).
+- **Task authority (including the authority's single backlog):** [`ORCHESTRATION_STATE.json`](ORCHESTRATION_STATE.json), with the generated view [`ACTIVE_TASK.md`](ACTIVE_TASK.md).
 - **Task prompts:** [`prompts/next/`](prompts/next/). The prompt at the authority revision that promoted a task is its operative instruction.
 - **Evidence:** the pull request (exact-head handback, independent review and checks), plus one dated governance reconciliation record per completed task in [`handoffs/`](handoffs/). Research findings go in the requirement they serve, or in [`research/`](research/).
 
