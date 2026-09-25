@@ -268,9 +268,9 @@ def claims_a_queue(line: str) -> bool:
 
 
 # Layer 2, the closed world. A pattern cannot enumerate every English sentence that sends work elsewhere,
-# so every live line that mentions a container must also appear, verbatim, in the reviewed ledger. A new or
-# reworded mention fails until its exact text is added to the ledger, which a reviewer sees in the PR diff.
-LEDGER_PATH = ROOT / "tests/queue_mention_ledger.json"
+# so every live line that mentions a container must also appear, verbatim, in REVIEWED_MENTIONS at the end
+# of this file. A new or reworded mention fails until its exact text is added there, which a reviewer sees
+# in the PR diff. The list lives in this oracle file because PLAN-01 7.4(e) exempts it by name.
 
 
 def mention_lines(text: str) -> list[str]:
@@ -279,8 +279,7 @@ def mention_lines(text: str) -> list[str]:
 
 def load_ledger() -> Counter:
     """Reviewed mentions as a multiset of (path, line): each occurrence of a line needs its own entry."""
-    entries = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))["reviewed_mentions"]
-    return Counter((e["path"], e["line"]) for e in entries)
+    return Counter(REVIEWED_MENTIONS)
 
 
 EXEMPT_CLASSES = {
@@ -292,9 +291,8 @@ EXEMPT_CLASSES = {
     "c": re.compile(r"^docs/cycle-preparation-history/"),
     # (d) by name: prompts that name the superseded sources in order to retire them.
     "d": re.compile(r"^projects/score2gp/prompts/next/(plan-01-single-coherent-backlog|gov-03-active-task-pr-discovery)\.md$"),
-    # (e) by name: the authority, its generated view, this oracle and its ledger (they must quote the patterns).
-    "e": re.compile(r"^(projects/score2gp/ORCHESTRATION_STATE\.json|projects/score2gp/ACTIVE_TASK\.md|tests/test_single_backlog\.py"
-                    r"|tests/queue_mention_ledger\.json)$"),
+    # (e) by name: the authority, its generated view and this oracle (it must contain the patterns).
+    "e": re.compile(r"^(projects/score2gp/ORCHESTRATION_STATE\.json|projects/score2gp/ACTIVE_TASK\.md|tests/test_single_backlog\.py)$"),
 }
 
 
@@ -317,25 +315,27 @@ def queue_claim_violations(files: dict[str, str], a: dict, ledger=()) -> list[st
                   or any(ledger[(path, line)] != n for line, n in Counter(mention_lines(text)).items()))
 
 
-# Only these suffixes may be skipped as binary. No tracked file has one today.
+# Only these suffixes may be skipped as binary, and only when their bytes are not text. No tracked file has one.
 BINARY_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp", ".pdf", ".zip", ".gz", ".gp", ".gpx", ".woff", ".woff2"}
-BOMS = [(b"\xef\xbb\xbf", "utf-8-sig"), (b"\xff\xfe\0\0", "utf-32"), (b"\0\0\xfe\xff", "utf-32"),
-        (b"\xff\xfe", "utf-16"), (b"\xfe\xff", "utf-16")]
 
 
 def decode_text(path: str, data: bytes) -> str | None:
-    """The text of a tracked file, or None for an allow-listed binary. Nothing else is skipped: a file with
-    a byte-order mark is read in that encoding, and any other file that is not UTF-8 (cp1252, BOM-less
-    UTF-16, an unlisted binary) raises, so a claim cannot drop out of the oracle (reviews 5323510443, 5323539979)."""
-    for bom, encoding in BOMS:
-        if data.startswith(bom):
-            return data.decode(encoding)
-    if Path(path).suffix.lower() in BINARY_SUFFIXES:
-        return None
-    if b"\0" in data:
-        raise UnicodeDecodeError("utf-8", data, data.index(b"\0"), data.index(b"\0") + 1,
-                                 f"{path}: NUL byte in a file that is not an allow-listed binary")
-    return data.decode("utf-8")
+    """The text of a tracked file, or None for an allow-listed binary.
+
+    Text is NUL-free UTF-8, optionally with a UTF-8 byte-order mark. Every other file raises, whatever its
+    byte-order mark (UTF-16/32, a BOM in front of UTF-8 bytes, a UTF-16 file with UTF-8 appended), cp1252
+    or an unlisted binary, so a claim cannot drop out of the oracle by its encoding. An allow-listed suffix
+    is skipped only when its bytes are not text (reviews 5323510443, 5323539979, 5323582757).
+    """
+    try:
+        if b"\0" in data:
+            raise UnicodeDecodeError("utf-8", data, data.index(b"\0"), data.index(b"\0") + 1, "NUL byte")
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError as error:
+        if Path(path).suffix.lower() in BINARY_SUFFIXES:
+            return None
+        raise UnicodeDecodeError(error.encoding, error.object, error.start, error.end,
+                                 f"{path} is not UTF-8 text; save it as UTF-8") from error
 
 
 def read_text_files(root: Path, paths: list[str]) -> dict[str, str]:
@@ -360,28 +360,31 @@ def tracked_text_files() -> dict[str, str]:
 RIVAL = "Keep the backlog in NOTES.md – new work goes there."
 
 
-@pytest.mark.parametrize("encoding", ["cp1252", "utf-16-le", "utf-16-be", "utf-32-le"])
-def test_negative_control_text_in_another_encoding_fails_rather_than_being_skipped(tmp_path: Path, encoding) -> None:
-    (tmp_path / "rival.md").write_bytes(RIVAL.encode(encoding))  # no byte-order mark
-    with pytest.raises(UnicodeDecodeError):
-        read_text_files(tmp_path, ["rival.md"])
+@pytest.mark.parametrize("data", [
+    RIVAL.encode("cp1252"),
+    RIVAL.encode("utf-16-le"), RIVAL.encode("utf-16-be"), RIVAL.encode("utf-32-le"),   # no byte-order mark
+    RIVAL.encode("utf-16"), RIVAL.encode("utf-32"),                                     # with one
+    b"\xff\xfe" + b"Keep the backlog in NOTES.md.\n",                                   # review 5323582757: BOM on UTF-8
+    RIVAL.encode("utf-16") + "\nKeep the backlog in NOTES.md.\n".encode("utf-8"),        # UTF-16 with UTF-8 appended
+    b"\x89PNG\r\n\x1a\n\0\0\0",                                                         # a binary without a listed suffix
+], ids=["cp1252", "utf16le", "utf16be", "utf32le", "utf16-bom", "utf32-bom", "bom-on-utf8", "mixed", "unlisted-binary"])
+def test_negative_control_a_file_that_is_not_utf8_text_fails_rather_than_being_skipped(tmp_path: Path, data) -> None:
+    (tmp_path / "new-plan.md").write_bytes(data)
+    with pytest.raises(UnicodeDecodeError, match="not UTF-8 text"):
+        read_text_files(tmp_path, ["new-plan.md"])
 
 
-@pytest.mark.parametrize("encoding", ["utf-8-sig", "utf-16", "utf-32"])
-def test_negative_control_text_with_a_byte_order_mark_is_read_and_judged(tmp_path: Path, encoding) -> None:
-    # Windows PowerShell 5.1 writes UTF-16 with a BOM by default; such a file must be judged, not skipped.
-    (tmp_path / "new-plan.md").write_bytes(RIVAL.encode(encoding))
+def test_utf8_with_a_byte_order_mark_is_read_and_judged(tmp_path: Path) -> None:
+    (tmp_path / "new-plan.md").write_bytes(RIVAL.encode("utf-8-sig"))
     files = {f"projects/score2gp/{k}": v for k, v in read_text_files(tmp_path, ["new-plan.md"]).items()}
     assert queue_claim_violations(files, authority(), load_ledger()) == ["projects/score2gp/new-plan.md"]
 
 
-def test_only_allow_listed_binaries_are_skipped(tmp_path: Path) -> None:
-    blob = b"\x89PNG\r\n\x1a\n\0\0\0"
-    (tmp_path / "image.png").write_bytes(blob)
-    (tmp_path / "image.dat").write_bytes(blob)
+def test_an_allow_listed_suffix_is_skipped_only_when_its_bytes_are_not_text(tmp_path: Path) -> None:
+    (tmp_path / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n\0\0\0")
+    (tmp_path / "f.PDF").write_bytes(RIVAL.encode("utf-8"))  # review 5323582757 (non-blocking): text named .pdf
     assert read_text_files(tmp_path, ["image.png"]) == {}
-    with pytest.raises(UnicodeDecodeError):
-        read_text_files(tmp_path, ["image.dat"])
+    assert read_text_files(tmp_path, ["f.PDF"]) == {"f.PDF": RIVAL}
 
 
 def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> None:
@@ -509,3 +512,147 @@ def test_dispatcher_resolution_of_the_current_task_is_unchanged_by_the_backlog()
     without = copy.deepcopy(with_backlog)
     without.pop("backlog")
     assert orca.resolve_state(with_backlog, {}) == orca.resolve_state(without, {})
+
+
+# --- the reviewed mentions (layer 2) ---------------------------------------------------------------------
+# Every live line that uses a planning-container word, verbatim, one entry per occurrence. Add an entry only
+# after reviewing that the line refers to the task authority (ORCHESTRATION_STATE.json) or to a product or
+# GitHub queue, and never to another place for planned work.
+REVIEWED_MENTIONS = [
+    ('.agents/agents/project-director/agent.json',
+     '"content": "At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\\n\\nRun the equivalent of:\\nFrom your governance checkout, on any OS:\\npython scripts/verify_identity.py\\ngit status --short --branch\\ngit fetch --all --prune\\nread projects/score2gp/ACTIVE_TASK.md in full\\nprint the backlog in projects/score2gp/ORCHESTRATION_STATE.json (the task authority)\\npython scripts/score2gp_governance_audit.py\\n\\nThen from the sibling ../score2gp checkout:\\ngit status --short --branch\\ngit fetch --all --prune\\ngit log --oneline --decorate --max-count=8"'),
+    ('.agents/agents/project-director/agent.json',
+     '"content": "Before ending after a successful task, inspect ACTIVE_TASK.md, the backlog in ORCHESTRATION_STATE.json, recent reports, recent reviews, and current blockers. If an approved next task exists and prerequisites are satisfied, execute it. If no approved next task exists, identify the smallest credible continuation still inside the current product direction. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping. Create a governance PR to record the continuation and make it active when safe.\\n\\nWhen a task hits a blocker, do not default to stopping. Identify the blocker precisely, decide whether a credible unblocker exists, convert that unblocker into the smallest research, fixture, test, reporting, or feature task, and continue on the appropriate branch. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference."'),
+    ('.agents/skills/score2gp-remediation-governance/SKILL.md',
+     "description: Governing E2E PDF-to-GP conversion-failure remediation, whose tasks live in the task authority's backlog. Enforces the ban on synthetic tests, mandates real-world in-situ testing on private fixtures, and governs task promotions for barline inheritance, page indexing, and digit over-merging."),
+    ('.agents/skills/score2gp-remediation-governance/SKILL.md',
+     "* Load the task authority's backlog (`ORCHESTRATION_STATE.json`, which replaced the retired conversion-recovery programme and M6 planning records) and the director skill."),
+    ('.agents/skills/score2gp-report-consolidation/SKILL.md',
+     '- Commit and push the consolidated report; record follow-up work as task authority backlog items.'),
+    ('AGENT-RULES.md',
+     "- Must maintain the task authority's backlog state and dependency graph (`ORCHESTRATION_STATE.json`)."),
+    ('README.md',
+     "### Single task authority (and the authority's backlog)"),
+    ('README.md',
+     "- the authority's `backlog` of items not yet detailed enough to promote."),
+    ('README.md',
+     "Every item cites the requirement it delivers (`projects/score2gp/requirements/`). `scripts/score2gp_orca_control.py` validates the authority's backlog and computes the ready frontier (`ready_frontier`). Governance promotes from that frontier, and `ACTIVE_TASK.md` is the generated view. `tests/test_single_backlog.py` enforces that planned work is recorded only in the task authority."),
+    ('projects/prompts/05-project-director.md',
+     "projects/score2gp/ORCHESTRATION_STATE.json (the task authority, including the authority's single backlog)"),
+    ('projects/prompts/05-project-director.md',
+     'python -c "import json; authority = json.load(open(\'projects/score2gp/ORCHESTRATION_STATE.json\', encoding=\'utf-8\')); print(json.dumps(authority[\'backlog\'], indent=1))"'),
+    ('projects/score2gp/AGENT_CONTROL.md',
+     "Agents must not treat `ACTIVE_TASK.md`, `NEXT.md`, the authority's backlog items,"),
+    ('projects/score2gp/AGENT_CONTROL.md',
+     "5. `projects/score2gp/ORCHESTRATION_STATE.json` (the task authority; the authority's `backlog` holds planned work)"),
+    ('projects/score2gp/AGENT_CONTROL.md',
+     "## Unpromoted Work (the task authority's backlog)"),
+    ('projects/score2gp/AGENT_CONTROL.md',
+     "The task authority's `backlog` is non-executable. The JSON task/incident model is the only authored authority. Agents must not execute an authority backlog item or automatically promote one without Orca Control Plane dispatch."),
+    ('projects/score2gp/ORCA_WORKFLOW.md',
+     '`ACTIVE_TASK.md`, the `backlog` in `ORCHESTRATION_STATE.json`, and `go/got` prompts.'),
+    ('projects/score2gp/ORCA_WORKFLOW.md',
+     "the task authority's non-executable `backlog` (done by PLAN-01). Make `go/got` thin compatibility wrappers around this CLI."),
+    ('projects/score2gp/README.md',
+     "- **Task authority (including the authority's single backlog):** [`ORCHESTRATION_STATE.json`](ORCHESTRATION_STATE.json), with the generated view [`ACTIVE_TASK.md`](ACTIVE_TASK.md)."),
+    ('projects/score2gp/TASK_RECORDING_CONVENTION.md',
+     "| the authority's `backlog` | Items not yet detailed enough to promote, in the light schema (`id`, `title`, `requirements`, `kind`, `repository`, `status`, `priority`, `depends_on`, `notes`) |"),
+    ('projects/score2gp/TASK_RECORDING_CONVENTION.md',
+     "`scripts/score2gp_orca_control.py` validates the authority's backlog: schema, unique IDs, known dependencies and no cycles. It also computes the **ready frontier**: items with status `READY` whose dependencies are all terminal, in priority order. Governance promotes from the frontier by converting an item to the full proposal schema. `ACTIVE_TASK.md` is generated from the authority and never edited by hand."),
+    ('projects/score2gp/TASK_RECORDING_CONVENTION.md',
+     "2. **What to do:** `ORCHESTRATION_STATE.json` (the task, proposals and the authority's backlog)"),
+    ('projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md',
+     'Phase 6 : Cloud SaaS Gateway : REST API, URL Processing & Cloud Queue'),
+    ('projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md',
+     '- [ ] **TSK-603**: Implement async conversion job queue (`ConversionJob`) and user API key authentication (`ApiKey`).'),
+    ('projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md',
+     "Each task is recorded in the task authority's `backlog` (`projects/score2gp/ORCHESTRATION_STATE.json`) and promoted by governance; `ACTIVE_TASK.md` is its generated view. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:"),
+    ('projects/score2gp/plans/2026-09-05-lesson3-native-working-slice.md',
+     "(The task authority's `backlog` has since replaced that record.) No feature-branch remote"),
+    ('projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md',
+     "`ACTIVE_TASK.md`, `ORCHESTRATION_STATE.json` (the task authority and the authority's backlog), and"),
+    ('projects/score2gp/prompts/next/res-req-0002-pluggable-gp-output-targets.md',
+     '- **Kind:** research (authority backlog item `RES-REQ-0002`; promote to a task before execution)'),
+    ('projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md',
+     '- **Kind:** research (authority backlog item `RES-REQ-0003`; promote to a task before execution)'),
+    ('projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md',
+     '4. **Status proposal.** Recommend `ACCEPTED`, with the chosen direction left to the maintainer as a decision (authority backlog item DEC-04).'),
+    ('projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md',
+     '- **Kind:** research (authority backlog item `RES-REQ-0005`; promote to a task before execution)'),
+    ('projects/score2gp/requirements/README.md',
+     "| `PLANNED` | The task authority's backlog (`ORCHESTRATION_STATE.json`) holds its tasks, with dependencies | Task IDs listed in the record |"),
+    ('projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md',
+     "## 11. Proposed tasks (recorded in the task authority's backlog; not promoted)"),
+    ('projects/score2gp/requirements/REQ-0004-conversion-runtime-provenance.md',
+     '- **Task authority backlog item:** PROV-01'),
+    ('projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md',
+     "4. **Learning over time.** Shortfall records are kept and aggregated across runs and sources, so the most frequent and most costly reasons become visible and drive the task authority's backlog."),
+    ('projects/score2gp/skills/conversion-recovery-director/SKILL.md',
+     "3. the task authority's `backlog` in ORCHESTRATION_STATE.json (it replaced the recovery file retired by PLAN-01);"),
+    ('projects/score2gp/skills/developer/SKILL.md',
+     'not read the authority backlog to select work, promote a successor, reinterpret an incident,'),
+    ('projects/score2gp/skills/project-director/SKILL.md',
+     'python -c "import json; authority = json.load(open(\'projects/score2gp/ORCHESTRATION_STATE.json\', encoding=\'utf-8\')); print(json.dumps(authority[\'backlog\'], indent=1))"'),
+    ('projects/score2gp/skills/project-director/SKILL.md',
+     "- invent product direction that is not supported by the task authority's backlog or review evidence;"),
+    ('scripts/score2gp_orca_control.py',
+     '# An authority backlog item cites a registered requirement (optionally one REQ-0001 obligation U01-U14) or a'),
+    ('scripts/score2gp_orca_control.py',
+     'reject unregistered citations without reading files. An authority backlog without that record is refused.'),
+    ('scripts/score2gp_orca_control.py',
+     'if not authority.get("backlog"):'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError("authority registered_requirements must list the registered REQ-NNNN IDs when the authority\'s backlog is non-empty")'),
+    ('scripts/score2gp_orca_control.py',
+     '"""At the loading boundary: the authority\'s backlog cites only requirements in the real register.'),
+    ('scripts/score2gp_orca_control.py',
+     'if not authority.get("backlog"):'),
+    ('scripts/score2gp_orca_control.py',
+     '"""Validate the authority\'s light ``backlog`` list: field types, unique IDs, references, dependencies and cycles.'),
+    ('scripts/score2gp_orca_control.py',
+     "schema. Dependencies may name the authority's backlog items or any other task it knows. When the register's"),
+    ('scripts/score2gp_orca_control.py',
+     'items = authority.get("backlog", [])'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError("authority backlog must be a list")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError("authority backlog items must be objects")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {item.get(\'id\', \'?\')} fields missing: {\', \'.join(missing)}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {item.get(\'id\', \'?\')} {field} must be a {\'string\' if field == \'notes\' else \'non-empty string\'}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {item[\'id\']} repository must be owner/name")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item ID {iid!r} is empty or duplicated")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} has unsupported kind {item[\'kind\']!r}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} has unsupported status {item[\'status\']!r}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} priority must be a positive integer")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} must cite at least one requirement or control-plane need")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} cites an unknown requirement reference {ref!r}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} cites unregistered requirement {match.group(1)}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} depends_on must be a list of IDs")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog item {iid} depends on unknown item {dep}")'),
+    ('scripts/score2gp_orca_control.py',
+     'raise ControlError(f"authority backlog dependency cycle: {\' -> \'.join([*path, node])}")'),
+    ('scripts/score2gp_orca_control.py',
+     '"""Authority backlog items that could be promoted now: READY, with every dependency terminal, by priority."""'),
+    ('scripts/score2gp_orca_control.py',
+     'items = authority.get("backlog", [])'),
+    ('scripts/score2gp_orchestrator.py',
+     "# Same loading-boundary rule as score2gp_orca_control.load_json: the authority's backlog citations must"),
+    ('skills/score2gp-project-director.md',
+     'python -c "import json; authority = json.load(open(\'projects/score2gp/ORCHESTRATION_STATE.json\', encoding=\'utf-8\')); print(json.dumps(authority[\'backlog\'], indent=1))"'),
+    ('skills/score2gp-task-orchestration.md',
+     "9. Governance records completion in run records and promotes the next smallest safe task from the authority's `backlog` (`ORCHESTRATION_STATE.json`), regenerating `ACTIVE_TASK.md` when the repo is clean."),
+    ('skills/score2gp-task-orchestration.md',
+     '4. Promote the next task from the `backlog` in `ORCHESTRATION_STATE.json`, regenerating `ACTIVE_TASK.md`. Ensure repository is clean before starting.'),
+]
