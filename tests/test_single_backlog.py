@@ -210,8 +210,10 @@ LEGACY_QUEUE = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue")
 # Any planning-container wording. A line that uses it must also refer to the task authority, so that a
 # new, differently worded queue claim ("this document is the product backlog", "add the next task to a
 # separate planning queue") fails however it is phrased.
-# Separators are optional ("tasklist", "work-list"), and a bare "todo" (TODO.md) counts.
-CONTAINER_WORDS = (r"backlogs?|queues?|queued|queueing|(?:task|work|to-?do|wish|punch|issue)[- ]?lists?|to-?dos?|kanban|icebox|trackers?|sprints?"
+# Separators are optional ("tasklist", "work-list", "to do list"), every inflection of queue counts
+# ("queuing", "enqueue"), and a bare "todo" (TODO.md) counts. A bare "to do" is ordinary English and does not.
+CONTAINER_WORDS = (r"backlog(?:s|ged)?|(?:en|re)?queu(?:e|es|ed|eing|ing)|(?:task|work|to[- ]?do|wish|punch|issue)[- ]?lists?"
+                   r"|to-?dos?|kanban|icebox|trackers?|sprints?"
                    r"|work[- ]?items?|task[- ]?boards?|planning[- ]?(?:files?|documents?|data)")
 CONTAINER = re.compile(r"\b(" + CONTAINER_WORDS + r")\b", re.I)
 AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
@@ -313,15 +315,33 @@ def queue_claim_violations(files: dict[str, str], a: dict, ledger=()) -> list[st
                   or any(ledger[(path, line)] != n for line, n in Counter(mention_lines(text)).items()))
 
 
-def tracked_text_files() -> dict[str, str]:
-    paths = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.splitlines()
+def read_text_files(root: Path, paths: list[str]) -> dict[str, str]:
+    """Every text file among ``paths``. Only binary blobs are skipped: text that is not UTF-8 raises, so a
+    claim saved in another encoding cannot drop out of the oracle (review 5323510443)."""
     files = {}
     for path in paths:
         try:
-            files[path] = (ROOT / path).read_text(encoding="utf-8")
-        except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
+            data = (root / path).read_bytes()
+        except (FileNotFoundError, IsADirectoryError):
+            continue  # deleted in the worktree, or a submodule: no text to judge
+        if b"\0" in data:
             continue
+        files[path] = data.decode("utf-8")
     return files
+
+
+def tracked_text_files() -> dict[str, str]:
+    # -z gives raw paths: with core.quotePath a non-ASCII path would be quoted, not found, and skipped.
+    listing = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True).stdout
+    return read_text_files(ROOT, [p for p in listing.decode("utf-8").split("\0") if p])
+
+
+def test_negative_control_text_in_another_encoding_fails_rather_than_being_skipped(tmp_path: Path) -> None:
+    (tmp_path / "rival.md").write_bytes("Keep the backlog in NOTES.md – new work goes there.".encode("cp1252"))
+    (tmp_path / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n\0\0\0")
+    with pytest.raises(UnicodeDecodeError):
+        read_text_files(tmp_path, ["rival.md"])
+    assert read_text_files(tmp_path, ["image.png"]) == {}
 
 
 def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> None:
@@ -408,6 +428,12 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Use the issue tracker for planned work.",
     "Plan the next sprint here.",
     "Work items are listed below.",
+    # Review 5323510443: every inflection of queue, and the open spelling of to-do list.
+    "Keep queuing new tasks in NOTES.md and work from them.",
+    "Enqueue new tasks in NOTES.md.",
+    "Keep a running to do list in NOTES.md and work from it.",
+    "Requeue unfinished tasks in NOTES.md.",
+    "Anything backlogged goes in NOTES.md.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     # The grammar alone rejects each one, so the ledger is a second layer rather than the only one.
