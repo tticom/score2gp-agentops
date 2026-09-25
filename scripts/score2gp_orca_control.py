@@ -193,7 +193,7 @@ def validate_authority(authority: dict[str, Any]) -> None:
                     f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
                 )
             active_branches[branch] = tid
-    validate_backlog(authority)
+    validate_backlog(authority, registered_requirements(authority))
 
 
 BACKLOG_KINDS = {"research", "implementation", "governance", "decision"}
@@ -204,10 +204,25 @@ TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONC
 # An authority backlog item cites a registered requirement (optionally one REQ-0001 obligation U01-U14) or a
 # declared control-plane or programme need.
 REQUIREMENT_REF = re.compile(r"^(REQ-\d{4})(?::U(?:0[1-9]|1[0-4]))?$")
+REQUIREMENT_ID = re.compile(r"^REQ-\d{4}$")
 NAMED_NEEDS = {"control-plane:records", "control-plane:skills", "control-plane:workspace", "control-plane:review-gate",
                "programme:multimodal"}
 REPOSITORY_REF = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 REGISTER_ROW = re.compile(r"^\| (REQ-\d{4}) \| [^|]+ \| `([A-Z_]+)` \|", re.M)
+
+
+def registered_requirements(authority: dict[str, Any]) -> set[str] | None:
+    """The requirement IDs the authority records as registered (``registered_requirements``).
+
+    It mirrors the requirements register (requirements/README.md), so the normal validation path can
+    reject unregistered citations without reading files. An authority backlog without that record is refused.
+    """
+    if not authority.get("backlog"):
+        return None
+    recorded = authority.get("registered_requirements")
+    if not isinstance(recorded, list) or not recorded or not all(isinstance(r, str) and REQUIREMENT_ID.match(r) for r in recorded):
+        raise ControlError("authority registered_requirements must list the registered REQ-NNNN IDs when a backlog is present")
+    return set(recorded)
 
 
 def register_requirement_ids(authority_path: Path) -> set[str]:
@@ -1050,6 +1065,8 @@ def main() -> None:
     if args.command == "frontier":
         authority = load_json(args.authority)
         validate_backlog(authority, register_requirement_ids(args.authority))
+        if registered_requirements(authority) != register_requirement_ids(args.authority):
+            raise ControlError("authority registered_requirements differs from the requirements register")
         print(json.dumps([{k: i[k] for k in ("id", "priority", "kind", "repository", "title")} for i in ready_frontier(authority)], indent=2))
         return
     if args.live is None:

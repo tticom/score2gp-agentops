@@ -80,6 +80,25 @@ def test_the_live_backlog_cites_only_registered_requirements() -> None:
     orca.validate_backlog(authority(), orca.register_requirement_ids(AUTHORITY_PATH))
 
 
+def test_the_authority_record_of_registered_requirements_matches_the_register() -> None:
+    assert orca.registered_requirements(authority()) == orca.register_requirement_ids(AUTHORITY_PATH)
+
+
+def test_the_normal_authority_path_rejects_an_unregistered_requirement() -> None:
+    # Review 5322962856: validate_authority itself, not only the frontier command, must refuse REQ-9999.
+    a = authority()
+    a["backlog"].append(backlog_item("NEW-1", requirements=["REQ-9999"]))
+    with pytest.raises(orca.ControlError, match="unregistered requirement REQ-9999"):
+        orca.validate_authority(a)
+
+
+def test_the_normal_authority_path_refuses_a_backlog_without_its_register_record() -> None:
+    a = authority()
+    a.pop("registered_requirements")
+    with pytest.raises(orca.ControlError, match="registered_requirements"):
+        orca.validate_authority(a)
+
+
 def test_duplicate_ids_are_rejected_including_collisions_with_known_tasks() -> None:
     with pytest.raises(orca.ControlError, match="duplicated"):
         orca.validate_backlog(synthetic(backlog_item("A"), backlog_item("A")))
@@ -161,10 +180,22 @@ AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_p
 NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue\b", re.I)
 
 
+# A qualifier naming an alternative container is a claim even beside a mention of the authority:
+# "keep a separate team backlog", "another queue".
+ALTERNATIVE_CONTAINER = re.compile(
+    r"\b(?:separate|another|second|additional|parallel|private|personal|team|own|extra|shadow|local)\s+(?:[\w-]+\s+){0,2}"
+    r"(?:backlogs?|queues?|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?)\b", re.I)
+# Clauses are judged separately, so an authority mention in one clause cannot excuse another.
+CLAUSE_BREAK = re.compile(r"[;.:!?]\s|\s[-\u2013\u2014]\s")
+
+
 def claims_a_queue(line: str) -> bool:
     if LEGACY_QUEUE.search(line):
         return True
-    return bool(CONTAINER.search(NON_TASK_QUEUE.sub("", line))) and not AUTHORITY_REFERENCE.search(line)
+    text = NON_TASK_QUEUE.sub("", line)
+    if ALTERNATIVE_CONTAINER.search(text):
+        return True
+    return any(CONTAINER.search(clause) and not AUTHORITY_REFERENCE.search(clause) for clause in CLAUSE_BREAK.split(text))
 
 
 EXEMPT_CLASSES = {
@@ -225,6 +256,10 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Our work-list lives in the wiki.",
     "Record new ideas in this planning document.",
     "Pending tasks are queued here until someone picks them up.",
+    # Review 5322962856: an authority mention elsewhere on the line must not excuse a second backlog.
+    "Keep a separate team backlog in NOTES.md; task authority stays in ORCHESTRATION_STATE.json.",
+    "Track fixes in our own queue beside the task authority.",
+    "The task authority is canonical - but log ideas in the planning document too.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == ["projects/score2gp/new-plan.md"]

@@ -2711,5 +2711,12 @@
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     }
+  ],
+  "registered_requirements": [
+    "REQ-0001",
+    "REQ-0002",
+    "REQ-0003",
+    "REQ-0004",
+    "REQ-0005"
   ]
 }

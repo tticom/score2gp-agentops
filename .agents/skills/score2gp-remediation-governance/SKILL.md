@@ -22,7 +22,7 @@ This skill provides specific rules and checks for executing the Milestone 6 conv
 * **No Unlabelled Synthesis**: Missing TAB remains absent or ambiguous. Any optimizer is separately researched, provenance-labelled, and never observed arranger fingering.
 
 ### 3. Workflow & Promotions
-* Load the task authority's backlog (`ORCHESTRATION_STATE.json`; the conversion-recovery programme and M6 backlog files were retired by PLAN-01) and the director skill.
+* Load the task authority's backlog (`ORCHESTRATION_STATE.json`, which replaced the retired conversion-recovery programme and M6 backlog files) and the director skill.
 * Do not promote M6 skeletons until the architecture review accepts their assumptions, files, and oracle.
 * Maintain sequentially incrementing page measure indexing. Revert any commit that resets `next_bar_index` to 1 on page change.
 

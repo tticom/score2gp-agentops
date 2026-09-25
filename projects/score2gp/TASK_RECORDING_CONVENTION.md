@@ -17,7 +17,7 @@ All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
 | `backlog` | Authority items not yet detailed enough to promote, in the light schema (`id`, `title`, `requirements`, `kind`, `repository`, `status`, `priority`, `depends_on`, `notes`) |
 | `completed_tasks` | Finished tasks, with their PR, reviewed head and merge commit |
 
-`scripts/score2gp_orca_control.py` validates the backlog: schema, unique IDs, known dependencies and no cycles. It also computes the **ready frontier**: items with status `READY` whose dependencies are all terminal, in priority order. Governance promotes from the frontier by converting an item to the full proposal schema. `ACTIVE_TASK.md` is generated from the authority and never edited by hand.
+`scripts/score2gp_orca_control.py` validates the authority's backlog: schema, unique IDs, known dependencies and no cycles. It also computes the **ready frontier**: items with status `READY` whose dependencies are all terminal, in priority order. Governance promotes from the frontier by converting an item to the full proposal schema. `ACTIVE_TASK.md` is generated from the authority and never edited by hand.
 
 Do not create `TASKS.md` files, sub-folder backlogs, planning queues or cycle backlogs outside the authority.
 
