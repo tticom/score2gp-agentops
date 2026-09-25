@@ -138,6 +138,7 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
      - **(b)** prompts of tasks listed in `completed_tasks`, and the numbered legacy prompts `projects/score2gp/prompts/next/[0-9][0-9][0-9][0-9]-*.md` from before the authority existed;
      - **(c)** `docs/cycle-preparation-history/**`;
      - **(d)** by name only, `prompts/next/plan-01-single-coherent-backlog.md` and `prompts/next/gov-03-active-task-pr-discovery.md`, which name the superseded sources in order to retire them.
+     - **(e)** by name only, the authority and its oracle: `projects/score2gp/ORCHESTRATION_STATE.json` and its generated view `projects/score2gp/ACTIVE_TASK.md` (they list superseded sources in PLAN-01's `allowed_paths` while the task is proposed or promoted), and the oracle test file itself (it must contain the patterns). Review of 186afd7 found these matches.
    - The test encodes these classes literally. A match in any other path fails, including a new file added to an exempt class's *parent* directory.
    - The separate record-directory cleanup (§4, control plane) may later remove class (a) content. This exemption does not depend on it.
 5. `TASK_RECORDING_CONVENTION.md` and the governance `README.md` describe the same single method, with no contradictory rules.
