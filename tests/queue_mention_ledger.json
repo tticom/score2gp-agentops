@@ -1,6 +1,6 @@
 {
  "schema_version": "queue-mention-ledger.v1",
- "note": "Every live line that mentions a backlog, queue, task list, to-do list, work list or planning file, verbatim. tests/test_single_backlog.py fails on any live mention not listed here and on any entry no longer present. Add an entry only after reviewing that the line refers to the task authority (ORCHESTRATION_STATE.json) or to a product or GitHub queue, and never to another place for planned work.",
+ "note": "Every live line that uses a planning-container word (CONTAINER_WORDS in tests/test_single_backlog.py), verbatim, one entry per occurrence. tests/test_single_backlog.py fails on any live mention not listed here and on any entry no longer present. Add an entry only after reviewing that the line refers to the task authority (ORCHESTRATION_STATE.json) or to a product or GitHub queue, and never to another place for planned work.",
  "reviewed_mentions": [
   {
    "path": ".agents/agents/project-director/agent.json",
@@ -176,6 +176,10 @@
   },
   {
    "path": "scripts/score2gp_orca_control.py",
+   "line": "if not authority.get(\"backlog\"):"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
    "line": "\"\"\"Validate the authority's light ``backlog`` list: field types, unique IDs, references, dependencies and cycles."
   },
   {
@@ -249,6 +253,10 @@
   {
    "path": "scripts/score2gp_orca_control.py",
    "line": "\"\"\"Authority backlog items that could be promoted now: READY, with every dependency terminal, by priority.\"\"\""
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "items = authority.get(\"backlog\", [])"
   },
   {
    "path": "scripts/score2gp_orchestrator.py",

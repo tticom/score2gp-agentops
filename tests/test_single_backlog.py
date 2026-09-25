@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+from collections import Counter
 import json
 import re
 import subprocess
@@ -209,7 +210,10 @@ LEGACY_QUEUE = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue")
 # Any planning-container wording. A line that uses it must also refer to the task authority, so that a
 # new, differently worded queue claim ("this document is the product backlog", "add the next task to a
 # separate planning queue") fails however it is phrased.
-CONTAINER = re.compile(r"\b(backlogs?|queues?|queued|queueing|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?|planning (?:files?|documents?|data))\b", re.I)
+# Separators are optional ("tasklist", "work-list"), and a bare "todo" (TODO.md) counts.
+CONTAINER_WORDS = (r"backlogs?|queues?|queued|queueing|(?:task|work|to-?do|wish|punch|issue)[- ]?lists?|to-?dos?|kanban|icebox|trackers?|sprints?"
+                   r"|work[- ]?items?|task[- ]?boards?|planning[- ]?(?:files?|documents?|data)")
+CONTAINER = re.compile(r"\b(" + CONTAINER_WORDS + r")\b", re.I)
 AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
 # Queues that are product features or GitHub mechanisms, not task queues.
 NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue\b", re.I)
@@ -219,7 +223,7 @@ NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue
 # "keep a separate team backlog", "another queue".
 ALTERNATIVE_CONTAINER = re.compile(
     r"\b(?:separate|another|second|additional|parallel|private|personal|team|own|extra|shadow|local)\s+(?:[\w-]+\s+){0,2}"
-    r"(?:backlogs?|queues?|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?)\b", re.I)
+    r"(?:" + CONTAINER_WORDS + r")\b", re.I)
 # Layer 1, the grammar. Every container mention must be *bound* to the task authority by a closed
 # grammar. Nothing else binds: not proximity, not a conjunction, not free words between the authority and
 # the container, and not another authority ("merge authority", "review authority").
@@ -269,9 +273,10 @@ def mention_lines(text: str) -> list[str]:
     return [line.strip() for line in text.splitlines() if CONTAINER.search(line) or LEGACY_QUEUE.search(line)]
 
 
-def load_ledger() -> set[tuple[str, str]]:
+def load_ledger() -> Counter:
+    """Reviewed mentions as a multiset of (path, line): each occurrence of a line needs its own entry."""
     entries = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))["reviewed_mentions"]
-    return {(e["path"], e["line"]) for e in entries}
+    return Counter((e["path"], e["line"]) for e in entries)
 
 
 EXEMPT_CLASSES = {
@@ -299,11 +304,13 @@ def live_files(files: dict[str, str], a: dict) -> dict[str, str]:
             if path not in completed and not any(rx.search(path) for rx in EXEMPT_CLASSES.values())}
 
 
-def queue_claim_violations(files: dict[str, str], a: dict, ledger: set[tuple[str, str]] = frozenset()) -> list[str]:
-    """Live paths with a line the grammar calls a claim, or a container mention that is not in the ledger."""
+def queue_claim_violations(files: dict[str, str], a: dict, ledger=()) -> list[str]:
+    """Live paths with a line the grammar calls a claim, or container mentions that the ledger does not
+    list exactly as often as they occur."""
+    ledger = Counter(ledger)
     return sorted(path for path, text in live_files(files, a).items()
                   if any(claims_a_queue(line) for line in text.splitlines())
-                  or any((path, line) not in ledger for line in mention_lines(text)))
+                  or any(ledger[(path, line)] != n for line, n in Counter(mention_lines(text)).items()))
 
 
 def tracked_text_files() -> dict[str, str]:
@@ -322,10 +329,19 @@ def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> No
 
 
 def test_every_ledger_entry_is_still_present_verbatim() -> None:
-    # A stale entry could later excuse a different line with the same text, so entries must match the tree.
+    # A stale entry could later excuse a different line with the same text, so each entry's count must
+    # match the tree (exempt files included, so completing a task's prompt does not strand its entries).
     files = tracked_text_files()
-    stale = sorted(e for e in load_ledger() if e[1] not in mention_lines(files.get(e[0], "")))
+    stale = sorted(e for e, n in load_ledger().items() if Counter(mention_lines(files.get(e[0], "")))[e[1]] != n)
     assert stale == []
+
+
+def test_negative_control_a_listed_line_repeated_in_the_same_file_fails() -> None:
+    # Review 5323468082: a listed line copied under a rival heading must need its own entry.
+    line = "Promote the next item from the task authority's backlog."
+    path = "projects/score2gp/new-plan.md"
+    assert queue_claim_violations({path: f"{line}\n## Rival\n{line}\n"}, authority(), {(path, line): 1}) == [path]
+    assert queue_claim_violations({path: f"{line}\n## Rival\n{line}\n"}, authority(), {(path, line): 2}) == []
 
 
 def test_negative_control_a_bound_but_unreviewed_mention_fails() -> None:
@@ -382,6 +398,16 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Copy the task authority's backlog into NOTES.md and work from the copy.",
     "Mirror the backlog of the task authority in NOTES.md and pick tasks from there.",
     "Mirror the task authority's backlog in the wiki.",
+    # Review 5323468082: closed-compound spellings, and the other common planning-container words.
+    "Add new tasks to the worklist in NOTES.md and work from it.",
+    "Keep the tasklist in NOTES.md; it is where new work goes.",
+    "Keep a running todolist in NOTES.md and work from it.",
+    "Track upcoming work in TODO.md.",
+    "New work goes on the kanban.",
+    "Park ideas in the icebox.",
+    "Use the issue tracker for planned work.",
+    "Plan the next sprint here.",
+    "Work items are listed below.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     # The grammar alone rejects each one, so the ledger is a second layer rather than the only one.
