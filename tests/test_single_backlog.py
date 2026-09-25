@@ -49,12 +49,35 @@ def test_the_live_authority_backlog_is_valid_and_has_a_ready_frontier() -> None:
     (lambda i: i.update(priority=True), "positive integer"),
     (lambda i: i.update(requirements=[]), "at least one requirement"),
     (lambda i: i.update(depends_on="X"), "must be a list"),
+    (lambda i: i.update(depends_on=[7]), "must be a list of IDs"),
+    (lambda i: i.update(title=42), "title must be"),              # review 5322160552
+    (lambda i: i.update(title="  "), "title must be"),
+    (lambda i: i.update(repository=None), "owner/name"),          # review 5322160552
+    (lambda i: i.update(repository="score2gp"), "owner/name"),
+    (lambda i: i.update(notes=[]), "notes must be"),               # review 5322160552
+    (lambda i: i.update(requirements=["REQ-1"]), "unknown requirement reference"),
+    (lambda i: i.update(requirements=["REQ-0001:U15"]), "unknown requirement reference"),
+    (lambda i: i.update(requirements=["control-plane:anything"]), "unknown requirement reference"),
 ])
 def test_malformed_backlog_items_are_rejected(mutate, message) -> None:
     bad = backlog_item("A")
     mutate(bad)
     with pytest.raises(orca.ControlError, match=message):
         orca.validate_backlog(synthetic(bad))
+
+
+def test_an_unregistered_requirement_is_rejected_against_the_register() -> None:
+    # Review 5322160552: requirements=["REQ-9999"] must not pass.
+    known = orca.register_requirement_ids(AUTHORITY_PATH)
+    assert known >= {"REQ-0001", "REQ-0005"}
+    item = backlog_item("A", requirements=["REQ-9999"])
+    orca.validate_backlog(synthetic(item))  # well-formed on its own ...
+    with pytest.raises(orca.ControlError, match="unregistered requirement REQ-9999"):
+        orca.validate_backlog(synthetic(item), known)  # ... but not a registered requirement
+
+
+def test_the_live_backlog_cites_only_registered_requirements() -> None:
+    orca.validate_backlog(authority(), orca.register_requirement_ids(AUTHORITY_PATH))
 
 
 def test_duplicate_ids_are_rejected_including_collisions_with_known_tasks() -> None:
@@ -127,7 +150,23 @@ def test_negative_control_a_requirement_without_items_is_detected() -> None:
 
 # --- one backlog: the search oracle ---------------------------------------------------------------
 
-QUEUE_CLAIM = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue|task queue|queued in")
+# Known alternative backlog files and headings from earlier methods: always a violation outside the exempt classes.
+LEGACY_QUEUE = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue")
+# Any planning-container wording. A line that uses it must also refer to the task authority, so that a
+# new, differently worded queue claim ("this document is the product backlog", "add the next task to a
+# separate planning queue") fails however it is phrased.
+CONTAINER = re.compile(r"\b(backlogs?|queues?|queued|queueing|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?|planning (?:file|document|data))\b", re.I)
+AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
+# Queues that are product features or GitHub mechanisms, not task queues.
+NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue\b", re.I)
+
+
+def claims_a_queue(line: str) -> bool:
+    if LEGACY_QUEUE.search(line):
+        return True
+    return bool(CONTAINER.search(NON_TASK_QUEUE.sub("", line))) and not AUTHORITY_REFERENCE.search(line)
+
+
 EXEMPT_CLASSES = {
     # (a) dated record directories: they describe past state and never instruct.
     "a": re.compile(r"^projects/score2gp/(runs|reviews|research|reports|decisions|handoffs|archive|audits)/"),
@@ -149,8 +188,8 @@ def completed_task_prompts(a: dict) -> set[str]:
 def queue_claim_violations(files: dict[str, str], a: dict) -> list[str]:
     completed = completed_task_prompts(a)  # (b, completed) prompts of tasks in completed_tasks
     return sorted(path for path, text in files.items()
-                  if QUEUE_CLAIM.search(text) and path not in completed
-                  and not any(rx.search(path) for rx in EXEMPT_CLASSES.values()))
+                  if path not in completed and not any(rx.search(path) for rx in EXEMPT_CLASSES.values())
+                  and any(claims_a_queue(line) for line in text.splitlines()))
 
 
 def tracked_text_files() -> dict[str, str]:
@@ -176,6 +215,28 @@ def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> No
 ])
 def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(path) -> None:
     assert queue_claim_violations({path: "Tasks are queued in PLANNING_DATA.md."}, authority()) == [path]
+
+
+@pytest.mark.parametrize("text", [
+    "This document is the product backlog.",                       # review 5322160552
+    "Add the next task to a separate planning queue.",             # review 5322160552
+    "Keep a running to-do list in NOTES.md and work from it.",
+    "Work items are tracked in the sprint task list below.",
+    "Our work-list lives in the wiki.",
+    "Record new ideas in this planning document.",
+    "Pending tasks are queued here until someone picks them up.",
+])
+def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
+    assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == ["projects/score2gp/new-plan.md"]
+
+
+@pytest.mark.parametrize("text", [
+    "Promote the next item from the task authority's backlog.",
+    "The backlog in ORCHESTRATION_STATE.json is the only planned-work record.",
+    "Implement an async conversion job queue for the cloud service.",
+])
+def test_references_to_the_authority_and_product_queues_are_not_claims(text) -> None:
+    assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == []
 
 
 # --- the dispatcher's resolution is unchanged by the backlog --------------------------------------

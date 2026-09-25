@@ -1,6 +1,6 @@
 # RES-REQ-0003 — Research to take REQ-0003 to ACCEPTED
 
-- **Kind:** research (backlog item `RES-REQ-0003`; promote to a task before execution)
+- **Kind:** research (authority backlog item `RES-REQ-0003`; promote to a task before execution)
 - **Repository:** `tticom/score2gp-agentops` (records); read-only inspection of `tticom/score2gp` dependencies
 - **Requirement:** [REQ-0003](../../requirements/REQ-0003-dependency-licence-compatibility.md), currently `PROPOSED`
 
@@ -16,7 +16,7 @@ Establish the facts and options the maintainer needs in order to accept REQ-0003
    - permissively licensed alternatives, for example `pypdfium2` and `pdfminer.six`.
    Assess each for the observations the product needs: vector paths with paint order, colour and opacity; text with positions; raster rendering. Measure, on at least Lesson 3, whether each alternative reproduces the observations the current pipeline uses. The existing topology fingerprint over the corpus is a suitable oracle.
 3. **A proposed mechanical audit**, the check the CI licence gate in REQ-0003 acceptance criterion 1 would run.
-4. **Status proposal.** Recommend `ACCEPTED`, with the chosen direction left to the maintainer as a decision (backlog item DEC-04).
+4. **Status proposal.** Recommend `ACCEPTED`, with the chosen direction left to the maintainer as a decision (authority backlog item DEC-04).
 
 ## Constraints
 

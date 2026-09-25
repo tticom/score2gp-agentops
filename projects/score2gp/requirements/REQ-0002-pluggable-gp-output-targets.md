@@ -160,7 +160,7 @@ Per-target criteria, for every supported target T:
 - **Acceptance harness:** Guitar Pro application round trip per version (NPG-06D, extended per target).
 - **Priority:** the maintainer will plan delivery as priority rises. Exception: **OUT-01 containment is recommended early**, because the current adapter can emit mislabelled files today.
 
-## 11. Proposed backlog (not promoted; for governance planning)
+## 11. Proposed tasks (recorded in the task authority's backlog; not promoted)
 
 | ID | Goal | Depends on | Exit evidence |
 |---|---|---|---|

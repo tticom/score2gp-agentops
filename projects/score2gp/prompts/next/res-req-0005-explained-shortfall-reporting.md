@@ -1,6 +1,6 @@
 # RES-REQ-0005 — Research to take REQ-0005 to ACCEPTED
 
-- **Kind:** research (backlog item `RES-REQ-0005`; promote to a task before execution)
+- **Kind:** research (authority backlog item `RES-REQ-0005`; promote to a task before execution)
 - **Repository:** `tticom/score2gp-agentops` (records), with read-only inspection of `tticom/score2gp` and the private corpus
 - **Requirement:** [REQ-0005](../../requirements/REQ-0005-explained-shortfall-reporting.md), currently `PROPOSED`
 

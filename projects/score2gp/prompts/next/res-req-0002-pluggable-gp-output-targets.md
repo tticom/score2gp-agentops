@@ -1,6 +1,6 @@
 # RES-REQ-0002 — Research to take REQ-0002 to ACCEPTED
 
-- **Kind:** research (backlog item `RES-REQ-0002`; promote to a task before execution)
+- **Kind:** research (authority backlog item `RES-REQ-0002`; promote to a task before execution)
 - **Repository:** `tticom/score2gp-agentops` (records), with read-only use of the private corpus
 - **Requirement:** [REQ-0002](../../requirements/REQ-0002-pluggable-gp-output-targets.md), currently `RESEARCHED`
 

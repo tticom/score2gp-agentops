@@ -47,7 +47,7 @@ run without an Orca assignment. They must not be combined with Orca mode.
 Neither Orca prompts nor worker interpretation may override a deterministic
 `BLOCKED` or merge `DENY` result.
 
-Agents must not treat `ACTIVE_TASK.md`, `NEXT.md`, task lists, backlog files,
+Agents must not treat `ACTIVE_TASK.md`, `NEXT.md`, the authority's backlog items,
 research notes, reports, handoffs, or unchecked checklist items as permission
 to execute. They are views, inputs, or compatibility pointers only. An
 executable assignment must resolve from `ORCHESTRATION_STATE.json` and current
@@ -205,7 +205,7 @@ bounded task or the smallest governance action needed to authorize it. The
 agent must not wait for the human to ask what comes next.
 
 If no approved task or prompt remains, the agent must assess the actual product
-state instead of stopping merely because a queue is empty. That assessment
+state instead of stopping merely because the task authority has no promotable task. That assessment
 must use real product evidence where safely available: current merged code,
 approved public fixtures, approved private fixtures in place, fresh conversion
 output, maintainer real-world test observations, and direct inspection of the
@@ -397,9 +397,9 @@ and read:
 
 `AGENTS.md`
 
-n## Planning Data
+## Planning Data (the task authority's backlog)
 
-Queues are non-executable planning data. The JSON task/incident model is the only authored authority. Agents must not execute tasks from a queue or automatically promote tasks without Orca Control Plane dispatch.
+The task authority's `backlog` is non-executable planning data. The JSON task/incident model is the only authored authority. Agents must not execute an authority backlog item or automatically promote one without Orca Control Plane dispatch.
 
 ## Permission Tiers
 

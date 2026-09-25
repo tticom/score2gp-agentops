@@ -102,7 +102,7 @@ The Project Director may:
 
 The Project Director must not:
 
-- invent product direction that is not supported by backlog/review evidence;
+- invent product direction that is not supported by the task authority's backlog or review evidence;
 - hide blockers;
 - bypass required validation;
 - run `git reset --hard` or `git clean` with deletion flags during

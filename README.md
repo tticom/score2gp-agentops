@@ -53,7 +53,7 @@ The agent-ops repository evaluates and directs product work, but it does not pro
 All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
 - the active `task`;
 - promotable proposals (`next_task_proposal`, `queued_task_proposals`);
-- the `backlog` of items not yet detailed enough to promote.
+- the authority's `backlog` of items not yet detailed enough to promote.
 
 Every item cites the requirement it delivers (`projects/score2gp/requirements/`). `scripts/score2gp_orca_control.py` validates the backlog and computes the ready frontier (`ready_frontier`). Governance promotes from that frontier, and `ACTIVE_TASK.md` is the generated view. No other file is a queue or backlog: `tests/test_single_backlog.py` enforces this.
 

@@ -16,7 +16,7 @@ Score2GP must know what it could not convert, and crucially **why**, and tell th
    - the provenance of the run (see REQ-0004).
 2. **User report.** From those records, a report shows the user what was not converted and why, in terms the user understands, not just a failure status.
 3. **Best effort.** Score2GP does what it can and renders the best result that can be done. It produces output for everything it can convert correctly, labels every gap, and never presents a partial result as complete.
-4. **Learning over time.** Shortfall records are kept and aggregated across runs and sources, so the most frequent and most costly reasons become visible and drive the backlog.
+4. **Learning over time.** Shortfall records are kept and aggregated across runs and sources, so the most frequent and most costly reasons become visible and drive the task authority's backlog.
 
 Maintainer direction (2026-09-25), verbatim:
 

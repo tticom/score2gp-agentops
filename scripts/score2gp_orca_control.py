@@ -201,6 +201,21 @@ BACKLOG_STATUSES = {"IDEA", "NEEDS_RESEARCH", "NEEDS_DETAIL", "READY", "PROMOTED
 BACKLOG_TERMINAL = {"DONE", "DROPPED"}
 BACKLOG_REQUIRED = ("id", "title", "requirements", "kind", "repository", "status", "priority", "depends_on", "notes")
 TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}
+# An authority backlog item cites a registered requirement (optionally one REQ-0001 obligation U01-U14) or a
+# declared control-plane or programme need.
+REQUIREMENT_REF = re.compile(r"^(REQ-\d{4})(?::U(?:0[1-9]|1[0-4]))?$")
+NAMED_NEEDS = {"control-plane:records", "control-plane:skills", "control-plane:workspace", "control-plane:review-gate",
+               "programme:multimodal"}
+REPOSITORY_REF = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+REGISTER_ROW = re.compile(r"^\| (REQ-\d{4}) \| [^|]+ \| `([A-Z_]+)` \|", re.M)
+
+
+def register_requirement_ids(authority_path: Path) -> set[str]:
+    """Requirement IDs listed in the register beside the authority (requirements/README.md)."""
+    register = authority_path.parent / "requirements" / "README.md"
+    if not register.is_file():
+        raise ControlError(f"requirements register missing: {register}")
+    return {req for req, _status in REGISTER_ROW.findall(register.read_text(encoding="utf-8"))}
 
 
 def _known_task_ids(authority: dict[str, Any]) -> dict[str, str]:
@@ -213,49 +228,61 @@ def _known_task_ids(authority: dict[str, Any]) -> dict[str, str]:
     return known
 
 
-def validate_backlog(authority: dict[str, Any]) -> None:
-    """Validate the light ``backlog`` list: schema, unique IDs, known dependencies and no cycles.
+def validate_backlog(authority: dict[str, Any], known_requirements: set[str] | None = None) -> None:
+    """Validate the authority's light ``backlog`` list: field types, unique IDs, references, dependencies and cycles.
 
     Items not yet detailed enough to promote live here; promotion converts one to the full proposal
-    schema. Dependencies may name backlog items or any task the authority knows.
+    schema. Dependencies may name backlog items or any task the authority knows. When the register's
+    ``known_requirements`` are given, every cited requirement must be registered.
     """
-    backlog = authority.get("backlog", [])
-    if not isinstance(backlog, list):
+    items = authority.get("backlog", [])
+    if not isinstance(items, list):
         raise ControlError("authority backlog must be a list")
     tasks = _known_task_ids(authority)
     ids: set[str] = set()
-    for item in backlog:
+    for item in items:
         if not isinstance(item, dict):
-            raise ControlError("backlog items must be objects")
+            raise ControlError("authority backlog items must be objects")
         missing = [f for f in BACKLOG_REQUIRED if f not in item]
         if missing:
-            raise ControlError(f"backlog item {item.get('id', '?')} fields missing: {', '.join(missing)}")
-        iid = str(item["id"])
-        if not iid or iid in ids or iid in tasks:
-            raise ControlError(f"backlog item ID {iid!r} is empty or duplicated")
+            raise ControlError(f"authority backlog item {item.get('id', '?')} fields missing: {', '.join(missing)}")
+        for field in ("id", "title", "notes"):
+            if not isinstance(item[field], str) or (field != "notes" and not item[field].strip()):
+                raise ControlError(f"authority backlog item {item.get('id', '?')} {field} must be a {'string' if field == 'notes' else 'non-empty string'}")
+        if not isinstance(item["repository"], str) or not REPOSITORY_REF.match(item["repository"]):
+            raise ControlError(f"authority backlog item {item['id']} repository must be owner/name")
+        iid = item["id"]
+        if iid in ids or iid in tasks:
+            raise ControlError(f"authority backlog item ID {iid!r} is empty or duplicated")
         ids.add(iid)
         if item["kind"] not in BACKLOG_KINDS:
-            raise ControlError(f"backlog item {iid} has unsupported kind {item['kind']!r}")
+            raise ControlError(f"authority backlog item {iid} has unsupported kind {item['kind']!r}")
         if item["status"] not in BACKLOG_STATUSES:
-            raise ControlError(f"backlog item {iid} has unsupported status {item['status']!r}")
+            raise ControlError(f"authority backlog item {iid} has unsupported status {item['status']!r}")
         if not isinstance(item["priority"], int) or isinstance(item["priority"], bool) or item["priority"] < 1:
-            raise ControlError(f"backlog item {iid} priority must be a positive integer")
+            raise ControlError(f"authority backlog item {iid} priority must be a positive integer")
         if not isinstance(item["requirements"], list) or not item["requirements"]:
-            raise ControlError(f"backlog item {iid} must cite at least one requirement or control-plane need")
-        if not isinstance(item["depends_on"], list):
-            raise ControlError(f"backlog item {iid} depends_on must be a list")
-    graph = {str(i["id"]): [str(d) for d in i["depends_on"]] for i in backlog}
+            raise ControlError(f"authority backlog item {iid} must cite at least one requirement or control-plane need")
+        for ref in item["requirements"]:
+            match = REQUIREMENT_REF.match(ref) if isinstance(ref, str) else None
+            if not match and ref not in NAMED_NEEDS:
+                raise ControlError(f"authority backlog item {iid} cites an unknown requirement reference {ref!r}")
+            if match and known_requirements is not None and match.group(1) not in known_requirements:
+                raise ControlError(f"authority backlog item {iid} cites unregistered requirement {match.group(1)}")
+        if not isinstance(item["depends_on"], list) or not all(isinstance(d, str) and d for d in item["depends_on"]):
+            raise ControlError(f"authority backlog item {iid} depends_on must be a list of IDs")
+    graph = {str(i["id"]): [str(d) for d in i["depends_on"]] for i in items}
     for iid, deps in graph.items():
         for dep in deps:
             if dep not in graph and dep not in tasks:
-                raise ControlError(f"backlog item {iid} depends on unknown item {dep}")
+                raise ControlError(f"authority backlog item {iid} depends on unknown item {dep}")
     state: dict[str, int] = {}
 
     def visit(node: str, path: list[str]) -> None:
         if state.get(node) == 2:
             return
         if state.get(node) == 1:
-            raise ControlError(f"backlog dependency cycle: {' -> '.join([*path, node])}")
+            raise ControlError(f"authority backlog dependency cycle: {' -> '.join([*path, node])}")
         state[node] = 1
         for dep in graph.get(node, []):
             visit(dep, [*path, node])
@@ -266,10 +293,10 @@ def validate_backlog(authority: dict[str, Any]) -> None:
 
 
 def ready_frontier(authority: dict[str, Any]) -> list[dict[str, Any]]:
-    """Backlog items that could be promoted now: READY, with every dependency terminal, by priority."""
+    """Authority backlog items that could be promoted now: READY, with every dependency terminal, by priority."""
     validate_backlog(authority)
-    backlog = authority.get("backlog", [])
-    status = {str(i["id"]): str(i["status"]) for i in backlog}
+    items = authority.get("backlog", [])
+    status = {str(i["id"]): str(i["status"]) for i in items}
     tasks = _known_task_ids(authority)
 
     def terminal(dep: str) -> bool:
@@ -277,7 +304,7 @@ def ready_frontier(authority: dict[str, Any]) -> list[dict[str, Any]]:
             return status[dep] in BACKLOG_TERMINAL
         return tasks.get(dep, "") in TERMINAL_TASK_STATUSES
 
-    frontier = [i for i in backlog if i["status"] == "READY" and all(terminal(str(d)) for d in i["depends_on"])]
+    frontier = [i for i in items if i["status"] == "READY" and all(terminal(str(d)) for d in i["depends_on"])]
     return sorted(frontier, key=lambda i: (i["priority"], str(i["id"])))
 
 
@@ -996,7 +1023,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile"),
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile", "frontier"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -1019,6 +1046,11 @@ def main() -> None:
             raise ControlError(f"expected GitHub login {args.github_login}, authenticated as {login}")
         receipt = execute_merge(load_json(args.authority), args.repository, args.pull_request, login)
         print(json.dumps(receipt, indent=2, sort_keys=True))
+        return
+    if args.command == "frontier":
+        authority = load_json(args.authority)
+        validate_backlog(authority, register_requirement_ids(args.authority))
+        print(json.dumps([{k: i[k] for k in ("id", "priority", "kind", "repository", "title")} for i in ready_frontier(authority)], indent=2))
         return
     if args.live is None:
         raise ControlError(f"{args.command} requires --live")

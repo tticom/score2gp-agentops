@@ -3,7 +3,7 @@
 - **Status:** `ACCEPTED`. It was approved as programme work in July 2026 (FS-01, FS-02) and is only partly implemented.
 - **Owner:** maintainer (`tticom`)
 - **Recorded in the register:** 2026-09-25, at the maintainer's request to check the earlier logging requirement.
-- **Backlog:** PROV-01
+- **Task authority backlog item:** PROV-01
 
 ## Requirement
 

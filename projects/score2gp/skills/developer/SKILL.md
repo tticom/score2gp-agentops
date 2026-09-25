@@ -14,7 +14,7 @@ The Developer must not widen scope, substitute a different architecture, tune be
 
 When Orca supplies a `score2gp_bounded_worker` assignment, it is the complete
 execution authority. Validate it against fresh live state before writing. Do
-not read queues to select work, promote a successor, reinterpret an incident,
+not read the authority backlog to select work, promote a successor, reinterpret an incident,
 change role, create another worker, or merge. Return control to Orca after the
 completion contract is satisfied.
 

@@ -26,7 +26,7 @@ The current system mixes four different concerns:
 - Policy: `AGENT_CONTROL.md`, `REVIEW_RULES.md`, `PR_EVIDENCE_CONTRACT.md`,
   protected-branch rules, task prompts, and role skills.
 - Orchestration: autonomous-continuation, blocker-pivot, role-transition, and
-  queue-promotion rules in `AGENT_CONTROL.md`, project-director skills,
+  authority promotion rules in `AGENT_CONTROL.md`, project-director skills,
   `ACTIVE_TASK.md`, the `backlog` in `ORCHESTRATION_STATE.json`, and `go/got` prompts.
 - Identity enforcement: GitHub login and workspace-slot checks
   (`scripts/verify_identity.py`), per-identity clones and GitHub CLI
@@ -127,14 +127,14 @@ detached at the exact PR head and remain read-only.
 
 ## Compatibility and migration
 
-The existing `ACTIVE_TASK.md`, queues, `go/got`, and bootstrap scripts remain
+The existing `ACTIVE_TASK.md`, the pre-authority planning files, `go/got`, and bootstrap scripts remain
 active during v1. They are compatibility inputs and audit evidence, not a
 second Orca state engine. Every change to task authority must update both
 `ACTIVE_TASK.md` and `ORCHESTRATION_STATE.json`; CI must reject divergence.
 
 After shadow runs prove equivalence, replace `ACTIVE_TASK.md` with a generated
 human view, retire autonomous continuation/pivot rules, and reduce `go/got` to
-thin adapters that call the same resolver. Queue files become planning records,
+thin adapters that call the same resolver. Planning files outside the authority become records,
 not executable dispatch inputs. The old bootstrap state reducers become
 obsolete only after this cutover.
 
@@ -150,8 +150,8 @@ obsolete only after this cutover.
 3. CI authority gate: run alignment and schema tests on every AgentOps PR; add a
    live ruleset audit that verifies automation cannot bypass either main.
 4. State cutover: make the JSON task/incident model the only authored authority;
-   generate `ACTIVE_TASK.md` as a human view. Convert queues to non-executable
-   planning data. Make `go/got` thin compatibility wrappers around this CLI.
+   generate `ACTIVE_TASK.md` as a human view. Move planned work into the
+   authority's non-executable `backlog` (done by PLAN-01). Make `go/got` thin compatibility wrappers around this CLI.
 5. Merge controller: GOV-01 delivered an audited merge executor for delegated
    `roles.merge_controller` logins with stale-head protection
    (`--match-head-commit`) and receipt auditing. A least-privilege GitHub App
@@ -164,7 +164,7 @@ obsolete only after this cutover.
 
 - State-reduction branches inside `score2gp_go_bootstrap.py`,
   `score2gp_got_bootstrap.py`, and `score2gp_bootstrap.py`.
-- Worker-side continuation, pivot, queue selection, and task-promotion clauses
+- Worker-side continuation, pivot, work selection outside the authority, and task-promotion clauses
   in `AGENT_CONTROL.md` and the project-director skill.
 - Hand-authored `ACTIVE_TASK.md` and prose status vocabulary after it becomes a
   generated view.

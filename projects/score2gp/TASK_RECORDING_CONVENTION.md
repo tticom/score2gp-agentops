@@ -1,6 +1,6 @@
 # Task Recording Convention
 
-There is one place for each kind of record. Nothing else is a queue, a backlog or a task list. `tests/test_single_backlog.py` enforces this.
+There is one place for each kind of record. Nothing but the task authority is a queue, a backlog or a task list. `tests/test_single_backlog.py` enforces this.
 
 ## 1. What must be true: requirements
 
@@ -14,12 +14,12 @@ All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
 |---|---|
 | `task` | The one active task |
 | `next_task_proposal`, `queued_task_proposals` | Promotable tasks in the full proposal schema |
-| `backlog` | Items not yet detailed enough to promote, in the light schema (`id`, `title`, `requirements`, `kind`, `repository`, `status`, `priority`, `depends_on`, `notes`) |
+| `backlog` | Authority items not yet detailed enough to promote, in the light schema (`id`, `title`, `requirements`, `kind`, `repository`, `status`, `priority`, `depends_on`, `notes`) |
 | `completed_tasks` | Finished tasks, with their PR, reviewed head and merge commit |
 
 `scripts/score2gp_orca_control.py` validates the backlog: schema, unique IDs, known dependencies and no cycles. It also computes the **ready frontier**: items with status `READY` whose dependencies are all terminal, in priority order. Governance promotes from the frontier by converting an item to the full proposal schema. `ACTIVE_TASK.md` is generated from the authority and never edited by hand.
 
-Do not create `TASKS.md` files, sub-folder backlogs, planning queues or cycle backlogs.
+Do not create `TASKS.md` files, sub-folder backlogs, planning queues or cycle backlogs outside the authority.
 
 ## 3. How to do it: task prompts
 
