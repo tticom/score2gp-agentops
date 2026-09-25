@@ -38,3 +38,24 @@ This document records the architectural decisions governing agent workflows and 
 - **Status**: **Conditional Recommendation (2026-08-20)**
 - **Decision**: Score2GP will build and own a native vector-based recognition layer instead of consuming a third-party recognition object. Audiveris is recommended for retirement due to its unsuitability for modern born-digital instructional PDFs (e.g. failing on floating barlines and irregular layouts).
 - **Reason**: Commercial alternatives like PDFtoMusic Pro are proprietary and brittle on messy instructional layouts. An owned vector pipeline allows us to specifically target the heuristic needs of instructional scores, including layout resilience, geometric rhythm extraction, and floating barlines.
+
+## ADR-008: Guitar Pro Output Targets Are Pluggable Modules Behind a Versioned Interface
+- **Status**: **Proposed (2026-09-25)**. Awaits maintainer acceptance, together with the open questions in REQ-0002 §12.
+- **Requirement**: [REQ-0002](requirements/REQ-0002-pluggable-gp-output-targets.md)
+- **Context**: The product writes one GPIF-in-ZIP package and then post-processes it into "GP6" and "GP8" (`src/score2gp/version_adapter.py`). Comparison with real Guitar Pro 8.1.0 and 8.1.4 files shows that the adapter invents tags and version stamps, and that its "GP6" output is a ZIP, whereas real GP6 files use the BCFZ/BCFS `.gpx` container. Guitar Pro spans three unrelated encodings: binary GP3–5, GPIF in BCFZ/BCFS (GP6), and GPIF in ZIP (GP7/8). The maintainer requires GP5–GP8 output, with future versions added as bolt-on modules.
+- **Decision**:
+  1. Output is produced by **output targets**. Each target implements a versioned interface: identity, capability matrix, `compile(canonical document, options) -> package + report`, and self-validation.
+  2. Targets are found through a **registry**. First-party and separately installed targets register the same way, and core code never names a concrete target.
+  3. Targets are grouped by **family** (binary, GPIF-BCFZ, GPIF-ZIP). Version differences within a family are **profiles** built from Guitar Pro-authored evidence, not conditionals.
+  4. Before writing, the **capability check** refuses, or under explicit policy degrades with a report, every canonical feature the target cannot represent. Silent loss is forbidden.
+  5. The canonical musical document is target-neutral. Targets never infer musical semantics.
+  6. Each target is accepted independently: an independent reader, plus an open/play/save/reopen round trip in that Guitar Pro version.
+- **Alternatives rejected**:
+  - One writer with post-hoc per-version patching (the current design). It cannot express different containers or encodings, and it has already produced fabricated output.
+  - Version conditionals inside `gpif.py`. This couples every version to one module and makes adding a version a core change.
+  - Delegating to an external converter. Guitar Pro has no headless converter, and alphaTab exports only GP7.
+- **Deferred**: Whether targets ship in this repository or as separate packages (the dormant `score2gp-exporter` scaffold) is a packaging decision for OUT-02.
+- **Consequences**:
+  - The current adapter's GP6/GP8 paths must be contained (REQ-0002 OUT-01) before the interface exists.
+  - Target acceptance requires access to each Guitar Pro version and licensing decisions per dependency.
+  - The pytest-conditional serializer and the canonical clamps must be removed first, so that target tests exercise production output and target limits are enforced by capability checks rather than by silent clamping.
