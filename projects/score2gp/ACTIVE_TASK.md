@@ -52,6 +52,9 @@ Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every plann
 - `skills/**`
 - `projects/prompts/**`
 - `.agents/agents/project-director/agent.json`
+- `AGENT-RULES.md`
+- `.agents/skills/**`
+- `projects/score2gp/WORKFLOW_SKILLS_PROFILE.md`
 - `projects/score2gp/prompts/*.md`
 - `docs/**`
 - `tests/test_governance_audit.py`
