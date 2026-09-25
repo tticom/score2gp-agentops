@@ -212,9 +212,11 @@ LEGACY_QUEUE = re.compile(r"PLANNING_DATA|backlog\.yaml|Approved Task Queue")
 # separate planning queue") fails however it is phrased.
 # Separators are optional ("tasklist", "work-list", "to do list"), every inflection of queue counts
 # ("queuing", "enqueue"), and a bare "todo" (TODO.md) counts. A bare "to do" is ordinary English and does not.
-CONTAINER_WORDS = (r"backlog(?:s|ged)?|(?:en|re)?queu(?:e|es|ed|eing|ing)|(?:task|work|to[- ]?do|wish|punch|issue)[- ]?lists?"
-                   r"|to-?dos?|kanban|icebox|trackers?|sprints?"
-                   r"|work[- ]?items?|task[- ]?boards?|planning[- ]?(?:files?|documents?|data)")
+SEP = "[-‐-― ]"  # ASCII hyphen, Unicode hyphens and dashes, or a space
+CONTAINER_WORDS = (r"backlog(?:s|ged|ging)?|(?:en|de|re)?queu(?:e|es|ed|eing|ing)"
+                   rf"|(?:task|work|to{SEP}?do|wish|punch|issue){SEP}?lists?"
+                   rf"|to[-‐-―]?dos?|kanban|icebox|trackers?|sprints?"
+                   rf"|work{SEP}?items?|task{SEP}?boards?|planning{SEP}?(?:files?|documents?|data)")
 CONTAINER = re.compile(r"\b(" + CONTAINER_WORDS + r")\b", re.I)
 AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
 # Queues that are product features or GitHub mechanisms, not task queues.
@@ -315,18 +317,37 @@ def queue_claim_violations(files: dict[str, str], a: dict, ledger=()) -> list[st
                   or any(ledger[(path, line)] != n for line, n in Counter(mention_lines(text)).items()))
 
 
+# Only these suffixes may be skipped as binary. No tracked file has one today.
+BINARY_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp", ".pdf", ".zip", ".gz", ".gp", ".gpx", ".woff", ".woff2"}
+BOMS = [(b"\xef\xbb\xbf", "utf-8-sig"), (b"\xff\xfe\0\0", "utf-32"), (b"\0\0\xfe\xff", "utf-32"),
+        (b"\xff\xfe", "utf-16"), (b"\xfe\xff", "utf-16")]
+
+
+def decode_text(path: str, data: bytes) -> str | None:
+    """The text of a tracked file, or None for an allow-listed binary. Nothing else is skipped: a file with
+    a byte-order mark is read in that encoding, and any other file that is not UTF-8 (cp1252, BOM-less
+    UTF-16, an unlisted binary) raises, so a claim cannot drop out of the oracle (reviews 5323510443, 5323539979)."""
+    for bom, encoding in BOMS:
+        if data.startswith(bom):
+            return data.decode(encoding)
+    if Path(path).suffix.lower() in BINARY_SUFFIXES:
+        return None
+    if b"\0" in data:
+        raise UnicodeDecodeError("utf-8", data, data.index(b"\0"), data.index(b"\0") + 1,
+                                 f"{path}: NUL byte in a file that is not an allow-listed binary")
+    return data.decode("utf-8")
+
+
 def read_text_files(root: Path, paths: list[str]) -> dict[str, str]:
-    """Every text file among ``paths``. Only binary blobs are skipped: text that is not UTF-8 raises, so a
-    claim saved in another encoding cannot drop out of the oracle (review 5323510443)."""
     files = {}
     for path in paths:
         try:
             data = (root / path).read_bytes()
         except (FileNotFoundError, IsADirectoryError):
             continue  # deleted in the worktree, or a submodule: no text to judge
-        if b"\0" in data:
-            continue
-        files[path] = data.decode("utf-8")
+        text = decode_text(path, data)
+        if text is not None:
+            files[path] = text
     return files
 
 
@@ -336,12 +357,31 @@ def tracked_text_files() -> dict[str, str]:
     return read_text_files(ROOT, [p for p in listing.decode("utf-8").split("\0") if p])
 
 
-def test_negative_control_text_in_another_encoding_fails_rather_than_being_skipped(tmp_path: Path) -> None:
-    (tmp_path / "rival.md").write_bytes("Keep the backlog in NOTES.md – new work goes there.".encode("cp1252"))
-    (tmp_path / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n\0\0\0")
+RIVAL = "Keep the backlog in NOTES.md – new work goes there."
+
+
+@pytest.mark.parametrize("encoding", ["cp1252", "utf-16-le", "utf-16-be", "utf-32-le"])
+def test_negative_control_text_in_another_encoding_fails_rather_than_being_skipped(tmp_path: Path, encoding) -> None:
+    (tmp_path / "rival.md").write_bytes(RIVAL.encode(encoding))  # no byte-order mark
     with pytest.raises(UnicodeDecodeError):
         read_text_files(tmp_path, ["rival.md"])
+
+
+@pytest.mark.parametrize("encoding", ["utf-8-sig", "utf-16", "utf-32"])
+def test_negative_control_text_with_a_byte_order_mark_is_read_and_judged(tmp_path: Path, encoding) -> None:
+    # Windows PowerShell 5.1 writes UTF-16 with a BOM by default; such a file must be judged, not skipped.
+    (tmp_path / "new-plan.md").write_bytes(RIVAL.encode(encoding))
+    files = {f"projects/score2gp/{k}": v for k, v in read_text_files(tmp_path, ["new-plan.md"]).items()}
+    assert queue_claim_violations(files, authority(), load_ledger()) == ["projects/score2gp/new-plan.md"]
+
+
+def test_only_allow_listed_binaries_are_skipped(tmp_path: Path) -> None:
+    blob = b"\x89PNG\r\n\x1a\n\0\0\0"
+    (tmp_path / "image.png").write_bytes(blob)
+    (tmp_path / "image.dat").write_bytes(blob)
     assert read_text_files(tmp_path, ["image.png"]) == {}
+    with pytest.raises(UnicodeDecodeError):
+        read_text_files(tmp_path, ["image.dat"])
 
 
 def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> None:
@@ -434,6 +474,11 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Keep a running to do list in NOTES.md and work from it.",
     "Requeue unfinished tasks in NOTES.md.",
     "Anything backlogged goes in NOTES.md.",
+    # Review 5323539979 (non-blocking): the remaining inflections and Unicode hyphens.
+    "Keep backlogging ideas in NOTES.md.",
+    "Dequeue the next task from NOTES.md.",
+    "Keep a running to‑do list in NOTES.md.",
+    "Track it on the task‐board in NOTES.md.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     # The grammar alone rejects each one, so the ledger is a second layer rather than the only one.
