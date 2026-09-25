@@ -1,0 +1,270 @@
+{
+ "schema_version": "queue-mention-ledger.v1",
+ "note": "Every live line that mentions a backlog, queue, task list, to-do list, work list or planning file, verbatim. tests/test_single_backlog.py fails on any live mention not listed here and on any entry no longer present. Add an entry only after reviewing that the line refers to the task authority (ORCHESTRATION_STATE.json) or to a product or GitHub queue, and never to another place for planned work.",
+ "reviewed_mentions": [
+  {
+   "path": ".agents/agents/project-director/agent.json",
+   "line": "\"content\": \"At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\\n\\nRun the equivalent of:\\nFrom your governance checkout, on any OS:\\npython scripts/verify_identity.py\\ngit status --short --branch\\ngit fetch --all --prune\\nread projects/score2gp/ACTIVE_TASK.md in full\\nprint the backlog in projects/score2gp/ORCHESTRATION_STATE.json (the task authority)\\npython scripts/score2gp_governance_audit.py\\n\\nThen from the sibling ../score2gp checkout:\\ngit status --short --branch\\ngit fetch --all --prune\\ngit log --oneline --decorate --max-count=8\""
+  },
+  {
+   "path": ".agents/agents/project-director/agent.json",
+   "line": "\"content\": \"Before ending after a successful task, inspect ACTIVE_TASK.md, the backlog in ORCHESTRATION_STATE.json, recent reports, recent reviews, and current blockers. If an approved next task exists and prerequisites are satisfied, execute it. If no approved next task exists, identify the smallest credible continuation still inside the current product direction. Prefer diagnostic, schema, fixture, reporting, smoke-test, fail-closed, or corpus-audit work over stopping. Create a governance PR to record the continuation and make it active when safe.\\n\\nWhen a task hits a blocker, do not default to stopping. Identify the blocker precisely, decide whether a credible unblocker exists, convert that unblocker into the smallest research, fixture, test, reporting, or feature task, and continue on the appropriate branch. Stop only if every credible pivot would require a new product direction, destructive action, unapproved data source, or speculative musical inference.\""
+  },
+  {
+   "path": ".agents/skills/score2gp-remediation-governance/SKILL.md",
+   "line": "description: Governing E2E PDF-to-GP conversion-failure remediation, whose tasks live in the task authority's backlog. Enforces the ban on synthetic tests, mandates real-world in-situ testing on private fixtures, and governs task promotions for barline inheritance, page indexing, and digit over-merging."
+  },
+  {
+   "path": ".agents/skills/score2gp-remediation-governance/SKILL.md",
+   "line": "* Load the task authority's backlog (`ORCHESTRATION_STATE.json`, which replaced the retired conversion-recovery programme and M6 planning records) and the director skill."
+  },
+  {
+   "path": ".agents/skills/score2gp-report-consolidation/SKILL.md",
+   "line": "- Commit and push the consolidated report; record follow-up work as task authority backlog items."
+  },
+  {
+   "path": "AGENT-RULES.md",
+   "line": "- Must maintain the task authority's backlog state and dependency graph (`ORCHESTRATION_STATE.json`)."
+  },
+  {
+   "path": "README.md",
+   "line": "### Single task authority (and the authority's backlog)"
+  },
+  {
+   "path": "README.md",
+   "line": "- the authority's `backlog` of items not yet detailed enough to promote."
+  },
+  {
+   "path": "README.md",
+   "line": "Every item cites the requirement it delivers (`projects/score2gp/requirements/`). `scripts/score2gp_orca_control.py` validates the authority's backlog and computes the ready frontier (`ready_frontier`). Governance promotes from that frontier, and `ACTIVE_TASK.md` is the generated view. `tests/test_single_backlog.py` enforces that planned work is recorded only in the task authority."
+  },
+  {
+   "path": "projects/prompts/05-project-director.md",
+   "line": "projects/score2gp/ORCHESTRATION_STATE.json (the task authority, including the authority's single backlog)"
+  },
+  {
+   "path": "projects/prompts/05-project-director.md",
+   "line": "python -c \"import json; authority = json.load(open('projects/score2gp/ORCHESTRATION_STATE.json', encoding='utf-8')); print(json.dumps(authority['backlog'], indent=1))\""
+  },
+  {
+   "path": "projects/score2gp/AGENT_CONTROL.md",
+   "line": "Agents must not treat `ACTIVE_TASK.md`, `NEXT.md`, the authority's backlog items,"
+  },
+  {
+   "path": "projects/score2gp/AGENT_CONTROL.md",
+   "line": "5. `projects/score2gp/ORCHESTRATION_STATE.json` (the task authority; the authority's `backlog` holds planned work)"
+  },
+  {
+   "path": "projects/score2gp/AGENT_CONTROL.md",
+   "line": "## Unpromoted Work (the task authority's backlog)"
+  },
+  {
+   "path": "projects/score2gp/AGENT_CONTROL.md",
+   "line": "The task authority's `backlog` is non-executable. The JSON task/incident model is the only authored authority. Agents must not execute an authority backlog item or automatically promote one without Orca Control Plane dispatch."
+  },
+  {
+   "path": "projects/score2gp/ORCA_WORKFLOW.md",
+   "line": "`ACTIVE_TASK.md`, the `backlog` in `ORCHESTRATION_STATE.json`, and `go/got` prompts."
+  },
+  {
+   "path": "projects/score2gp/ORCA_WORKFLOW.md",
+   "line": "the task authority's non-executable `backlog` (done by PLAN-01). Make `go/got` thin compatibility wrappers around this CLI."
+  },
+  {
+   "path": "projects/score2gp/README.md",
+   "line": "- **Task authority (including the authority's single backlog):** [`ORCHESTRATION_STATE.json`](ORCHESTRATION_STATE.json), with the generated view [`ACTIVE_TASK.md`](ACTIVE_TASK.md)."
+  },
+  {
+   "path": "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+   "line": "| the authority's `backlog` | Items not yet detailed enough to promote, in the light schema (`id`, `title`, `requirements`, `kind`, `repository`, `status`, `priority`, `depends_on`, `notes`) |"
+  },
+  {
+   "path": "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+   "line": "`scripts/score2gp_orca_control.py` validates the authority's backlog: schema, unique IDs, known dependencies and no cycles. It also computes the **ready frontier**: items with status `READY` whose dependencies are all terminal, in priority order. Governance promotes from the frontier by converting an item to the full proposal schema. `ACTIVE_TASK.md` is generated from the authority and never edited by hand."
+  },
+  {
+   "path": "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+   "line": "2. **What to do:** `ORCHESTRATION_STATE.json` (the task, proposals and the authority's backlog)"
+  },
+  {
+   "path": "projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md",
+   "line": "Phase 6 : Cloud SaaS Gateway : REST API, URL Processing & Cloud Queue"
+  },
+  {
+   "path": "projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md",
+   "line": "- [ ] **TSK-603**: Implement async conversion job queue (`ConversionJob`) and user API key authentication (`ApiKey`)."
+  },
+  {
+   "path": "projects/score2gp/plans/2026-08-04-multimodal-audio-score-platform-roadmap.md",
+   "line": "Each task is recorded in the task authority's `backlog` (`projects/score2gp/ORCHESTRATION_STATE.json`) and promoted by governance; `ACTIVE_TASK.md` is its generated view. Governance worker (`tticom-gov`) will dispatch tasks through the established identity-aware router:"
+  },
+  {
+   "path": "projects/score2gp/plans/2026-09-05-lesson3-native-working-slice.md",
+   "line": "(The task authority's `backlog` has since replaced that record.) No feature-branch remote"
+  },
+  {
+   "path": "projects/score2gp/prompts/2026-07-19-teamwork-runtime-provenance-functional-stabilisation.md",
+   "line": "`ACTIVE_TASK.md`, `ORCHESTRATION_STATE.json` (the task authority and the authority's backlog), and"
+  },
+  {
+   "path": "projects/score2gp/prompts/next/res-req-0002-pluggable-gp-output-targets.md",
+   "line": "- **Kind:** research (authority backlog item `RES-REQ-0002`; promote to a task before execution)"
+  },
+  {
+   "path": "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md",
+   "line": "- **Kind:** research (authority backlog item `RES-REQ-0003`; promote to a task before execution)"
+  },
+  {
+   "path": "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md",
+   "line": "4. **Status proposal.** Recommend `ACCEPTED`, with the chosen direction left to the maintainer as a decision (authority backlog item DEC-04)."
+  },
+  {
+   "path": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
+   "line": "- **Kind:** research (authority backlog item `RES-REQ-0005`; promote to a task before execution)"
+  },
+  {
+   "path": "projects/score2gp/requirements/README.md",
+   "line": "| `PLANNED` | The task authority's backlog (`ORCHESTRATION_STATE.json`) holds its tasks, with dependencies | Task IDs listed in the record |"
+  },
+  {
+   "path": "projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md",
+   "line": "## 11. Proposed tasks (recorded in the task authority's backlog; not promoted)"
+  },
+  {
+   "path": "projects/score2gp/requirements/REQ-0004-conversion-runtime-provenance.md",
+   "line": "- **Task authority backlog item:** PROV-01"
+  },
+  {
+   "path": "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
+   "line": "4. **Learning over time.** Shortfall records are kept and aggregated across runs and sources, so the most frequent and most costly reasons become visible and drive the task authority's backlog."
+  },
+  {
+   "path": "projects/score2gp/skills/conversion-recovery-director/SKILL.md",
+   "line": "3. the task authority's `backlog` in ORCHESTRATION_STATE.json (it replaced the recovery file retired by PLAN-01);"
+  },
+  {
+   "path": "projects/score2gp/skills/developer/SKILL.md",
+   "line": "not read the authority backlog to select work, promote a successor, reinterpret an incident,"
+  },
+  {
+   "path": "projects/score2gp/skills/project-director/SKILL.md",
+   "line": "python -c \"import json; authority = json.load(open('projects/score2gp/ORCHESTRATION_STATE.json', encoding='utf-8')); print(json.dumps(authority['backlog'], indent=1))\""
+  },
+  {
+   "path": "projects/score2gp/skills/project-director/SKILL.md",
+   "line": "- invent product direction that is not supported by the task authority's backlog or review evidence;"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "# An authority backlog item cites a registered requirement (optionally one REQ-0001 obligation U01-U14) or a"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "reject unregistered citations without reading files. An authority backlog without that record is refused."
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "if not authority.get(\"backlog\"):"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(\"authority registered_requirements must list the registered REQ-NNNN IDs when the authority's backlog is non-empty\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "\"\"\"At the loading boundary: the authority's backlog cites only requirements in the real register."
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "\"\"\"Validate the authority's light ``backlog`` list: field types, unique IDs, references, dependencies and cycles."
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "schema. Dependencies may name the authority's backlog items or any other task it knows. When the register's"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "items = authority.get(\"backlog\", [])"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(\"authority backlog must be a list\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(\"authority backlog items must be objects\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {item.get('id', '?')} fields missing: {', '.join(missing)}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {item.get('id', '?')} {field} must be a {'string' if field == 'notes' else 'non-empty string'}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {item['id']} repository must be owner/name\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item ID {iid!r} is empty or duplicated\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} has unsupported kind {item['kind']!r}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} has unsupported status {item['status']!r}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} priority must be a positive integer\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} must cite at least one requirement or control-plane need\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} cites an unknown requirement reference {ref!r}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} cites unregistered requirement {match.group(1)}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} depends_on must be a list of IDs\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog item {iid} depends on unknown item {dep}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "raise ControlError(f\"authority backlog dependency cycle: {' -> '.join([*path, node])}\")"
+  },
+  {
+   "path": "scripts/score2gp_orca_control.py",
+   "line": "\"\"\"Authority backlog items that could be promoted now: READY, with every dependency terminal, by priority.\"\"\""
+  },
+  {
+   "path": "scripts/score2gp_orchestrator.py",
+   "line": "# Same loading-boundary rule as score2gp_orca_control.load_json: the authority's backlog citations must"
+  },
+  {
+   "path": "skills/score2gp-project-director.md",
+   "line": "python -c \"import json; authority = json.load(open('projects/score2gp/ORCHESTRATION_STATE.json', encoding='utf-8')); print(json.dumps(authority['backlog'], indent=1))\""
+  },
+  {
+   "path": "skills/score2gp-task-orchestration.md",
+   "line": "9. Governance records completion in run records and promotes the next smallest safe task from the authority's `backlog` (`ORCHESTRATION_STATE.json`), regenerating `ACTIVE_TASK.md` when the repo is clean."
+  },
+  {
+   "path": "skills/score2gp-task-orchestration.md",
+   "line": "4. Promote the next task from the `backlog` in `ORCHESTRATION_STATE.json`, regenerating `ACTIVE_TASK.md`. Ensure repository is clean before starting."
+  }
+ ]
+}

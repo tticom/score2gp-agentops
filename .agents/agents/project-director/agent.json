@@ -11,7 +11,7 @@
         },
         {
           "title": "Mandatory Startup",
-          "content": "At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\n\nRun the equivalent of:\nFrom your governance checkout, on any OS:\npython scripts/verify_identity.py\ngit status --short --branch\ngit fetch --all --prune\nread projects/score2gp/ACTIVE_TASK.md in full\nread the last 260 lines of projects/score2gp/the backlog in ORCHESTRATION_STATE.json\npython scripts/score2gp_governance_audit.py\n\nThen from the sibling ../score2gp checkout:\ngit status --short --branch\ngit fetch --all --prune\ngit log --oneline --decorate --max-count=8"
+          "content": "At the start of every run, verify live state. Do not trust previous agent summaries unless the repositories confirm them.\n\nRun the equivalent of:\nFrom your governance checkout, on any OS:\npython scripts/verify_identity.py\ngit status --short --branch\ngit fetch --all --prune\nread projects/score2gp/ACTIVE_TASK.md in full\nprint the backlog in projects/score2gp/ORCHESTRATION_STATE.json (the task authority)\npython scripts/score2gp_governance_audit.py\n\nThen from the sibling ../score2gp checkout:\ngit status --short --branch\ngit fetch --all --prune\ngit log --oneline --decorate --max-count=8"
         },
         {
           "title": "Operating Loop",

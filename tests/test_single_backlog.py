@@ -220,22 +220,30 @@ NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue
 ALTERNATIVE_CONTAINER = re.compile(
     r"\b(?:separate|another|second|additional|parallel|private|personal|team|own|extra|shadow|local)\s+(?:[\w-]+\s+){0,2}"
     r"(?:backlogs?|queues?|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?)\b", re.I)
-# Every container mention must be *bound* to the task authority by a closed grammar. Nothing else
-# binds: not proximity, not a conjunction, not free words between the authority and the container.
-#   before:  the authority's [single|non-executable|light|unpromoted]{0,2} backlog | authority backlog
-#            authority.get("backlog") | authority['backlog']
-#   after:   backlog [`] [field|item|items] in|of|within [the] task authority | ORCHESTRATION_STATE.json
-AUTHORITY_TERM = r"(?:task\s+)?authority|`?ORCHESTRATION_STATE(?:\.json)?`?"
+# Layer 1, the grammar. Every container mention must be *bound* to the task authority by a closed
+# grammar. Nothing else binds: not proximity, not a conjunction, not free words between the authority and
+# the container, and not another authority ("merge authority", "review authority").
+#   before:  task authority | the/an authority | unqualified authority | ORCHESTRATION_STATE.json, then ['s [single|non-executable|
+#            light|unpromoted]{0,2}] backlog;  authority.get("backlog") | authority['backlog']
+#   after:   backlog [`] [field|item|items] in|of|within  the task authority | the authority | ORCHESTRATION_STATE.json
+# A line that binds a container but also directs it to another location ("the authority's backlog in
+# NOTES.md", "copy it into the wiki") is still a claim.
+# A bare "authority" binds only where no word qualifies it: at the start of the line, a quote or a bracket.
+AUTHORITY_TERM = r"(?:\btask\s+authority|\b(?:the|an)\s+authority|(?:^|[\"'(])\s*authority|`?\bORCHESTRATION_STATE(?:\.json)?`?)"
 MODIFIER = r"(?:single|non-executable|light|unpromoted)"
-BOUND_BEFORE = re.compile(r"(?<![\w-])(?:" + AUTHORITY_TERM + r")(?:'s\s+(?:" + MODIFIER + r"\s+){0,2}|\s+)`{0,2}$", re.I)
-BOUND_CODE = re.compile(r"\bauthority(?:\.get\(|\[)[\"']$")
+BOUND_BEFORE = re.compile(AUTHORITY_TERM + r"(?:'s\s+(?:" + MODIFIER + r"\s+){0,2}|\s+)`{0,2}$", re.I)
+BOUND_CODE = re.compile(r"(?<![\w.-])authority(?:\.get\(|\[)[\"']$")
 BOUND_AFTER = re.compile(
-    r"^`{0,2}(?:\s+(?:field|items?))?\s+(?:in|of|within)\s+(?:the\s+)?"
-    r"(?:(?:task\s+)?authority\b|`?(?:projects/score2gp/)?ORCHESTRATION_STATE\.json`?)", re.I)
+    r"^`{0,2}(?:\s+(?:field|items?))?\s+(?:in|of|within)\s+"
+    r"(?:(?:the\s+)?task\s+authority\b|the\s+authority\b|`?(?:projects/score2gp/)?ORCHESTRATION_STATE\.json`?)", re.I)
+OTHER_LOCATION = re.compile(
+    r"\b(?:in|into|on|at|to|from|onto)\s+(?:the\s+|a\s+|an\s+|your\s+|our\s+|my\s+)?"
+    r"(?:`?(?![\w./-]*ORCHESTRATION_STATE\.json)[\w./-]+\.(?:md|txt|json|ya?ml|csv|tsv|xlsx?|docx?|org)`?"
+    r"|(?:wiki|notes|notebook|slack|spreadsheet|sheet|board|trello|jira|notion)\b)", re.I)
 
 
 def _bound_to_authority(text: str, match: re.Match) -> bool:
-    before, after = text[max(0, match.start() - 80):match.start()], text[match.end():match.end() + 80]
+    before, after = text[:match.start()], text[match.end():match.end() + 80]
     return bool(BOUND_BEFORE.search(before) or BOUND_CODE.search(before) or BOUND_AFTER.search(after))
 
 
@@ -245,7 +253,25 @@ def claims_a_queue(line: str) -> bool:
     text = NON_TASK_QUEUE.sub("", line)
     if ALTERNATIVE_CONTAINER.search(text):
         return True
-    return any(not _bound_to_authority(text, m) for m in CONTAINER.finditer(text))
+    mentions = list(CONTAINER.finditer(text))
+    if any(not _bound_to_authority(text, m) for m in mentions):
+        return True
+    return bool(mentions) and bool(OTHER_LOCATION.search(text))
+
+
+# Layer 2, the closed world. A pattern cannot enumerate every English sentence that sends work elsewhere,
+# so every live line that mentions a container must also appear, verbatim, in the reviewed ledger. A new or
+# reworded mention fails until its exact text is added to the ledger, which a reviewer sees in the PR diff.
+LEDGER_PATH = ROOT / "tests/queue_mention_ledger.json"
+
+
+def mention_lines(text: str) -> list[str]:
+    return [line.strip() for line in text.splitlines() if CONTAINER.search(line) or LEGACY_QUEUE.search(line)]
+
+
+def load_ledger() -> set[tuple[str, str]]:
+    entries = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))["reviewed_mentions"]
+    return {(e["path"], e["line"]) for e in entries}
 
 
 EXEMPT_CLASSES = {
@@ -257,8 +283,9 @@ EXEMPT_CLASSES = {
     "c": re.compile(r"^docs/cycle-preparation-history/"),
     # (d) by name: prompts that name the superseded sources in order to retire them.
     "d": re.compile(r"^projects/score2gp/prompts/next/(plan-01-single-coherent-backlog|gov-03-active-task-pr-discovery)\.md$"),
-    # (e) by name: the authority, its generated view and this oracle (it must contain the patterns).
-    "e": re.compile(r"^(projects/score2gp/ORCHESTRATION_STATE\.json|projects/score2gp/ACTIVE_TASK\.md|tests/test_single_backlog\.py)$"),
+    # (e) by name: the authority, its generated view, this oracle and its ledger (they must quote the patterns).
+    "e": re.compile(r"^(projects/score2gp/ORCHESTRATION_STATE\.json|projects/score2gp/ACTIVE_TASK\.md|tests/test_single_backlog\.py"
+                    r"|tests/queue_mention_ledger\.json)$"),
 }
 
 
@@ -266,11 +293,17 @@ def completed_task_prompts(a: dict) -> set[str]:
     return {t["prompt"] for t in a.get("completed_tasks", []) if t.get("prompt")}
 
 
-def queue_claim_violations(files: dict[str, str], a: dict) -> list[str]:
+def live_files(files: dict[str, str], a: dict) -> dict[str, str]:
     completed = completed_task_prompts(a)  # (b, completed) prompts of tasks in completed_tasks
-    return sorted(path for path, text in files.items()
-                  if path not in completed and not any(rx.search(path) for rx in EXEMPT_CLASSES.values())
-                  and any(claims_a_queue(line) for line in text.splitlines()))
+    return {path: text for path, text in files.items()
+            if path not in completed and not any(rx.search(path) for rx in EXEMPT_CLASSES.values())}
+
+
+def queue_claim_violations(files: dict[str, str], a: dict, ledger: set[tuple[str, str]] = frozenset()) -> list[str]:
+    """Live paths with a line the grammar calls a claim, or a container mention that is not in the ledger."""
+    return sorted(path for path, text in live_files(files, a).items()
+                  if any(claims_a_queue(line) for line in text.splitlines())
+                  or any((path, line) not in ledger for line in mention_lines(text)))
 
 
 def tracked_text_files() -> dict[str, str]:
@@ -285,7 +318,22 @@ def tracked_text_files() -> dict[str, str]:
 
 
 def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> None:
-    assert queue_claim_violations(tracked_text_files(), authority()) == []
+    assert queue_claim_violations(tracked_text_files(), authority(), load_ledger()) == []
+
+
+def test_every_ledger_entry_is_still_present_verbatim() -> None:
+    # A stale entry could later excuse a different line with the same text, so entries must match the tree.
+    files = tracked_text_files()
+    stale = sorted(e for e in load_ledger() if e[1] not in mention_lines(files.get(e[0], "")))
+    assert stale == []
+
+
+def test_negative_control_a_bound_but_unreviewed_mention_fails() -> None:
+    # The grammar accepts this line; only the ledger stops a new, unreviewed mention.
+    line = "Promote the next item from the task authority's backlog."
+    assert not claims_a_queue(line)
+    assert queue_claim_violations({"projects/score2gp/new-plan.md": line}, authority(), load_ledger()) == ["projects/score2gp/new-plan.md"]
+    assert queue_claim_violations({"projects/score2gp/new-plan.md": line}, authority(), {("projects/score2gp/new-plan.md", line)}) == []
 
 
 @pytest.mark.parametrize("path", [
@@ -325,9 +373,21 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     "Keep a backlog in the authority and a queue in NOTES.md.",
     "notes.get(\"backlog\")",
     "The authority holds routine items and a queue in SLACK.md holds the rest.",
+    # Review 5323410769: another authority is not the task authority, and a bound container sent elsewhere is a claim.
+    "Keep the merge authority backlog in NOTES.md.",
+    "Add new tasks to the review authority's backlog in NOTES.md.",
+    "The design authority's backlog in NOTES.md is where new work goes.",
+    "Maintain an authority backlog in NOTES.md.",
+    "Keep the authority's backlog in NOTES.md from now on.",
+    "Copy the task authority's backlog into NOTES.md and work from the copy.",
+    "Mirror the backlog of the task authority in NOTES.md and pick tasks from there.",
+    "Mirror the task authority's backlog in the wiki.",
 ])
 def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
-    assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == ["projects/score2gp/new-plan.md"]
+    # The grammar alone rejects each one, so the ledger is a second layer rather than the only one.
+    assert claims_a_queue(text)
+    assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority(), {("projects/score2gp/new-plan.md", text)}) == [
+        "projects/score2gp/new-plan.md"]
 
 
 @pytest.mark.parametrize("text", [
@@ -342,7 +402,7 @@ def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     "Implement an async conversion job queue for the cloud service.",
 ])
 def test_references_to_the_authority_and_product_queues_are_not_claims(text) -> None:
-    assert queue_claim_violations({"projects/score2gp/new-plan.md": text}, authority()) == []
+    assert not claims_a_queue(text)
 
 
 # --- the dispatcher's resolution is unchanged by the backlog --------------------------------------

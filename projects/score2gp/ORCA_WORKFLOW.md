@@ -150,8 +150,8 @@ obsolete only after this cutover.
 3. CI authority gate: run alignment and schema tests on every AgentOps PR; add a
    live ruleset audit that verifies automation cannot bypass either main.
 4. State cutover: make the JSON task/incident model the only authored authority;
-   generate `ACTIVE_TASK.md` as a human view. Move planned work into the
-   authority's non-executable `backlog` (done by PLAN-01). Make `go/got` thin compatibility wrappers around this CLI.
+   generate `ACTIVE_TASK.md` as a human view. Move planned work into
+   the task authority's non-executable `backlog` (done by PLAN-01). Make `go/got` thin compatibility wrappers around this CLI.
 5. Merge controller: GOV-01 delivered an audited merge executor for delegated
    `roles.merge_controller` logins with stale-head protection
    (`--match-head-commit`) and receipt auditing. A least-privilege GitHub App

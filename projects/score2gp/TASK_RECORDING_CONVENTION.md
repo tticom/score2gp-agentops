@@ -1,6 +1,6 @@
 # Task Recording Convention
 
-There is one place for each kind of record. Planned work is recorded only in the task authority. `tests/test_single_backlog.py` enforces this.
+There is one place for each kind of record. Planned work is recorded only in the task authority. `tests/test_single_backlog.py` enforces this. It also lists every live line that uses a planning-container word, verbatim, in `tests/queue_mention_ledger.json`: a new or reworded line fails until a reviewer accepts its ledger entry in the PR diff.
 
 ## 1. What must be true: requirements
 
