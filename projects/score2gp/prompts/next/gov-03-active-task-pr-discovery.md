@@ -19,6 +19,10 @@ Root cause (read from code at `5ce2547`):
 4. Nothing records the PR number in the authority while a task is in flight. The only precedent is a manual governance commit (`0f13e8a`).
 5. `validate_legacy_alignment` skips the PR check when both sides are null or TBD. The governance audit queries `gh pr list --head` but flags only MERGED, never an OPEN PR missing from the authority.
 
+### Related defect (observed 2026-09-25)
+
+For an explicit review request (`--review-repo tticom/score2gp --review-pr 465`), the reviewer assignment carried the **active task's** (L3-01) goal, acceptance and prompt, alongside the requested PR's branch and head. A reviewer following the assignment literally would judge an unrelated PR against another task's acceptance.
+
 ## 2. Goal
 
 The dispatcher must never report "no PR" while a PR exists for the active task's exact repository, branch and base. It must route a discovered PR exactly as a bound PR for author and reviewer actions, and fail closed on any ambiguity.
@@ -32,6 +36,7 @@ The dispatcher must never report "no PR" while a PR exists for the active task's
 2. **Routing.** A discovered PR is routed like a bound PR (for example `current_head_changes_requested` → address the review). The result carries `binding_required: true` and a `next_action` asking governance to record the number.
 3. **Merge gate unchanged.** `verify_merge_gate` still requires the number in the authority, so no merge happens on a discovered binding alone.
 4. **Audit.** The governance audit flags an OPEN PR on the active branch that is not recorded in the authority.
+5. **Review context.** An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, and the linked task or none), never the active task's goal, acceptance or prompt.
 
 ## 4. Allowed paths
 

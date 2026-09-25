@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "branch": "feat/l3-01-paired-staff-barline-acceptance",
-    "pull_request": null,
+    "pull_request": 464,
     "owner_role": "implementation",
     "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
     "allowed_paths": [
@@ -142,6 +142,7 @@
       "acceptance": [
         "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
         "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
+        "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
         "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
         "Disabling discovery makes the replay test fail.",
         "python -m pytest and the governance audit pass; git diff --check is clean."
