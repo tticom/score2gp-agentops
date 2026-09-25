@@ -39,9 +39,9 @@ Maintainer direction (2026-09-25), verbatim:
 
 | Term | Meaning |
 |---|---|
-| Output target | A module that writes one Guitar Pro file format version (container plus score encoding) from the canonical musical document |
-| Target family | Targets sharing an encoding: **binary** (GP3–GP5), **GPIF in BCFZ/BCFS** (GP6 `.gpx`), **GPIF in ZIP** (GP7/GP8 `.gp`) |
-| Target profile | Version-specific facts within a family (version stamps, feature set, limits), derived from real Guitar Pro-authored files |
+| Output target | One registry entry that writes exactly one Guitar Pro file format version (for example `gp8`, `gp7`), with its own ID, capability matrix, profile and acceptance evidence |
+| Target family | A shared writer implementation used by several targets with the same encoding: **binary** (GP3–GP5), **GPIF in BCFZ/BCFS** (GP6 `.gpx`), **GPIF in ZIP** (GP7/GP8 `.gp`). A family is code reuse, not a registry entry |
+| Target profile | The version-specific facts a target supplies to its family writer (version stamps, container facts, feature set, limits), derived from real Guitar Pro-authored files |
 | Capability matrix | Per-target declaration of which canonical features are represented **exactly**, **degraded** (with a declared, reported loss) or **refused** |
 | Degradation | A reported, located, policy-permitted loss of a feature the target cannot represent. Never silent |
 
@@ -85,7 +85,7 @@ Acceptance for every target therefore needs real application round trips in that
 
 ### 4.4 Conclusions
 
-1. **GP7 and GP8 are one family.** They share a container and an encoding and differ by profile (version stamps, feature set). One GPIF-ZIP target with per-version profiles is sufficient. Separate writers would duplicate the family.
+1. **GP7 and GP8 are one family.** They share a container and an encoding and differ by profile (version stamps, feature set). They are **two targets** (`gp7`, `gp8`) that share one GPIF-ZIP family writer, each with its own profile, capability matrix and acceptance. Separate writer implementations would duplicate the family.
 2. **GP6 reuses GPIF but needs its own container writer** (BCFZ/BCFS). No open-source GPX writer was identified. alphaTab reads GPX only.
 3. **GP5 is a separate binary family**, sharing no code with GPIF. It is a new writer plus an independent reader, from reverse-engineered knowledge or an LGPL dependency.
 4. **Expressiveness differs by version.** The exact limits per version (voices per bar, string counts, techniques, audio, and so on) are **not yet verified**. OUT-00 must establish them from real Guitar Pro-authored files and documentation before any capability matrix is claimed.
@@ -146,7 +146,7 @@ Per-target criteria, for every supported target T:
 
 ## 9. Scope
 
-- **In scope, first delivery:** the target interface and registry; capability negotiation; the GPIF-ZIP family with GP8 and GP7 profiles, with their readers and acceptance.
+- **In scope, first delivery:** the target interface and registry; capability negotiation; the GPIF-ZIP family writer; the `gp8` target with its reader and acceptance. The `gp7` target is built on the same family but is **released only when criterion 6 can be met in a real Guitar Pro 7 application** (see §12, Q1).
 - **In scope by architecture, later delivery:** GP6 (`.gpx`) and GP5 targets, as bolt-on modules proven possible by the interface's bolt-on criterion.
 - **Out of scope for now:** GP3/GP4 targets (addable later as bolt-ons); reading these formats as conversion input; non-Guitar-Pro targets such as MusicXML or Sibelius. The interface should not preclude them (multimodal roadmap, Phase 3).
 
@@ -166,17 +166,17 @@ Per-target criteria, for every supported target T:
 |---|---|---|---|
 | OUT-00 | Evidence and research: capture GP5/GP6/GP7/GP8-authored reference and blank files; derive per-version feature limits; licensing review; confirm application access | none | Evidence record with hashes; draft capability matrix per version; answers to Q1–Q2 |
 | OUT-01 | Containment: `--target` accepts only evidence-backed targets (the current GPIF-ZIP output) and refuses others; remove invented tags and their tests; stop unsourced version stamps | none | Negative tests: GP6/GP8 selection refuses; audit finds no invented tag |
-| OUT-02 | Target interface and registry (ADR-008); move the current GPIF-ZIP writer behind it as the first target with semantic parity; registry discovery; bolt-on test target | NPG-06A, FND-02 | Criteria 1–3 |
+| OUT-02 | Target interface and registry (ADR-008); move the current GPIF-ZIP writer behind it as the family writer for the first target with semantic parity; registry discovery; bolt-on test target | NPG-06A, FND-02, NPG-04B | Criteria 1–3 |
 | OUT-03 | Capability matrix, negotiation and degradation report | OUT-02, OUT-00 | Criterion 7 for the first target |
-| OUT-04 | GP8 profile of the GPIF-ZIP family | OUT-02, OUT-00 | Criteria 4–7 for GP8 |
-| OUT-05 | GP7 profile of the GPIF-ZIP family | OUT-04, GP7-authored evidence | Criteria 4–7 for GP7 |
+| OUT-04 | `gp8` target (GP8 profile of the GPIF-ZIP family) | OUT-03, OUT-00 | Criteria 4–7 for GP8 |
+| OUT-05 | `gp7` target (GP7 profile of the GPIF-ZIP family) | OUT-04, GP7-authored evidence, access to a Guitar Pro 7 application | Criteria 4–7 for GP7 |
 | OUT-06 | *Deferred by maintainer decision:* GP5 binary target and independent reader | OUT-03, Q2 | Criteria 4–7 for GP5 |
 | OUT-07 | *Deferred by maintainer decision:* GP6 `.gpx` target (BCFZ/BCFS container plus GP6 GPIF profile) and reader | OUT-03 | Criteria 4–7 for GP6 |
 
 ## 12. Open questions for the maintainer
 
 Maintainer answers (2026-09-25):
-- **Q1:** only Guitar Pro 8 is available. GP8 acceptance is possible now. Whether GP8 can open and re-save GP7-version files for GP7 acceptance is for OUT-00 to establish. GP5/GP6 application acceptance is deferred with those targets.
+- **Q1:** only Guitar Pro 8 is available. GP8 acceptance is possible now. Opening or re-saving a GP7 file in GP8 is **not** a GP7 round trip and does not satisfy criterion 6 for `gp7`. The `gp7` target may be built and tested against GP7-authored references (`Ex 2 Hands Up.gp`), but it is not released until a Guitar Pro 7 application is available. That follows the maintainer's no-new-spend constraint without weakening acceptance. GP5/GP6 application acceptance is deferred with those targets.
 - **Q2:** licensing must be as narrow as possible, so copyleft dependencies are unwanted in the product. See [REQ-0003](REQ-0003-dependency-licence-compatibility.md).
 - **Q3–Q5:** still open. GP3/GP4 stay out of scope and could be added later as bolt-ons.
 

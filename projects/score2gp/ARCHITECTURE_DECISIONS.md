@@ -46,7 +46,7 @@ This document records the architectural decisions governing agent workflows and 
 - **Decision**:
   1. Output is produced by **output targets**. Each target implements a versioned interface: identity, capability matrix, `compile(canonical document, options) -> package + report`, and self-validation.
   2. Targets are found through a **registry**. First-party and separately installed targets register the same way, and core code never names a concrete target.
-  3. Targets are grouped by **family** (binary, GPIF-BCFZ, GPIF-ZIP). Version differences within a family are **profiles** built from Guitar Pro-authored evidence, not conditionals.
+  3. Each written version is its own target and registry entry (for example `gp7` and `gp8`). Targets sharing an encoding reuse one **family** writer (binary, GPIF-BCFZ, GPIF-ZIP). Version differences are **profiles** built from Guitar Pro-authored evidence, not conditionals.
   4. Before writing, the **capability check** refuses, or under explicit policy degrades with a report, every canonical feature the target cannot represent. Silent loss is forbidden.
   5. The canonical musical document is target-neutral. Targets never infer musical semantics.
   6. Each target is accepted independently: an independent reader, plus an open/play/save/reopen round trip in that Guitar Pro version.
