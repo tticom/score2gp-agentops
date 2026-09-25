@@ -115,13 +115,22 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
 - `projects/score2gp/prompts/next/res-*.md` (new research task prompts)
 - `scripts/score2gp_orca_control.py`, `scripts/score2gp_orchestrator.py`, and their tests, only to validate the `backlog` list and compute the ready frontier
 - `scripts/agy_cycle.py`, `scripts/agy_spec_job.py`, `docs/agy-*.md`, `docs/spec-job-orca.md`, `requirements-agy-cycle.txt`, `tests/test_agy_*.py` (removal only, if nothing live depends on them)
+- **Queue-instruction reconciliation only.** In these files, change only text that directs work into a queue or backlog other than the authority:
+  - `projects/score2gp/plans/**`, `projects/score2gp/AGENT_CONTROL.md`, `projects/score2gp/ORCA_WORKFLOW.md`;
+  - `projects/score2gp/skills/**`, `skills/**`, `projects/prompts/**`, `.agents/agents/project-director/agent.json`;
+  - `projects/score2gp/prompts/*.md` (not `prompts/next/`), `docs/**`.
+  Review 5317328303 found that the multimodal roadmap (lines 73–75) still routes tasks into `PLANNING_DATA.md`.
+- `tests/test_governance_audit.py` or a new `tests/test_single_backlog.py`, for the queue-claim search oracle
 
 ## 7. Acceptance
 
 1. `ORCHESTRATION_STATE.json` holds every planned item, either as a proposal or as a `backlog` item. A test validates the backlog schema, rejects duplicate IDs, unknown dependencies and dependency cycles, and computes the ready frontier.
 2. Every requirement in `requirements/` below `VERIFIED` is referenced by at least one item. Every requirement below `ACCEPTED` has a `RES-` research task with a prompt file. A test enforces both.
 3. The PR includes a supersession table covering every item in every §2 source, each with a disposition. A reviewer can check any source item against it.
-4. After the change, no file other than `ORCHESTRATION_STATE.json` claims to be a backlog or queue. A repository search for backlog-claiming language (the audit test's pattern list) finds only the authority and its generated view.
+4. After the change, no **live** file directs work into, or claims to be, a backlog or queue other than `ORCHESTRATION_STATE.json` and its generated view.
+   - A test runs the search oracle: patterns including `PLANNING_DATA`, `backlog.yaml`, `Approved Task Queue` and "queued in".
+   - It fails on any match outside an explicit, reviewed exemption list.
+   - The exemption list may contain only historical records: prompts of tasks listed in `completed_tasks`, and dated history under `docs/cycle-preparation-history/`. Each entry carries a one-line reason.
 5. `TASK_RECORDING_CONVENTION.md` and the governance `README.md` describe the same single method, with no contradictory rules.
 6. The dispatcher's behaviour for the current task is unchanged (a characterization test against the pre-change resolution).
 7. `python -m pytest` and `python scripts/score2gp_governance_audit.py` pass. `git diff --check` is clean.
