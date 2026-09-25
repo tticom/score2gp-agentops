@@ -58,7 +58,13 @@ alphaTab lists three GP8-only features: audio tracks, password-locked files and 
 
 - `Can't Find My Way Home (open chord shenanigans).gp`: `GPVersion` 8.1.4, `VERSION` member `7.0`, an embedded MP3 asset (`Content/Assets/*.mp3`), 21 MasterBars, one track.
 - `Lesson-3.gp` through `Lesson-7.gp`: `GPVersion` 8.1.0, `VERSION` member `7.0`.
-  **Every reference in the corpus was authored by Guitar Pro 8.** There is no GP5, GP6 or GP7-authored reference.
+- `Ex 2 Hands Up.gp` (added 2026-09-25): **GP7-authored**. `GPVersion` 7, `GPRevision` 12025, `VERSION` member `7.0`, 11 MasterBars.
+- `Ex 2 Hands Up.gpx` (added 2026-09-25): **GP6-authored**.
+  - BCFZ-compressed BCFS container holding `score.gpif`, `misc.xml`, `BinaryStylesheet`, `PartConfiguration` and `LayoutConfiguration`.
+  - `GPRevision` 11686 and **no `GPVersion` element**; 11 MasterBars.
+  - Decoded read-only with the algorithm alphaTab documents in `GpxFileSystem.ts`; as in alphaTab, the compressed stream may end before its declared length.
+- **Same piece, two versions, different encoding of the same repeats.** Both files have one repeat start (count 4) and alternate endings 1–4. The three repeat-end bars have count **4** in GP7 and **2** in GP6. Raw attributes are therefore not version-neutral. Comparison must use a normalized projection (the resulting play order), and each target profile must encode repeats the way its version does. The PDF must adjudicate the intended meaning.
+- No GP5-authored reference exists yet.
 - Neither file family contains the tags the current adapter injects (`TargetCompliancy`, `VersionLayout`, `StyleCollections`/`ModernDefault`, `LegacyLayout`).
 - GP8 keeps `VERSION` = `7.0`. The current adapter writes `8.0` for GP8.
 
@@ -177,5 +183,6 @@ Per-target criteria, for every supported target T:
 | Formats are proprietary and reverse-engineered | Profiles only from real Guitar Pro-authored files; application round trip is mandatory per target |
 | Licence contamination (LGPL/MPL) in a commercial product | Q2 decision before OUT-06; NFR-3 |
 | Discontinued applications (GP5/GP6) cannot be tested | Q1; a target without application acceptance is not released |
+| Version-specific encoding of the same musical meaning (for example, repeat counts in GP6 vs GP7) | Per-target profiles from real files; oracle compares normalized semantics (play order), never raw attributes |
 | Capability-matrix scope grows with each version | Matrix entries derive from the canonical feature list; unknown features refuse by default |
 | Mislabelled output from the current adapter | OUT-01 early |
