@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 49,
+  "authority_revision": 50,
   "task": {
     "id": "PLAN-01",
     "title": "Single coherent backlog, with research tasks per requirement",
@@ -48,6 +48,8 @@
       "skills/**",
       "projects/prompts/**",
       ".agents/agents/project-director/agent.json",
+      "AGENT-RULES.md",
+      ".agents/skills/**",
       "projects/score2gp/prompts/*.md",
       "docs/**",
       "tests/test_governance_audit.py",
