@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 46,
+  "authority_revision": 47,
   "task": {
     "id": "L3-01",
     "title": "Paired-staff barline acceptance for the Lesson 3 first system",
@@ -50,8 +50,115 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "PLAN-01",
+    "title": "Single coherent backlog, with research tasks per requirement",
+    "objective": "Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every planned item from every current planning source absorbed or dispositioned, every requirement traced to items, a dispatchable research task per requirement below ACCEPTED, and the superseded backlog sources removed.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/plan-01-single-coherent-backlog",
+    "prompt": "projects/score2gp/prompts/next/plan-01-single-coherent-backlog.md",
+    "allowed_paths": [
+      "projects/score2gp/ORCHESTRATION_STATE.json",
+      "projects/score2gp/ACTIVE_TASK.md",
+      "projects/score2gp/PLANNING_DATA.md",
+      "projects/score2gp/tasks/**",
+      "projects/score2gp/programmes/**",
+      "plan/**",
+      ".agy/**",
+      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+      "README.md",
+      "projects/score2gp/README.md",
+      "projects/score2gp/requirements/**",
+      "projects/score2gp/prompts/next/res-*.md",
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_orchestrator.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py",
+      "scripts/agy_cycle.py",
+      "scripts/agy_spec_job.py",
+      "docs/agy-cycle.md",
+      "docs/agy-cycle-roadmap.md",
+      "docs/agy-cycle-v2-plan.md",
+      "docs/spec-job-orca.md",
+      "requirements-agy-cycle.txt",
+      "tests/test_agy_cycle.py",
+      "tests/test_agy_spec_job.py"
+    ],
+    "acceptance": [
+      "ORCHESTRATION_STATE.json holds every planned item as a proposal or a backlog item; a test validates the backlog schema, rejects duplicate IDs, unknown dependencies and cycles, and computes the ready frontier.",
+      "Every requirement below VERIFIED is referenced by at least one item, and every requirement below ACCEPTED has a RES- research task with a prompt file; a test enforces both.",
+      "The PR includes a supersession table giving every item of every current planning source a disposition: absorbed, superseded, done or dropped.",
+      "No file other than ORCHESTRATION_STATE.json and its generated view claims to be a backlog or queue.",
+      "TASK_RECORDING_CONVENTION.md and the governance README describe one method with no contradictory rules.",
+      "Dispatcher resolution for the current task is unchanged (characterization test).",
+      "python -m pytest and the governance audit pass; git diff --check is clean."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python scripts/score2gp_governance_audit.py",
+      "python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "tticom/score2gp-agentops#695"
+    ],
+    "stop_conditions": [
+      "source_item_unaccounted",
+      "dispatcher_behaviour_changed_for_current_task",
+      "product_edit_required",
+      "repository_deletion_required",
+      "requirement_without_backlog_item"
+    ]
+  },
+  "queued_task_proposals": [
+    {
+      "id": "GOV-03",
+      "title": "Active-task PR discovery and fail-closed binding",
+      "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/gov-03-active-task-pr-discovery",
+      "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
+      "allowed_paths": [
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_dispatch.py",
+        "tests/test_governance_audit.py"
+      ],
+      "acceptance": [
+        "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
+        "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
+        "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
+        "Disabling discovery makes the replay test fail.",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_gate_weakened",
+        "role_boundary_changed",
+        "product_edit_required"
+      ]
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
