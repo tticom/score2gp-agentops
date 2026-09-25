@@ -1,6 +1,6 @@
 # PLAN-01 — Single coherent backlog, with research tasks per requirement
 
-- **Status**: PROPOSED (`next_task_proposal` in `ORCHESTRATION_STATE.json`). Governance must promote it before execution.
+- **Status**: PROMOTED (the `task` in `ORCHESTRATION_STATE.json`, authority revision 48). Executable by the implementation role.
 - **Repository**: `tticom/score2gp-agentops`
 - **Branch**: `feat/plan-01-single-coherent-backlog`
 - **Owner Role**: `implementation` (governance-repository task, as WIN-04)
