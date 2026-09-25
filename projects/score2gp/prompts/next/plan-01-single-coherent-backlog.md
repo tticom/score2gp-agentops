@@ -79,7 +79,9 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
   - skills consolidation. Agents load skills from `.agents` folders. Target is one skills repository (`agentops-claude-skills`), one control-plane repository and product repositories. `agy-skills` is mined for anything useful, then deleted with explicit maintainer confirmation;
   - workspace layout: single instances of private-fixtures, agentops and claude-skills, linked by junction into identity worktrees; product repositories in isolated worktrees;
   - removal of AI artifacts from product repositories (`CLAUDE.md`, `AGENTS.md`, `HANDOFF.md`, `docs/agents/`, `docs/agentops.md`), but only after a workspace-level replacement is loaded from the linked control plane;
-  - a **test-adequacy verification** capability (below).
+  - a **test-adequacy verification** capability (below);
+  - tests/test_scoreir_gpif_compiler_refactor.py `_ensure_fixture` writes Lesson-6_{unowned,invalid}_artifact.json into the private corpus (score2gp-private-fixtures/fixtures/private). Tests must never write into the corpus; use tmp_path. Observed repeatedly, 2026-09-25.
+  - FND-06 urgency: the 16 known Windows host failures make a zero-exit local full suite impossible, and the devils-advocate reviewer withholds verdicts (#465 re-review, 2026-09-25). Quarantine by exact ID with linked issues, or fix them.
   - **stale review contract.** `CLAUDE.md` and `AGENTS.md` require the reviewer dispatcher to return `REVIEW_CURRENT_HEAD` with `review_skill`, `review_skill_path` and `review_publisher_path`. Since WIN-01 (2026-09-23) the dispatcher emits only Orca `score2gp_bounded_worker` assignments, which have none of those fields. Reviewers correctly refuse. The contract and the implementation must be reconciled: either the assignment carries the pinned skill and publisher paths, or the rules change. Observed 2026-09-25;
   - **durable headless review launcher.** Unattended reviews must not depend on an interactive session. On this host the Codex workspace-write sandbox protects `.git` and cannot be elevated headlessly (`0xC0000142`), and cannot read the Windows keyring. A working pattern exists (2026-09-25):
     - run the reviewer dispatcher and every git-metadata write outside the sandbox, as the reviewer identity;
@@ -120,6 +122,7 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
   - `projects/score2gp/skills/**`, `skills/**`, `projects/prompts/**`, `.agents/agents/project-director/agent.json`;
   - `projects/score2gp/prompts/*.md` (not `prompts/next/`), `docs/**`.
   Review 5317328303 found that the multimodal roadmap (lines 73–75) still routes tasks into `PLANNING_DATA.md`.
+- `projects/score2gp/prompts/next/agy-*.md` (removal only: AGY is retired)
 - `tests/test_governance_audit.py` or a new `tests/test_single_backlog.py`, for the queue-claim search oracle
 
 ## 7. Acceptance
@@ -130,7 +133,13 @@ The ordering below is the maintainer-endorsed starting point (2026-09-25). The t
 4. After the change, no **live** file directs work into, or claims to be, a backlog or queue other than `ORCHESTRATION_STATE.json` and its generated view.
    - A test runs the search oracle: patterns including `PLANNING_DATA`, `backlog.yaml`, `Approved Task Queue` and "queued in".
    - It fails on any match outside an explicit, reviewed exemption list.
-   - The exemption list may contain only historical records: prompts of tasks listed in `completed_tasks`, and dated history under `docs/cycle-preparation-history/`. Each entry carries a one-line reason.
+   - The exemption list may contain only historical records, by **class**, each with a one-line reason:
+     - **(a) dated record directories**, which describe past state and never instruct: `projects/score2gp/{runs,reviews,research,reports,decisions,handoffs,archive,audits}/**`. Review 5317954117 found matches in all four of the first set;
+     - **(b)** prompts of tasks listed in `completed_tasks`, and the numbered legacy prompts `projects/score2gp/prompts/next/[0-9][0-9][0-9][0-9]-*.md` from before the authority existed;
+     - **(c)** `docs/cycle-preparation-history/**`;
+     - **(d)** by name only, `prompts/next/plan-01-single-coherent-backlog.md` and `prompts/next/gov-03-active-task-pr-discovery.md`, which name the superseded sources in order to retire them.
+   - The test encodes these classes literally. A match in any other path fails, including a new file added to an exempt class's *parent* directory.
+   - The separate record-directory cleanup (§4, control plane) may later remove class (a) content. This exemption does not depend on it.
 5. `TASK_RECORDING_CONVENTION.md` and the governance `README.md` describe the same single method, with no contradictory rules.
 6. The dispatcher's behaviour for the current task is unchanged (a characterization test against the pre-change resolution).
 7. `python -m pytest` and `python scripts/score2gp_governance_audit.py` pass. `git diff --check` is clean.
