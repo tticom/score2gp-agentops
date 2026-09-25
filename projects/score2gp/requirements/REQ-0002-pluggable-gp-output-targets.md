@@ -1,6 +1,6 @@
 # REQ-0002 — Pluggable, version-selectable Guitar Pro output
 
-- **Status:** `RESEARCHED`. Open questions §12 await the maintainer. Not prioritised and not promoted.
+- **Status:** `RESEARCHED`. Q1–Q2 answered 2026-09-25; Q3–Q4 open. Not prioritised and not promoted.
 - **Owner:** maintainer (`tticom`)
 - **Recorded:** 2026-09-25, from maintainer direction in an implementation session
 - **Extends:** [REQ-0001](REQ-0001-native-faithful-pdf-to-gp.md) obligation U13 ("Additional explicitly supported Guitar Pro versions")
@@ -10,7 +10,9 @@
 ## 1. Requirement
 
 Score2GP must produce Guitar Pro output in whichever file version the customer
-selects. The initial target versions are **Guitar Pro 5, 6, 7 and 8**.
+selects. The versions in scope are **Guitar Pro 5, 6, 7 and 8**. **Delivery
+starts with the newest (GP8, then GP7).** GP5 and GP6 are provided for by the
+architecture (injectable targets) and delivered when demand justifies them.
 
 Each version is an **output target**: an independently installable module
 behind one stable, versioned interface. Adding, removing or upgrading a target,
@@ -24,6 +26,8 @@ Maintainer direction (2026-09-25), verbatim:
 > "Output versions 5 to 8 and new versions must be bolt-on."
 >
 > "it has to be an injectable module to cope with current and future file type versions, so ultimately this feature needs to be rearchitected."
+>
+> "If the converter is an injectable, we can focus on the file output version in isolation. gp5 might be still in use and might also be a target that's not requested often. I'd go with newer versions at this stage and plan for older versions by architecture. i.e. injectability."
 
 ## 2. Rationale
 
@@ -142,7 +146,8 @@ Per-target criteria, for every supported target T:
 
 ## 9. Scope
 
-- **In scope:** GP5, GP6, GP7 and GP8 targets; the target interface and registry; capability negotiation; per-target profiles, readers and acceptance.
+- **In scope, first delivery:** the target interface and registry; capability negotiation; the GPIF-ZIP family with GP8 and GP7 profiles, with their readers and acceptance.
+- **In scope by architecture, later delivery:** GP6 (`.gpx`) and GP5 targets, as bolt-on modules proven possible by the interface's bolt-on criterion.
 - **Out of scope for now:** GP3/GP4 targets (addable later as bolt-ons); reading these formats as conversion input; non-Guitar-Pro targets such as MusicXML or Sibelius. The interface should not preclude them (multimodal roadmap, Phase 3).
 
 ## 10. Dependencies and sequencing
@@ -165,10 +170,15 @@ Per-target criteria, for every supported target T:
 | OUT-03 | Capability matrix, negotiation and degradation report | OUT-02, OUT-00 | Criterion 7 for the first target |
 | OUT-04 | GP8 profile of the GPIF-ZIP family | OUT-02, OUT-00 | Criteria 4–7 for GP8 |
 | OUT-05 | GP7 profile of the GPIF-ZIP family | OUT-04, GP7-authored evidence | Criteria 4–7 for GP7 |
-| OUT-06 | GP5 binary target and independent reader | OUT-03, Q2 | Criteria 4–7 for GP5 |
-| OUT-07 | GP6 `.gpx` target (BCFZ/BCFS container plus GP6 GPIF profile) and reader | OUT-03 | Criteria 4–7 for GP6 |
+| OUT-06 | *Deferred by maintainer decision:* GP5 binary target and independent reader | OUT-03, Q2 | Criteria 4–7 for GP5 |
+| OUT-07 | *Deferred by maintainer decision:* GP6 `.gpx` target (BCFZ/BCFS container plus GP6 GPIF profile) and reader | OUT-03 | Criteria 4–7 for GP6 |
 
 ## 12. Open questions for the maintainer
+
+Maintainer answers (2026-09-25):
+- **Q1:** only Guitar Pro 8 is available. GP8 acceptance is possible now. Whether GP8 can open and re-save GP7-version files for GP7 acceptance is for OUT-00 to establish. GP5/GP6 application acceptance is deferred with those targets.
+- **Q2:** licensing must be as narrow as possible, so copyleft dependencies are unwanted in the product. See [REQ-0003](REQ-0003-dependency-licence-compatibility.md).
+- **Q3–Q5:** still open. GP3/GP4 stay out of scope and could be added later as bolt-ons.
 
 1. **Application access:** do you have licensed Guitar Pro 5, 6 and 7 installs (or can obtain them) for per-version acceptance? Without them, criteria 4 and 6 cannot be met for those versions.
 2. **Licensing posture:** may a commercial Score2GP depend on LGPL-3.0 code (PyGuitarPro) for a writer, or on MPL-2.0 code (alphaTab) as a validator? This decides whether GP5 is built in-house.
