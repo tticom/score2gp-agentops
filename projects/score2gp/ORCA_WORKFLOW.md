@@ -127,7 +127,7 @@ detached at the exact PR head and remain read-only.
 
 ## Compatibility and migration
 
-The existing `ACTIVE_TASK.md`, the pre-authority planning files, `go/got`, and bootstrap scripts remain
+The existing `ACTIVE_TASK.md`, the pre-authority planning records, `go/got`, and bootstrap scripts remain
 active during v1. They are compatibility inputs and audit evidence, not a
 second Orca state engine. Every change to task authority must update both
 `ACTIVE_TASK.md` and `ORCHESTRATION_STATE.json`; CI must reject divergence.

@@ -48,7 +48,7 @@ The agent-ops repository evaluates and directs product work, but it does not pro
 
 ## Workflow Model
 
-### Single task authority and backlog
+### Single task authority (and the authority's backlog)
 
 All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
 - the active `task`;

@@ -220,12 +220,18 @@ NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue
 ALTERNATIVE_CONTAINER = re.compile(
     r"\b(?:separate|another|second|additional|parallel|private|personal|team|own|extra|shadow|local)\s+(?:[\w-]+\s+){0,2}"
     r"(?:backlogs?|queues?|task[- ]lists?|to-?do[- ]lists?|work[- ]lists?)\b", re.I)
-# Every container mention must be *bound* to the task authority by explicit grammar. Mentioning the
-# authority elsewhere on the line, in whatever clause or with whatever conjunction, does not bind it.
-AUTHORITY_TERM = r"(?:(?:task\s+)?authority|`?ORCHESTRATION_STATE(?:\.json)?`?)"
-BOUND_BEFORE = re.compile(AUTHORITY_TERM + r"(?:'s)?\s+(?:[\w`-]+\s+){0,2}`{0,2}$", re.I)          # "the authority's non-executable backlog"
-BOUND_CODE = re.compile(r"\bauthority(?:\.get\(|\[)[\"']$")                                             # authority.get("backlog"), authority['backlog']
-BOUND_AFTER = re.compile(r"^\s*(?:[\w`-]+\s+){0,3}(?:in|of|from|within|is)\s+(?:the\s+)?" + AUTHORITY_TERM, re.I)  # "backlog in ORCHESTRATION_STATE.json"
+# Every container mention must be *bound* to the task authority by a closed grammar. Nothing else
+# binds: not proximity, not a conjunction, not free words between the authority and the container.
+#   before:  the authority's [single|non-executable|light|unpromoted]{0,2} backlog | authority backlog
+#            authority.get("backlog") | authority['backlog']
+#   after:   backlog [`] [field|item|items] in|of|within [the] task authority | ORCHESTRATION_STATE.json
+AUTHORITY_TERM = r"(?:task\s+)?authority|`?ORCHESTRATION_STATE(?:\.json)?`?"
+MODIFIER = r"(?:single|non-executable|light|unpromoted)"
+BOUND_BEFORE = re.compile(r"(?<![\w-])(?:" + AUTHORITY_TERM + r")(?:'s\s+(?:" + MODIFIER + r"\s+){0,2}|\s+)`{0,2}$", re.I)
+BOUND_CODE = re.compile(r"\bauthority(?:\.get\(|\[)[\"']$")
+BOUND_AFTER = re.compile(
+    r"^`{0,2}(?:\s+(?:field|items?))?\s+(?:in|of|within)\s+(?:the\s+)?"
+    r"(?:(?:task\s+)?authority\b|`?(?:projects/score2gp/)?ORCHESTRATION_STATE\.json`?)", re.I)
 
 
 def _bound_to_authority(text: str, match: re.Match) -> bool:
@@ -310,6 +316,13 @@ def test_negative_control_a_new_queue_claim_outside_the_exempt_classes_fails(pat
     # A field name is not bound by its backticks alone, and a plural planning file is still one.
     "Keep a `backlog` in NOTES.md.",
     "Record ideas in the planning files as well as the authority.",
+    # Review 5323357360: free words between the authority and the container must not bind it.
+    "Keep the task authority and a backlog for urgent tasks in NOTES.md.",
+    "Use ORCHESTRATION_STATE.json plus a queue in NOTES.md.",
+    "The authority's rival backlog lives in NOTES.md.",
+    "The backlog is separate from the task authority.",
+    "Keep a backlog outside of the authority.",
+    "Keep a backlog in the authority and a queue in NOTES.md.",
     "notes.get(\"backlog\")",
     "The authority holds routine items and a queue in SLACK.md holds the rest.",
 ])
@@ -321,6 +334,8 @@ def test_negative_control_differently_worded_queue_claims_fail(text) -> None:
     "Promote the next item from the task authority's backlog.",
     "The backlog in ORCHESTRATION_STATE.json is the only planned-work record.",
     "Record it as an authority backlog item.",
+    "The task authority's non-executable `backlog` holds unpromoted work.",
+    "Backlog items in `ORCHESTRATION_STATE.json` are not executable.",
     "Items not yet detailed live in the authority's `backlog` field.",
     "items = authority.get(\"backlog\", [])",
     "print(authority['backlog'])",

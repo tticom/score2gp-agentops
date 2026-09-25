@@ -22,7 +22,7 @@ In the governance repository, read:
 ```text
 projects/score2gp/AGENT_CONTROL.md
 projects/score2gp/ACTIVE_TASK.md
-projects/score2gp/ORCHESTRATION_STATE.json (task authority and single backlog)
+projects/score2gp/ORCHESTRATION_STATE.json (the task authority, including the authority's single backlog)
 projects/score2gp/skills/project-director/SKILL.md
 projects/score2gp/skills/architect/SKILL.md
 projects/score2gp/skills/developer/SKILL.md
