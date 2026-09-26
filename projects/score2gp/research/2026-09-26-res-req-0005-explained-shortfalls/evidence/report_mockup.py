@@ -31,7 +31,8 @@ from score2gp.pdf_tab_measure_timing import select_pdf_tab_grid_spacing_and_dura
 from score2gp.pdf_tab_event_factory import _REST_CANDIDATE_MAP  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
-from facts_harness import SAFE  # noqa: E402  (pdf.py:2283-2305 exemption list)
+from facts_harness import SAFE, source_inventory  # noqa: E402  (SAFE: pdf.py:2283-2305 exemption list)
+from coverage_check import conservation  # noqa: E402
 
 USER = {  # engine code -> (user reason, family, plain-language text, suggested action)
     "pdf_only_tab_ambiguous_duration": (
@@ -42,6 +43,10 @@ USER = {  # engine code -> (user reason, family, plain-language text, suggested 
         "bar-overfull", "contradictory_evidence",
         "The notes read in these bars don't fit the bar's time signature, so at least one note or length was misread.",
         "Check these bars for a misread note or duration."),
+    "pdf_only_tab_source_bar_without_playable_candidate": (
+        "bar-content-not-found", "missing_observation",
+        "These bars are on the page, but no fret numbers were found in them. Today they are missing from the output.",
+        "Check whether these bars are empty, rests, or hold notes that were not read."),
 }
 CAND_USER = {
     "fret-unreadable": {"pdf_fret_optical_bounds_confidence_below_threshold", "pdf_fret_refinement_not_enough_for_build_ir",
@@ -93,8 +98,19 @@ def build_records():
     tab = TabRaw.from_json_file(RUN / "tab" / "tab_raw.json")
     fret = [c for c in tab.candidates if (c.parsed_fret is not None and c.kind == "fret") or c.raw_text == "quarter_rest"]
     keys = sorted({bar_key(c) for c in fret})
+    # Source bars come from layout geometry, independent of candidates (facts_harness.source_inventory).
+    inventory, _ = source_inventory(tab.source_pdf)
+    located = [c for c in tab.candidates if c.bar_index is not None and c.system_index is not None]
     records = []
     delivered = []
+    for k in sorted(inventory - set(keys)):
+        here = [c for c in located if bar_key(c) == k]
+        records.append({"feature_kind": "bar",
+                        "location": {"precision": "bar", "page": k[0], "system": k[1], "staff": k[2], "source_bar": k[3]},
+                        "engine_code": "pdf_only_tab_source_bar_without_playable_candidate", "stage": "build-ir",
+                        "disposition": "refused_region",
+                        "evidence": dict(collections.Counter(f"candidate_kind:{c.kind}" for c in here)),
+                        "candidate_ids": [c.id for c in here], "impact": {"notes": 0, "bars": 1}})
     for i, k in enumerate(keys, 1):
         bf = [c for c in fret if bar_key(c) == k]
         loc = {"precision": "bar", "page": k[0], "system": k[1], "staff": k[2], "source_bar": k[3]}
@@ -126,15 +142,50 @@ def build_records():
                                 "stage": "tab-extraction", "disposition": "approximated",
                                 "evidence": {k2: v for k2, v in evidence.items() if k2 in codes},
                                 "impact": {"notes": n, "bars": 1}})
-    kinds = collections.Counter(c.kind for c in tab.candidates)
-    lyrics = len((tab.model_dump().get("structural_signals") or {}).get("lyrics", []))
-    records.append({"feature_kind": "text", "location": {"precision": "document"},
-                    "engine_code": "pdf_text_candidate_not_converted", "stage": "build-ir", "disposition": "omitted",
-                    "evidence": {}, "impact": {"notes": 0, "bars": 0, "items": kinds.get("candidate-text", 0)}})
-    records.append({"feature_kind": "lyric", "location": {"precision": "document"},
-                    "engine_code": "pdf_lyrics_not_converted", "stage": "build-ir", "disposition": "omitted",
-                    "evidence": {}, "impact": {"notes": 0, "bars": 0, "items": lyrics}})
-    return keys, delivered, records
+    # One record per dropped feature, at the finest location extraction gave it (G16, G17).
+    for c in tab.candidates:
+        if c.kind != "candidate-text":
+            continue
+        if c.bar_index is not None and c.system_index is not None:
+            loc = {"precision": "bar", "page": c.page_index or 1, "system": c.system_index,
+                   "staff": c.staff_index or 1, "source_bar": c.bar_index}
+        elif c.page_index is not None:
+            loc = {"precision": "page", "page": c.page_index}
+        else:
+            loc = {"precision": "document"}
+        records.append({"feature_kind": "text", "location": loc, "engine_code": "pdf_text_candidate_not_converted",
+                        "stage": "build-ir", "disposition": "omitted", "evidence": {}, "candidate_ids": [c.id],
+                        "impact": {"notes": 0, "bars": 0, "items": 1}})
+    for ly in (tab.structural_signals or {}).get("lyrics", []):
+        if ly.get("system_index") is not None:
+            loc = {"precision": "system", "page": ly.get("page_index"), "system": ly.get("system_index"),
+                   "staff": ly.get("staff_index")}
+        elif ly.get("page_index") is not None:
+            loc = {"precision": "page", "page": ly.get("page_index")}
+        else:
+            loc = {"precision": "document"}
+        records.append({"feature_kind": "lyric", "location": loc, "engine_code": "pdf_lyrics_not_converted",
+                        "stage": "build-ir", "disposition": "omitted", "evidence": {},
+                        "impact": {"notes": 0, "bars": 0, "items": 1}})
+    accounted = {(r["location"]["page"], r["location"]["system"], r["location"]["staff"], r["location"]["source_bar"])
+                 for r in records if r["feature_kind"] in ("bar", "duration")}
+    check = conservation(inventory, {bar_key(c) for c in located}, set(keys), accounted)
+    return sorted(inventory), delivered, records, check
+
+
+def where_items(recs):
+    """Where omitted features are, by location precision. Redacted: counts of distinct places only."""
+    by = collections.defaultdict(list)
+    for r in recs:
+        by[r["location"]["precision"]].append(r["location"])
+    if PRIVATE:
+        return "; ".join(f"{prec}: " + ", ".join(sorted({"/".join(str(v) for k, v in loc.items() if k != "precision")
+                                                           for loc in locs})) for prec, locs in by.items())
+    parts = []
+    for prec, locs in sorted(by.items()):
+        places = {tuple(v for k, v in loc.items() if k != "precision") for loc in locs}
+        parts.append(f"{len(locs)} located to {prec} ({len(places)} distinct)")
+    return "; ".join(parts) + " — listed in the private report"
 
 
 def where(recs):
@@ -150,7 +201,7 @@ def where(recs):
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     report = json.loads((RUN / "convert-report.json").read_text(encoding="utf-8"))
-    keys, delivered, records = build_records()
+    keys, delivered, records, check = build_records()
     refused = [r for r in records if r["disposition"] == "refused_region"]
     approx = [r for r in records if r["engine_code"] == "pdf_only_tab_inferred_timing"]
     synth = [r for r in records if r["disposition"] == "synthesised"]
@@ -197,12 +248,15 @@ def main() -> None:
             p(f"| `{user}` | {text} | {len(rs)} | {sum(r['impact']['notes'] for r in rs)} |")
     p("")
     p("## Not converted at all (feature not supported yet)\n")
-    p("| Feature | Items | Why |")
-    p("|---|---|---|")
+    p("| Feature | Items | Where | Why |")
+    p("|---|---|---|---|")
+    omitted = collections.defaultdict(list)
     for r in records:
         if r["disposition"] == "omitted":
-            label = {"text": "Text on the page (unclassified)", "lyric": "Lyrics"}[r["feature_kind"]]
-            p(f"| {label} | {r['impact']['items']} | `feature-not-supported` |")
+            omitted[r["feature_kind"]].append(r)
+    for kind, rs in omitted.items():
+        label = {"text": "Text on the page (unclassified)", "lyric": "Lyrics"}[kind]
+        p(f"| {label} | {sum(r['impact']['items'] for r in rs)} | {where_items(rs)} | `feature-not-supported` |")
     p("")
     p("## Details for support\n")
     p("Events in converted bars, by how their duration was chosen: "
@@ -215,7 +269,8 @@ def main() -> None:
         groups[(r["engine_code"], r["stage"])].append(r)
     fam = {"pdf_only_tab_ambiguous_duration": "ambiguous_evidence", "pdf_only_tab_measure_overcapacity": "contradictory_evidence",
            "pdf_only_tab_inferred_timing": "missing_observation", "measure_fill_rest_synthesised": "missing_observation",
-           "pdf_text_candidate_not_converted": "unsupported_feature", "pdf_lyrics_not_converted": "unsupported_feature"}
+           "pdf_text_candidate_not_converted": "unsupported_feature", "pdf_lyrics_not_converted": "unsupported_feature",
+           "pdf_only_tab_source_bar_without_playable_candidate": "missing_observation"}
     for (code, stage), rs in sorted(groups.items()):
         ev = collections.Counter()
         for r in rs:
@@ -227,6 +282,9 @@ def main() -> None:
     sha = __import__("subprocess").run(["git", "-C", str(PRODUCT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
     p(f"- Product SHA: `{sha}`; route: `pdf-only`; target: GP7")
     p(f"- Status: `partial` (proposed); today: `{report.get('status')}` / exit {report.get('exit_code')}")
+    p(f"- Source bars (layout inventory): {check['source_bars']}; bars with a playable candidate: "
+      f"{check['bars_replayed']}; candidate-only: {check['bars_candidate_only']}; empty: {check['bars_empty']}; "
+      f"not accounted for by a delivered bar or a record: {check['bars_unaccounted']}")
     p(f"- Records: {len(records)} (private, `shortfall-records.json`); sanitised aggregate: counts and codes only")
     print("\n".join(out))
 

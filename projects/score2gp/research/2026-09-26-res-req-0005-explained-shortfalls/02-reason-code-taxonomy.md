@@ -29,7 +29,7 @@ Keep every existing engine code. Put two stable layers above them, and add two s
 vocabularies that every shortfall carries.
 
 ```text
-user reason   (layer 3, ~16 stable ids, plain language, what the user can do)
+user reason   (layer 3, ~17 stable ids, plain language, what the user can do)
    ▲ many-to-one
 reason family (layer 2, 8 stable ids, REQ-0005's "why" classes)
    ▲ many-to-one
@@ -100,6 +100,7 @@ wording may be edited or localised.
 | `rhythm-ambiguous` | ambiguous_evidence | "The note lengths in {location} could be read more than one way." | Check the rhythm here by hand. |
 | `bar-overfull` | contradictory_evidence | "The notes read in {location} don't fit the bar's time signature." | Check this bar for a misread note or duration. |
 | `layout-unreadable` | missing_observation / ambiguous_evidence | "We couldn't reliably find the staff lines, systems or barlines on {location}." | Use a cleaner PDF, or mark the region. |
+| `bar-content-not-found` | missing_observation | "{location} is a bar on the page, but no fret numbers were found in it." | Check whether the bar is empty, a rest, or holds notes that were not read. |
 | `note-position-uncertain` | ambiguous_evidence | "We found a fret number in {location} but can't tell which string or bar it belongs to." | Check this bar. |
 | `fret-unreadable` | ambiguous_evidence | "A fret number in {location} can't be read reliably." | Check the fret numbers here. |
 | `notation-symbol-unread` | missing_observation | "A notation symbol in {location} couldn't be recognised." | Check this bar. |
@@ -160,11 +161,12 @@ proposals.
 | G13 | `musicxml_pitch_incomplete` (refuse the note; no default) | invalid_input | input-invalid | omitted |
 | G14 | `musicxml_tuplet_incomplete` | invalid_input | input-invalid | omitted |
 | G15 | `sidecar_clef_assumed_treble` | missing_observation | defaulted | defaulted |
-| G16 | `pdf_text_candidate_not_converted` (count per kind) | unsupported_feature | feature-not-supported | omitted |
+| G16 | `pdf_text_candidate_not_converted` (one record per candidate, at the finest location extraction gave it) | unsupported_feature | feature-not-supported | omitted |
 | G17 | `pdf_lyrics_not_converted` | unsupported_feature | feature-not-supported | omitted |
 | G18 | `musicxml_direction_not_converted` (subtype: dynamics, words, wedge, pedal) | unsupported_feature | feature-not-supported | omitted |
 | G19 | `musicxml_notation_not_converted` (subtype: articulation, fermata, glissando, arpeggiate, ornament) | unsupported_feature | feature-not-supported | omitted |
 | G20 | (no new code) the `--pages` filter must keep document-level records | — | — | — |
+| G21 | `pdf_only_tab_source_bar_without_playable_candidate`, with the located non-playable candidates as evidence | missing_observation | bar-content-not-found | refused_region |
 
 ## 2.5 How the existing cause taxonomy fits
 

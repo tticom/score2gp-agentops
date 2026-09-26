@@ -37,7 +37,11 @@ unless a `docs/` or `tests/` path is given.
    gitignored `<product>/work/res-req-0005/<source>/<route>/`.
 3. **Per-bar replay** (`evidence/facts_harness.py`): the PDF-only builder stops at the first bad
    bar (`build_ir.py:1743-1773`). The harness calls the product's own `assemble_pdf_tab_bar` for
-   every bar and records each outcome. It is a research simulation, not product behaviour. Its first
+   every bar the builder iterates (bars with a playable candidate) and records each outcome. Because
+   that set comes from the candidates, the harness also builds an **independent source-bar
+   inventory** from layout geometry (`source_inventory`: the product's staff and barline detector
+   on the source PDF, no candidates) and checks conservation against it
+   (`evidence/coverage_check.py`, with negative controls for candidate-only and empty bars). It is a research simulation, not product behaviour. Its first
    failure code equals the product's actual refusal code in all 12 routes that reached
    measure assembly, which is the check that it replays the product faithfully.
 4. **Counts-only evidence**: `evidence/run-matrix-facts.json` holds counts, codes, stage names and

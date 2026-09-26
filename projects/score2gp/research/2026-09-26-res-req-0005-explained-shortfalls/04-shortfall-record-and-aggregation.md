@@ -133,7 +133,7 @@ that is not a non-negative integer. This is the same check applied to
 | Test | What it proves |
 |---|---|
 | Registry completeness (AST scan) | Every emitted `code=`/`category=` literal is registered with family, user reason, stage and role. |
-| Conservation, per route, on public fixtures | `source_bar_count == delivered_clean_bars + bars covered by records with disposition in {refused_region, approximated, synthesised, omitted}`, and every input candidate is either consumed by a delivered note or referenced by a record. Today `candidate-text` (G16) and lyrics (G17) break this. |
+| Conservation, per route, on public fixtures | `source_bar_count == delivered_clean_bars + bars covered by records with disposition in {refused_region, approximated, synthesised, omitted}`, and every input candidate is either consumed by a delivered note or referenced by a record. `source_bar_count` must come from an inventory derived **independently** of the candidates being checked: layout geometry (staff lines and barlines), as `evidence/facts_harness.py` `source_inventory` does. An inventory built from the playable candidates cannot see a candidate-only or empty bar (map §1.3a). Negative controls: a fixture bar with only non-playable text and a fixture bar with no candidates must each fail the test until a record covers it (`evidence/coverage_check.py` self-test). Today `candidate-text` (G16), lyrics (G17) and bars with no playable candidate (G21) break this. |
 | Location precision | No bar-level engine code is recorded with `precision: document` (G2, G3). |
 | No confident synthesis | No delivered event has `confidence == 1.0` with empty provenance unless it has a `synthesised` record (G8). |
 | Status honesty | `status == success` implies no record with disposition other than `defaulted` (U10 defaults only); `approximated` or `synthesised` imply `partial` (G7). |
@@ -148,25 +148,28 @@ task, not part of this research.
 
 `evidence/aggregate_preview.py` builds this table from `evidence/run-matrix-facts.json` alone,
 which is counts only. It uses the proposed mapping and the pdf-only replay. It is a preview of
-the rollup, not product output. Totals: 7 sources, 275 source bars.
+the rollup, not product output. Totals: 7 sources, 277 source bars from the independent layout
+inventory (275 reached by the replay).
 
 | Rank | User reason | Family | Engine code | Disposition | Level | Occurrences | Bars affected | Sources |
 |---|---|---|---|---|---|---|---|---|
-| 1 | `timing-not-in-source` | missing_observation | `pdf_only_tab_missing_timing_evidence` | refused_document | document | 7 | 275 | 7 |
-| 2 | `input-required` | invalid_input | `missing_musicxml` | refused_document | document | 7 | 275 | 7 |
-| 3 | `internal-error` | internal_error | `sidecar_generation_measure_capacity_invalid` (proposed) | refused_document | document | 7 | 275 | 7 |
+| 1 | `timing-not-in-source` | missing_observation | `pdf_only_tab_missing_timing_evidence` | refused_document | document | 7 | 277 | 7 |
+| 2 | `input-required` | invalid_input | `missing_musicxml` | refused_document | document | 7 | 277 | 7 |
+| 3 | `internal-error` | internal_error | `sidecar_generation_measure_capacity_invalid` (proposed) | refused_document | document | 7 | 277 | 7 |
 | 4 | `bar-overfull` | contradictory_evidence | `pdf_only_tab_measure_overcapacity` | refused_region (proposed) | bar | 107 | 107 | 5 |
 | 5 | `approximated` | missing_observation | `pdf_only_tab_inferred_timing` | approximated | bar | 105 | 105 | 7 |
 | 6 | `approximated` | missing_observation | `measure_fill_rest_synthesised` (proposed) | synthesised | bar | 68 | 68 | 7 |
 | 7 | `fret-unreadable` / `note-position-uncertain` | ambiguous_evidence | non-exempt candidate-level codes | approximated or omitted (proposed) | note | 724 | 65 | 7 |
 | 8 | `rhythm-ambiguous` | ambiguous_evidence | `pdf_only_tab_ambiguous_duration` | refused_region (proposed) | bar | 63 | 63 | 7 |
-| 9 | `layout-unreadable` | ambiguous_evidence | `pdf_only_tab_grouping_unsafe` | refused_document | document | 1 | 16 | 1 |
-| 10 | `feature-not-supported` | unsupported_feature | `pdf_text_candidate_not_converted` (proposed) | omitted | feature | 1318 | — | 7 |
-| 11 | `feature-not-supported` | unsupported_feature | `pdf_lyrics_not_converted` (proposed) | omitted | feature | 142 | — | 6 |
+| 9 | `layout-unreadable` | ambiguous_evidence | `pdf_only_tab_grouping_unsafe` | refused_document | document | 1 | 17 | 1 |
+| 10 | `bar-content-not-found` | missing_observation | `pdf_only_tab_source_bar_without_playable_candidate` (proposed) | refused_region | bar | 2 | 2 | 2 |
+| 11 | `feature-not-supported` | unsupported_feature | `pdf_text_candidate_not_converted` (proposed) | omitted | feature | 1318 | — | 7 |
+| 12 | `feature-not-supported` | unsupported_feature | `pdf_lyrics_not_converted` (proposed) | omitted | feature | 142 | — | 6 |
 
 What it already says, from real data: without a sidecar, the three document-level reasons block
 everything. Behind them, over-full bars (rank 4) and ambiguous durations (rank 8) are the two bar
-reasons to fix, and over-full bars cost more. The count of 1318 dropped text candidates shows why
-G16 needs its own record: without one, nobody can tell how much of that text is musical.
-Rows 1-3 overlap: each is a different route over the same 275 bars. A real rollup would keep
+reasons to fix, and over-full bars cost more. Rank 10 exists only because the source bars now come
+from the layout inventory: 2 bars that the playable-candidate replay never sees. The count of 1318
+dropped text candidates shows why G16 needs its own record: without one, nobody can tell how much of that text is musical.
+Rows 1-3 overlap: each is a different route over the same 277 bars. A real rollup would keep
 routes apart (`route` is part of the key); the preview merges them to stay small.

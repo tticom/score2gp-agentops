@@ -240,6 +240,23 @@
    "global_layout_gate_codes": {},
    "source_bars": 10
   },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 1,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 10,
+   "bars_unaccounted": 1,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": false,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 11,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 5,
+    "chord-symbol": 30,
+    "technique-text": 22
+   }
+  },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
     "pdf_candidates_unassigned_to_string",
@@ -579,6 +596,25 @@
    },
    "source_bars": 16
   },
+  "source_inventory": {
+   "bars_candidate_only": 1,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 16,
+   "bars_unaccounted": 1,
+   "candidate_only_bar_items_by_kind": {
+    "candidate-text": 3
+   },
+   "conservation_ok": false,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 17,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 8,
+    "chord-symbol": 2,
+    "technique-text": 2
+   }
+  },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
     "pdf_candidates_unassigned_to_string",
@@ -856,6 +892,22 @@
    "fret_candidates_in_refused_bars": 335,
    "global_layout_gate_codes": {},
    "source_bars": 66
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 66,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 66,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 31,
+    "technique-text": 4
+   }
   },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
@@ -1143,6 +1195,22 @@
    "fret_candidates_in_refused_bars": 410,
    "global_layout_gate_codes": {},
    "source_bars": 77
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 77,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 77,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 43,
+    "technique-text": 9
+   }
   },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
@@ -1435,6 +1503,22 @@
    "global_layout_gate_codes": {},
    "source_bars": 35
   },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 35,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 35,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 99,
+    "technique-text": 9
+   }
+  },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
     "ambiguous_bar_assignment",
@@ -1720,6 +1804,22 @@
    "global_layout_gate_codes": {},
    "source_bars": 21
   },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 21,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 21,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 836,
+    "technique-text": 13
+   }
+  },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [
     "ambiguous_bar_assignment",
@@ -2002,6 +2102,22 @@
    "fret_candidates_in_refused_bars": 474,
    "global_layout_gate_codes": {},
    "source_bars": 50
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 50,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 50,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 21,
+    "technique-text": 6
+   }
   },
   "tabraw": {
    "candidate_level_codes_absent_from_top_level": [

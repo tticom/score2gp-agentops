@@ -3,8 +3,10 @@
 Reads run-matrix-facts.json (same directory) and writes corpus-aggregate-preview.json: one row per
 (user reason, engine code, disposition) with occurrence, bar and source counts, ranked by bars
 affected and then by sources affected. The mapping from engine code to family and user reason is
-the proposal in 02-reason-code-taxonomy.md. Document-level rows count every source bar as affected;
-bar rows come from the pdf-only replay.
+the proposal in 02-reason-code-taxonomy.md. Source bars come from the independent layout inventory
+(facts[source]["source_inventory"], built by facts_harness.source_inventory), not from the replay.
+Document-level rows count every source bar as affected; bar rows come from the pdf-only replay, plus
+the inventory bars the replay never reaches (no playable candidate).
 
 Usage: python aggregate_preview.py
 """
@@ -30,6 +32,9 @@ def main() -> None:
     facts = json.loads((HERE / "run-matrix-facts.json").read_text(encoding="utf-8"))
     rows = []
 
+    def source_bars(s):
+        return facts[s]["source_inventory"]["source_bars"]
+
     def bar_codes(mode):
         agg: dict[str, list[int]] = {}
         for s in SOURCES:
@@ -52,6 +57,12 @@ def main() -> None:
                     "bar", synth, synth,
                     sum(1 for s in SOURCES if facts[s]["sim_pdfonly"]["bars_assembled_with_synthesised_rests"]),
                     proposed=True))
+    unbuilt = {s: facts[s]["source_inventory"]["bars_candidate_only"] + facts[s]["source_inventory"]["bars_empty"]
+               for s in SOURCES}
+    rows.append(row("bar-content-not-found", "missing_observation",
+                    "pdf_only_tab_source_bar_without_playable_candidate", "refused_region", "bar",
+                    sum(unbuilt.values()), sum(unbuilt.values()), sum(1 for s in SOURCES if unbuilt[s]),
+                    proposed=True))
     low = sum(facts[s]["sim_pdfonly"]["bars_assembled_containing_low_confidence_candidates"] for s in SOURCES)
     notes = sum(facts[s]["tabraw"]["playable_with_unsafe_candidate_code"] for s in SOURCES)
     rows.append(row("fret-unreadable|note-position-uncertain", "ambiguous_evidence",
@@ -71,9 +82,9 @@ def main() -> None:
             "missing_musicxml": ("input-required", "invalid_input"),
             "pdf_only_tab_grouping_unsafe": ("layout-unreadable", "ambiguous_evidence")}
     for (code, _stage), srcs in doc_refusals.items():
-        bars = sum(facts[s]["sim_pdfonly"]["source_bars"] for s in srcs)
+        bars = sum(source_bars(s) for s in srcs)
         rows.append(row(*dmap[code], code, "refused_document", "document", len(srcs), bars, len(srcs)))
-    bars = sum(facts[s]["sim_pdfonly"]["source_bars"] for s in SIDECAR_CRASH_SOURCES)
+    bars = sum(source_bars(s) for s in SIDECAR_CRASH_SOURCES)
     rows.append(row("internal-error", "internal_error", "sidecar_generation_measure_capacity_invalid",
                     "refused_document", "document", len(SIDECAR_CRASH_SOURCES), bars, len(SIDECAR_CRASH_SOURCES),
                     proposed=True))
@@ -92,7 +103,8 @@ def main() -> None:
     for i, r in enumerate(rows, 1):
         r["rank"] = i
     out = {"schema": "res-req-0005.aggregate-preview.v0", "sources": len(SOURCES),
-           "source_bars_total": sum(facts[s]["sim_pdfonly"]["source_bars"] for s in SOURCES),
+           "source_bars_total": sum(source_bars(s) for s in SOURCES),
+           "source_bars_replayed_total": sum(facts[s]["sim_pdfonly"]["source_bars"] for s in SOURCES),
            "rows": rows}
     (HERE / "corpus-aggregate-preview.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
     print(len(rows), "rows")

@@ -35,7 +35,7 @@ Maintainer direction (2026-09-25), verbatim:
 1. How best-effort output coexists with strict refusal: a mode, per-measure gating, or a separate "partial" artifact.
    **Answer:** the primary `--out` stays complete-or-nothing. When a conversion is not complete, the run exits non-success with status `partial`, writes no primary output, and writes a labelled `<name>.partial.gp` beside it: delivered bars, plus a marked gap bar for each refused bar. ([options](../research/2026-09-26-res-req-0005-explained-shortfalls/03-best-effort-options.md))
 2. The reason-code taxonomy: extend the existing codes or define a user-facing layer above them.
-   **Answer:** both. Register and freeze the existing engine codes, and add 8 reason families and 16 stable user reasons above them. Every shortfall also carries a feature kind and a disposition. ([taxonomy](../research/2026-09-26-res-req-0005-explained-shortfalls/02-reason-code-taxonomy.md))
+   **Answer:** both. Register and freeze the existing engine codes, and add 8 reason families and 17 stable user reasons above them. Every shortfall also carries a feature kind and a disposition. ([taxonomy](../research/2026-09-26-res-req-0005-explained-shortfalls/02-reason-code-taxonomy.md))
 3. Where shortfall records live and how they are aggregated without exposing private content.
    **Answer:** a private per-run `shortfall-records.json` in the work directory. A sanitised counts-and-codes aggregate, enforced by a validator, goes to a local ledger. A ranked rollup may be committed. ([design](../research/2026-09-26-res-req-0005-explained-shortfalls/04-shortfall-record-and-aggregation.md))
 4. What the user report looks like, and in which formats.
@@ -49,7 +49,7 @@ code stands for up to 52 failing bars in a source, alongside up to 25 bars that 
 own per-bar checks. At most 10 of those are free of candidate-level doubt and synthesised rests, and
 all of them have inferred rhythm. The
 [current-state map](../research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md#18-silent-gaps-named)
-names 20 silent gaps (G1-G20). Three of them already contradict existing fail-closed rules:
+names 21 silent gaps (G1-G21). Three of them already contradict existing fail-closed rules:
 inferred rhythm reported as `success` (G7), synthesised rests at confidence 1.0 (G8), and
 `generate-sidecar` crashing without a code (G5).
 
@@ -59,7 +59,7 @@ Testable criteria, replacing the 2026-09-25 draft. G-numbers refer to the silent
 research map. "Corpus" means the seven sources above, run locally; only counts and codes from
 those runs may be committed.
 
-1. **A1 — Records exist and are complete.** Every `convert` run, whatever its outcome, writes `shortfall-records.json`. On a public fixture set with known unsupported, ambiguous and over-full features, a conservation test passes: every source bar is delivered clean or covered by a record, and every extracted candidate is consumed by a delivered note or referenced by a record (covers G1, G4, G9, G11-G19). A registry test fails if any emitted `code=`/`category=` literal in `src/score2gp` is not registered with stage, role, family and user reason.
+1. **A1 — Records exist and are complete.** Every `convert` run, whatever its outcome, writes `shortfall-records.json`. On a public fixture set with known unsupported, ambiguous and over-full features, a conservation test passes: every source bar is delivered clean or covered by a record, and every extracted candidate is consumed by a delivered note or referenced by a record (covers G1, G4, G9, G11-G19, G21). The source-bar count comes from an inventory derived from layout geometry, independent of the candidates being checked; the test must fail on a fixture bar that holds only non-playable text and on a fixture bar that holds no candidate, until a record covers each. Dropped features (text, lyrics) are recorded one per item at the finest location extraction gave them, not as one document-level count. A registry test fails if any emitted `code=`/`category=` literal in `src/score2gp` is not registered with stage, role, family and user reason.
 2. **A2 — Located.** Every record whose engine code is bar-level or finer has a source-frame location (page, system, source bar) at bar precision or finer. A test fails any bar-level code recorded at document precision (G2, G3). With `--pages`, document-level records are kept (G20).
 3. **A3 — Reasoned.** Every record has a registered engine code, family and user reason. A fault-injection test raising an unexpected exception in `convert` and in `generate-sidecar` yields a record with an `internal_error` family and the stage name, not a bare traceback (G5, G6). GP-writer omissions use per-reason target codes (G10).
 4. **A4 — Honest status.** `status: success` and exit 0 only when there are no records other than `defaulted` records with policy provenance. `approximated`, `synthesised`, `omitted` and `refused_region` records make the status `partial` with a non-zero exit (G7). No delivered event has confidence 1.0 with empty provenance unless a `synthesised` record covers it (G8). `summary_counts` in the JSON report match the extraction (E1).

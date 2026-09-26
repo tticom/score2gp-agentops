@@ -26,12 +26,14 @@ seven sources:
 
 | | Bars |
 |---|---|
-| Source bars | 275 |
+| Source bars (independent layout inventory, map §1.3a) | 277 |
+| …reached by the PDF-only builder (≥1 playable candidate) | 275 |
+| …never reached: candidate-only 1 (EX2), empty 1 (CFMWH); no output bar, no record (G21) | 2 |
 | Pass the product's current per-bar checks | 105 |
 | …and contain no candidate with a non-exempt candidate-level code and no synthesised rest | 17 |
 | Refused by the current checks | 170 (`pdf_only_tab_measure_overcapacity` 107, `pdf_only_tab_ambiguous_duration` 63) |
 
-Even the 17 "clean" bars have durations chosen from the number of events (`D1`). None of the 275
+Even the 17 "clean" bars have durations chosen from the number of events (`D1`). None of the 277
 has observed rhythm. So with tab-only input, a best-effort result can deliver **observed
 string/fret content** for some bars, and only **approximated** rhythm. Any design must be able to
 say that at bar level. Today, per-bar success is necessary but not sufficient for correctness:
@@ -70,7 +72,7 @@ synthesised content; each field is either observed or carries disposition `appro
 | FC1 | Holds if the gate is strict. Approximated rhythm must be labelled per bar, not per document. |
 | FC2, FC7 | Holds: `partial` is a non-success status with a non-zero exit. |
 | FC3 | Holds: records carry page/system/source bar (design 04). |
-| FC4 | Holds: every source bar is present exactly once, delivered or gap. |
+| FC4 | Holds only if "every source bar" means the independent layout inventory (map §1.3a). A bar with no playable candidate must become a gap bar too (G21); a builder keyed on playable candidates silently drops it. |
 | FC6 | **Risk.** GP has no "unknown" bar content. An empty or gap bar is rendered, and played back, as silence. That is invented material unless the marker is in the file. Whether GPIF can hold a bar with no beats that GP 7/8 opens without repairing to a rest is **Unverified** (maintainer decision D3). |
 | FC8 | Holds only while the marker survives in the file. Once the user edits the GP and deletes the marker, the file no longer says it is partial. |
 

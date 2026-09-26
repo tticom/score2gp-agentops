@@ -14,7 +14,7 @@ Grounds:
   the test that decides it (§6.3).
 - The requirement is feasible without weakening the fail-closed rules. Option B in 03 meets all
   eight rules, with one condition (the GP gap-bar representation, decision D3).
-- The research found 20 silent gaps (map §1.8). Several of them already break existing fail-closed
+- The research found 21 silent gaps (map §1.8). Several of them already break existing fail-closed
   rules in shipped code, independent of REQ-0005: G7 (inferred rhythm reported as `success`), G8
   (synthesised rests at confidence 1.0) and G5 (sidecar crash without a code). That raises the
   requirement's value. It does not decide its priority.
@@ -24,7 +24,7 @@ Grounds:
 | # | Open question | Answer | Where |
 |---|---|---|---|
 | 1 | How best effort coexists with strict refusal | A complete-or-nothing primary `--out`, plus a separate labelled `<name>.partial.gp` and report, run status `partial`, non-success exit. Per-bar gating (Option A) is acceptable under conditions. Always-on gating (C) and omitting failing bars (D) are rejected. | [03](03-best-effort-options.md) |
-| 2 | Extend the existing codes or define a user-facing layer | Both. Register and freeze the existing engine codes (a stability rule and a completeness test), and add two stable layers above them: 8 reason families and 16 user reasons. Every shortfall also carries a feature kind and a disposition. `docs/diagnostics_failure_taxonomy.md` is a cause taxonomy for one recogniser and becomes an optional `cause` field. | [02](02-reason-code-taxonomy.md) |
+| 2 | Extend the existing codes or define a user-facing layer | Both. Register and freeze the existing engine codes (a stability rule and a completeness test), and add two stable layers above them: 8 reason families and 17 user reasons. Every shortfall also carries a feature kind and a disposition. `docs/diagnostics_failure_taxonomy.md` is a cause taxonomy for one recogniser and becomes an optional `cause` field. | [02](02-reason-code-taxonomy.md) |
 | 3 | Where records live, how they are aggregated privately | Private per-run `shortfall-records.json` in the work directory. A sanitised counts-and-codes aggregate, with an enforced privacy validator, is appended to a local ledger. A ranked rollup (bars affected, then sources) may be committed to agentops and feeds backlog proposals. | [04](04-shortfall-record-and-aggregation.md) |
 | 4 | What the report looks like, which formats | Headline status and coverage, then "not converted" by user reason with source locations, then "converted but check", then "not supported yet", then support details. Rendered as Markdown, HTML and JSON from the same records. | [05](05-report-mockup.md) |
 
@@ -35,11 +35,11 @@ evidence motivated it.
 
 | Criterion (REQ-0005) | Closes gaps | Motivating evidence |
 |---|---|---|
-| A1 Records exist and are complete | G1, G4, G6, G9, G11-G19 | Map §1.3-1.6: one code per run; 18-31 candidate codes per source never reach the user |
+| A1 Records exist and are complete | G1, G4, G6, G9, G11-G19, G21 | Map §1.3-1.6: one code per run; 18-31 candidate codes per source never reach the user; the layout inventory finds 2 source bars that no bar-keyed check sees (§1.3a) |
 | A2 Every record is located in the source frame | G2, G3, G20 | Map R5, R6, X9 |
 | A3 Every record has a registered reason; no uncoded failure | G5, G6, G10, E6 | 190 unregistered literals; the `generate-sidecar` traceback on 7/7 sources |
 | A4 Status honesty | G7, G8, E1, E2 | `PUB` success with inferred rhythm; `total_candidates` 0 on 21/21 runs; `--strict` no-op |
-| A5 Best-effort output, checked by an independent oracle | G4, G7, G8 | Replay: 105 of 275 bars assemble, 17 clean |
+| A5 Best-effort output, checked by an independent oracle | G4, G7, G8, G21 | Replay: 105 of 275 replayed bars assemble, 17 clean; layout inventory 277 |
 | A6 User report | E3, E4 | The refusal is 1 of 54-225 HTML items; no location, severity or action shown |
 | A7 Corpus aggregate ranks reasons | — | Aggregate preview (04 §4.6) |
 | A8 Privacy | — | Evidence validator used in this research |

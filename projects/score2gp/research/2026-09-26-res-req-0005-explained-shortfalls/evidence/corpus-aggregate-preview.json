@@ -1,7 +1,8 @@
 {
  "schema": "res-req-0005.aggregate-preview.v0",
  "sources": 7,
- "source_bars_total": 275,
+ "source_bars_total": 277,
+ "source_bars_replayed_total": 275,
  "rows": [
   {
    "user_reason": "timing-not-in-source",
@@ -10,7 +11,7 @@
    "disposition": "refused_document",
    "level": "document",
    "occurrences": 7,
-   "bars_affected": 275,
+   "bars_affected": 277,
    "sources_affected": 7,
    "proposed": false,
    "rank": 1
@@ -22,7 +23,7 @@
    "disposition": "refused_document",
    "level": "document",
    "occurrences": 7,
-   "bars_affected": 275,
+   "bars_affected": 277,
    "sources_affected": 7,
    "proposed": false,
    "rank": 2
@@ -34,7 +35,7 @@
    "disposition": "refused_document",
    "level": "document",
    "occurrences": 7,
-   "bars_affected": 275,
+   "bars_affected": 277,
    "sources_affected": 7,
    "proposed": true,
    "rank": 3
@@ -106,10 +107,22 @@
    "disposition": "refused_document",
    "level": "document",
    "occurrences": 1,
-   "bars_affected": 16,
+   "bars_affected": 17,
    "sources_affected": 1,
    "proposed": false,
    "rank": 9
+  },
+  {
+   "user_reason": "bar-content-not-found",
+   "family": "missing_observation",
+   "engine_code": "pdf_only_tab_source_bar_without_playable_candidate",
+   "disposition": "refused_region",
+   "level": "bar",
+   "occurrences": 2,
+   "bars_affected": 2,
+   "sources_affected": 2,
+   "proposed": true,
+   "rank": 10
   },
   {
    "user_reason": "feature-not-supported",
@@ -121,7 +134,7 @@
    "bars_affected": null,
    "sources_affected": 7,
    "proposed": true,
-   "rank": 10
+   "rank": 11
   },
   {
    "user_reason": "feature-not-supported",
@@ -133,7 +146,7 @@
    "bars_affected": null,
    "sources_affected": 6,
    "proposed": true,
-   "rank": 11
+   "rank": 12
   }
  ]
 }

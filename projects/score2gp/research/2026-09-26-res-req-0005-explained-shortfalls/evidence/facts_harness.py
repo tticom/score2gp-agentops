@@ -6,6 +6,12 @@ It also replays the PDF-only bar loop (build_ir.py:1716-1773 at the pinned SHA) 
 product's own assemble_pdf_tab_bar, so that every bar's outcome is recorded instead of only the first
 failure. The replay is a research simulation, not product behaviour.
 
+The replay iterates only bars that hold a playable candidate, as the product does (build_ir.py:1735-1736),
+so its bar count is not a source-bar inventory. source_inventory() derives the source bars independently
+from layout geometry: the product's own staff and barline detector (_detect_tab_systems, pdf.py:4609) run
+on the source PDF, numbered as extraction numbers them (pdf.py:2423-2426, 5011-5021). No candidate is
+used. coverage_check.conservation() then compares the two.
+
 Usage (product venv): python facts_harness.py <product-checkout> <out.json>
 """
 import ast
@@ -21,6 +27,9 @@ from score2gp.tabraw import TabRaw  # noqa: E402
 from score2gp.pdf_tab_bar_assembler import assemble_pdf_tab_bar  # noqa: E402
 from score2gp.pdf_tab_measure_timing import PdfTabBarAssemblerError  # noqa: E402
 from score2gp.pdf_only_chord_event_grouper import PDF_ONLY_CHORD_X_TOLERANCE_PT  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).parent))
+from coverage_check import conservation  # noqa: E402
 
 W = PRODUCT / "work" / "res-req-0005"
 SRCS = ["L3", "L4", "L5", "L6", "L7", "EX2", "CFMWH"]
@@ -78,6 +87,54 @@ def html_summary(p: Path, refusal):
 def bar_key(c):
     return (c.page_index or 1, c.system_index if c.system_index is not None else -1, c.staff_index or 1,
             c.bar_index if c.bar_index is not None else -1)
+
+
+def source_inventory(pdf_path: str) -> tuple[set, int]:
+    """Source bars from layout geometry only: one slot per pair of adjacent barlines in each detected tab
+    system, and one slot for a system with fewer than two barlines, exactly as extraction numbers them."""
+    import pymupdf as fitz  # type: ignore[import-not-found]
+    from score2gp import pdf as product_pdf
+    slots: set = set()
+    under_barlined = 0
+    running, offset = 1, 0.0
+    with fitz.open(pdf_path) as doc:
+        for page_number, page in enumerate(doc, start=1):
+            systems = product_pdf._detect_tab_systems(page, page_number, first_bar_index=running,
+                                                      cumulative_y_offset=offset)
+            for sy in systems:
+                under_barlined += len(sy.barlines) < 2
+                for b in range(sy.first_bar_index, sy.first_bar_index + max(1, len(sy.barlines) - 1)):
+                    slots.add((page_number, sy.system_index, sy.staff_index or 1, b))
+            if systems:
+                running = systems[-1].first_bar_index + max(1, len(systems[-1].barlines) - 1)
+            offset += float(page.rect.height)
+    return slots, under_barlined
+
+
+def inventory_summary(tab_json: dict, sim: dict) -> dict:
+    """Counts only: the layout inventory against located, replayed and accounted bars."""
+    slots, under_barlined = source_inventory(tab_json["source_pdf"])
+    cands = tab_json.get("candidates", [])
+
+    def key(c):
+        return (c.get("page_index") or 1, c.get("system_index"), c.get("staff_index") or 1, c.get("bar_index"))
+
+    located = [c for c in cands if c.get("bar_index") is not None and c.get("system_index") is not None]
+    playable = [c for c in located if (c.get("parsed_fret") is not None and c.get("kind") == "fret")
+                or c.get("raw_text") == "quarter_rest"]
+    located_keys = {key(c) for c in located}
+    replayed = {key(c) for c in playable}
+    result = conservation(slots, located_keys, replayed, replayed)
+    candidate_only = (located_keys - replayed) & slots
+    result.update({
+        "systems_with_fewer_than_two_barlines": under_barlined,
+        "candidate_only_bar_items_by_kind": dict(collections.Counter(
+            c.get("kind") for c in located if key(c) in candidate_only)),
+        "unlocated_candidates_by_kind": dict(collections.Counter(
+            c.get("kind") for c in cands if c.get("bar_index") is None or c.get("system_index") is None)),
+        "replay_source_bars_matches_bars_replayed": sim["source_bars"] == result["bars_replayed"],
+    })
+    return result
 
 
 def simulate(tabraw_path: Path, draft: bool) -> dict:
@@ -171,6 +228,7 @@ def main() -> None:
         }
         rec["sim_pdfonly"] = simulate(tp, False)
         rec["sim_draft"] = simulate(tp, True)
+        rec["source_inventory"] = inventory_summary(tab, rec["sim_pdfonly"])
         out[s] = rec
     Path(sys.argv[2]).write_text(json.dumps(out, indent=1, sort_keys=True), encoding="utf-8")
     print("ok")

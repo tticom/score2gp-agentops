@@ -9,7 +9,11 @@ Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`.
 - **Generator:** `evidence/report_mockup.py <product> <run-work-dir>`, run with the product venv.
   It reads the run's `tab/tab_raw.json` and `convert-report.json` and replays every bar through
   the product's `assemble_pdf_tab_bar`. From that it builds shortfall records in the shape of
-  design 04 and renders the report proposed for Option B of 03.
+  design 04 and renders the report proposed for Option B of 03. The bar total comes from the
+  independent layout inventory (map §1.3a), not from the replayed bars. A source bar with no
+  playable candidate gets a `bar-content-not-found` record. Every dropped text candidate and
+  lyric gets its own record at the finest location extraction gave it, with its candidate id in
+  the private tier.
 - **Redaction:** the committed rendering below is the default (redacted) mode. Page, system and
   bar values are replaced by counts and a placeholder. The same command with `--private` prints
   the real locations. It was run once, writing only to the gitignored work directory, to check
@@ -46,10 +50,10 @@ Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`.
 
 #### Not converted at all (feature not supported yet)
 
-| Feature | Items | Why |
-|---|---|---|
-| Text on the page (unclassified) | 175 | `feature-not-supported` |
-| Lyrics | 10 | `feature-not-supported` |
+| Feature | Items | Where | Why |
+|---|---|---|---|
+| Text on the page (unclassified) | 175 | 76 located to bar (26 distinct); 99 located to page (3 distinct) — listed in the private report | `feature-not-supported` |
+| Lyrics | 10 | 10 located to system (7 distinct) — listed in the private report | `feature-not-supported` |
 
 #### Details for support
 
@@ -60,17 +64,18 @@ Events in converted bars, by how their duration was chosen: count rule (16th 118
 | `candidate:fret-unreadable` | `tab-extraction` | ambiguous_evidence | 12 | `pdf_fret_digits_not_merged_exceeds_max_fret` 41 |
 | `candidate:notation-symbol-unread` | `tab-extraction` | ambiguous_evidence | 18 | `pdf_notation_rhythm_missing_notehead` 211 |
 | `measure_fill_rest_synthesised` | `measure-assembly` | missing_observation | 12 | — |
-| `pdf_lyrics_not_converted` | `build-ir` | unsupported_feature | 1 | — |
+| `pdf_lyrics_not_converted` | `build-ir` | unsupported_feature | 10 | — |
 | `pdf_only_tab_ambiguous_duration` | `measure-assembly` | ambiguous_evidence | 8 | `pdf_fret_digits_not_merged_exceeds_max_fret` 1 |
 | `pdf_only_tab_inferred_timing` | `measure-assembly` | missing_observation | 18 | — |
 | `pdf_only_tab_measure_overcapacity` | `measure-assembly` | contradictory_evidence | 9 | `pdf_fret_digits_not_merged_exceeds_max_fret` 17 |
-| `pdf_text_candidate_not_converted` | `build-ir` | unsupported_feature | 1 | — |
+| `pdf_text_candidate_not_converted` | `build-ir` | unsupported_feature | 175 | — |
 
 #### Run
 
 - Product SHA: `3af19250bcc716ccc8a3e2b2102db897f78e56e5`; route: `pdf-only`; target: GP7
 - Status: `partial` (proposed); today: `refused` / exit 2
-- Records: 79 (private, `shortfall-records.json`); sanitised aggregate: counts and codes only
+- Source bars (layout inventory): 35; bars with a playable candidate: 35; candidate-only: 0; empty: 0; not accounted for by a delivered bar or a record: 0
+- Records: 262 (private, `shortfall-records.json`); sanitised aggregate: counts and codes only
 
 ---
 
@@ -99,7 +104,14 @@ Events in converted bars, by how their duration was chosen: count rule (16th 118
    the 18 delivered bars came from the count rule: 61 eighths (bars with at most 8 events) and 118
    sixteenths (bars with 9-16 events). The rest-symbol and duration-mark exception is printed only
    when it occurs.
-7. **Limitation:** "notation-symbol-unread" appears on all 211 delivered notes, because in this
+7. **Every source bar and every dropped item is accounted for.** For L5 the layout inventory and
+   the replay agree (35 bars), so no `bar-content-not-found` row appears. The same generator on the
+   EX2 and CFMWH `pdfonly` runs reports "14 of 17" and "5 of 11" bars converted. Each includes one
+   `bar-content-not-found` bar (EX2: candidate-only, 3 text items as evidence; CFMWH: empty), and
+   the run footer shows 0 bars unaccounted. The text and lyric rows carry per-item records located
+   to bar, system or page, so the private report lists each place rather than one document-level
+   total.
+8. **Limitation:** "notation-symbol-unread" appears on all 211 delivered notes, because in this
    run every fret candidate carries `pdf_notation_rhythm_missing_notehead`. A real report would
    fold that into the `approximated` rhythm row rather than list it twice. The generator keeps
    the rows separate here so the counts can be checked against the evidence.

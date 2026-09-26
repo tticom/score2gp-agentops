@@ -78,10 +78,13 @@ severity shown and no recommended action (`recommended_action` is absent from al
 
 ### 1.3 What the single refusal hides: per-bar replay (**Observed** via the harness)
 
-The replay calls the product's `assemble_pdf_tab_bar` for every source bar. "Assembled" means the
-product's current per-bar checks pass. It does **not** mean the bar is correct: see D1-D3.
+The replay calls the product's `assemble_pdf_tab_bar` for every bar the PDF-only builder iterates:
+the bars that hold at least one playable candidate (`build_ir.py:1735-1736`). That set is **not** the
+source-bar inventory; §1.3a gives the independent inventory and the bars this table cannot see.
+"Assembled" means the product's current per-bar checks pass. It does **not** mean the bar is
+correct: see D1-D3.
 
-| Source | Mode | Source bars | Assembled | Refused (by code) | First failure (= product refusal) | Assembled bars with low-confidence candidates | Assembled bars with synthesised rests |
+| Source | Mode | Bars replayed (≥1 playable candidate) | Assembled | Refused (by code) | First failure (= product refusal) | Assembled bars with low-confidence candidates | Assembled bars with synthesised rests |
 |---|---|---|---|---|---|---|---|
 | L3 | pdf-only | 66 | 24 | `pdf_only_tab_ambiguous_duration` 3, `pdf_only_tab_measure_overcapacity` 39 | `pdf_only_tab_measure_overcapacity` | 3 | 11 |
 | L3 | draft | 66 | 15 | `pdf_only_tab_ambiguous_duration` 3, `pdf_only_tab_measure_overcapacity` 48 | `pdf_only_tab_measure_overcapacity` | 0 | 11 |
@@ -98,8 +101,40 @@ product's current per-bar checks pass. It does **not** mean the bar is correct: 
 | CFMWH | pdf-only | 10 | 5 | `pdf_only_tab_ambiguous_duration` 5 | `pdf_only_tab_ambiguous_duration` | 5 | 5 |
 | CFMWH | draft | 10 | 0 | `pdf_only_tab_ambiguous_duration` 5, `pdf_only_tab_measure_overcapacity` 5 | `pdf_only_tab_measure_overcapacity` | 0 | 0 |
 
-Across the seven sources in pdf-only mode, 105 of 275 source bars assemble, and 170 are refused
-under 2 codes. The user is told about one of them.
+Across the seven sources in pdf-only mode, 105 of the 275 replayed bars assemble, and 170 are
+refused under 2 codes. The user is told about one of them. The layout inventory has 277 source
+bars: 2 more that the builder never reaches (§1.3a).
+
+### 1.3a Independent source-bar inventory (**Observed**)
+
+The inventory is built from layout geometry only. `evidence/facts_harness.py` (`source_inventory`)
+runs the product's own staff and barline detector (`pdf.py:4609`, `_detect_tab_systems`) on each
+source PDF, and numbers bars as extraction does: one bar per pair of adjacent barlines, or one for a
+system with fewer than two barlines, with a running index across systems and pages
+(`pdf.py:2423-2426, 5011-5021`). It uses no candidate. `evidence/coverage_check.py` then compares
+the inventory with the bars that hold located candidates and the bars that hold playable ones. Its
+self-test fails a candidate-only bar and an empty bar, and shows that an inventory taken from the
+replayed bars passes both (the weak oracle this replaces).
+
+| Source | Layout source bars | Replayed (≥1 playable) | Candidate-only (located non-playable items only) | Empty (no located candidate) | Unlocated candidates (by kind) | Conservation today |
+|---|---|---|---|---|---|---|
+| L3 | 66 | 66 | 0 | 0 | candidate-text 31, technique-text 4 | holds |
+| L4 | 77 | 77 | 0 | 0 | candidate-text 43, technique-text 9 | holds |
+| L5 | 35 | 35 | 0 | 0 | candidate-text 99, technique-text 9 | holds |
+| L6 | 21 | 21 | 0 | 0 | candidate-text 836, technique-text 13 | holds |
+| L7 | 50 | 50 | 0 | 0 | candidate-text 21, technique-text 6 | holds |
+| EX2 | 17 | 16 | 1 (candidate-text 3) | 0 | candidate-text 8, chord-symbol 2, technique-text 2 | **fails**: 1 bar unaccounted |
+| CFMWH | 11 | 10 | 0 | 1 | candidate-text 5, chord-symbol 30, technique-text 22 | **fails**: 1 bar unaccounted |
+| Total | 277 | 275 | 1 | 1 | 1140 | 2 bars unaccounted |
+
+No source has a system with fewer than two barlines, so the edge-boundary inference in
+`pdf.py:868-905`, which uses playable x positions, did not change any inventory. The PDF-only
+builder keys output bars only from playable candidates (`build_ir.py:1735-1736`). So the EX2
+candidate-only bar and the CFMWH empty bar get no output bar and no record, and every later
+output bar index shifts by one (gap **G21**, row X10). Whether the CFMWH slot is a musical bar
+(for example a whole-bar rest) or a layout artefact is **Unverified**; either way nothing
+accounts for it. Unlocated candidates are not bar-level. The candidate conservation rule in 04
+§4.5 covers them.
 
 ## 1.4 Degradations in delivered output
 
@@ -132,6 +167,7 @@ is code plus the public `PUB` runs.
 | X6 | MusicXML → ScoreIR | `build_ir.py:1565, 2242, 2257, 3799` | Extra parts, grace notes without host, zero-duration notes, unattached harmony | `musicxml-extra-parts-ignored`, `musicxml-grace-skipped`, `musicxml-zero-duration-skipped`, `musicxml-harmony-unattached` | Warning | Code | Labelled |
 | X7 | MusicXML path | `build_ir.py:2703` | Tab candidates not matched | `tab-candidate-unused` | Warning | Code | Labelled |
 | X8 | Unboxed systems | `build_ir.py:1377-1405` | Systems skipped when `--allow-skip-unboxed-systems` | `pdf_unboxed_system_skipped` | Warning | Code | Labelled, opt-in |
+| X10 | PDF-only build | `build_ir.py:1735-1736` keys output bars from playable candidates only | Source bars with no playable candidate, whether candidate-only or empty, get no output bar; later output bars shift | None | No | Observed via the layout inventory (§1.3a): EX2 1 (candidate-only), CFMWH 1 (empty) | **G21** |
 | X9 | Warning filter | `cli.py:994-1031` | With `--pages`, every page-less `pdf_*`/`ascii_*` warning is removed from `warnings.json` | None | No | Observed (L5, `--pages` probe): all 16 page-less occurrences (5 codes) removed | **G20** document-level warnings silently dropped |
 
 ## 1.6 Candidate-level evidence that never reaches a user surface (**Observed**)
@@ -187,6 +223,7 @@ nor the location reaches a user surface.
 | G18 | MusicXML `direction` content and other barline styles ignored | drop silent | Code |
 | G19 | MusicXML articulations, fermata, glissando, arpeggiate, most ornaments ignored | drop silent | Code |
 | G20 | `--pages` removes document-level warnings | record lost | Observed |
+| G21 | PDF-only build drops source bars with no playable candidate; output bar numbers shift | drop silent | Observed (layout inventory, §1.3a) |
 
 Not claimed: this map covers the `convert` and `generate-sidecar` routes and the modules they
 call. The standalone notation export commands (`cli.py:743-835, 1409-1497`), `batch`, `omr`
