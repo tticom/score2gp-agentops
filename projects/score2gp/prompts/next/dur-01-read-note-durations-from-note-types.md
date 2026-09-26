@@ -25,7 +25,7 @@ Every note and rest carries its own duration, and that duration is written in it
 - Each augmentation dot adds half of the previous value: one dot gives 1.5×, two dots 1.75×.
 - A tie joins two written values into one sounding note. Record the tie; do not merge the values.
 
-**Rests** have their own symbol for each value (whole, half, quarter, eighth, sixteenth, thirty-second), and take dots the same way.
+**Rests** have their own symbol for each value (whole, half, quarter, eighth, sixteenth, thirty-second, sixty-fourth), and take dots the same way.
 
 **Grouping:**
 - A beam group relates notes within a beat. The number of beam lines meeting each stem gives that note's value, so a group can mix values: for example an eighth beamed to two sixteenths, or a partial beam.
@@ -35,7 +35,11 @@ Every note and rest carries its own duration, and that duration is written in it
 
 ## Current state (product `3af1925`)
 
-- The conversion route still guesses. `select_pdf_tab_grid_spacing_and_duration_name` gives every event in a bar one duration chosen from the event count, and the remainder is padded with rests. DUR-02 deletes this. DUR-01 must not use it or anything like it.
+- The conversion route still guesses wherever per-note evidence is missing. DUR-02 deletes every fallback below; DUR-01 must not use any of them, or anything like them.
+  - `determine_pdf_tab_event_duration` (`pdf_tab_event_factory.py`) first takes a recognised rest or `visual_morphology` duration evidence for the event.
+  - Only when that is absent does it fall back to `select_pdf_tab_grid_spacing_and_duration_name`, which picks one duration for the bar from the event count.
+  - `pdf_tab_duration_associator.py` separately emits a 960-tick quarter, `equal_spacing_fallback`, for unstemmed events that have no visual candidates.
+  - The remainder of the bar is padded with rests.
 - `notation_omr/` holds partial evidence: whole, half and quarter notehead candidates, flag and beam candidates, `compose_filled_duration_candidates`, tuplet markers and a timeline preview.
 - Its flag reading is itself a count. It picks 1, 2 or 3 flags from the **number of drawing segments** near the stem, with thresholds 25, 45 and 65. It does not identify flag shapes. There are no dots, no eighth or shorter rests, and no working tuplet or tie handling.
 - `generate-sidecar` crashes on all seven real sources (RES-REQ-0005, gap G5).
@@ -68,7 +72,7 @@ When the symbols are ambiguous, the event is recorded as **unread**, with a loca
    - dotted and double-dotted notes;
    - an eighth beamed to two sixteenths, and a partial beam;
    - a triplet;
-   - each rest type;
+   - each rest type, whole through sixty-fourth;
    - a tie across a barline.
 4. **Real-source accuracy.** Read `Lesson-3.pdf` and compare per event with `Lesson-3.gp`, using the independent oracle reader rather than the product's own model.
    - Every event of the first system is read, and equals the ground truth.

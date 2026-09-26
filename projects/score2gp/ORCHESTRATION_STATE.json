@@ -32,7 +32,7 @@
     "acceptance": [
       "Every duration record is derived from symbols: notehead kind and stem give the base value; a flag count is a count of identified flag glyphs, never of drawing segments; a beam count is the number of distinct beam lines meeting that stem; dots, rest glyphs, tuplets and ties are read; each field cites its source symbols.",
       "No duration comes from event counts, note spacing, a default or the bar total; the bar total against the time signature is a reported check only; an ambiguous event is recorded as unread with a located reason.",
-      "Committed, generated public PDF fixtures read 100% correctly: a bar mixing a half note and eight thirty-second notes; dotted and double-dotted notes; an eighth beamed to two sixteenths and a partial beam; a triplet; each rest type; a tie across a barline.",
+      "Committed, generated public PDF fixtures read 100% correctly: a bar mixing a half note and eight thirty-second notes; dotted and double-dotted notes; an eighth beamed to two sixteenths and a partial beam; a triplet; each rest type, whole through sixty-fourth; a tie across a barline.",
       "Lesson-3.pdf compared per event with Lesson-3.gp through the independent oracle reader: every event of the first system read and equal to ground truth; whole-document coverage, match rate and every mismatch or unread event reported by page, bar and event index with its cause; committed reports hold counts, indices and codes only.",
       "Mutation checks fail the tests: flag-glyph identification replaced by a segment count; dots ignored; tuplets ignored; values derived from the number of events in a group.",
       "python -m pytest, export-schema (no unintended schema diff), validate-ir, scripts/artifact_audit.py and git diff --check pass."
@@ -57,7 +57,7 @@
   "next_task_proposal": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
-    "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based duration choice, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
+    "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -83,10 +83,17 @@
       "docs/design/pdf-tab-duration-candidate-extraction.md",
       "docs/musicxml-tabraw-build-ir.md",
       "docs/architecture.md",
-      "schemas/**"
+      "schemas/**",
+      "src/score2gp/pdf_tab_duration_associator.py",
+      "src/score2gp/pdf_tab_duration_types.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_geometry_candidate_extraction.py",
+      "tests/test_pdf_tab_duration_associator.py",
+      "tests/test_tabraw_duration_metadata.py"
     ],
     "acceptance": [
-      "select_pdf_tab_grid_spacing_and_duration_name, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total.",
+      "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
       "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
       "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
       "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
