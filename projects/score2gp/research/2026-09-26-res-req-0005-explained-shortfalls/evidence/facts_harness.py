@@ -88,7 +88,7 @@ def simulate(tabraw_path: Path, draft: bool) -> dict:
     fret = [c for c in tab.candidates if (c.parsed_fret is not None and c.kind == "fret") or c.raw_text == "quarter_rest"]
     keys = sorted({bar_key(c) for c in fret})
     per = collections.Counter()
-    ok = ok_low = synth = notes_ok = notes_ref = 0
+    ok = ok_low = synth = clean = notes_ok = notes_ref = 0
     first_failure = None
     for i, k in enumerate(keys, 1):
         bf = [c for c in fret if bar_key(c) == k]
@@ -110,14 +110,16 @@ def simulate(tabraw_path: Path, draft: bool) -> dict:
             continue
         ok += 1
         notes_ok += len(bf)
-        if any(set((c.raw or {}).get("assignment_warnings") or []) - SAFE for c in bf):
-            ok_low += 1
-        if any(ev.is_rest and not ev.provenance for ev in bar.events):
-            synth += 1
+        low = any(set((c.raw or {}).get("assignment_warnings") or []) - SAFE for c in bf)
+        syn = any(ev.is_rest and not ev.provenance for ev in bar.events)
+        ok_low += low
+        synth += syn
+        clean += not (low or syn)
     return {"source_bars": len(keys), "bars_assembled": ok, "bars_refused_by_code": dict(per),
             "first_failure_code": first_failure,
             "bars_assembled_containing_low_confidence_candidates": ok_low,
             "bars_assembled_with_synthesised_rests": synth,
+            "bars_assembled_clean": clean,
             "fret_candidates_in_assembled_bars": notes_ok, "fret_candidates_in_refused_bars": notes_ref,
             "global_layout_gate_codes": dict(gate)}
 

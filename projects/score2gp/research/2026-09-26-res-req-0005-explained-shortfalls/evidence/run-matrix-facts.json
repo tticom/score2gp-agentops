@@ -213,6 +213,7 @@
   },
   "sim_draft": {
    "bars_assembled": 0,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 0,
    "bars_assembled_with_synthesised_rests": 0,
    "bars_refused_by_code": {
@@ -227,6 +228,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 5,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 5,
    "bars_assembled_with_synthesised_rests": 5,
    "bars_refused_by_code": {
@@ -541,6 +543,7 @@
   },
   "sim_draft": {
    "bars_assembled": 7,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 7,
    "bars_assembled_with_synthesised_rests": 7,
    "bars_refused_by_code": {
@@ -557,6 +560,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 14,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 14,
    "bars_assembled_with_synthesised_rests": 14,
    "bars_refused_by_code": {
@@ -815,6 +819,7 @@
   },
   "sim_draft": {
    "bars_assembled": 15,
+   "bars_assembled_clean": 4,
    "bars_assembled_containing_low_confidence_candidates": 0,
    "bars_assembled_with_synthesised_rests": 11,
    "bars_refused_by_code": {
@@ -829,6 +834,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 24,
+   "bars_assembled_clean": 10,
    "bars_assembled_containing_low_confidence_candidates": 3,
    "bars_assembled_with_synthesised_rests": 11,
    "bars_refused_by_code": {
@@ -1095,6 +1101,7 @@
   },
   "sim_draft": {
    "bars_assembled": 13,
+   "bars_assembled_clean": 3,
    "bars_assembled_containing_low_confidence_candidates": 1,
    "bars_assembled_with_synthesised_rests": 10,
    "bars_refused_by_code": {
@@ -1109,6 +1116,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 25,
+   "bars_assembled_clean": 7,
    "bars_assembled_containing_low_confidence_candidates": 9,
    "bars_assembled_with_synthesised_rests": 11,
    "bars_refused_by_code": {
@@ -1379,6 +1387,7 @@
   },
   "sim_draft": {
    "bars_assembled": 0,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 0,
    "bars_assembled_with_synthesised_rests": 0,
    "bars_refused_by_code": {
@@ -1393,6 +1402,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 18,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 18,
    "bars_assembled_with_synthesised_rests": 12,
    "bars_refused_by_code": {
@@ -1657,6 +1667,7 @@
   },
   "sim_draft": {
    "bars_assembled": 0,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 0,
    "bars_assembled_with_synthesised_rests": 0,
    "bars_refused_by_code": {
@@ -1671,6 +1682,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 6,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 6,
    "bars_assembled_with_synthesised_rests": 6,
    "bars_refused_by_code": {
@@ -1933,6 +1945,7 @@
   },
   "sim_draft": {
    "bars_assembled": 4,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 1,
    "bars_assembled_with_synthesised_rests": 3,
    "bars_refused_by_code": {
@@ -1947,6 +1960,7 @@
   },
   "sim_pdfonly": {
    "bars_assembled": 13,
+   "bars_assembled_clean": 0,
    "bars_assembled_containing_low_confidence_candidates": 10,
    "bars_assembled_with_synthesised_rests": 9,
    "bars_refused_by_code": {
