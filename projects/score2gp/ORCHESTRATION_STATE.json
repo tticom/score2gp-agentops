@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 51,
+  "authority_revision": 52,
   "task": {
-    "id": "PLAN-01",
-    "title": "Single coherent backlog, with research tasks per requirement",
-    "objective": "Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every planned item from every current planning source absorbed or dispositioned, every requirement traced to items, a dispatchable research task per requirement below ACCEPTED, and the superseded backlog sources removed.",
+    "id": "GOV-03",
+    "title": "Active-task PR discovery and fail-closed binding",
+    "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
@@ -13,122 +13,39 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/plan-01-single-coherent-backlog",
-    "prompt": "projects/score2gp/prompts/next/plan-01-single-coherent-backlog.md",
+    "branch": "feat/gov-03-active-task-pr-discovery",
+    "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
     "allowed_paths": [
-      "projects/score2gp/ORCHESTRATION_STATE.json",
-      "projects/score2gp/ACTIVE_TASK.md",
-      "projects/score2gp/PLANNING_DATA.md",
-      "projects/score2gp/tasks/**",
-      "projects/score2gp/programmes/**",
-      "plan/**",
-      ".agy/**",
-      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
-      "README.md",
-      "projects/score2gp/README.md",
-      "projects/score2gp/requirements/**",
-      "projects/score2gp/prompts/next/res-*.md",
+      "scripts/score2gp_go_bootstrap.py",
+      "scripts/score2gp_got_bootstrap.py",
       "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_orchestrator.py",
+      "scripts/score2gp_governance_audit.py",
       "tests/test_score2gp_orca_control.py",
-      "tests/test_score2gp_orchestrator.py",
-      "scripts/agy_cycle.py",
-      "scripts/agy_spec_job.py",
-      "docs/agy-cycle.md",
-      "docs/agy-cycle-roadmap.md",
-      "docs/agy-cycle-v2-plan.md",
-      "docs/spec-job-orca.md",
-      "requirements-agy-cycle.txt",
-      "tests/test_agy_cycle.py",
-      "tests/test_agy_spec_job.py",
-      "projects/score2gp/plans/**",
-      "projects/score2gp/AGENT_CONTROL.md",
-      "projects/score2gp/ORCA_WORKFLOW.md",
-      "projects/score2gp/skills/**",
-      "skills/**",
-      "projects/prompts/**",
-      ".agents/agents/project-director/agent.json",
-      "AGENT-RULES.md",
-      ".agents/skills/**",
-      "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
-      "projects/score2gp/prompts/*.md",
-      "docs/**",
-      "tests/test_governance_audit.py",
-      "tests/test_single_backlog.py",
-      "projects/score2gp/prompts/next/agy-*.md",
-      ".github/workflows/governance-control-plane.yml"
+      "tests/test_score2gp_dispatch.py",
+      "tests/test_governance_audit.py"
     ],
     "acceptance": [
-      "ORCHESTRATION_STATE.json holds every planned item as a proposal or a backlog item; a test validates the backlog schema, rejects duplicate IDs, unknown dependencies and cycles, and computes the ready frontier.",
-      "Every requirement below VERIFIED is referenced by at least one item, and every requirement below ACCEPTED has a RES- research task with a prompt file; a test enforces both.",
-      "The PR includes a supersession table giving every item of every current planning source a disposition: absorbed, superseded, done or dropped.",
-      "No live file directs work into, or claims to be, a backlog or queue other than ORCHESTRATION_STATE.json and its generated view; a test runs the search oracle and fails on any match outside five literal exemption classes, each with a reason: (a) dated record directories projects/score2gp/{runs,reviews,research,reports,decisions,handoffs,archive,audits}/**; (b) prompts of completed_tasks and numbered legacy prompts prompts/next/[0-9][0-9][0-9][0-9]-*.md; (c) docs/cycle-preparation-history/**; (d) by name, the PLAN-01 and GOV-03 prompts; (e) by name, ORCHESTRATION_STATE.json, ACTIVE_TASK.md and the oracle test file.",
-      "TASK_RECORDING_CONVENTION.md and the governance README describe one method with no contradictory rules.",
-      "Dispatcher resolution for the current task is unchanged (characterization test).",
+      "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
+      "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
+      "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
+      "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
+      "Disabling discovery makes the replay test fail.",
       "python -m pytest and the governance audit pass; git diff --check is clean."
     ],
     "validation_commands": [
       "python -m pytest",
       "python scripts/score2gp_governance_audit.py",
-      "python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json",
       "git diff --check"
     ],
-    "dependencies": [
-      "tticom/score2gp-agentops#695"
-    ],
+    "dependencies": [],
     "stop_conditions": [
-      "source_item_unaccounted",
-      "dispatcher_behaviour_changed_for_current_task",
-      "product_edit_required",
-      "repository_deletion_required",
-      "requirement_without_backlog_item"
+      "merge_gate_weakened",
+      "role_boundary_changed",
+      "product_edit_required"
     ]
   },
   "next_task_proposal": null,
-  "queued_task_proposals": [
-    {
-      "id": "GOV-03",
-      "title": "Active-task PR discovery and fail-closed binding",
-      "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/gov-03-active-task-pr-discovery",
-      "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
-      "allowed_paths": [
-        "scripts/score2gp_go_bootstrap.py",
-        "scripts/score2gp_got_bootstrap.py",
-        "scripts/score2gp_orca_control.py",
-        "scripts/score2gp_governance_audit.py",
-        "tests/test_score2gp_orca_control.py",
-        "tests/test_score2gp_dispatch.py",
-        "tests/test_governance_audit.py"
-      ],
-      "acceptance": [
-        "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
-        "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
-        "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
-        "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
-        "Disabling discovery makes the replay test fail.",
-        "python -m pytest and the governance audit pass; git diff --check is clean."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python scripts/score2gp_governance_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "merge_gate_weakened",
-        "role_boundary_changed",
-        "product_edit_required"
-      ]
-    }
-  ],
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -1260,6 +1177,92 @@
       "merge_commit": "1143a05bf5328df7de81c001b0db29c746021133",
       "reconciled": true,
       "reconciled_at": "2026-09-25T18:25:25.156271+00:00"
+    },
+    {
+      "id": "PLAN-01",
+      "title": "Single coherent backlog, with research tasks per requirement",
+      "objective": "Make ORCHESTRATION_STATE.json the single, machine-validated backlog: every planned item from every current planning source absorbed or dispositioned, every requirement traced to items, a dispatchable research task per requirement below ACCEPTED, and the superseded backlog sources removed.",
+      "status": "MERGED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "branch": "feat/plan-01-single-coherent-backlog",
+      "pull_request": 700,
+      "owner_role": "implementation",
+      "prompt": "projects/score2gp/prompts/next/plan-01-single-coherent-backlog.md",
+      "allowed_paths": [
+        "projects/score2gp/ORCHESTRATION_STATE.json",
+        "projects/score2gp/ACTIVE_TASK.md",
+        "projects/score2gp/PLANNING_DATA.md",
+        "projects/score2gp/tasks/**",
+        "projects/score2gp/programmes/**",
+        "plan/**",
+        ".agy/**",
+        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+        "README.md",
+        "projects/score2gp/README.md",
+        "projects/score2gp/requirements/**",
+        "projects/score2gp/prompts/next/res-*.md",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_orchestrator.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_orchestrator.py",
+        "scripts/agy_cycle.py",
+        "scripts/agy_spec_job.py",
+        "docs/agy-cycle.md",
+        "docs/agy-cycle-roadmap.md",
+        "docs/agy-cycle-v2-plan.md",
+        "docs/spec-job-orca.md",
+        "requirements-agy-cycle.txt",
+        "tests/test_agy_cycle.py",
+        "tests/test_agy_spec_job.py",
+        "projects/score2gp/plans/**",
+        "projects/score2gp/AGENT_CONTROL.md",
+        "projects/score2gp/ORCA_WORKFLOW.md",
+        "projects/score2gp/skills/**",
+        "skills/**",
+        "projects/prompts/**",
+        ".agents/agents/project-director/agent.json",
+        "AGENT-RULES.md",
+        ".agents/skills/**",
+        "projects/score2gp/WORKFLOW_SKILLS_PROFILE.md",
+        "projects/score2gp/prompts/*.md",
+        "docs/**",
+        "tests/test_governance_audit.py",
+        "tests/test_single_backlog.py",
+        "projects/score2gp/prompts/next/agy-*.md",
+        ".github/workflows/governance-control-plane.yml"
+      ],
+      "acceptance": [
+        "ORCHESTRATION_STATE.json holds every planned item as a proposal or a backlog item; a test validates the backlog schema, rejects duplicate IDs, unknown dependencies and cycles, and computes the ready frontier.",
+        "Every requirement below VERIFIED is referenced by at least one item, and every requirement below ACCEPTED has a RES- research task with a prompt file; a test enforces both.",
+        "The PR includes a supersession table giving every item of every current planning source a disposition: absorbed, superseded, done or dropped.",
+        "No live file directs work into, or claims to be, a backlog or queue other than ORCHESTRATION_STATE.json and its generated view; a test runs the search oracle and fails on any match outside five literal exemption classes, each with a reason: (a) dated record directories projects/score2gp/{runs,reviews,research,reports,decisions,handoffs,archive,audits}/**; (b) prompts of completed_tasks and numbered legacy prompts prompts/next/[0-9][0-9][0-9][0-9]-*.md; (c) docs/cycle-preparation-history/**; (d) by name, the PLAN-01 and GOV-03 prompts; (e) by name, ORCHESTRATION_STATE.json, ACTIVE_TASK.md and the oracle test file.",
+        "TASK_RECORDING_CONVENTION.md and the governance README describe one method with no contradictory rules.",
+        "Dispatcher resolution for the current task is unchanged (characterization test).",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "python scripts/score2gp_dispatch.py --product ../score2gp --agentops . --json",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "tticom/score2gp-agentops#695"
+      ],
+      "stop_conditions": [
+        "source_item_unaccounted",
+        "dispatcher_behaviour_changed_for_current_task",
+        "product_edit_required",
+        "repository_deletion_required",
+        "requirement_without_backlog_item"
+      ],
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "head_sha": "83fd82883262b8cea61859e1f03b96f2fd1de676",
+      "merge_commit": "be5da52a6c388e26d6ccfe5f5bc0946fafe9ea37",
+      "reconciled": true,
+      "reconciled_at": "2026-09-26T06:24:10.390278+00:00"
     }
   ],
   "backlog": [
@@ -2710,6 +2713,47 @@
       "priority": 115,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
+    },
+    {
+      "id": "CP-10",
+      "title": "Decode gh output as UTF-8 in the control plane: run_json/capture_live_state in scripts/score2gp_orca_control.py use the locale codec and crash with cp1252 UnicodeDecodeError on Windows",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [],
+      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1."
+    },
+    {
+      "id": "CP-11",
+      "title": "Review launcher falls back to the Claude reviewer engine on any Codex failure that publishes nothing, not only on usage limits",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 6,
+      "depends_on": [
+        "CP-08"
+      ],
+      "notes": "Reported 2026-09-26: a Codex 401 authentication failure published no review and did not trigger the usage-limit fallback. Decide the fallback on the publication outcome (no formal review at the exact head from the reviewer after the Codex run), not on error text. The launcher is not yet versioned in this repository; CP-08 versions it."
+    },
+    {
+      "id": "CP-12",
+      "title": "Remove the stale promotion rule in projects/score2gp/plans/2026-07-26-cr04d-pdf-tab-measure-assembly-refactor-sequence.md: it says prompts/NEXT.md selects executable work, contradicting the single task authority",
+      "requirements": [
+        "control-plane:records"
+      ],
+      "kind": "governance",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 23,
+      "depends_on": [],
+      "notes": "Found 2026-09-26 after PLAN-01 merged (the 'Promotion Rule' section, line 42). tests/test_single_backlog.py did not flag it because the line uses no planning-container word; the fix should also close that oracle gap or record why it is out of scope."
     }
   ],
   "registered_requirements": [
