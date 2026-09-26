@@ -185,16 +185,41 @@ def test_every_requirement_below_verified_is_delivered_by_at_least_one_item() ->
     assert [r for r in open_reqs if r not in cited] == []
 
 
+def research_prompt(a: dict, req: str) -> str | None:
+    """The prompt of RES-<req>, whether it is still a backlog item or has been promoted to a task."""
+    rid = f"RES-{req}"
+    for item in a["backlog"]:
+        if item["id"] == rid and item["kind"] == "research":
+            match = re.search(r"prompts/next/res-[\w.-]+\.md", item["notes"])
+            return match.group(0) if match else None
+    promoted = [a.get("task"), a.get("next_task_proposal"), *a.get("queued_task_proposals", []), *a.get("completed_tasks", [])]
+    for task in promoted:
+        if isinstance(task, dict) and task.get("id") == rid:
+            match = re.search(r"prompts/next/res-[\w.-]+\.md$", str(task.get("prompt", "")))
+            return match.group(0) if match else None
+    return None
+
+
 def test_every_requirement_below_accepted_has_a_research_task_with_a_prompt() -> None:
     a = authority()
-    by_id = {i["id"]: i for i in a["backlog"]}
     for req, status in register().items():
         if REQUIREMENT_ORDER.index(status) >= REQUIREMENT_ORDER.index("ACCEPTED"):
             continue
-        research = by_id.get(f"RES-{req}")
-        assert research and research["kind"] == "research", f"{req} ({status}) needs RES-{req}"
-        prompt = re.search(r"prompts/next/res-[\w.-]+\.md", research["notes"])
-        assert prompt and (ROOT / "projects/score2gp" / prompt.group(0)).is_file(), f"RES-{req} needs a prompt file"
+        prompt = research_prompt(a, req)
+        assert prompt, f"{req} ({status}) needs RES-{req} with a prompt"
+        assert (ROOT / "projects/score2gp" / prompt).is_file(), f"RES-{req} needs a prompt file"
+
+
+def test_a_promoted_research_task_still_counts_and_a_missing_one_is_detected() -> None:
+    a = authority()
+    item = {"id": "RES-REQ-0009", "title": "t", "requirements": ["REQ-0009"], "kind": "research", "repository": "o/r",
+            "status": "READY", "priority": 1, "depends_on": [], "notes": "Prompt: prompts/next/res-req-0009-x.md."}
+    a["backlog"].append(item)
+    assert research_prompt(a, "REQ-0009") == "prompts/next/res-req-0009-x.md"
+    a["backlog"].remove(item)
+    assert research_prompt(a, "REQ-0009") is None
+    a["queued_task_proposals"] = [{"id": "RES-REQ-0009", "prompt": "projects/score2gp/prompts/next/res-req-0009-x.md"}]
+    assert research_prompt(a, "REQ-0009") == "prompts/next/res-req-0009-x.md"
 
 
 def test_negative_control_a_requirement_without_items_is_detected() -> None:
