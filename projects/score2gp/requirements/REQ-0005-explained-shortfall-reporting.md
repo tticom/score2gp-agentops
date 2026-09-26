@@ -49,7 +49,7 @@ code stands for up to 52 failing bars in a source, alongside up to 25 bars that 
 own per-bar checks. At most 10 of those are free of candidate-level doubt and synthesised rests, and
 all of them have inferred rhythm. The
 [current-state map](../research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md#18-silent-gaps-named)
-names 21 silent gaps (G1-G21). Three of them already contradict existing fail-closed rules:
+names 22 silent gaps (G1-G22). Three of them already contradict existing fail-closed rules:
 inferred rhythm reported as `success` (G7), synthesised rests at confidence 1.0 (G8), and
 `generate-sidecar` crashing without a code (G5).
 
@@ -63,14 +63,14 @@ those runs may be committed.
 2. **A2 — Located.** Every record whose engine code is bar-level or finer has a source-frame location (page, system, source bar) at bar precision or finer. A test fails any bar-level code recorded at document precision (G2, G3). With `--pages`, document-level records are kept (G20).
 3. **A3 — Reasoned.** Every record has a registered engine code, family and user reason. A fault-injection test raising an unexpected exception in `convert` and in `generate-sidecar` yields a record with an `internal_error` family and the stage name, not a bare traceback (G5, G6). GP-writer omissions use per-reason target codes (G10).
 4. **A4 — Honest status.** `status: success` and exit 0 only when there are no records other than `defaulted` records with policy provenance. `approximated`, `synthesised`, `omitted` and `refused_region` records make the status `partial` with a non-zero exit (G7). No delivered event has confidence 1.0 with empty provenance unless a `synthesised` record covers it (G8). `summary_counts` in the JSON report match the extraction (E1).
-5. **A5 — Best effort, independently checked.** On a public fixture with known failing bars, and locally on at least one corpus source with a reference `.gp`: `--out` is not written, `<name>.partial.gp` is written, and its bar count equals the source bar count. Each refused bar is a marked gap bar. Every delivered bar's string, fret and pitch content equals the reference, as read by an oracle that does not import `score2gp`. Approximated fields are labelled per bar in the file and in the records.
+5. **A5 — Best effort, independently checked.** On a public fixture with known failing bars, and locally on at least one corpus source with a reference `.gp`: `--out` is not written, `<name>.partial.gp` is written, and its bar count equals the source bar count. Repeat-run negative controls pass (G22, research 03 §3.3a). (a) With a complete `--out` from an earlier run, a partial or refused run either refuses at preflight with `output_exists` and leaves the old file untouched (no `--overwrite`), or leaves no file at `--out` (with `--overwrite`). (b) A stale `<name>.partial.gp` is gone after a complete run. (c) An injected crash leaves the JSON report `running` or `failed`, never an earlier `success`. (d) No artifact in the run's work directory predates the run. The report records the `run_id` and the SHA-256 of every artifact written. Each refused bar is a marked gap bar. Every delivered bar's string, fret and pitch content equals the reference, as read by an oracle that does not import `score2gp`. Approximated fields are labelled per bar in the file and in the records.
 6. **A6 — User report.** Every run writes a report, rendered from the records, with: headline status and bar coverage; "not converted" grouped by user reason with location and suggested action; "converted but check"; "not supported yet"; and support details. A test proves that each record appears in exactly one user-facing section, and that evidence-role codes never appear outside the details section.
 7. **A7 — Aggregate.** A rollup over the corpus ranks reasons by bars affected, then by sources affected. It is produced from sanitised aggregates only.
 8. **A8 — Private.** A validator rejects any sanitised aggregate that contains free text, coordinates, page/system/bar values, candidate ids or an unhashed input identity. The test includes a seeded adversarial record.
 
 ## Decisions for the maintainer (before `ACCEPTED`)
 
-1. **D1** Delivery option: separate partial artifact (recommended) or a mode switch writing the partial GP to `--out`.
+1. **D1** Delivery option: separate partial artifact (recommended) or a mode switch writing the partial GP to `--out`; and repeat-run behaviour (recommended: refuse on an existing output unless `--overwrite`, with the run-bound output contract).
 2. **D2** Whether PDF-only and editable-draft runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change; recommended yes).
 3. **D3** How a gap bar is represented in Guitar Pro, and who verifies in the pinned Guitar Pro version that it is not repaired into a rest (unverified today).
 4. **D4** Whether a labelled omission of an unsupported feature (lyrics, text, dynamics) blocks `success` (recommended: yes, with an allowlist the maintainer can grant).

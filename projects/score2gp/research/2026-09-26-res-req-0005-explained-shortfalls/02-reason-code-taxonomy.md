@@ -167,6 +167,7 @@ proposals.
 | G19 | `musicxml_notation_not_converted` (subtype: articulation, fermata, glissando, arpeggiate, ornament) | unsupported_feature | feature-not-supported | omitted |
 | G20 | (no new code) the `--pages` filter must keep document-level records | — | — | — |
 | G21 | `pdf_only_tab_source_bar_without_playable_candidate`, with the located non-playable candidates as evidence | missing_observation | bar-content-not-found | refused_region |
+| G22 | `output_exists` (preflight refusal without `--overwrite`; 03 §3.3a) | invalid_input | input-invalid | refused_document |
 
 ## 2.5 How the existing cause taxonomy fits
 

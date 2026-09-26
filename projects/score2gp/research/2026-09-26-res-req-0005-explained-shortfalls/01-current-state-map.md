@@ -195,6 +195,7 @@ is code plus the public `PUB` runs.
 | E5 | `docs/scoreir-to-gpif-coverage.md` vs `gpif.py:8, 738-753, 1296-1331, 2345-2371` | The doc says the writer warns for tuplets, grace timing, MIDI program/channel, bend, let-ring, palm-mute and grace. The code warns for none of these: the last four are in `SUPPORTED_MINIMAL_TECHNIQUES`, and tuplets and MIDI are written. Whether bend points are written in full is **Unverified** | Code |
 | E6 | `docs/diagnostics_failure_taxonomy.md` | Covers only raster treble-clef classifier false negatives. It is not the stage/refusal code catalogue that REQ-0005 assumes. No such catalogue exists: 190 distinct `code=`/`category=` literals are spread across modules (165 snake_case, 25 kebab-case) | Code (regex count over `src/score2gp/**/*.py`) |
 | E7 | `build_ir.py:1779` | The `pdf_only_tab_inferred_timing` message says durations are "inferred from PDF horizontal layout positioning". The duration selector takes only the event count (D1), so the one explanation the user gets is wrong | Code; selector boundary probe at the pinned SHA: N = 1, 8 → eighth; 9, 16 → 16th; 17, 32 → 32nd; 33, 64 → 64th; draft → quarter |
+| E8 | `cli.py:1296-1309` (move to `--out` only on success); no refusal or failure path removes or marks an existing `--out`; the work directory is never cleared | A refused or failed rerun leaves an earlier run's `--out` unchanged, and earlier intermediates (`score.ir.json`) beside the new run's `tab_raw.json`. File presence at `--out` does not mean this run succeeded | Observed: 03 §3.3a runs S1-S3 (same SHA-256 and mtime after a refused rerun) |
 
 ## 1.8 Silent gaps, named
 
@@ -224,6 +225,7 @@ nor the location reaches a user surface.
 | G19 | MusicXML articulations, fermata, glissando, arpeggiate, most ornaments ignored | drop silent | Code |
 | G20 | `--pages` removes document-level warnings | record lost | Observed |
 | G21 | PDF-only build drops source bars with no playable candidate; output bar numbers shift | drop silent | Observed (layout inventory, §1.3a) |
+| G22 | A failed rerun leaves an earlier run's `--out` and intermediates in place, unmarked (E8) | stale result | Observed (03 §3.3a) |
 
 Not claimed: this map covers the `convert` and `generate-sidecar` routes and the modules they
 call. The standalone notation export commands (`cli.py:743-835, 1409-1497`), `batch`, `omr`

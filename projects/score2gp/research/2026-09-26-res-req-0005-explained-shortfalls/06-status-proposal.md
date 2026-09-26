@@ -13,8 +13,9 @@ Grounds:
   [REQ-0005](../../requirements/REQ-0005-explained-shortfall-reporting.md#acceptance), each with
   the test that decides it (§6.3).
 - The requirement is feasible without weakening the fail-closed rules. Option B in 03 meets all
-  eight rules, with one condition (the GP gap-bar representation, decision D3).
-- The research found 21 silent gaps (map §1.8). Several of them already break existing fail-closed
+  eight rules, with two conditions: the run-bound output contract for repeat runs (03 §3.3a) and
+  the GP gap-bar representation (decision D3).
+- The research found 22 silent gaps (map §1.8). Several of them already break existing fail-closed
   rules in shipped code, independent of REQ-0005: G7 (inferred rhythm reported as `success`), G8
   (synthesised rests at confidence 1.0) and G5 (sidecar crash without a code). That raises the
   requirement's value. It does not decide its priority.
@@ -39,7 +40,7 @@ evidence motivated it.
 | A2 Every record is located in the source frame | G2, G3, G20 | Map R5, R6, X9 |
 | A3 Every record has a registered reason; no uncoded failure | G5, G6, G10, E6 | 190 unregistered literals; the `generate-sidecar` traceback on 7/7 sources |
 | A4 Status honesty | G7, G8, E1, E2 | `PUB` success with inferred rhythm; `total_candidates` 0 on 21/21 runs; `--strict` no-op |
-| A5 Best-effort output, checked by an independent oracle | G4, G7, G8, G21 | Replay: 105 of 275 replayed bars assemble, 17 clean; layout inventory 277 |
+| A5 Best-effort output, checked by an independent oracle | G4, G7, G8, G21, G22 | Replay: 105 of 275 replayed bars assemble, 17 clean; layout inventory 277 |
 | A6 User report | E3, E4 | The refusal is 1 of 54-225 HTML items; no location, severity or action shown |
 | A7 Corpus aggregate ranks reasons | — | Aggregate preview (04 §4.6) |
 | A8 Privacy | — | Evidence validator used in this research |
@@ -51,7 +52,7 @@ recommendation.
 
 | # | Decision | Recommendation |
 |---|---|---|
-| D1 | Best-effort delivery option: B (separate partial artifact) or A (mode switch, partial GP in `--out`) | B |
+| D1 | Best-effort delivery option: B (separate partial artifact) or A (mode switch, partial GP in `--out`), and the repeat-run behaviour: refuse on an existing output unless `--overwrite` (03 §3.3a) | B, with the run-bound output contract |
 | D2 | Whether `--pdf-only-tab` and `--editable-draft` runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change that fixes G7) | Yes; the L3 contract already forbids layout-inferred rhythm in a successful result |
 | D3 | How a gap bar is represented in GP, and who verifies it opens in Guitar Pro without being repaired into a rest (**Unverified** today) | Maintainer verifies in the pinned Guitar Pro version before delivery starts |
 | D4 | Whether a labelled omission of an unsupported feature (lyrics, text, dynamics) blocks `success` | Blocks `success` (FC2 reading), with a per-feature allowlist the maintainer can grant later |

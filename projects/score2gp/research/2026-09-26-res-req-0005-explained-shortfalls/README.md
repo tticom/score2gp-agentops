@@ -88,6 +88,10 @@ so `PUB` is the only observed success path.
 
 No corpus run wrote a GP file. See the map for what each outcome tells the user.
 
+Repeat-run probe (review follow-up): three further `convert` runs (`PUB` then L5 twice, same
+`--out`) under `<product>/work/res-req-0005/probe/stale/` test whether a failed rerun leaves an
+earlier output in place. It does ([03 §3.3a](03-best-effort-options.md#33a-repeat-runs-and-stale-outputs-applies-to-every-option)).
+
 ## Privacy
 
 Committed files hold counts, codes, stage names, file-level identifiers and code references only.
