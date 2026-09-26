@@ -1,0 +1,2195 @@
+{
+ "CFMWH": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 92,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 265,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 4,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 92,
+     "distinct_codes": 21,
+     "message_mentions_location": 77,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 76,
+      "warning": 14
+     },
+     "with_location_fields": 65
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 92,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 265,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 4,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 92,
+     "distinct_codes": 21,
+     "message_mentions_location": 76,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 76,
+      "warning": 14
+     },
+     "with_location_fields": 65
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 92,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 4,
+      "missing_musicxml": 1,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 92,
+     "distinct_codes": 21,
+     "message_mentions_location": 76,
+     "severity": {
+      "<none>": 1,
+      "info": 76,
+      "warning": 15
+     },
+     "with_location_fields": 65
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 92,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 265,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 4,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 92,
+     "distinct_codes": 21,
+     "message_mentions_location": 76,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 76,
+      "warning": 14
+     },
+     "with_location_fields": 65
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 0,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 0,
+   "bars_assembled_with_synthesised_rests": 0,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 5,
+    "pdf_only_tab_measure_overcapacity": 5
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 0,
+   "fret_candidates_in_refused_bars": 266,
+   "global_layout_gate_codes": {},
+   "source_bars": 10
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 5,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 5,
+   "bars_assembled_with_synthesised_rests": 5,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 5
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 143,
+   "fret_candidates_in_refused_bars": 123,
+   "global_layout_gate_codes": {},
+   "source_bars": 10
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 1,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 10,
+   "bars_unaccounted": 1,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": false,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 11,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 5,
+    "chord-symbol": 30,
+    "technique-text": 22
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 21,
+   "candidate_level_occurrences": 959,
+   "candidate_unsafe_code_counts": {
+    "pdf_candidates_unassigned_to_string": 4,
+    "pdf_candidates_unassigned_to_system": 4,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 4,
+    "pdf_fret_digits_not_merged_gap_too_large": 6,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 12,
+    "pdf_fret_refinement_not_enough_for_build_ir": 16,
+    "pdf_notation_rhythm_missing_notehead": 171,
+    "pdf_playable_candidate_requires_string_assignment": 4,
+    "pdf_string_assignment_missing": 4
+   },
+   "candidates": 362,
+   "kinds": {
+    "candidate-text": 13,
+    "chord-symbol": 30,
+    "fret": 265,
+    "technique-text": 54
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 265,
+   "playable_with_unsafe_candidate_code": 147,
+   "structural_signal_counts": {
+    "lyrics": 0,
+    "repeats": 0,
+    "sections": 11
+   },
+   "top_level_distinct_codes": 20,
+   "top_level_warning_count": 91
+  }
+ },
+ "EX2": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [
+     "refusal_warning_code"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 4,
+    "html": {
+     "list_items": 54,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_grouping_unsafe",
+    "report_playable_candidates": 60,
+    "report_total_candidates": 0,
+    "stage": "layout-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 3,
+      "info_pdf_barline_does_not_cross_staff": 3,
+      "info_pdf_barline_inherited_too_close": 2,
+      "info_pdf_barline_outside_staff_region": 3,
+      "info_pdf_barline_outside_system_bounds": 3,
+      "info_pdf_barline_partial_staff_crossing": 2,
+      "info_pdf_barline_too_short": 3,
+      "info_pdf_barline_too_short_absolute": 1,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_box_construction_not_enough_for_build_ir": 2,
+      "pdf_bar_box_too_narrow": 2,
+      "pdf_bar_boxes_constructed": 2,
+      "pdf_barline_double_secondary": 3,
+      "pdf_boundary_candidate_blocks_full_grouping": 1,
+      "pdf_candidate_boundary_ambiguous": 1,
+      "pdf_candidate_on_bar_boundary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_grouping_unsafe": 1,
+      "pdf_partial_grouping_one_system_unboxed": 2,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "pdf_string_assignment_compact_staff_ambiguous": 1,
+      "pdf_string_assignment_confidence_below_threshold": 1,
+      "pdf_string_assignment_succeeded_upstream_grouping_still_blocks": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 54,
+     "distinct_codes": 31,
+     "message_mentions_location": 33,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 26,
+      "warning": 26
+     },
+     "with_location_fields": 25
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 54,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 60,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 3,
+      "info_pdf_barline_does_not_cross_staff": 3,
+      "info_pdf_barline_inherited_too_close": 2,
+      "info_pdf_barline_outside_staff_region": 3,
+      "info_pdf_barline_outside_system_bounds": 3,
+      "info_pdf_barline_partial_staff_crossing": 2,
+      "info_pdf_barline_too_short": 3,
+      "info_pdf_barline_too_short_absolute": 1,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_box_construction_not_enough_for_build_ir": 2,
+      "pdf_bar_box_too_narrow": 2,
+      "pdf_bar_boxes_constructed": 2,
+      "pdf_barline_double_secondary": 3,
+      "pdf_boundary_candidate_blocks_full_grouping": 1,
+      "pdf_candidate_boundary_ambiguous": 1,
+      "pdf_candidate_on_bar_boundary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_partial_grouping_one_system_unboxed": 2,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "pdf_string_assignment_compact_staff_ambiguous": 1,
+      "pdf_string_assignment_confidence_below_threshold": 1,
+      "pdf_string_assignment_succeeded_upstream_grouping_still_blocks": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 54,
+     "distinct_codes": 31,
+     "message_mentions_location": 33,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 26,
+      "warning": 26
+     },
+     "with_location_fields": 25
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 54,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 3,
+      "info_pdf_barline_does_not_cross_staff": 3,
+      "info_pdf_barline_inherited_too_close": 2,
+      "info_pdf_barline_outside_staff_region": 3,
+      "info_pdf_barline_outside_system_bounds": 3,
+      "info_pdf_barline_partial_staff_crossing": 2,
+      "info_pdf_barline_too_short": 3,
+      "info_pdf_barline_too_short_absolute": 1,
+      "missing_musicxml": 1,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_box_construction_not_enough_for_build_ir": 2,
+      "pdf_bar_box_too_narrow": 2,
+      "pdf_bar_boxes_constructed": 2,
+      "pdf_barline_double_secondary": 3,
+      "pdf_boundary_candidate_blocks_full_grouping": 1,
+      "pdf_candidate_boundary_ambiguous": 1,
+      "pdf_candidate_on_bar_boundary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_partial_grouping_one_system_unboxed": 2,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "pdf_string_assignment_compact_staff_ambiguous": 1,
+      "pdf_string_assignment_confidence_below_threshold": 1,
+      "pdf_string_assignment_succeeded_upstream_grouping_still_blocks": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 54,
+     "distinct_codes": 31,
+     "message_mentions_location": 33,
+     "severity": {
+      "<none>": 1,
+      "info": 26,
+      "warning": 27
+     },
+     "with_location_fields": 25
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [
+     "refusal_warning_code"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 4,
+    "html": {
+     "list_items": 54,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_grouping_unsafe",
+    "report_playable_candidates": 60,
+    "report_total_candidates": 0,
+    "stage": "layout-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 3,
+      "info_pdf_barline_does_not_cross_staff": 3,
+      "info_pdf_barline_inherited_too_close": 2,
+      "info_pdf_barline_outside_staff_region": 3,
+      "info_pdf_barline_outside_system_bounds": 3,
+      "info_pdf_barline_partial_staff_crossing": 2,
+      "info_pdf_barline_too_short": 3,
+      "info_pdf_barline_too_short_absolute": 1,
+      "partial_pdf_grouping": 1,
+      "pdf_bar_box_construction_not_enough_for_build_ir": 2,
+      "pdf_bar_box_too_narrow": 2,
+      "pdf_bar_boxes_constructed": 2,
+      "pdf_barline_double_secondary": 3,
+      "pdf_boundary_candidate_blocks_full_grouping": 1,
+      "pdf_candidate_boundary_ambiguous": 1,
+      "pdf_candidate_on_bar_boundary": 1,
+      "pdf_fret_digits_not_merged_gap_too_large": 1,
+      "pdf_fret_optical_bounds_confidence_below_threshold": 1,
+      "pdf_fret_refinement_not_enough_for_build_ir": 1,
+      "pdf_grouping_confidence_below_threshold": 2,
+      "pdf_grouping_not_safe_for_build_ir": 2,
+      "pdf_layout_details": 1,
+      "pdf_layout_detection_requires_manual_review": 2,
+      "pdf_missing_pdf_grouping_blocks_build_ir": 2,
+      "pdf_only_tab_grouping_unsafe": 1,
+      "pdf_partial_grouping_one_system_unboxed": 2,
+      "pdf_partial_grouping_with_playable_candidates": 2,
+      "pdf_string_assignment_compact_staff_ambiguous": 1,
+      "pdf_string_assignment_confidence_below_threshold": 1,
+      "pdf_string_assignment_succeeded_upstream_grouping_still_blocks": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 54,
+     "distinct_codes": 31,
+     "message_mentions_location": 33,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 26,
+      "warning": 26
+     },
+     "with_location_fields": 25
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 7,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 7,
+   "bars_assembled_with_synthesised_rests": 7,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 2,
+    "pdf_only_tab_measure_overcapacity": 7
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 15,
+   "fret_candidates_in_refused_bars": 45,
+   "global_layout_gate_codes": {
+    "pdf_bar_box_construction_not_enough_for_build_ir": 3
+   },
+   "source_bars": 16
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 14,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 14,
+   "bars_assembled_with_synthesised_rests": 14,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 2
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 56,
+   "fret_candidates_in_refused_bars": 4,
+   "global_layout_gate_codes": {
+    "pdf_bar_box_construction_not_enough_for_build_ir": 3
+   },
+   "source_bars": 16
+  },
+  "source_inventory": {
+   "bars_candidate_only": 1,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 16,
+   "bars_unaccounted": 1,
+   "candidate_only_bar_items_by_kind": {
+    "candidate-text": 3
+   },
+   "conservation_ok": false,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 17,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 8,
+    "chord-symbol": 2,
+    "technique-text": 2
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_digits_merged",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_split_text_span_merged",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 30,
+   "candidate_level_occurrences": 598,
+   "candidate_unsafe_code_counts": {
+    "pdf_boundary_candidate_blocks_full_grouping": 7,
+    "pdf_candidate_boundary_ambiguous": 11,
+    "pdf_candidate_on_bar_boundary": 11,
+    "pdf_candidates_unassigned_to_string": 7,
+    "pdf_candidates_unassigned_to_system": 7,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 2,
+    "pdf_fret_digits_not_merged_gap_too_large": 10,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 12,
+    "pdf_fret_refinement_not_enough_for_build_ir": 22,
+    "pdf_notation_rhythm_missing_notehead": 108,
+    "pdf_playable_candidate_requires_string_assignment": 7,
+    "pdf_string_assignment_compact_staff_ambiguous": 60,
+    "pdf_string_assignment_confidence_below_threshold": 60,
+    "pdf_string_assignment_missing": 7
+   },
+   "candidates": 136,
+   "kinds": {
+    "candidate-text": 61,
+    "chord-symbol": 10,
+    "fret": 60,
+    "technique-text": 5
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 60,
+   "playable_with_unsafe_candidate_code": 60,
+   "structural_signal_counts": {
+    "lyrics": 12,
+    "repeats": 0,
+    "sections": 1
+   },
+   "top_level_distinct_codes": 30,
+   "top_level_warning_count": 55
+  }
+ },
+ "L3": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 179,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 473,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 23,
+      "info_pdf_barline_does_not_cross_staff": 23,
+      "info_pdf_barline_outside_staff_region": 23,
+      "info_pdf_barline_outside_system_bounds": 23,
+      "info_pdf_barline_partial_staff_crossing": 23,
+      "info_pdf_barline_too_short": 23,
+      "pdf_bar_boxes_constructed": 23,
+      "pdf_barline_double_secondary": 12,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 179,
+     "distinct_codes": 14,
+     "message_mentions_location": 177,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 177
+     },
+     "with_location_fields": 150
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 179,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 473,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 23,
+      "info_pdf_barline_does_not_cross_staff": 23,
+      "info_pdf_barline_outside_staff_region": 23,
+      "info_pdf_barline_outside_system_bounds": 23,
+      "info_pdf_barline_partial_staff_crossing": 23,
+      "info_pdf_barline_too_short": 23,
+      "pdf_bar_boxes_constructed": 23,
+      "pdf_barline_double_secondary": 12,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 179,
+     "distinct_codes": 14,
+     "message_mentions_location": 176,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 177
+     },
+     "with_location_fields": 150
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 179,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 23,
+      "info_pdf_barline_does_not_cross_staff": 23,
+      "info_pdf_barline_outside_staff_region": 23,
+      "info_pdf_barline_outside_system_bounds": 23,
+      "info_pdf_barline_partial_staff_crossing": 23,
+      "info_pdf_barline_too_short": 23,
+      "missing_musicxml": 1,
+      "pdf_bar_boxes_constructed": 23,
+      "pdf_barline_double_secondary": 12,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 179,
+     "distinct_codes": 14,
+     "message_mentions_location": 176,
+     "severity": {
+      "<none>": 1,
+      "info": 177,
+      "warning": 1
+     },
+     "with_location_fields": 150
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 179,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 473,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 23,
+      "info_pdf_barline_does_not_cross_staff": 23,
+      "info_pdf_barline_outside_staff_region": 23,
+      "info_pdf_barline_outside_system_bounds": 23,
+      "info_pdf_barline_partial_staff_crossing": 23,
+      "info_pdf_barline_too_short": 23,
+      "pdf_bar_boxes_constructed": 23,
+      "pdf_barline_double_secondary": 12,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 179,
+     "distinct_codes": 14,
+     "message_mentions_location": 177,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 177
+     },
+     "with_location_fields": 150
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 15,
+   "bars_assembled_clean": 4,
+   "bars_assembled_containing_low_confidence_candidates": 0,
+   "bars_assembled_with_synthesised_rests": 11,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 3,
+    "pdf_only_tab_measure_overcapacity": 48
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 66,
+   "fret_candidates_in_refused_bars": 407,
+   "global_layout_gate_codes": {},
+   "source_bars": 66
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 24,
+   "bars_assembled_clean": 10,
+   "bars_assembled_containing_low_confidence_candidates": 3,
+   "bars_assembled_with_synthesised_rests": 11,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 3,
+    "pdf_only_tab_measure_overcapacity": 39
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 138,
+   "fret_candidates_in_refused_bars": 335,
+   "global_layout_gate_codes": {},
+   "source_bars": 66
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 66,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 66,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 31,
+    "technique-text": 4
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "ambiguous_bar_assignment",
+    "pdf_bar_box_boundary_ambiguous",
+    "pdf_barlines_ambiguous",
+    "pdf_candidate_boundary_ambiguous",
+    "pdf_candidate_on_bar_boundary",
+    "pdf_candidate_outside_bar",
+    "pdf_candidate_outside_system",
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_optical_bounds_confidence_below_threshold",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_refinement_not_enough_for_build_ir",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_string_assignment_outside_staff",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 32,
+   "candidate_level_occurrences": 1500,
+   "candidate_unsafe_code_counts": {
+    "ambiguous_bar_assignment": 20,
+    "pdf_bar_box_boundary_ambiguous": 20,
+    "pdf_barlines_ambiguous": 20,
+    "pdf_candidate_boundary_ambiguous": 20,
+    "pdf_candidate_on_bar_boundary": 20,
+    "pdf_candidate_outside_bar": 1,
+    "pdf_candidate_outside_system": 1,
+    "pdf_candidates_unassigned_to_string": 8,
+    "pdf_candidates_unassigned_to_system": 8,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 8,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 8,
+    "pdf_fret_refinement_not_enough_for_build_ir": 8,
+    "pdf_notation_rhythm_missing_notehead": 24,
+    "pdf_playable_candidate_requires_string_assignment": 8,
+    "pdf_string_assignment_missing": 43,
+    "pdf_string_assignment_outside_staff": 35
+   },
+   "candidates": 524,
+   "kinds": {
+    "candidate-text": 47,
+    "fret": 473,
+    "technique-text": 4
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 473,
+   "playable_with_unsafe_candidate_code": 24,
+   "structural_signal_counts": {
+    "lyrics": 13,
+    "repeats": 0,
+    "sections": 0
+   },
+   "top_level_distinct_codes": 13,
+   "top_level_warning_count": 178
+  }
+ },
+ "L4": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 225,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 556,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 29,
+      "info_pdf_barline_does_not_cross_staff": 29,
+      "info_pdf_barline_outside_staff_region": 29,
+      "info_pdf_barline_outside_system_bounds": 29,
+      "info_pdf_barline_partial_staff_crossing": 29,
+      "info_pdf_barline_too_short": 29,
+      "pdf_bar_boxes_constructed": 29,
+      "pdf_barline_double_secondary": 16,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 225,
+     "distinct_codes": 14,
+     "message_mentions_location": 223,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 223
+     },
+     "with_location_fields": 190
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 225,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 556,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 29,
+      "info_pdf_barline_does_not_cross_staff": 29,
+      "info_pdf_barline_outside_staff_region": 29,
+      "info_pdf_barline_outside_system_bounds": 29,
+      "info_pdf_barline_partial_staff_crossing": 29,
+      "info_pdf_barline_too_short": 29,
+      "pdf_bar_boxes_constructed": 29,
+      "pdf_barline_double_secondary": 16,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 225,
+     "distinct_codes": 14,
+     "message_mentions_location": 222,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 223
+     },
+     "with_location_fields": 190
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 225,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 29,
+      "info_pdf_barline_does_not_cross_staff": 29,
+      "info_pdf_barline_outside_staff_region": 29,
+      "info_pdf_barline_outside_system_bounds": 29,
+      "info_pdf_barline_partial_staff_crossing": 29,
+      "info_pdf_barline_too_short": 29,
+      "missing_musicxml": 1,
+      "pdf_bar_boxes_constructed": 29,
+      "pdf_barline_double_secondary": 16,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 225,
+     "distinct_codes": 14,
+     "message_mentions_location": 222,
+     "severity": {
+      "<none>": 1,
+      "info": 223,
+      "warning": 1
+     },
+     "with_location_fields": 190
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 225,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 556,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 29,
+      "info_pdf_barline_does_not_cross_staff": 29,
+      "info_pdf_barline_outside_staff_region": 29,
+      "info_pdf_barline_outside_system_bounds": 29,
+      "info_pdf_barline_partial_staff_crossing": 29,
+      "info_pdf_barline_too_short": 29,
+      "pdf_bar_boxes_constructed": 29,
+      "pdf_barline_double_secondary": 16,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 225,
+     "distinct_codes": 14,
+     "message_mentions_location": 223,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 223
+     },
+     "with_location_fields": 190
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 13,
+   "bars_assembled_clean": 3,
+   "bars_assembled_containing_low_confidence_candidates": 1,
+   "bars_assembled_with_synthesised_rests": 10,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 5,
+    "pdf_only_tab_measure_overcapacity": 59
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 53,
+   "fret_candidates_in_refused_bars": 503,
+   "global_layout_gate_codes": {},
+   "source_bars": 77
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 25,
+   "bars_assembled_clean": 7,
+   "bars_assembled_containing_low_confidence_candidates": 9,
+   "bars_assembled_with_synthesised_rests": 11,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 5,
+    "pdf_only_tab_measure_overcapacity": 47
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 146,
+   "fret_candidates_in_refused_bars": 410,
+   "global_layout_gate_codes": {},
+   "source_bars": 77
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 77,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 77,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 43,
+    "technique-text": 9
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "ambiguous_bar_assignment",
+    "pdf_bar_box_boundary_ambiguous",
+    "pdf_barlines_ambiguous",
+    "pdf_candidate_boundary_ambiguous",
+    "pdf_candidate_on_bar_boundary",
+    "pdf_candidate_outside_bar",
+    "pdf_candidate_outside_system",
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_optical_bounds_confidence_below_threshold",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_refinement_not_enough_for_build_ir",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_string_assignment_outside_staff",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 32,
+   "candidate_level_occurrences": 1955,
+   "candidate_unsafe_code_counts": {
+    "ambiguous_bar_assignment": 26,
+    "pdf_bar_box_boundary_ambiguous": 26,
+    "pdf_barlines_ambiguous": 26,
+    "pdf_candidate_boundary_ambiguous": 26,
+    "pdf_candidate_on_bar_boundary": 26,
+    "pdf_candidate_outside_bar": 3,
+    "pdf_candidate_outside_system": 3,
+    "pdf_candidates_unassigned_to_string": 13,
+    "pdf_candidates_unassigned_to_system": 13,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 10,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 13,
+    "pdf_fret_refinement_not_enough_for_build_ir": 13,
+    "pdf_notation_rhythm_missing_notehead": 70,
+    "pdf_playable_candidate_requires_string_assignment": 13,
+    "pdf_string_assignment_missing": 62,
+    "pdf_string_assignment_outside_staff": 49
+   },
+   "candidates": 656,
+   "kinds": {
+    "candidate-text": 69,
+    "fret": 556,
+    "technique-text": 31
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 556,
+   "playable_with_unsafe_candidate_code": 64,
+   "structural_signal_counts": {
+    "lyrics": 20,
+    "repeats": 0,
+    "sections": 0
+   },
+   "top_level_distinct_codes": 13,
+   "top_level_warning_count": 224
+  }
+ },
+ "L5": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [
+     "accumulated_ticks",
+     "bar_index",
+     "measure_capacity"
+    ],
+    "diag_has_location": true,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 111,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_measure_overcapacity",
+    "report_playable_candidates": 440,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_ambiguous": 5,
+      "info_pdf_barline_crosses_insufficient_string_gaps": 12,
+      "info_pdf_barline_does_not_cross_staff": 12,
+      "info_pdf_barline_outside_staff_region": 12,
+      "info_pdf_barline_outside_system_bounds": 12,
+      "info_pdf_barline_partial_staff_crossing": 12,
+      "info_pdf_barline_too_short": 12,
+      "info_pdf_barline_too_short_absolute": 8,
+      "pdf_bar_boxes_constructed": 12,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_measure_overcapacity": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 111,
+     "distinct_codes": 16,
+     "message_mentions_location": 109,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 109
+     },
+     "with_location_fields": 93
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 111,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 440,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_ambiguous": 5,
+      "info_pdf_barline_crosses_insufficient_string_gaps": 12,
+      "info_pdf_barline_does_not_cross_staff": 12,
+      "info_pdf_barline_outside_staff_region": 12,
+      "info_pdf_barline_outside_system_bounds": 12,
+      "info_pdf_barline_partial_staff_crossing": 12,
+      "info_pdf_barline_too_short": 12,
+      "info_pdf_barline_too_short_absolute": 8,
+      "pdf_bar_boxes_constructed": 12,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 111,
+     "distinct_codes": 16,
+     "message_mentions_location": 108,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 109
+     },
+     "with_location_fields": 93
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 111,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_ambiguous": 5,
+      "info_pdf_barline_crosses_insufficient_string_gaps": 12,
+      "info_pdf_barline_does_not_cross_staff": 12,
+      "info_pdf_barline_outside_staff_region": 12,
+      "info_pdf_barline_outside_system_bounds": 12,
+      "info_pdf_barline_partial_staff_crossing": 12,
+      "info_pdf_barline_too_short": 12,
+      "info_pdf_barline_too_short_absolute": 8,
+      "missing_musicxml": 1,
+      "pdf_bar_boxes_constructed": 12,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 111,
+     "distinct_codes": 16,
+     "message_mentions_location": 108,
+     "severity": {
+      "<none>": 1,
+      "info": 109,
+      "warning": 1
+     },
+     "with_location_fields": 93
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 111,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 440,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_ambiguous": 5,
+      "info_pdf_barline_crosses_insufficient_string_gaps": 12,
+      "info_pdf_barline_does_not_cross_staff": 12,
+      "info_pdf_barline_outside_staff_region": 12,
+      "info_pdf_barline_outside_system_bounds": 12,
+      "info_pdf_barline_partial_staff_crossing": 12,
+      "info_pdf_barline_too_short": 12,
+      "info_pdf_barline_too_short_absolute": 8,
+      "pdf_bar_boxes_constructed": 12,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 111,
+     "distinct_codes": 16,
+     "message_mentions_location": 108,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 109
+     },
+     "with_location_fields": 93
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 0,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 0,
+   "bars_assembled_with_synthesised_rests": 0,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 8,
+    "pdf_only_tab_measure_overcapacity": 27
+   },
+   "first_failure_code": "pdf_only_tab_measure_overcapacity",
+   "fret_candidates_in_assembled_bars": 0,
+   "fret_candidates_in_refused_bars": 440,
+   "global_layout_gate_codes": {},
+   "source_bars": 35
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 18,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 18,
+   "bars_assembled_with_synthesised_rests": 12,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 8,
+    "pdf_only_tab_measure_overcapacity": 9
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 211,
+   "fret_candidates_in_refused_bars": 229,
+   "global_layout_gate_codes": {},
+   "source_bars": 35
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 35,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 35,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 99,
+    "technique-text": 9
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "ambiguous_bar_assignment",
+    "pdf_bar_box_boundary_ambiguous",
+    "pdf_barlines_ambiguous",
+    "pdf_candidate_boundary_ambiguous",
+    "pdf_candidate_on_bar_boundary",
+    "pdf_candidate_outside_bar",
+    "pdf_candidate_outside_system",
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_digits_not_merged_exceeds_max_fret",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_optical_bounds_confidence_below_threshold",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_refinement_not_enough_for_build_ir",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_string_assignment_outside_staff",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 33,
+   "candidate_level_occurrences": 2482,
+   "candidate_unsafe_code_counts": {
+    "ambiguous_bar_assignment": 2,
+    "pdf_bar_box_boundary_ambiguous": 2,
+    "pdf_barlines_ambiguous": 2,
+    "pdf_candidate_boundary_ambiguous": 2,
+    "pdf_candidate_on_bar_boundary": 2,
+    "pdf_candidate_outside_bar": 4,
+    "pdf_candidate_outside_system": 4,
+    "pdf_candidates_unassigned_to_string": 155,
+    "pdf_candidates_unassigned_to_system": 90,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 6,
+    "pdf_fret_digits_not_merged_exceeds_max_fret": 59,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 90,
+    "pdf_fret_refinement_not_enough_for_build_ir": 90,
+    "pdf_notation_rhythm_missing_notehead": 262,
+    "pdf_playable_candidate_requires_string_assignment": 155,
+    "pdf_string_assignment_missing": 164,
+    "pdf_string_assignment_outside_staff": 74
+   },
+   "candidates": 636,
+   "kinds": {
+    "candidate-text": 175,
+    "fret": 440,
+    "technique-text": 21
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 440,
+   "playable_with_unsafe_candidate_code": 229,
+   "structural_signal_counts": {
+    "lyrics": 10,
+    "repeats": 0,
+    "sections": 0
+   },
+   "top_level_distinct_codes": 15,
+   "top_level_warning_count": 110
+  }
+ },
+ "L6": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 93,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 235,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 9,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 93,
+     "distinct_codes": 15,
+     "message_mentions_location": 90,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 91
+     },
+     "with_location_fields": 77
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 93,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 235,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 9,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 93,
+     "distinct_codes": 15,
+     "message_mentions_location": 90,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 91
+     },
+     "with_location_fields": 77
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 93,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 9,
+      "missing_musicxml": 1,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 93,
+     "distinct_codes": 15,
+     "message_mentions_location": 90,
+     "severity": {
+      "<none>": 1,
+      "info": 91,
+      "warning": 1
+     },
+     "with_location_fields": 77
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 93,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 235,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 10,
+      "info_pdf_barline_does_not_cross_staff": 10,
+      "info_pdf_barline_outside_staff_region": 10,
+      "info_pdf_barline_outside_system_bounds": 10,
+      "info_pdf_barline_partial_staff_crossing": 10,
+      "info_pdf_barline_too_short": 10,
+      "info_pdf_barline_too_short_absolute": 9,
+      "pdf_bar_boxes_constructed": 10,
+      "pdf_barline_double_secondary": 8,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 93,
+     "distinct_codes": 15,
+     "message_mentions_location": 90,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 91
+     },
+     "with_location_fields": 77
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 0,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 0,
+   "bars_assembled_with_synthesised_rests": 0,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 13,
+    "pdf_only_tab_measure_overcapacity": 8
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 0,
+   "fret_candidates_in_refused_bars": 235,
+   "global_layout_gate_codes": {},
+   "source_bars": 21
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 6,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 6,
+   "bars_assembled_with_synthesised_rests": 6,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 14,
+    "pdf_only_tab_measure_overcapacity": 1
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 69,
+   "fret_candidates_in_refused_bars": 166,
+   "global_layout_gate_codes": {},
+   "source_bars": 21
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 21,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 21,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 836,
+    "technique-text": 13
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "ambiguous_bar_assignment",
+    "pdf_bar_box_boundary_ambiguous",
+    "pdf_barlines_ambiguous",
+    "pdf_candidate_boundary_ambiguous",
+    "pdf_candidate_on_bar_boundary",
+    "pdf_candidate_outside_bar",
+    "pdf_candidate_outside_system",
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_optical_bounds_confidence_below_threshold",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_refinement_not_enough_for_build_ir",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_string_assignment_outside_staff",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 32,
+   "candidate_level_occurrences": 6665,
+   "candidate_unsafe_code_counts": {
+    "ambiguous_bar_assignment": 4,
+    "pdf_bar_box_boundary_ambiguous": 4,
+    "pdf_barlines_ambiguous": 4,
+    "pdf_candidate_boundary_ambiguous": 4,
+    "pdf_candidate_on_bar_boundary": 4,
+    "pdf_candidate_outside_bar": 9,
+    "pdf_candidate_outside_system": 9,
+    "pdf_candidates_unassigned_to_string": 841,
+    "pdf_candidates_unassigned_to_system": 785,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 12,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 785,
+    "pdf_fret_refinement_not_enough_for_build_ir": 785,
+    "pdf_notation_rhythm_missing_notehead": 81,
+    "pdf_playable_candidate_requires_string_assignment": 841,
+    "pdf_string_assignment_missing": 849,
+    "pdf_string_assignment_outside_staff": 64
+   },
+   "candidates": 1154,
+   "kinds": {
+    "candidate-text": 906,
+    "fret": 235,
+    "technique-text": 13
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 235,
+   "playable_with_unsafe_candidate_code": 69,
+   "structural_signal_counts": {
+    "lyrics": 27,
+    "repeats": 0,
+    "sections": 0
+   },
+   "top_level_distinct_codes": 14,
+   "top_level_warning_count": 92
+  }
+ },
+ "L7": {
+  "routes": {
+   "draft": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 219,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 624,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 25,
+      "info_pdf_barline_does_not_cross_staff": 25,
+      "info_pdf_barline_outside_staff_region": 25,
+      "info_pdf_barline_outside_system_bounds": 25,
+      "info_pdf_barline_partial_staff_crossing": 25,
+      "info_pdf_barline_too_short": 25,
+      "info_pdf_barline_too_short_absolute": 16,
+      "pdf_bar_boxes_constructed": 25,
+      "pdf_barline_double_secondary": 22,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 219,
+     "distinct_codes": 15,
+     "message_mentions_location": 216,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 217
+     },
+     "with_location_fields": 188
+    }
+   },
+   "native": {
+    "diag_details_keys": [
+     "remediation_hint"
+    ],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 219,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_missing_timing_evidence",
+    "report_playable_candidates": 624,
+    "report_total_candidates": 0,
+    "stage": "timing-gating",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 25,
+      "info_pdf_barline_does_not_cross_staff": 25,
+      "info_pdf_barline_outside_staff_region": 25,
+      "info_pdf_barline_outside_system_bounds": 25,
+      "info_pdf_barline_partial_staff_crossing": 25,
+      "info_pdf_barline_too_short": 25,
+      "info_pdf_barline_too_short_absolute": 16,
+      "pdf_bar_boxes_constructed": 25,
+      "pdf_barline_double_secondary": 22,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_missing_timing_evidence": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 219,
+     "distinct_codes": 15,
+     "message_mentions_location": 216,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 217
+     },
+     "with_location_fields": 188
+    }
+   },
+   "nosidecar": {
+    "diag_details_keys": null,
+    "diag_has_location": false,
+    "error_type": "ValueError",
+    "exit": 1,
+    "html": {
+     "list_items": 219,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "missing_musicxml",
+    "report_playable_candidates": null,
+    "report_total_candidates": null,
+    "stage": "orchestration-gate",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 25,
+      "info_pdf_barline_does_not_cross_staff": 25,
+      "info_pdf_barline_outside_staff_region": 25,
+      "info_pdf_barline_outside_system_bounds": 25,
+      "info_pdf_barline_partial_staff_crossing": 25,
+      "info_pdf_barline_too_short": 25,
+      "info_pdf_barline_too_short_absolute": 16,
+      "missing_musicxml": 1,
+      "pdf_bar_boxes_constructed": 25,
+      "pdf_barline_double_secondary": 22,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 219,
+     "distinct_codes": 15,
+     "message_mentions_location": 216,
+     "severity": {
+      "<none>": 1,
+      "info": 217,
+      "warning": 1
+     },
+     "with_location_fields": 188
+    }
+   },
+   "pdfonly": {
+    "diag_details_keys": [],
+    "diag_has_location": false,
+    "error_type": "BuildIrInputRiskError",
+    "exit": 2,
+    "html": {
+     "list_items": 219,
+     "recommended_action_in_html": false,
+     "refusal_code_in_html": true
+    },
+    "refusal_code": "pdf_only_tab_ambiguous_duration",
+    "report_playable_candidates": 624,
+    "report_total_candidates": 0,
+    "stage": "measure-assembly",
+    "status": "refused",
+    "warnings_json": {
+     "codes": {
+      "info_pdf_barline_crosses_insufficient_string_gaps": 25,
+      "info_pdf_barline_does_not_cross_staff": 25,
+      "info_pdf_barline_outside_staff_region": 25,
+      "info_pdf_barline_outside_system_bounds": 25,
+      "info_pdf_barline_partial_staff_crossing": 25,
+      "info_pdf_barline_too_short": 25,
+      "info_pdf_barline_too_short_absolute": 16,
+      "pdf_bar_boxes_constructed": 25,
+      "pdf_barline_double_secondary": 22,
+      "pdf_grouping_complete": 1,
+      "pdf_layout_details": 1,
+      "pdf_only_tab_ambiguous_duration": 1,
+      "pdf_timing_mapping_not_implemented": 1,
+      "pdf_tuning_standard_detected": 1,
+      "tab-extraction-incomplete": 1
+     },
+     "count": 219,
+     "distinct_codes": 15,
+     "message_mentions_location": 216,
+     "severity": {
+      "<none>": 1,
+      "error": 1,
+      "info": 217
+     },
+     "with_location_fields": 188
+    }
+   }
+  },
+  "sim_draft": {
+   "bars_assembled": 4,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 1,
+   "bars_assembled_with_synthesised_rests": 3,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 26,
+    "pdf_only_tab_measure_overcapacity": 20
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 26,
+   "fret_candidates_in_refused_bars": 598,
+   "global_layout_gate_codes": {},
+   "source_bars": 50
+  },
+  "sim_pdfonly": {
+   "bars_assembled": 13,
+   "bars_assembled_clean": 0,
+   "bars_assembled_containing_low_confidence_candidates": 10,
+   "bars_assembled_with_synthesised_rests": 9,
+   "bars_refused_by_code": {
+    "pdf_only_tab_ambiguous_duration": 26,
+    "pdf_only_tab_measure_overcapacity": 11
+   },
+   "first_failure_code": "pdf_only_tab_ambiguous_duration",
+   "fret_candidates_in_assembled_bars": 150,
+   "fret_candidates_in_refused_bars": 474,
+   "global_layout_gate_codes": {},
+   "source_bars": 50
+  },
+  "source_inventory": {
+   "bars_candidate_only": 0,
+   "bars_empty": 0,
+   "bars_outside_inventory": 0,
+   "bars_replayed": 50,
+   "bars_unaccounted": 0,
+   "candidate_only_bar_items_by_kind": {},
+   "conservation_ok": true,
+   "replay_source_bars_matches_bars_replayed": true,
+   "source_bars": 50,
+   "systems_with_fewer_than_two_barlines": 0,
+   "unlocated_candidates_by_kind": {
+    "candidate-text": 21,
+    "technique-text": 6
+   }
+  },
+  "tabraw": {
+   "candidate_level_codes_absent_from_top_level": [
+    "ambiguous_bar_assignment",
+    "pdf_bar_box_boundary_ambiguous",
+    "pdf_barlines_ambiguous",
+    "pdf_candidate_boundary_ambiguous",
+    "pdf_candidate_on_bar_boundary",
+    "pdf_candidate_outside_bar",
+    "pdf_candidate_outside_system",
+    "pdf_candidates_unassigned_to_string",
+    "pdf_candidates_unassigned_to_system",
+    "pdf_fret_chord_text_digit_excluded",
+    "pdf_fret_digit_symbol_overlap_ambiguous",
+    "pdf_fret_multidigit_extracted",
+    "pdf_fret_optical_bounds_confidence_below_threshold",
+    "pdf_fret_page_or_legend_number_excluded",
+    "pdf_fret_refinement_not_enough_for_build_ir",
+    "pdf_fret_single_digit_extracted",
+    "pdf_fret_technique_marker_excluded",
+    "pdf_multidigit_fret_string_assigned",
+    "pdf_non_playable_text_not_string_assigned",
+    "pdf_notation_rhythm_missing_notehead",
+    "pdf_pitch_layout_evidence_detected",
+    "pdf_playable_candidate_requires_string_assignment",
+    "pdf_string_assignment_missing",
+    "pdf_string_assignment_nearest_line",
+    "pdf_string_assignment_outside_staff",
+    "pdf_tuning_label_outside_system",
+    "pdf_tuning_label_unassociated",
+    "pdf_tuning_not_used_for_fret_inference",
+    "pdf_tuning_not_used_for_string_assignment",
+    "pdf_tuning_text_preserved_non_playable"
+   ],
+   "candidate_level_distinct_codes": 32,
+   "candidate_level_occurrences": 1940,
+   "candidate_unsafe_code_counts": {
+    "ambiguous_bar_assignment": 7,
+    "pdf_bar_box_boundary_ambiguous": 7,
+    "pdf_barlines_ambiguous": 7,
+    "pdf_candidate_boundary_ambiguous": 7,
+    "pdf_candidate_on_bar_boundary": 7,
+    "pdf_candidate_outside_bar": 1,
+    "pdf_candidate_outside_system": 1,
+    "pdf_candidates_unassigned_to_string": 11,
+    "pdf_candidates_unassigned_to_system": 11,
+    "pdf_fret_digit_symbol_overlap_ambiguous": 10,
+    "pdf_fret_optical_bounds_confidence_below_threshold": 11,
+    "pdf_fret_refinement_not_enough_for_build_ir": 11,
+    "pdf_notation_rhythm_missing_notehead": 138,
+    "pdf_playable_candidate_requires_string_assignment": 11,
+    "pdf_string_assignment_missing": 38,
+    "pdf_string_assignment_outside_staff": 27
+   },
+   "candidates": 696,
+   "kinds": {
+    "candidate-text": 47,
+    "chord-symbol": 12,
+    "fret": 624,
+    "technique-text": 13
+   },
+   "layout_class": "vector_tab_with_barlines",
+   "layout_warning_codes": [],
+   "playable": 624,
+   "playable_with_unsafe_candidate_code": 131,
+   "structural_signal_counts": {
+    "lyrics": 60,
+    "repeats": 0,
+    "sections": 7
+   },
+   "top_level_distinct_codes": 14,
+   "top_level_warning_count": 218
+  }
+ }
+}
