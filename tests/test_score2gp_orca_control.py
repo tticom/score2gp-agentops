@@ -1643,3 +1643,42 @@ def test_explicit_review_of_the_active_task_pr_keeps_the_task_context() -> None:
     assert work["goal"] == "Bounded repair"
     assert work["acceptance"] == ["prove repair"]
     assert work["linked_task"] == "108"
+
+
+def _assert_own_review_context(config: dict, facts: dict, repository: str, number: int) -> None:
+    resolved = resolve_state(config, facts)
+    assert (resolved["state"], resolved["dispatch_role"]) == ("REVIEW_REQUIRED", "reviewer")
+    work = build_assignment(config, facts, resolved, RuntimeIdentity("niall", "reviewer"), "b" * 40)["work"]
+    assert (work["repository"], work["pull_request"], work["goal"]) == (repository, number, "Same-branch collision")
+    assert work["linked_task"] is None and work["prompt"] is None and work["acceptance"] == []
+    active = config["task"]
+    rendered = json.dumps(work)
+    for leaked in (active["title"], active["prompt"], *active["acceptance"]):
+        assert leaked not in rendered
+
+
+def test_explicit_review_of_another_repositorys_pr_on_the_active_branch_name_gets_its_own_context() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=12, branch="feat/task-108", title="Same-branch collision")
+    facts["snapshot"]["repository"] = "tticom/score2gp-agentops"
+    _assert_own_review_context(config, facts, "tticom/score2gp-agentops", 12)
+
+
+def test_explicit_review_of_another_pr_number_on_the_active_repository_and_branch_gets_its_own_context() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=442, branch="feat/task-108", title="Same-branch collision")
+    _assert_own_review_context(config, facts, "tticom/score2gp", 442)
+
+
+def test_explicit_review_on_the_unrecorded_active_branch_still_requires_validated_discovery() -> None:
+    config = authority()
+    config["task"]["pull_request"] = None
+    facts = explicit_review_facts(number=442, branch="feat/task-108", title="Same-branch collision")
+    assert resolve_state(config, facts)["reason"] == "active_task_missing_pull_request"
+
+
+def test_a_non_explicit_snapshot_of_another_pr_on_the_active_branch_still_fails_closed() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=442, branch="feat/task-108")
+    del facts["explicit_review"]
+    assert resolve_state(config, facts)["reason"] == "live_pr_does_not_match_authority"

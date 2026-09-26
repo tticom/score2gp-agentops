@@ -976,7 +976,7 @@ def test_suite_isolation_holds_when_live_authority_enables_the_receipt_audit(mon
 
 # --- GOV-03: an OPEN PR on the active branch must be recorded in the authority ---
 
-def _run_main_with_active_task(monkeypatch, recorded, gh_stdout):
+def _run_main_with_active_task(monkeypatch, recorded, gh_stdout, runner=None):
     mock_files = [
         "projects/score2gp/skills/architect/SKILL.md",
         "skills/score2gp-developer.md",
@@ -1000,7 +1000,7 @@ def _run_main_with_active_task(monkeypatch, recorded, gh_stdout):
         return original_open(path, *args, **kwargs)
 
     monkeypatch.setattr("builtins.open", mock_open)
-    runner = RecordedSubprocessRunner(stdout=json.dumps(gh_stdout))
+    runner = runner or RecordedSubprocessRunner(stdout=json.dumps(gh_stdout))
     monkeypatch.setattr(subprocess, "run", runner)
     with pytest.raises(SystemExit) as raised:
         score2gp_governance_audit.main()
@@ -1036,3 +1036,37 @@ def test_active_task_pull_request_field_is_parsed() -> None:
     assert parse("**Pull Request**: 464\n") == "464"
     assert parse("**Pull Request**: TBD\n") == "TBD"
     assert parse("**Status**: PROMOTED\n") == ""
+
+
+class LimitedPrListRunner(RecordedSubprocessRunner):
+    """gh pr list as the CLI behaves: newest first, truncated at --limit (default 30)."""
+
+    def __call__(self, args, **kwargs):
+        if args and args[0] == "gh":
+            self.calls.append(list(args))
+            limit = int(args[args.index("--limit") + 1]) if "--limit" in args else 30
+            return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(self.stdout[:limit]), stderr="")
+        return subprocess.run(args, **kwargs)
+
+
+def _run_main_with_branch_history(monkeypatch, matches):
+    runner = LimitedPrListRunner(stdout=matches)
+    return _run_main_with_active_task(monkeypatch, "TBD", matches, runner=runner), runner
+
+
+def test_an_open_pr_behind_more_than_thirty_newer_branch_prs_still_fails_audit(monkeypatch, capsys) -> None:
+    newer = [{"number": 1000 - index, "state": "CLOSED"} for index in range(31)]
+    code, runner = _run_main_with_branch_history(monkeypatch, newer + [{"number": 464, "state": "OPEN"}])
+    assert code == 1
+    assert "OPEN PR #464" in capsys.readouterr().out
+    assert "--limit" in runner.calls[0]
+
+
+def test_branch_pr_list_reaching_the_audit_limit_fails_closed(monkeypatch, capsys) -> None:
+    limit = score2gp_governance_audit.BRANCH_PR_LIST_LIMIT
+    at_limit = [{"number": 5000 - index, "state": "CLOSED"} for index in range(limit)]
+    code, _ = _run_main_with_branch_history(monkeypatch, at_limit)
+    assert code == 1
+    assert "reached the audit limit" in capsys.readouterr().out
+    code, _ = _run_main_with_branch_history(monkeypatch, at_limit[:-1])
+    assert code == 0

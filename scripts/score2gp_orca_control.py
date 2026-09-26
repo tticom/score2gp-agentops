@@ -559,6 +559,24 @@ def _parse_strict_positive_int(val: Any) -> int | None:
     return None
 
 
+def _is_active_task_pr(task: dict[str, Any], live: dict[str, Any]) -> bool:
+    """Whether the live PR is the active task's own PR (GOV-03).
+
+    Branch equality alone is not identity. An explicitly requested PR must also
+    be in the task's repository and carry its recorded number; an unrecorded
+    one stays the task's so discovery validates or refuses the binding.
+    """
+    pr = live.get("pull_request")
+    if not isinstance(pr, dict) or not task.get("branch") or str(pr.get("head_branch", "")) != str(task["branch"]):
+        return False
+    if not _is_explicit_review(live):
+        return True
+    if str((live.get("snapshot") or {}).get("repository") or task["repository"]) != str(task["repository"]):
+        return False
+    task_pr = _parse_strict_positive_int(task.get("pull_request"))
+    return task_pr is None or _parse_strict_positive_int(pr.get("number")) == task_pr
+
+
 def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str | None = None) -> dict[str, Any]:
     validate_authority(authority)
     blockers = active_incidents(authority)
@@ -585,8 +603,7 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
 
     # Handle review targets for open PRs not belonging to an in-flight active task
     # (e.g. governance promotion PRs, control-plane repairs, or completed/registry PRs like PR 460)
-    is_active_task_branch = bool(task.get("branch") and str((pr or {}).get("head_branch", "")) == str(task.get("branch")))
-    if isinstance(pr, dict) and str(pr.get("state", "")).upper() == "OPEN" and not is_active_task_branch:
+    if isinstance(pr, dict) and str(pr.get("state", "")).upper() == "OPEN" and not _is_active_task_pr(task, live):
         target = _completed_review_target(authority, live)
         if target is not None:
             review = current_head_review(pr)
@@ -883,8 +900,8 @@ def _explicit_review_context(authority: dict[str, Any], live: dict[str, Any]) ->
     number = _parse_strict_positive_int(pr.get("number"))
     head_branch = str(pr.get("head_branch", ""))
     task_pr = _parse_strict_positive_int(task.get("pull_request"))
-    if repository == str(task["repository"]) and (
-        (number is not None and number == task_pr) or head_branch == str(task["branch"])
+    if _is_active_task_pr(task, live) or (
+        repository == str(task["repository"]) and number is not None and number == task_pr
     ):
         return None
     unflagged = {k: v for k, v in live.items() if k not in {"explicit_review", "control_plane_repair"}}

@@ -27,6 +27,8 @@ MERGE_AUDIT_REPOSITORIES = ("tticom/score2gp", "tticom/score2gp-agentops")
 # gh pr list pages internally up to --limit. A result that reaches the limit may be
 # truncated, so the audit fails closed rather than silently skipping later merges.
 MERGE_AUDIT_PR_LIMIT = 1000
+# The same rule for every PR on the active task branch (GOV-03).
+BRANCH_PR_LIST_LIMIT = 1000
 
 
 def parse_gh_json_stream(text):
@@ -302,7 +304,8 @@ def main():
             # Query gh to see if a PR exists for this branch and whether it is already merged
             try:
                 res = subprocess.run(
-                    ["gh", "pr", "list", "--repo", repository, "--head", branch_name, "--state", "all", "--json", "number,state"],
+                    ["gh", "pr", "list", "--repo", repository, "--head", branch_name, "--state", "all",
+                     "--limit", str(BRANCH_PR_LIST_LIMIT), "--json", "number,state"],
                     capture_output=True, text=True
                 )
                 if res.returncode != 0:
@@ -310,6 +313,11 @@ def main():
                 elif res.stdout.strip():
                     try:
                         matches = json.loads(res.stdout)
+                        if len(matches) >= BRANCH_PR_LIST_LIMIT:
+                            violations.append(
+                                f"{len(matches)} PRs on active task branch '{branch_name}' ({repository}) "
+                                "reached the audit limit; an OPEN PR may be unlisted."
+                            )
                         for pr_info in matches:
                             if pr_info.get("state") == "MERGED":
                                 violations.append(
