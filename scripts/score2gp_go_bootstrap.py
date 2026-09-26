@@ -41,6 +41,33 @@ def sync_main(cwd: Path, name: str) -> None:
         fail_closed(f"Failed to sync {name}: {detail.strip()}")
 
 
+def capture_task_live(agentops: Path, authority_path: Path) -> dict:
+    """Live state for the active task: its recorded PR, or GOV-03 discovery when none is recorded."""
+    res = subprocess.run(
+        [sys.executable, "scripts/score2gp_orca_control.py", "task-live", "--authority", str(authority_path)],
+        cwd=agentops, capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        fail_closed(f"Live-state capture failed: {res.stderr.strip()}")
+    try:
+        live = json.loads(res.stdout)
+    except json.JSONDecodeError:
+        fail_closed("Live-state capture returned invalid JSON")
+    if not isinstance(live, dict):
+        fail_closed("Live-state capture did not return a JSON object")
+    return live
+
+
+def resolve_live(agentops: Path, authority_path: Path, live_file: str) -> dict:
+    res = subprocess.run(
+        [sys.executable, "scripts/score2gp_orca_control.py", "resolve", "--authority", str(authority_path), "--live", live_file],
+        cwd=agentops, capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        fail_closed(f"Resolve failed: {res.stderr.strip()}")
+    return json.loads(res.stdout)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Score2GP Agy `go` Dispatch Bootstrap Helper.")
     parser.add_argument("--product", type=str, default="../score2gp")
@@ -68,26 +95,11 @@ def main() -> None:
         auth = json.load(f)
 
     task = auth.get("task", {})
-    repo = task.get("repository")
-    pr = task.get("pull_request")
 
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         live_file = f.name
 
     try:
-        if repo and pr and should_snapshot_task_pr(str(task.get("status", ""))):
-            res = subprocess.run(
-                [sys.executable, "scripts/score2gp_orca_control.py", "snapshot", "--repository", str(repo), "--pull-request", str(pr)],
-                cwd=agentops, capture_output=True, text=True
-            )
-            if res.returncode != 0:
-                fail_closed(f"Snapshot failed: {res.stderr.strip()}")
-            with open(live_file, "w") as f:
-                f.write(res.stdout)
-        else:
-            with open(live_file, "w") as f:
-                f.write("{}")
-
         gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True)
         if gh_user.returncode != 0:
             fail_closed(f"GitHub identity check failed: {gh_user.stderr.strip()}")
@@ -99,6 +111,18 @@ def main() -> None:
             else:
                 print(f"score2gp: task {task.get('id')} is complete; no dispatch required")
             return
+
+        # Never "no PR" while one exists: an unrecorded PR is discovered on the task branch.
+        with open(live_file, "w", encoding="utf-8") as f:
+            json.dump(capture_task_live(agentops, authority_path), f)
+
+        resolved = resolve_live(agentops, authority_path, live_file)
+        if resolved.get("dispatch_role") != "implementation":
+            if args.json:
+                print(json.dumps({"ok": False, **resolved}, indent=2))
+            else:
+                print(f"score2gp: {resolved.get('state')} ({resolved.get('reason')}); no implementation dispatch", file=sys.stderr)
+            sys.exit(1)
 
         cmd = [
             sys.executable, "scripts/score2gp_dispatch.py",

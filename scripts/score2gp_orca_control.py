@@ -74,7 +74,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
     """Capture normalized GitHub facts under the caller's scoped credential."""
     raw = run_json([
         "gh", "pr", "view", str(pull_request), "--repo", repository, "--json",
-        "number,state,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit,mergedBy",
+        "number,state,title,headRefName,headRefOid,baseRefName,author,reviews,statusCheckRollup,mergeCommit,mergedBy",
     ])
     reviews = []
     for review in raw.get("reviews", []):
@@ -129,6 +129,7 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
         "pull_request": {
             "number": raw["number"],
             "state": raw["state"],
+            "title": str(raw.get("title") or ""),
             "head_branch": raw["headRefName"],
             "head_sha": raw["headRefOid"],
             "base_branch": raw["baseRefName"],
@@ -148,6 +149,89 @@ def capture_live_state(repository: str, pull_request: int) -> dict[str, Any]:
         },
         "admin_bypass": False,
     }
+
+
+# More matches than this on one branch may be truncated; discovery then fails closed.
+PR_DISCOVERY_LIMIT = 100
+
+
+def list_branch_pull_requests(repository: str, branch: str) -> list[dict[str, Any]]:
+    """Every PR, in any state, whose head branch is ``branch`` in ``repository``."""
+    raw = run_json([
+        "gh", "pr", "list", "--repo", repository, "--head", branch, "--state", "all",
+        "--limit", str(PR_DISCOVERY_LIMIT),
+        "--json", "number,state,headRefName,baseRefName,author,isCrossRepository",
+    ])
+    if not isinstance(raw, list):
+        raise ControlError(f"unexpected gh pr list output for {repository} branch {branch}")
+    if len(raw) >= PR_DISCOVERY_LIMIT:
+        raise ControlError(f"{len(raw)} PRs on {repository} branch {branch} reached the discovery limit")
+    return [
+        {
+            "number": item.get("number"),
+            "state": str(item.get("state", "")).upper(),
+            "head_branch": str(item.get("headRefName", "")),
+            "base_branch": str(item.get("baseRefName", "")),
+            "author": str((item.get("author") or {}).get("login", "")),
+            "cross_repository": bool(item.get("isCrossRepository", False)),
+        }
+        for item in raw
+    ]
+
+
+def branch_commits_ahead(repository: str, branch: str, base: str) -> int:
+    """Commits on ``branch`` not on ``base``; 0 when the branch does not exist."""
+    refs = run_json(["gh", "api", f"repos/{repository}/git/matching-refs/heads/{branch}"])
+    if not isinstance(refs, list):
+        raise ControlError(f"unexpected matching-refs output for {repository} branch {branch}")
+    # matching-refs is a prefix match, so require the exact ref.
+    if f"refs/heads/{branch}" not in {str(ref.get("ref", "")) for ref in refs if isinstance(ref, dict)}:
+        return 0
+    comparison = run_json(["gh", "api", f"repos/{repository}/compare/{base}...{branch}"])
+    ahead = comparison.get("ahead_by") if isinstance(comparison, dict) else None
+    if not isinstance(ahead, int) or isinstance(ahead, bool) or ahead < 0:
+        raise ControlError(f"cannot read commits ahead of {base} for {repository} branch {branch}")
+    return ahead
+
+
+def discover_live_state(task: dict[str, Any]) -> dict[str, Any]:
+    """Live facts for an in-flight task whose authority records no PR (GOV-03).
+
+    Lists every PR on the task's branch. A single OPEN or MERGED candidate is
+    captured in full; the resolver decides whether it may be bound.
+    """
+    repository = str(task["repository"])
+    branch = str(task["branch"])
+    base = str(task.get("base_branch") or "main")
+    candidates = list_branch_pull_requests(repository, branch)
+    discovery: dict[str, Any] = {
+        "repository": repository,
+        "branch": branch,
+        "base_branch": base,
+        "candidates": candidates,
+    }
+    if not candidates:
+        discovery["branch_ahead_by"] = branch_commits_ahead(repository, branch, base)
+        return {"discovery": discovery}
+    number = _parse_strict_positive_int(candidates[0]["number"])
+    if len(candidates) == 1 and number is not None and candidates[0]["state"] in {"OPEN", "MERGED"}:
+        live = capture_live_state(repository, number)
+        live["discovery"] = discovery
+        live["pr_binding"] = "discovered"
+        return live
+    return {"discovery": discovery}
+
+
+def task_live_state(task: dict[str, Any]) -> dict[str, Any]:
+    """Live facts for the active task: its recorded PR, or discovery when none is recorded."""
+    if str(task.get("status", "")).upper() in TERMINAL_TASK_STATUSES:
+        return {}
+    if task.get("pull_request") is not None:
+        number = _parse_strict_positive_int(task["pull_request"])
+        if number is None:
+            raise ControlError(f"authority task pull_request is not a positive integer: {task['pull_request']!r}")
+        return capture_live_state(str(task["repository"]), number)
+    return discover_live_state(task)
 
 
 def validate_authority(authority: dict[str, Any]) -> None:
@@ -556,12 +640,19 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
                 )
         return result("COMPLETE", "task_declared_complete", task)
 
+    binding: dict[str, Any] = {}
+    discovery = live.get("discovery")
+    if task.get("pull_request") is None and isinstance(discovery, dict):
+        blocked, binding = _discovered_binding(authority, task, live, discovery)
+        if blocked is not None:
+            return blocked
+
     if not isinstance(pr, dict):
         if declared in {"READY", "PROMOTED", "APPROVED"}:
             return result("READY", "authorised_task_without_pr", task, dispatch_role=task["owner_role"])
         return result("RUNNING", "authorised_task_not_published", task, dispatch_role=task["owner_role"])
 
-    authorised_pr = task.get("pull_request")
+    authorised_pr = binding.get("pull_request", task.get("pull_request"))
     if authorised_pr is None:
         return result("BLOCKED", "active_task_missing_pull_request", task)
     authorised_pr_num = _parse_strict_positive_int(authorised_pr)
@@ -577,16 +668,98 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
 
     pr_state = str(pr.get("state", "")).upper()
     if pr_state == "MERGED":
-        return result("GOVERNANCE_REQUIRED", "merge_requires_governance_reconciliation", task, dispatch_role="governance")
+        return result("GOVERNANCE_REQUIRED", "merge_requires_governance_reconciliation", task,
+                      dispatch_role="governance", **binding)
     if pr_state != "OPEN":
-        return result("BLOCKED", "authorised_pr_is_not_open", task)
+        return result("BLOCKED", "authorised_pr_is_not_open", task, **binding)
 
     review = current_head_review(pr)
     if review == "CHANGES_REQUESTED":
-        return result("RUNNING", "current_head_changes_requested", task, dispatch_role=task["owner_role"])
+        return result("RUNNING", "current_head_changes_requested", task, dispatch_role=task["owner_role"], **binding)
     if review == "NONE":
-        return result("REVIEW_REQUIRED", "current_head_requires_review", task, dispatch_role="reviewer")
-    return result("GOVERNANCE_REQUIRED", "current_head_review_approved", task, dispatch_role="governance")
+        return result("REVIEW_REQUIRED", "current_head_requires_review", task, dispatch_role="reviewer", **binding)
+    return result("GOVERNANCE_REQUIRED", "current_head_review_approved", task, dispatch_role="governance", **binding)
+
+
+def _discovered_binding(
+    authority: dict[str, Any],
+    task: dict[str, Any],
+    live: dict[str, Any],
+    discovery: dict[str, Any],
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    """Decide whether a PR discovered on the active task's branch may be routed (GOV-03).
+
+    Returns ``(blocked_result, {})`` to fail closed, ``(None, {})`` when no PR
+    exists and the branch has no unpublished commits, or ``(None, binding)`` for
+    exactly one PR on the task's repository, branch and base, authored by an
+    implementation-role login. A binding is routed like a recorded PR but
+    names itself so governance records the number; the merge gate still
+    requires that record.
+    """
+    repository = str(task["repository"])
+    branch = str(task["branch"])
+    base = str(task.get("base_branch") or "main")
+    if (discovery.get("repository"), discovery.get("branch"), discovery.get("base_branch")) != (repository, branch, base):
+        return result("BLOCKED", "active_task_discovery_mismatch", task), {}
+    candidates = discovery.get("candidates")
+    if not isinstance(candidates, list) or not all(isinstance(c, dict) for c in candidates):
+        return result("BLOCKED", "active_task_discovery_invalid", task), {}
+    pr = live.get("pull_request")
+    if not candidates:
+        ahead = discovery.get("branch_ahead_by")
+        if isinstance(pr, dict) or not isinstance(ahead, int) or isinstance(ahead, bool) or ahead < 0:
+            return result("BLOCKED", "active_task_discovery_invalid", task), {}
+        if ahead:
+            return result("BLOCKED", "active_task_branch_without_pr", task, branch_ahead_by=ahead), {}
+        return None, {}
+
+    numbers = [c.get("number") for c in candidates]
+
+    def blocked(reason: str) -> tuple[dict[str, Any], dict[str, Any]]:
+        return result("BLOCKED", reason, task, discovered_pull_requests=numbers), {}
+
+    if len(candidates) > 1:
+        return blocked("active_task_multiple_pull_requests")
+    candidate = candidates[0]
+    number = _parse_strict_positive_int(candidate.get("number"))
+    if number is None:
+        return blocked("active_task_discovery_invalid")
+    if str(candidate.get("head_branch", "")) != branch:
+        return blocked("active_task_pr_branch_mismatch")
+    if candidate.get("cross_repository") is not False:
+        return blocked("active_task_pr_cross_repository")
+    if str(candidate.get("base_branch", "")) != base:
+        return blocked("active_task_pr_wrong_base")
+    author = str(candidate.get("author", ""))
+    implementation = authority.get("roles", {}).get("implementation", {}).get("github_logins") or []
+    if not author or author not in implementation:
+        return blocked("active_task_pr_author_not_implementation")
+    state = str(candidate.get("state", "")).upper()
+    if state == "CLOSED":
+        return blocked("active_task_pr_closed_unmerged")
+    if state not in {"OPEN", "MERGED"}:
+        return blocked("active_task_pr_state_unsupported")
+    snapshot_matches = (
+        live.get("pr_binding") == "discovered"
+        and isinstance(pr, dict)
+        and str((live.get("snapshot") or {}).get("repository", "")) == repository
+        and _parse_strict_positive_int(pr.get("number")) == number
+        and str(pr.get("head_branch", "")) == branch
+        and str(pr.get("base_branch", "")) == base
+        and str(pr.get("author", "")) == author
+        and str(pr.get("state", "")).upper() == state
+    )
+    if not snapshot_matches:
+        return blocked("active_task_discovery_snapshot_mismatch")
+    return None, {
+        "pr_binding": "discovered",
+        "binding_required": True,
+        "pull_request": number,
+        "next_action": (
+            f"governance must record pull_request {number} for task {task['id']} "
+            "in ORCHESTRATION_STATE.json; the merge gate denies until it is recorded"
+        ),
+    }
 
 
 def result(state: str, reason: str, task: dict[str, Any], **extra: Any) -> dict[str, Any]:
@@ -637,32 +810,48 @@ def build_assignment(
         task["pull_request"] = (live.get("pull_request") or {}).get("number")
     pr = live.get("pull_request") or {}
     role_policy = authority["roles"][role]
+    authority_facts = {
+        "agentops_sha": agentops_sha,
+        "authority_revision": authority["authority_revision"],
+        "task_id": str(task["id"]),
+        "operational_state": resolved["state"],
+        "reason": resolved["reason"],
+    }
+    if resolved.get("pr_binding") == "discovered":
+        authority_facts.update(
+            pr_binding="discovered",
+            binding_required=True,
+            next_action=resolved["next_action"],
+        )
+    work = {
+        "goal": task["title"],
+        "repository": task["repository"],
+        "branch": task["branch"],
+        "pull_request": resolved["pull_request"] if resolved.get("pr_binding") == "discovered" else task.get("pull_request"),
+        "expected_head_sha": pr.get("head_sha"),
+        "prompt": task.get("prompt"),
+        "allowed_paths": [] if role == "reviewer" else list(task.get("allowed_paths", [])),
+        "acceptance": task.get("acceptance", []),
+        "required_evidence": task.get("required_evidence", []),
+    }
+    if _is_explicit_review(live):
+        context = _explicit_review_context(authority, live)
+        if context is None:
+            work["linked_task"] = str(authority["task"]["id"])
+        else:
+            if role == "reviewer":
+                context["allowed_paths"] = []
+            work.update(context)
     return {
         "schema_version": 1,
         "assignment_type": "score2gp_bounded_worker",
-        "authority": {
-            "agentops_sha": agentops_sha,
-            "authority_revision": authority["authority_revision"],
-            "task_id": str(task["id"]),
-            "operational_state": resolved["state"],
-            "reason": resolved["reason"],
-        },
+        "authority": authority_facts,
         "worker": {
             "role": role,
             "os_user": identity.os_user,
             "github_login": identity.github_login,
         },
-        "work": {
-            "goal": task["title"],
-            "repository": task["repository"],
-            "branch": task["branch"],
-            "pull_request": task.get("pull_request"),
-            "expected_head_sha": pr.get("head_sha"),
-            "prompt": task.get("prompt"),
-            "allowed_paths": [] if role == "reviewer" else list(task.get("allowed_paths", [])),
-            "acceptance": task.get("acceptance", []),
-            "required_evidence": task.get("required_evidence", []),
-        },
+        "work": work,
         "capabilities": {
             "allowed_actions": role_policy["allowed_actions"],
             "forbidden_actions": role_policy["forbidden_actions"],
@@ -674,6 +863,44 @@ def build_assignment(
             "may_select_next_task": False,
             "may_merge": False,
         },
+    }
+
+
+def _is_explicit_review(live: dict[str, Any]) -> bool:
+    return live.get("explicit_review") is True or live.get("control_plane_repair") is True
+
+
+def _explicit_review_context(authority: dict[str, Any], live: dict[str, Any]) -> dict[str, Any] | None:
+    """Work context for an explicitly requested PR that is not the active task's PR (GOV-03).
+
+    Returns None for the active task's own PR. Otherwise the PR's own title,
+    repository and branch, and the task it links to (or none). Only a linked
+    task other than the active task contributes its prompt and acceptance.
+    """
+    task = authority["task"]
+    pr = live.get("pull_request") or {}
+    repository = str((live.get("snapshot") or {}).get("repository") or task["repository"])
+    number = _parse_strict_positive_int(pr.get("number"))
+    head_branch = str(pr.get("head_branch", ""))
+    task_pr = _parse_strict_positive_int(task.get("pull_request"))
+    if repository == str(task["repository"]) and (
+        (number is not None and number == task_pr) or head_branch == str(task["branch"])
+    ):
+        return None
+    unflagged = {k: v for k, v in live.items() if k not in {"explicit_review", "control_plane_repair"}}
+    linked = _completed_review_target(authority, unflagged)
+    linked_id = str(linked["id"]) if linked is not None and linked.get("id") else None
+    source = linked if linked is not None and linked_id != str(task["id"]) else {}
+    return {
+        "goal": str(pr.get("title") or f"{repository}#{pr.get('number')}"),
+        "repository": repository,
+        "branch": head_branch,
+        "pull_request": pr.get("number"),
+        "prompt": source.get("prompt"),
+        "allowed_paths": list(source.get("allowed_paths", [])),
+        "acceptance": list(source.get("acceptance", [])),
+        "required_evidence": list(source.get("required_evidence", [])),
+        "linked_task": linked_id,
     }
 
 
@@ -769,8 +996,11 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append("branch_mismatch")
         if repository != str(task["repository"]):
             failures.append("repository_mismatch")
+        # A PR found by discovery (GOV-03) is never merged until the authority records its number.
         task_pr = _parse_strict_positive_int(task.get("pull_request"))
-        if task_pr is not None and _parse_strict_positive_int(pr.get("number")) != task_pr:
+        if task_pr is None:
+            failures.append("task_pull_request_not_recorded")
+        elif _parse_strict_positive_int(pr.get("number")) != task_pr:
             failures.append("pull_request_mismatch")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
@@ -1054,7 +1284,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile", "frontier"),
+        choices=("snapshot", "task-live", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile",
+                 "frontier"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -1068,6 +1299,11 @@ def main() -> None:
         if not args.repository or args.pull_request is None:
             raise ControlError("snapshot requires --repository and --pull-request")
         print(json.dumps(capture_live_state(args.repository, args.pull_request), indent=2, sort_keys=True))
+        return
+    if args.command == "task-live":
+        authority = load_json(args.authority)
+        validate_authority(authority)
+        print(json.dumps(task_live_state(authority["task"]), indent=2, sort_keys=True))
         return
     if args.command == "merge":
         if not args.repository or args.pull_request is None:

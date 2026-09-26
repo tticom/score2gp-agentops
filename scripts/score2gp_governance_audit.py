@@ -188,6 +188,12 @@ def parse_active_task_state(content: str) -> tuple[str, str, str]:
 
     return status, repository, branch_name
 
+
+def parse_active_task_pull_request(content: str) -> str:
+    """The task contract's recorded PR number, ``TBD``, or empty when the field is absent."""
+    match = re.search(r"^\*\*Pull Request\*\*:\s*`?([^`\s]+)`?\s*$", content, re.MULTILINE)
+    return match.group(1).strip() if match else ""
+
 FULL_SHA_METADATA = re.compile(r"`?[0-9a-f]{40}`?")
 REAPPROVED_HEAD_METADATA = re.compile(
     r"`?[0-9a-f]{40}`?\s+"
@@ -310,6 +316,14 @@ def main():
                                     f"ACTIVE_TASK.md status is stale ({status}) for branch '{branch_name}' which is already MERGED on {repository}."
                                 )
                                 break
+                        # GOV-03: an in-flight PR must be recorded, or only discovery can find it.
+                        recorded_pr = parse_active_task_pull_request(content)
+                        for pr_info in matches:
+                            if pr_info.get("state") == "OPEN" and recorded_pr != str(pr_info.get("number")):
+                                violations.append(
+                                    f"OPEN PR #{pr_info.get('number')} on active task branch '{branch_name}' ({repository}) "
+                                    f"is not recorded in the orchestration authority (Pull Request: {recorded_pr or 'missing'})."
+                                )
                     except Exception as json_err:
                         violations.append(f"Unable to verify active task branch against GitHub: {branch_name} (JSON parse error: {json_err})")
             except Exception as e:
