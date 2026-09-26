@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dur-01-note-durations-from-note-types`
 
-**Pull Request**: TBD
+**Pull Request**: 466
 
 **Owner Role**: implementation
 
