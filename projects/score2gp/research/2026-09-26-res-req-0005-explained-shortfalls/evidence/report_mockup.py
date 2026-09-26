@@ -25,7 +25,10 @@ sys.path.insert(0, str(PRODUCT / "src"))
 from score2gp.tabraw import TabRaw  # noqa: E402
 from score2gp.pdf_tab_bar_assembler import assemble_pdf_tab_bar  # noqa: E402
 from score2gp.pdf_tab_measure_timing import PdfTabBarAssemblerError  # noqa: E402
-from score2gp.pdf_only_chord_event_grouper import PDF_ONLY_CHORD_X_TOLERANCE_PT  # noqa: E402
+from score2gp.pdf_only_chord_event_grouper import PDF_ONLY_CHORD_X_TOLERANCE_PT, PdfOnlyChordEventGrouper  # noqa: E402
+from score2gp.pdf_tab_bar_assembler import split_tab_candidates_by_floating_barlines  # noqa: E402
+from score2gp.pdf_tab_measure_timing import select_pdf_tab_grid_spacing_and_duration_name  # noqa: E402
+from score2gp.pdf_tab_event_factory import _REST_CANDIDATE_MAP  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
 from facts_harness import SAFE  # noqa: E402  (pdf.py:2283-2305 exemption list)
@@ -58,6 +61,34 @@ def bar_key(c):
             c.bar_index if c.bar_index is not None else -1)
 
 
+def duration_methods(bf, floating_barlines, draft=False):
+    """How each event's duration was chosen in one assembled bar, mirroring pdf_tab_bar_assembler.py:56-117.
+
+    The assembler groups candidates into events by x position (PdfOnlyChordEventGrouper), then asks
+    select_pdf_tab_grid_spacing_and_duration_name (pdf_tab_measure_timing.py:45-66) for one duration
+    from the number of events N only: N <= 8 eighth, <= 16 16th, <= 32 32nd, else 64th. An event keeps
+    that duration unless it is a rest symbol or carries explicit duration evidence
+    (pdf_tab_event_factory.py:83-133). Spacing between events is never an input.
+    Returns a Counter of method labels ("count_rule:<duration>", "explicit_evidence", "rest_symbol").
+    """
+    grouper = PdfOnlyChordEventGrouper(tolerance=PDF_ONLY_CHORD_X_TOLERANCE_PT)
+    measures = split_tab_candidates_by_floating_barlines(bf, floating_barlines) if floating_barlines else [bf]
+    methods = collections.Counter()
+    for m in measures:
+        groups = grouper.group_bar_candidates(m)
+        _, name = select_pdf_tab_grid_spacing_and_duration_name(len(groups), editable_draft=draft)
+        for g in groups:
+            if any((c.raw_text or "").lower() in _REST_CANDIDATE_MAP for c in g):
+                methods["rest_symbol"] += 1
+            elif any(c.duration_evidence is not None and (c.duration_evidence.source == "visual_morphology" or (
+                    not c.duration_evidence.is_fallback_placeholder and c.duration_evidence.duration_ticks > 0))
+                    for c in g):
+                methods["explicit_evidence"] += 1
+            else:
+                methods[f"count_rule:{name}"] += 1
+    return methods
+
+
 def build_records():
     tab = TabRaw.from_json_file(RUN / "tab" / "tab_raw.json")
     fret = [c for c in tab.candidates if (c.parsed_fret is not None and c.kind == "fret") or c.raw_text == "quarter_rest"]
@@ -82,6 +113,7 @@ def build_records():
         delivered.append(k)
         records.append({"feature_kind": "duration", "location": loc, "engine_code": "pdf_only_tab_inferred_timing",
                         "stage": "measure-assembly", "disposition": "approximated", "evidence": {},
+                        "disposition_detail": {"method": dict(duration_methods(bf, tab.floating_barlines))},
                         "impact": {"notes": len(bf), "bars": 1}})
         if any(ev.is_rest and not ev.provenance for ev in bar.events):
             records.append({"feature_kind": "rest", "location": loc, "engine_code": "measure_fill_rest_synthesised",
@@ -144,8 +176,17 @@ def main() -> None:
     p("## Converted, but check before relying on it\n")
     p("| Why (user reason) | What it means | Bars | Notes |")
     p("|---|---|---|---|")
-    p(f"| `approximated` | Rhythm in these bars was estimated from note spacing, not read from notation. | {len(approx)} | "
-      f"{sum(r['impact']['notes'] for r in approx)} |")
+    rule = collections.Counter()
+    for r in approx:
+        for method, n in r["disposition_detail"]["method"].items():
+            rule[method] += n
+    by_dur = ", ".join(f"{m.split(':', 1)[1]} {n}" for m, n in sorted(rule.items()) if m.startswith("count_rule:"))
+    kept = rule.get("explicit_evidence", 0) + rule.get("rest_symbol", 0)
+    p(f"| `approximated` | Rhythm in these bars was not read from the notation. Every note or chord in a bar was "
+      f"given the same length, chosen only from how many there are in the bar: up to 8 become eighth notes, "
+      f"9 to 16 become sixteenths, 17 to 32 become 32nds. Where they are placed on the page does not change "
+      f"their length{' (except rest symbols and notes with a readable duration mark)' if kept else ''}. "
+      f"| {len(approx)} | {sum(r['impact']['notes'] for r in approx)} |")
     p(f"| `approximated` | Rests were added to fill these bars to the time signature. | {len(synth)} | — |")
     for user in CAND_USER:
         rs = [r for r in records if r["engine_code"] == f"candidate:{user}"]
@@ -164,6 +205,9 @@ def main() -> None:
             p(f"| {label} | {r['impact']['items']} | `feature-not-supported` |")
     p("")
     p("## Details for support\n")
+    p("Events in converted bars, by how their duration was chosen: "
+      + (f"count rule ({by_dur}); " if by_dur else "")
+      + f"explicit duration evidence {rule.get('explicit_evidence', 0)}; rest symbols {rule.get('rest_symbol', 0)}.\n")
     p("| Engine code | Stage | Family | Records | Evidence codes (count) |")
     p("|---|---|---|---|---|")
     groups = collections.defaultdict(list)

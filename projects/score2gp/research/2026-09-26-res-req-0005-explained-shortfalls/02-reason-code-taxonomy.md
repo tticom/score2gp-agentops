@@ -80,7 +80,7 @@ axes on every shortfall record:  feature kind  ×  disposition
 | `refused_document` | Nothing delivered | n/a |
 | `refused_region` | That region is left out and marked as a gap; the rest is delivered | Yes, with a visible gap marker |
 | `omitted` | The feature is left out; its host region is delivered | Yes, labelled |
-| `approximated` | Delivered from inference, not observation (e.g. rhythm from spacing) | Only in an output labelled as approximate (see 03) |
+| `approximated` | Delivered from inference, not observation (e.g. rhythm from the per-bar event-count rule, map D1) | Only in an output labelled as approximate (see 03) |
 | `defaulted` | Delivered using a documented default (e.g. tempo 120) | Yes, labelled |
 | `synthesised` | Content created to satisfy a container rule (e.g. rests filling a bar) | Only if labelled; never with confidence 1.0 |
 | `preserved_not_written` | Kept in ScoreIR, not written by the target | Yes, labelled |
@@ -107,7 +107,7 @@ wording may be edited or localised.
 | `target-cannot-represent` | target_limit | "The selected Guitar Pro version can't store {feature}." | Choose a newer target (REQ-0002). |
 | `sources-disagree` | contradictory_evidence | "The PDF and the sidecar disagree about {location}." | Check which one is right. |
 | `input-invalid` | invalid_input | "The file couldn't be read as {expected}." | Check the file. |
-| `approximated` | missing_observation | "{feature} in {location} was estimated from the page layout, not read from the notation." | Check before relying on it. |
+| `approximated` | missing_observation | "{feature} in {location} was not read from the notation; it was set by {method}." (`method` is the record's `disposition_detail.method`, e.g. the event-count rule of map D1, so the text states the rule actually applied) | Check before relying on it. |
 | `defaulted` | missing_observation | "No {feature} was given, so {default} was used." | Set it if you know it. |
 | `setup-required` | environment | "{tool} is needed for this step and isn't available." | Install or configure it. |
 | `input-required` | invalid_input | "{input} is needed for this conversion." | Supply it. |

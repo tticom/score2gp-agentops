@@ -39,7 +39,7 @@ Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`.
 
 | Why (user reason) | What it means | Bars | Notes |
 |---|---|---|---|
-| `approximated` | Rhythm in these bars was estimated from note spacing, not read from notation. | 18 | 211 |
+| `approximated` | Rhythm in these bars was not read from the notation. Every note or chord in a bar was given the same length, chosen only from how many there are in the bar: up to 8 become eighth notes, 9 to 16 become sixteenths, 17 to 32 become 32nds. Where they are placed on the page does not change their length. | 18 | 211 |
 | `approximated` | Rests were added to fill these bars to the time signature. | 12 | — |
 | `fret-unreadable` | Some fret numbers could not be read reliably. | 12 | 41 |
 | `notation-symbol-unread` | A rhythm symbol above the tab could not be recognised. | 18 | 211 |
@@ -52,6 +52,8 @@ Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`.
 | Lyrics | 10 | `feature-not-supported` |
 
 #### Details for support
+
+Events in converted bars, by how their duration was chosen: count rule (16th 118, eighth 61); explicit duration evidence 0; rest symbols 0.
 
 | Engine code | Stage | Family | Records | Evidence codes (count) |
 |---|---|---|---|---|
@@ -88,7 +90,16 @@ Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`.
 5. **Formats.** The same records render to Markdown (terminal and PR evidence), HTML (users),
    and JSON (`shortfall-records.json`, tools). The sanitised aggregate is a fourth, counts-only
    rendering (design 04 §4.3).
-6. **Limitation:** "notation-symbol-unread" appears on all 211 delivered notes, because in this
+6. **The explanation states the rule actually applied.** The `approximated` rhythm row names the
+   product's event-count rule (map D1: `pdf_tab_measure_timing.py:45-66`, called at
+   `pdf_tab_bar_assembler.py:78`), not the product's own warning text, which wrongly says
+   "horizontal layout positioning" (map E7). The generator derives each delivered bar's methods by
+   calling the product's grouper and selector (`duration_methods` in `evidence/report_mockup.py`),
+   and stores them in the record's `disposition_detail.method`. In this run all 179 events in
+   the 18 delivered bars came from the count rule: 61 eighths (bars with at most 8 events) and 118
+   sixteenths (bars with 9-16 events). The rest-symbol and duration-mark exception is printed only
+   when it occurs.
+7. **Limitation:** "notation-symbol-unread" appears on all 211 delivered notes, because in this
    run every fret candidate carries `pdf_notation_rhythm_missing_notehead`. A real report would
    fold that into the `approximated` rhythm row rather than list it twice. The generator keeps
    the rows separate here so the counts can be checked against the evidence.
