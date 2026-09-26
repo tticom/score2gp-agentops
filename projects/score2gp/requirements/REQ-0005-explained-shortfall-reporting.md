@@ -33,7 +33,7 @@ Maintainer direction (2026-09-25), verbatim:
 ## Open questions (answered by RES-REQ-0005)
 
 1. How best-effort output coexists with strict refusal: a mode, per-measure gating, or a separate "partial" artifact.
-   **Answer:** the primary `--out` stays complete-or-nothing. When a conversion is not complete, the run exits non-success with status `partial`, writes no primary output, and writes a labelled `<name>.partial.gp` beside it: delivered bars, plus a marked gap bar for each refused bar. ([options](../research/2026-09-26-res-req-0005-explained-shortfalls/03-best-effort-options.md))
+   **Answer:** the primary `--out` stays complete-or-nothing. When a conversion is not complete, the run exits non-success with status `partial`, leaves no file at `--out`, and writes a labelled `<name>.partial.gp` beside it: delivered bars, plus a marked gap bar for each refused bar. A run-bound output contract makes that hold on repeat runs: preflight refusal on an existing output unless `--overwrite`, a report written first, and a `run_id` plus artifact hashes. ([options](../research/2026-09-26-res-req-0005-explained-shortfalls/03-best-effort-options.md))
 2. The reason-code taxonomy: extend the existing codes or define a user-facing layer above them.
    **Answer:** both. Register and freeze the existing engine codes, and add 8 reason families and 17 stable user reasons above them. Every shortfall also carries a feature kind and a disposition. ([taxonomy](../research/2026-09-26-res-req-0005-explained-shortfalls/02-reason-code-taxonomy.md))
 3. Where shortfall records live and how they are aggregated without exposing private content.
