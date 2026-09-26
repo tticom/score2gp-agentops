@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 55,
+  "authority_revision": 56,
   "task": {
     "id": "RES-REQ-0005",
     "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
@@ -43,7 +43,65 @@
       "maintainer_decision_required"
     ]
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "RHY-00",
+    "title": "Refuse output whose rhythm was not read from the notation",
+    "objective": "No GP output may contain a duration or rest that was not read from note types (noteheads, stems, flags, beams, dots, rests) and their grouping (beams, tuplets). Remove the count-based duration choice, the editable-draft quarter default and the remainder rest padding; the PDF-only and editable-draft routes refuse with a located pdf_rhythm_not_read code until rhythm evidence (REC-10) exists.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/rhy-00-refuse-unread-rhythm",
+    "prompt": "projects/score2gp/prompts/next/rhy-00-refuse-unread-rhythm.md",
+    "allowed_paths": [
+      "src/score2gp/pdf_tab_measure_timing.py",
+      "src/score2gp/pdf_tab_bar_assembler.py",
+      "src/score2gp/pdf_tab_event_factory.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/cli.py",
+      "src/score2gp/ir.py",
+      "tests/test_cli_convert.py",
+      "tests/test_pdf_only_tab.py",
+      "tests/test_pdf_only_tab_quarter_rest.py",
+      "tests/test_pdf_tab_bar_assembler.py",
+      "tests/test_pdf_tab_duration_assembler_integration.py",
+      "tests/test_pdf_tab_duration_regression_audit.py",
+      "tests/test_pdf_tab_event_factory.py",
+      "tests/test_pdf_tab_measure_timing.py",
+      "tests/test_rhy_00_refuse_unread_rhythm.py",
+      "docs/design/pdf-tab-duration-candidate-extraction.md",
+      "docs/musicxml-tabraw-build-ir.md",
+      "docs/architecture.md",
+      "docs/diagnostics_failure_taxonomy.md"
+    ],
+    "acceptance": [
+      "The count-based duration choice (select_pdf_tab_grid_spacing_and_duration_name), the editable-draft quarter default and the remainder rest padding (decompose_pdf_tab_measure_remainder_to_rests) are removed from every output-producing code path; no function in src/ derives a duration from an event count, note spacing or a fixed default.",
+      "convert --pdf-only-tab and convert --editable-draft on a public PDF fixture and on the real Lesson-5.pdf exit non-zero with refusal code pdf_rhythm_not_read (stage measure-assembly), a located page, system and bar, a message that rhythm must come from note types and grouping, and no new GP file written.",
+      "MusicXML-timed conversions and their tests are unchanged and pass.",
+      "Every test that asserted a count-derived duration or padded rest becomes a refusal assertion, none deleted without replacement; restoring the old duration choice makes the refusal tests fail.",
+      "docs/design/pdf-tab-duration-candidate-extraction.md and docs/musicxml-tabraw-build-ir.md record the removal, the reason and the refusal code.",
+      "python -m pytest, export-schema (no schema diff), validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "RES-REQ-0005"
+    ],
+    "stop_conditions": [
+      "gate_loosened",
+      "alternative_duration_guess_introduced",
+      "musicxml_route_changed",
+      "private_content_would_be_committed"
+    ]
+  },
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -1747,7 +1805,7 @@
       "depends_on": [
         "TOP-02"
       ],
-      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-10. Absorbs RHY-01, NPG-04C future."
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-10. Absorbs RHY-01, NPG-04C future. Maintainer 2026-09-26: rhythm comes only from note types (noteheads, stems, flags, beams, dots, rests) and their grouping (beams, tuplets); never from event counts, spacing or defaults. RHY-00 removes the count-based guess meanwhile."
     },
     {
       "id": "NPG-05A",
