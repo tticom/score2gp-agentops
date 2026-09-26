@@ -337,3 +337,137 @@ def test_orca_path_refuses_login_in_another_identitys_workspace(tmp_path, monkey
     with pytest.raises(DispatchError, match="may not operate in worktrees/gov"):
         run_orca_main(monkeypatch, agentops, "tticom-automation", "implementation")
     assert capsys.readouterr().out == ""
+
+
+# --- GOV-03: both bootstraps discover an unrecorded PR on the active task branch ---
+
+FIXTURE_BRANCH = ORCA_FIXTURE_AUTHORITY["task"]["branch"]
+
+
+def discovered_live(reviews=(), author="tticom-automation", numbers=(464,)) -> dict:
+    candidates = [
+        {"number": n, "state": "OPEN", "head_branch": FIXTURE_BRANCH, "base_branch": "main",
+         "author": author, "cross_repository": False}
+        for n in numbers
+    ]
+    live = {"discovery": {"repository": "tticom/score2gp", "branch": FIXTURE_BRANCH,
+                          "base_branch": "main", "candidates": candidates}}
+    if len(numbers) == 1:
+        live.update(
+            snapshot={"repository": "tticom/score2gp"},
+            pr_binding="discovered",
+            pull_request={"number": numbers[0], "state": "OPEN", "head_branch": FIXTURE_BRANCH,
+                          "base_branch": "main", "head_sha": "d" * 40, "author": author,
+                          "reviews": list(reviews)},
+        )
+    return live
+
+
+class BootstrapRunner:
+    """Scripted subprocess.run for the bootstraps; resolves with the real resolver."""
+
+    def __init__(self, live: dict, login: str, snapshot: dict | None = None):
+        self.live, self.login, self.snapshot = live, login, snapshot
+        self.commands: list[list[str]] = []
+        self.dispatched: list[tuple[list[str], dict]] = []
+
+    def __call__(self, command, **kwargs):
+        from scripts.score2gp_orca_control import resolve_state
+
+        command = [str(part) for part in command]
+        self.commands.append(command)
+
+        def done(stdout="", returncode=0):
+            return SimpleNamespace(returncode=returncode, stdout=stdout, stderr="")
+
+        if command[0] == "git":
+            return done()
+        if command[:3] == ["gh", "api", "user"]:
+            return done(self.login + "\n")
+        if command[:3] == ["gh", "pr", "view"]:
+            return done(json.dumps({"files": [{"path": "src/fixture.py"}]}))
+        if "task-live" in command:
+            return done(json.dumps(self.live))
+        if "snapshot" in command:
+            return done(json.dumps(self.snapshot))
+        if "resolve" in command:
+            authority = json.loads(Path(command[command.index("--authority") + 1]).read_text(encoding="utf-8"))
+            live = json.loads(Path(command[command.index("--live") + 1]).read_text(encoding="utf-8"))
+            return done(json.dumps(resolve_state(authority, live)))
+        if command[1].endswith("score2gp_dispatch.py"):
+            live = json.loads(Path(command[command.index("--live") + 1]).read_text(encoding="utf-8"))
+            self.dispatched.append((command, live))
+            return done()
+        raise AssertionError(f"unexpected command {command}")
+
+
+def run_bootstrap(monkeypatch, tmp_path, module_name: str, runner: BootstrapRunner, *extra: str) -> int:
+    import importlib
+
+    module = importlib.import_module(f"scripts.{module_name}")
+    agentops = orca_checkout(tmp_path, "auto")
+    monkeypatch.setattr("subprocess.run", runner)
+    monkeypatch.setattr(sys, "argv", [f"{module_name}.py", "--agentops", str(agentops),
+                                      "--product", str(tmp_path / "product"), "--json", *extra])
+    with pytest.raises(SystemExit) as raised:
+        module.main()
+    return raised.value.code
+
+
+def orca_role(command: list[str]) -> str:
+    return command[command.index("--orca-role") + 1]
+
+
+def test_go_bootstrap_discovers_an_unrecorded_pr_and_routes_its_blocking_review(tmp_path, monkeypatch) -> None:
+    review = {"author": "tticom-codex", "state": "CHANGES_REQUESTED", "head_sha": "d" * 40}
+    runner = BootstrapRunner(discovered_live([review]), "tticom-automation")
+    assert run_bootstrap(monkeypatch, tmp_path, "score2gp_go_bootstrap", runner) == 0
+    assert any("task-live" in c for c in runner.commands)
+    assert not any("snapshot" in c for c in runner.commands)
+    [(command, live)] = runner.dispatched
+    assert orca_role(command) == "implementation"
+    assert live["pr_binding"] == "discovered" and live["pull_request"]["number"] == 464
+
+
+def test_go_bootstrap_stops_with_the_named_reason_when_discovery_is_ambiguous(tmp_path, monkeypatch, capsys) -> None:
+    runner = BootstrapRunner(discovered_live(numbers=(464, 470)), "tticom-automation")
+    assert run_bootstrap(monkeypatch, tmp_path, "score2gp_go_bootstrap", runner) == 1
+    out = json.loads(capsys.readouterr().out)
+    assert (out["ok"], out["state"], out["reason"]) == (False, "BLOCKED", "active_task_multiple_pull_requests")
+    assert runner.dispatched == []
+
+
+def test_go_bootstrap_without_any_pr_still_dispatches_the_task(tmp_path, monkeypatch) -> None:
+    live = {"discovery": {"repository": "tticom/score2gp", "branch": FIXTURE_BRANCH, "base_branch": "main",
+                          "candidates": [], "branch_ahead_by": 0}}
+    runner = BootstrapRunner(live, "tticom-automation")
+    assert run_bootstrap(monkeypatch, tmp_path, "score2gp_go_bootstrap", runner) == 0
+    [(command, _)] = runner.dispatched
+    assert orca_role(command) == "implementation"
+
+
+def test_got_bootstrap_routes_a_discovered_pr_to_review(tmp_path, monkeypatch) -> None:
+    runner = BootstrapRunner(discovered_live(), "tticomgov-code")
+    assert run_bootstrap(monkeypatch, tmp_path, "score2gp_got_bootstrap", runner) == 0
+    [(command, live)] = runner.dispatched
+    assert orca_role(command) == "reviewer"
+    assert live["pr_binding"] == "discovered"
+
+
+def test_got_bootstrap_refuses_self_review_of_a_discovered_pr(tmp_path, monkeypatch, capsys) -> None:
+    runner = BootstrapRunner(discovered_live(author="tticom-codex"), "tticom-codex")
+    assert run_bootstrap(monkeypatch, tmp_path, "score2gp_got_bootstrap", runner) == 1
+    assert "self-review is forbidden" in capsys.readouterr().out
+    assert runner.dispatched == []
+
+
+def test_got_explicit_review_of_the_unrecorded_active_task_pr_binds_it(tmp_path, monkeypatch) -> None:
+    live = discovered_live()
+    snapshot = {"snapshot": live["snapshot"], "pull_request": live["pull_request"]}
+    runner = BootstrapRunner(live, "tticomgov-code", snapshot=snapshot)
+    code = run_bootstrap(monkeypatch, tmp_path, "score2gp_got_bootstrap", runner,
+                         "--review-repo", "tticom/score2gp", "--review-pr", "464")
+    assert code == 0
+    [(command, dispatched)] = runner.dispatched
+    assert orca_role(command) == "reviewer"
+    assert dispatched["explicit_review"] is True and dispatched["pr_binding"] == "discovered"

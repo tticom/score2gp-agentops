@@ -370,6 +370,7 @@ def test_open_matching_pr_passes_audit(monkeypatch, capsys) -> None:
 **Status**: APPROVED
 **PR Branch**: `gov/promote-cr05-structural-layout-and-titles-architecture`
 **Repository**: tticom/score2gp-agentops
+**Pull Request**: 425
 """
             return m_open(read_data=data)()
         if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
@@ -920,6 +921,7 @@ def _run_main_with_other_steps_passing(monkeypatch, authority=None, gh_stdout=No
 **Status**: APPROVED
 **PR Branch**: `feat/gov-02-fixture`
 **Repository**: tticom/score2gp-agentops
+**Pull Request**: 425
 """)()
         if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
             return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
@@ -970,3 +972,101 @@ def test_suite_isolation_holds_when_live_authority_enables_the_receipt_audit(mon
     assert code == 0
     assert len(calls) == 1
     assert "GOVERNANCE AUDIT PASS" in capsys.readouterr().out
+
+
+# --- GOV-03: an OPEN PR on the active branch must be recorded in the authority ---
+
+def _run_main_with_active_task(monkeypatch, recorded, gh_stdout, runner=None):
+    mock_files = [
+        "projects/score2gp/skills/architect/SKILL.md",
+        "skills/score2gp-developer.md",
+        "skills/score2gp-pr-hard-review.md",
+        "skills/score2gp-task-orchestration.md",
+    ]
+    monkeypatch.setattr(score2gp_governance_audit, "run_cmd", lambda args: "\n".join(mock_files))
+    monkeypatch.setattr(os.path, "exists", lambda path: True)
+    monkeypatch.delenv("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE", raising=False)
+    original_open = open
+    pull_request_line = f"**Pull Request**: {recorded}\n" if recorded is not None else ""
+
+    def mock_open(path, *args, **kwargs):
+        from unittest.mock import mock_open as m_open
+        if "ACTIVE_TASK.md" in str(path):
+            return m_open(read_data="# Active Task\n**Status**: PROMOTED\n"
+                          "**PR Branch**: `feat/gov-03-fixture`\n"
+                          "**Repository**: tticom/score2gp-agentops\n" + pull_request_line)()
+        if "AGENT-RULES.md" in str(path) or "AGENT_CONTROL.md" in str(path):
+            return m_open(read_data="agent_verify.py artifact_audit.py pr_body.py")()
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", mock_open)
+    runner = runner or RecordedSubprocessRunner(stdout=json.dumps(gh_stdout))
+    monkeypatch.setattr(subprocess, "run", runner)
+    with pytest.raises(SystemExit) as raised:
+        score2gp_governance_audit.main()
+    runner.assert_called_with_gh_pr_list(repo="tticom/score2gp-agentops", head="feat/gov-03-fixture")
+    return raised.value.code
+
+
+@pytest.mark.parametrize("recorded", ["TBD", None, "470"])
+def test_open_pr_on_the_active_branch_missing_from_the_authority_fails_audit(monkeypatch, capsys, recorded) -> None:
+    code = _run_main_with_active_task(monkeypatch, recorded, [{"number": 464, "state": "OPEN"}])
+    assert code == 1
+    out = capsys.readouterr().out
+    assert "OPEN PR #464" in out
+    assert "feat/gov-03-fixture" in out
+    assert "not recorded in the orchestration authority" in out
+
+
+def test_open_pr_recorded_in_the_authority_passes_audit(monkeypatch, capsys) -> None:
+    code = _run_main_with_active_task(monkeypatch, "464", [{"number": 464, "state": "OPEN"}])
+    assert code == 0
+    assert "GOVERNANCE AUDIT PASS" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("state", ["CLOSED"])
+def test_closed_pr_on_the_active_branch_is_not_an_unrecorded_open_pr(monkeypatch, capsys, state) -> None:
+    code = _run_main_with_active_task(monkeypatch, "TBD", [{"number": 464, "state": state}])
+    assert code == 0
+    assert "not recorded" not in capsys.readouterr().out
+
+
+def test_active_task_pull_request_field_is_parsed() -> None:
+    parse = score2gp_governance_audit.parse_active_task_pull_request
+    assert parse("**Pull Request**: 464\n") == "464"
+    assert parse("**Pull Request**: TBD\n") == "TBD"
+    assert parse("**Status**: PROMOTED\n") == ""
+
+
+class LimitedPrListRunner(RecordedSubprocessRunner):
+    """gh pr list as the CLI behaves: newest first, truncated at --limit (default 30)."""
+
+    def __call__(self, args, **kwargs):
+        if args and args[0] == "gh":
+            self.calls.append(list(args))
+            limit = int(args[args.index("--limit") + 1]) if "--limit" in args else 30
+            return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(self.stdout[:limit]), stderr="")
+        return subprocess.run(args, **kwargs)
+
+
+def _run_main_with_branch_history(monkeypatch, matches):
+    runner = LimitedPrListRunner(stdout=matches)
+    return _run_main_with_active_task(monkeypatch, "TBD", matches, runner=runner), runner
+
+
+def test_an_open_pr_behind_more_than_thirty_newer_branch_prs_still_fails_audit(monkeypatch, capsys) -> None:
+    newer = [{"number": 1000 - index, "state": "CLOSED"} for index in range(31)]
+    code, runner = _run_main_with_branch_history(monkeypatch, newer + [{"number": 464, "state": "OPEN"}])
+    assert code == 1
+    assert "OPEN PR #464" in capsys.readouterr().out
+    assert "--limit" in runner.calls[0]
+
+
+def test_branch_pr_list_reaching_the_audit_limit_fails_closed(monkeypatch, capsys) -> None:
+    limit = score2gp_governance_audit.BRANCH_PR_LIST_LIMIT
+    at_limit = [{"number": 5000 - index, "state": "CLOSED"} for index in range(limit)]
+    code, _ = _run_main_with_branch_history(monkeypatch, at_limit)
+    assert code == 1
+    assert "reached the audit limit" in capsys.readouterr().out
+    code, _ = _run_main_with_branch_history(monkeypatch, at_limit[:-1])
+    assert code == 0

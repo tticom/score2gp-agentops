@@ -1296,3 +1296,389 @@ def test_live_capture_records_githubs_merger_login(monkeypatch) -> None:
     snapshot = capture_live_state("tticom/score2gp", 441)
     assert snapshot["pull_request"]["merged_by"] == "tticom-codex"
     assert "mergedBy" in requested[0][requested[0].index("--json") + 1]
+
+
+# --- GOV-03: active-task PR discovery and fail-closed binding ---
+
+from scripts import score2gp_orca_control  # noqa: E402
+from scripts.score2gp_orca_control import task_live_state  # noqa: E402
+
+L3_01_BRANCH = "feat/l3-01-paired-staff-barline-acceptance"
+L3_01_HEAD = "22048b6d16e44983991ea8da097a26ec80050424"
+
+
+def l3_01_authority() -> dict:
+    """The 2026-09-25 authority (revision 46): L3-01 PROMOTED with no recorded PR."""
+    config = authority()
+    config["authority_revision"] = 46
+    config["task"] = {
+        "id": "L3-01",
+        "title": "Paired-staff barline acceptance for the Lesson 3 first system",
+        "status": "PROMOTED",
+        "repository": "tticom/score2gp",
+        "base_branch": "main",
+        "branch": L3_01_BRANCH,
+        "pull_request": None,
+        "owner_role": "implementation",
+        "reviewer_role": "reviewer",
+        "prompt": "projects/score2gp/prompts/next/l3-01-paired-staff-barline-acceptance.md",
+        "allowed_paths": ["src/score2gp/pdf.py", "tests/test_pdf.py"],
+        "acceptance": ["Lesson 3 page 1 system 1 yields exactly 4 boundaries and 3 bar boxes."],
+        "required_evidence": [],
+    }
+    config["roles"]["implementation"]["github_logins"] = ["tticom-automation", "tticom-codex"]
+    config["roles"]["reviewer"]["github_logins"] = ["tticom-codex", "tticomgov-code", "tticom-automation"]
+    return config
+
+
+def listed_pr(number: int = 464, state: str = "OPEN", base: str = "main",
+              author: str = "tticom-automation", branch: str = L3_01_BRANCH, cross: bool = False) -> dict:
+    return {"number": number, "state": state, "headRefName": branch, "baseRefName": base,
+            "author": {"login": author}, "isCrossRepository": cross}
+
+
+def viewed_pr(listed: dict, head: str = L3_01_HEAD, reviews: list | None = None) -> dict:
+    return {
+        "number": listed["number"], "state": listed["state"], "title": "L3-01: paired-staff barline acceptance",
+        "headRefName": listed["headRefName"], "headRefOid": head, "baseRefName": listed["baseRefName"],
+        "author": listed["author"], "reviews": reviews or [], "statusCheckRollup": [],
+        "mergeCommit": None, "mergedBy": None,
+    }
+
+
+# #464 at 22048b6: tticom-codex had requested changes at that exact head (and at earlier heads).
+L3_01_REVIEWS = [
+    {"author": {"login": "tticom-codex"}, "state": "CHANGES_REQUESTED",
+     "commit": {"oid": "30609cf5f703ec6dbb4ea8ee520ab40f845f5edf"}},
+    {"author": {"login": "tticom-codex"}, "state": "CHANGES_REQUESTED", "commit": {"oid": L3_01_HEAD}},
+]
+
+
+class FakeGh:
+    """Answers the gh queries discovery and capture make; records every command."""
+
+    def __init__(self, listed: list[dict], viewed: dict | None = None, ref_exists: bool = False, ahead_by: int = 0):
+        self.listed, self.viewed = listed, viewed or {}
+        self.ref_exists, self.ahead_by = ref_exists, ahead_by
+        self.commands: list[list[str]] = []
+
+    def __call__(self, command: list[str]):
+        self.commands.append(command)
+        if command[:3] == ["gh", "pr", "list"]:
+            return deepcopy(self.listed)
+        if command[:3] == ["gh", "pr", "view"]:
+            return deepcopy(self.viewed[int(command[3])])
+        if command[:3] == ["gh", "api", "graphql"]:
+            return {"data": {"repository": {"pullRequest": {"reviewThreads": {
+                "nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}}
+        if "matching-refs" in command[-1]:
+            branch = command[-1].split("matching-refs/heads/", 1)[1]
+            return [{"ref": f"refs/heads/{branch}"}] if self.ref_exists else []
+        if "/compare/" in command[-1]:
+            return {"ahead_by": self.ahead_by}
+        if command[-1].endswith("/rulesets"):
+            return [{"id": 7, "enforcement": "active"}]
+        if "/rulesets/" in command[-1]:
+            return {"id": 7, "current_user_can_bypass": "never"}
+        raise AssertionError(f"unexpected gh command {command}")
+
+
+def discovered(monkeypatch, gh: FakeGh, config: dict | None = None) -> dict:
+    monkeypatch.setattr("scripts.score2gp_orca_control.run_json", gh)
+    return task_live_state((config or l3_01_authority())["task"])
+
+
+def replay_live(monkeypatch) -> dict:
+    only = listed_pr()
+    return discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only, reviews=L3_01_REVIEWS)}))
+
+
+def assert_replay_resolves_to_changes_requested(live_state: dict) -> dict:
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert resolved["state"] != "READY"
+    assert resolved["state"] == "RUNNING"
+    assert resolved["reason"] == "current_head_changes_requested"
+    assert resolved["dispatch_role"] == "implementation"
+    assert resolved["binding_required"] is True
+    assert resolved["pr_binding"] == "discovered"
+    assert resolved["pull_request"] == 464
+    assert "464" in resolved["next_action"] and "governance" in resolved["next_action"]
+    return resolved
+
+
+def test_replay_of_l3_01_discovers_464_and_routes_the_blocking_review(monkeypatch) -> None:
+    live_state = replay_live(monkeypatch)
+    assert live_state["pull_request"]["head_sha"] == L3_01_HEAD
+    assert_replay_resolves_to_changes_requested(live_state)
+    config = l3_01_authority()
+    resolved = resolve_state(config, live_state)
+    identity = RuntimeIdentity("niall", "tticom-automation")
+    assignment = build_assignment(config, live_state, resolved, identity, "b" * 40)
+    assert assignment["work"]["pull_request"] == 464
+    assert assignment["work"]["expected_head_sha"] == L3_01_HEAD
+    assert assignment["authority"]["binding_required"] is True
+    assert assignment["authority"]["pr_binding"] == "discovered"
+    assert "464" in assignment["authority"]["next_action"]
+    validate_assignment(config, live_state, assignment, identity, "b" * 40)
+
+
+def test_disabling_discovery_makes_the_replay_fail(monkeypatch) -> None:
+    monkeypatch.setattr(score2gp_orca_control, "discover_live_state", lambda task: {})
+    live_state = replay_live(monkeypatch)
+    assert resolve_state(l3_01_authority(), live_state)["state"] == "READY"  # the 2026-09-25 fail-open
+    with pytest.raises(AssertionError):
+        assert_replay_resolves_to_changes_requested(live_state)
+
+
+def test_discovery_lists_the_task_branch_in_all_states(monkeypatch) -> None:
+    gh = FakeGh([], ref_exists=False)
+    discovered(monkeypatch, gh)
+    listing = gh.commands[0]
+    assert listing[:3] == ["gh", "pr", "list"]
+    assert listing[listing.index("--repo") + 1] == "tticom/score2gp"
+    assert listing[listing.index("--head") + 1] == L3_01_BRANCH
+    assert listing[listing.index("--state") + 1] == "all"
+
+
+def test_recorded_pull_request_is_captured_without_discovery(monkeypatch) -> None:
+    config = l3_01_authority()
+    config["task"]["pull_request"] = 464
+    only = listed_pr()
+    gh = FakeGh([], {464: viewed_pr(only, reviews=L3_01_REVIEWS)})
+    live_state = discovered(monkeypatch, gh, config)
+    assert not [c for c in gh.commands if c[:3] == ["gh", "pr", "list"]]
+    assert "discovery" not in live_state
+    resolved = resolve_state(config, live_state)
+    assert resolved["state"] == "RUNNING" and "binding_required" not in resolved
+
+
+def test_terminal_task_is_not_discovered(monkeypatch) -> None:
+    config = l3_01_authority()
+    config["task"]["status"] = "COMPLETED"
+    gh = FakeGh([listed_pr()])
+    assert discovered(monkeypatch, gh, config) == {}
+    assert gh.commands == []
+
+
+def test_two_pull_requests_on_the_task_branch_fail_closed(monkeypatch) -> None:
+    live_state = discovered(monkeypatch, FakeGh([listed_pr(464), listed_pr(470)]))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_multiple_pull_requests")
+    assert resolved["discovered_pull_requests"] == [464, 470]
+    assert "dispatch_role" not in resolved
+
+
+def test_wrong_base_is_not_bound(monkeypatch) -> None:
+    only = listed_pr(base="release")
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only, reviews=L3_01_REVIEWS)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_pr_wrong_base")
+    assert "binding_required" not in resolved and "dispatch_role" not in resolved
+
+
+def test_author_outside_the_implementation_role_is_not_bound(monkeypatch) -> None:
+    only = listed_pr(author="tticomgov-code")
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only, reviews=L3_01_REVIEWS)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_pr_author_not_implementation")
+    assert "binding_required" not in resolved and "dispatch_role" not in resolved
+
+
+def test_cross_repository_pr_is_not_bound(monkeypatch) -> None:
+    only = listed_pr(cross=True)
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_pr_cross_repository")
+
+
+def test_branch_with_commits_but_no_pr_fails_closed(monkeypatch) -> None:
+    gh = FakeGh([], ref_exists=True, ahead_by=3)
+    live_state = discovered(monkeypatch, gh)
+    compare = [c for c in gh.commands if "/compare/" in c[-1]]
+    assert compare and compare[0][-1] == f"repos/tticom/score2gp/compare/main...{L3_01_BRANCH}"
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_branch_without_pr")
+
+
+@pytest.mark.parametrize(("ref_exists", "ahead_by"), [(False, 0), (True, 0)])
+def test_no_pr_and_no_new_commits_is_ready(monkeypatch, ref_exists, ahead_by) -> None:
+    live_state = discovered(monkeypatch, FakeGh([], ref_exists=ref_exists, ahead_by=ahead_by))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("READY", "authorised_task_without_pr")
+    assert resolved["dispatch_role"] == "implementation"
+
+
+def test_closed_unmerged_pr_fails_closed(monkeypatch) -> None:
+    only = listed_pr(state="CLOSED")
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_pr_closed_unmerged")
+
+
+def test_merged_discovered_pr_routes_to_governance(monkeypatch) -> None:
+    only = listed_pr(state="MERGED")
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("GOVERNANCE_REQUIRED", "merge_requires_governance_reconciliation")
+    assert resolved["dispatch_role"] == "governance"
+    assert resolved["binding_required"] is True
+
+
+@pytest.mark.parametrize(
+    ("reviews", "state", "role"),
+    [
+        ([], "REVIEW_REQUIRED", "reviewer"),
+        ([{"author": {"login": "tticom-codex"}, "state": "APPROVED", "commit": {"oid": L3_01_HEAD}}],
+         "GOVERNANCE_REQUIRED", "governance"),
+    ],
+)
+def test_discovered_pr_routes_like_a_bound_pr(monkeypatch, reviews, state, role) -> None:
+    only = listed_pr()
+    live_state = discovered(monkeypatch, FakeGh([only], {464: viewed_pr(only, reviews=reviews)}))
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["dispatch_role"]) == (state, role)
+    assert resolved["binding_required"] is True
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("number", 470), ("head_branch", "feat/other"), ("base_branch", "release"), ("author", "tticomgov-code"),
+     ("state", "MERGED")],
+)
+def test_snapshot_disagreeing_with_the_discovered_candidate_fails_closed(monkeypatch, field, value) -> None:
+    live_state = replay_live(monkeypatch)
+    live_state["pull_request"][field] = value
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert resolved["state"] == "BLOCKED"
+    assert "dispatch_role" not in resolved
+
+
+def test_discovery_for_another_branch_is_not_trusted(monkeypatch) -> None:
+    live_state = replay_live(monkeypatch)
+    live_state["discovery"]["branch"] = "feat/other"
+    resolved = resolve_state(l3_01_authority(), live_state)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_discovery_mismatch")
+
+
+def test_pr_without_discovery_facts_still_fails_closed() -> None:
+    config = l3_01_authority()
+    facts = live()
+    facts["pull_request"]["head_branch"] = L3_01_BRANCH
+    facts["pr_binding"] = "discovered"
+    assert resolve_state(config, facts)["reason"] == "active_task_missing_pull_request"
+
+
+def test_merge_gate_denies_while_the_authority_pr_number_is_null() -> None:
+    config = executor_authority()
+    config["task"]["pull_request"] = None
+    facts = open_pr()
+    facts["pr_binding"] = "discovered"
+    decision = verify_merge_gate(config, gated(facts, config=config))
+    assert decision["decision"] == "DENY"
+    assert decision["failures"] == ["task_pull_request_not_recorded"]
+    recorded = executor_authority()
+    assert verify_merge_gate(recorded, gated(facts, config=recorded))["decision"] == "ALLOW"
+
+
+def test_executor_never_merges_a_discovered_but_unrecorded_pr() -> None:
+    config = executor_authority()
+    config["task"]["pull_request"] = None
+    gh = FakeGitHub(open_pr())
+    with pytest.raises(ControlError, match="task_pull_request_not_recorded"):
+        execute_merge(config, "tticom/score2gp", 441, "merge-app", capture=gh.capture, run=gh.run)
+    assert gh.merge_commands() == []
+
+
+def explicit_review_facts(number: int = 465, branch: str = "feat/l3-02-other-task", title: str = "L3-02: other work") -> dict:
+    return {
+        "snapshot": {"repository": "tticom/score2gp"},
+        "explicit_review": True,
+        "pull_request": {
+            "number": number, "state": "OPEN", "title": title, "head_branch": branch,
+            "base_branch": "main", "head_sha": "c" * 40, "author": "tticom-automation", "reviews": [],
+        },
+    }
+
+
+def test_explicit_review_of_another_pr_carries_that_prs_own_context() -> None:
+    config = authority()
+    facts = explicit_review_facts()
+    resolved = resolve_state(config, facts)
+    assignment = build_assignment(config, facts, resolved, RuntimeIdentity("niall", "reviewer"), "b" * 40)
+    work = assignment["work"]
+    assert work["goal"] == "L3-02: other work"
+    assert work["repository"] == "tticom/score2gp"
+    assert work["branch"] == "feat/l3-02-other-task"
+    assert work["pull_request"] == 465
+    assert work["linked_task"] is None
+    assert work["prompt"] is None
+    assert work["acceptance"] == [] and work["required_evidence"] == []
+    active = config["task"]
+    rendered = json.dumps(work)
+    for leaked in (active["title"], active["prompt"], *active["acceptance"]):
+        assert leaked not in rendered
+
+
+def test_explicit_review_of_a_registered_task_pr_names_the_linked_task() -> None:
+    config = authority()
+    config["task_registry"] = {"L3-02": {
+        "id": "L3-02", "title": "Other task", "status": "COMPLETED", "repository": "tticom/score2gp",
+        "branch": "feat/l3-02-other-task", "owner_role": "implementation", "allowed_paths": ["src/b.py"],
+        "prompt": "l3-02.md", "acceptance": ["other acceptance"],
+    }}
+    facts = explicit_review_facts()
+    resolved = resolve_state(config, facts)
+    work = build_assignment(config, facts, resolved, RuntimeIdentity("niall", "reviewer"), "b" * 40)["work"]
+    assert work["linked_task"] == "L3-02"
+    assert work["goal"] == "L3-02: other work"
+    assert work["acceptance"] == ["other acceptance"] and work["prompt"] == "l3-02.md"
+    assert "prove repair" not in json.dumps(work)
+
+
+def test_explicit_review_of_the_active_task_pr_keeps_the_task_context() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=441, branch="feat/task-108", title="Task 108")
+    resolved = resolve_state(config, facts)
+    work = build_assignment(config, facts, resolved, RuntimeIdentity("niall", "reviewer"), "b" * 40)["work"]
+    assert work["goal"] == "Bounded repair"
+    assert work["acceptance"] == ["prove repair"]
+    assert work["linked_task"] == "108"
+
+
+def _assert_own_review_context(config: dict, facts: dict, repository: str, number: int) -> None:
+    resolved = resolve_state(config, facts)
+    assert (resolved["state"], resolved["dispatch_role"]) == ("REVIEW_REQUIRED", "reviewer")
+    work = build_assignment(config, facts, resolved, RuntimeIdentity("niall", "reviewer"), "b" * 40)["work"]
+    assert (work["repository"], work["pull_request"], work["goal"]) == (repository, number, "Same-branch collision")
+    assert work["linked_task"] is None and work["prompt"] is None and work["acceptance"] == []
+    active = config["task"]
+    rendered = json.dumps(work)
+    for leaked in (active["title"], active["prompt"], *active["acceptance"]):
+        assert leaked not in rendered
+
+
+def test_explicit_review_of_another_repositorys_pr_on_the_active_branch_name_gets_its_own_context() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=12, branch="feat/task-108", title="Same-branch collision")
+    facts["snapshot"]["repository"] = "tticom/score2gp-agentops"
+    _assert_own_review_context(config, facts, "tticom/score2gp-agentops", 12)
+
+
+def test_explicit_review_of_another_pr_number_on_the_active_repository_and_branch_gets_its_own_context() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=442, branch="feat/task-108", title="Same-branch collision")
+    _assert_own_review_context(config, facts, "tticom/score2gp", 442)
+
+
+def test_explicit_review_on_the_unrecorded_active_branch_still_requires_validated_discovery() -> None:
+    config = authority()
+    config["task"]["pull_request"] = None
+    facts = explicit_review_facts(number=442, branch="feat/task-108", title="Same-branch collision")
+    assert resolve_state(config, facts)["reason"] == "active_task_missing_pull_request"
+
+
+def test_a_non_explicit_snapshot_of_another_pr_on_the_active_branch_still_fails_closed() -> None:
+    config = authority()
+    facts = explicit_review_facts(number=442, branch="feat/task-108")
+    del facts["explicit_review"]
+    assert resolve_state(config, facts)["reason"] == "live_pr_does_not_match_authority"

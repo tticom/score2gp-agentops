@@ -13,6 +13,11 @@ import sys
 import tempfile
 from pathlib import Path
 
+try:
+    from scripts.score2gp_go_bootstrap import capture_task_live
+except ModuleNotFoundError:
+    from score2gp_go_bootstrap import capture_task_live
+
 CONTROL_PLANE_REPAIR_PATHS = {
     "scripts/score2gp_orca_control.py",
     "scripts/score2gp_orchestrator.py",
@@ -104,37 +109,51 @@ def main() -> None:
 
     try:
         explicit_review = bool(args.review_repo and args.review_pr)
-        if repo and pr and should_snapshot_task_pr(str(task.get("status", "")), explicit_review):
+        status = str(task.get("status", ""))
+        pr_data = None
+        if explicit_review:
             res = subprocess.run(
                 [sys.executable, "scripts/score2gp_orca_control.py", "snapshot", "--repository", str(repo), "--pull-request", str(pr)],
                 cwd=agentops, capture_output=True, text=True
             )
             if res.returncode != 0:
                 fail_closed(f"Snapshot failed: {res.stderr.strip()}")
-            with open(live_file, "w") as f:
-                live = json.loads(res.stdout)
+            live = json.loads(res.stdout)
+            pr_data = live.get("pull_request")
+            if not isinstance(pr_data, dict):
+                fail_closed(f"PR #{pr} not found or missing from snapshot")
+            if str(pr_data.get("state", "")).upper() != "OPEN":
+                fail_closed(f"PR #{pr} is not open (state: {pr_data.get('state')})")
+            if (repo == task.get("repository") and pr_data.get("head_branch") == task.get("branch")
+                    and task.get("pull_request") is None and should_snapshot_task_pr(status, False)):
+                # The active task's own PR, not yet recorded: bind it through discovery (GOV-03).
+                live = capture_task_live(agentops, authority_path)
                 pr_data = live.get("pull_request")
+                if not isinstance(pr_data, dict) or pr_data.get("number") != pr:
+                    fail_closed(f"PR #{pr} is on the active task branch but discovery did not bind it")
+            # An explicit review is an independently requested, read-only
+            # operation. It must not depend on the active task being the PR
+            # under review.
+            live["explicit_review"] = True
+            if classify_control_plane_repair(repo, pr):
+                live["control_plane_repair"] = True
+        elif should_snapshot_task_pr(status, False):
+            # The recorded PR, or discovery on the task branch when none is recorded (GOV-03).
+            live = capture_task_live(agentops, authority_path)
+            pr_data = live.get("pull_request")
+            if pr is not None:
                 if not isinstance(pr_data, dict):
                     fail_closed(f"PR #{pr} not found or missing from snapshot")
-                if explicit_review and str(pr_data.get("state", "")).upper() != "OPEN":
-                    fail_closed(f"PR #{pr} is not open (state: {pr_data.get('state')})")
-                elif not explicit_review and str(pr_data.get("state", "")).upper() not in {"OPEN", "MERGED"}:
+                if str(pr_data.get("state", "")).upper() not in {"OPEN", "MERGED"}:
                     fail_closed(f"PR #{pr} is neither open nor merged (state: {pr_data.get('state')})")
-                if args.review_head:
-                    live_head = pr_data.get("head_sha")
-                    if live_head != args.review_head:
-                        fail_closed(f"PR #{pr} head changed: expected {args.review_head}, got {live_head}")
-                if explicit_review:
-                    # An explicit review is an independently requested,
-                    # read-only operation. It must not depend on the active
-                    # task being the PR under review.
-                    live["explicit_review"] = True
-                if args.review_repo and args.review_pr and classify_control_plane_repair(repo, pr):
-                    live["control_plane_repair"] = True
-                json.dump(live, f)
         else:
-            with open(live_file, "w") as f:
-                f.write("{}")
+            live = {}
+        if args.review_head and isinstance(pr_data, dict):
+            live_head = pr_data.get("head_sha")
+            if live_head != args.review_head:
+                fail_closed(f"PR #{pr_data.get('number')} head changed: expected {args.review_head}, got {live_head}")
+        with open(live_file, "w", encoding="utf-8") as f:
+            json.dump(live, f)
 
         # Use resolve to figure out the role
         res = subprocess.run(
@@ -153,17 +172,17 @@ def main() -> None:
                 else:
                     print(f"score2gp: task {resolved.get('task_id')} is complete; no dispatch required")
                 return
-            fail_closed(f"No dispatch role resolved. State: {resolved.get('state')}")
+            fail_closed(f"No dispatch role resolved. State: {resolved.get('state')} ({resolved.get('reason')})")
 
         gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True)
         if gh_user.returncode != 0:
             fail_closed(f"GitHub identity check failed: {gh_user.stderr.strip()}")
         login = gh_user.stdout.strip()
-        if repo and pr and isinstance(pr_data, dict):
+        if isinstance(pr_data, dict):
             pr_author_raw = pr_data.get("author") or pr_data.get("user")
             pr_author = pr_author_raw.get("login", "") if isinstance(pr_author_raw, dict) else str(pr_author_raw or "")
             if pr_author and login == pr_author:
-                fail_closed(f"self-review is forbidden: {login} cannot review own PR #{pr}")
+                fail_closed(f"self-review is forbidden: {login} cannot review own PR #{pr_data.get('number')}")
 
         cmd = [
             sys.executable, "scripts/score2gp_dispatch.py",
