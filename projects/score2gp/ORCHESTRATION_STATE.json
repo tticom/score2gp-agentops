@@ -1,47 +1,46 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 53,
+  "authority_revision": 54,
   "task": {
-    "id": "GOV-03",
-    "title": "Active-task PR discovery and fail-closed binding",
-    "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
+    "id": "RES-REQ-0005",
+    "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
+    "objective": "Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": 703,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/gov-03-active-task-pr-discovery",
-    "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
+    "branch": "feat/res-req-0005-explained-shortfalls",
+    "prompt": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
     "allowed_paths": [
-      "scripts/score2gp_go_bootstrap.py",
-      "scripts/score2gp_got_bootstrap.py",
-      "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_governance_audit.py",
-      "tests/test_score2gp_orca_control.py",
-      "tests/test_score2gp_dispatch.py",
-      "tests/test_governance_audit.py"
+      "projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**",
+      "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
+      "projects/score2gp/requirements/README.md"
     ],
     "acceptance": [
-      "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
-      "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
-      "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
-      "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
-      "Disabling discovery makes the replay test fail.",
-      "python -m pytest and the governance audit pass; git diff --check is clean."
+      "A current-state map in projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/ lists every place the product refuses, degrades or drops a feature at a pinned tticom/score2gp SHA: stage, emitted code, and whether the location and reason reach the user; every silent gap is named. Evidence comes from code references and from real runs on Lessons 3-7, Ex 2 Hands Up and Can't Find My Way Home.",
+      "A reason-code taxonomy proposal builds on docs/diagnostics_failure_taxonomy.md in the product repo, with stable codes and a user-facing layer.",
+      "At least two best-effort delivery options are evaluated against the fail-closed rules; none allows an unlabelled wrong result.",
+      "A shortfall record and aggregation design is given; everything committed holds counts and codes only.",
+      "A report mock-up is generated from a real run's records.",
+      "REQ-0005's draft acceptance criteria are rewritten as testable criteria, its status moves to RESEARCHED in the requirement file and the register, and the decisions left to the maintainer are listed; ACCEPTED is recommended, not set.",
+      "No product code change; no private musical content or coordinates committed; python -m pytest and the governance audit pass; git diff --check is clean."
     ],
     "validation_commands": [
       "python -m pytest",
       "python scripts/score2gp_governance_audit.py",
       "git diff --check"
     ],
-    "dependencies": [],
+    "dependencies": [
+      "GOV-03"
+    ],
     "stop_conditions": [
-      "merge_gate_weakened",
-      "role_boundary_changed",
-      "product_edit_required"
+      "product_edit_required",
+      "private_content_would_be_committed",
+      "maintainer_decision_required"
     ]
   },
   "next_task_proposal": null,
@@ -1263,22 +1262,55 @@
       "merge_commit": "be5da52a6c388e26d6ccfe5f5bc0946fafe9ea37",
       "reconciled": true,
       "reconciled_at": "2026-09-26T06:24:10.390278+00:00"
+    },
+    {
+      "id": "GOV-03",
+      "title": "Active-task PR discovery and fail-closed binding",
+      "objective": "The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 703,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/gov-03-active-task-pr-discovery",
+      "prompt": "projects/score2gp/prompts/next/gov-03-active-task-pr-discovery.md",
+      "allowed_paths": [
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_dispatch.py",
+        "tests/test_governance_audit.py"
+      ],
+      "acceptance": [
+        "A replay of the 2026-09-25 L3-01 state (authority PR null, #464 OPEN with CHANGES_REQUESTED at 22048b6) resolves to RUNNING / current_head_changes_requested with binding_required true, never READY.",
+        "Two PRs, wrong base, non-implementation author, branch-without-PR and closed-unmerged cases fail closed; merged routes to governance.",
+        "An explicit review request for a PR that is not the active task's PR carries that PR's own context (title, branch, linked task or none), never the active task's goal, acceptance or prompt; a test covers it.",
+        "verify_merge_gate denies while the authority PR number is null, even with APPROVE on a discovered PR.",
+        "Disabling discovery makes the replay test fail.",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_gate_weakened",
+        "role_boundary_changed",
+        "product_edit_required"
+      ],
+      "head_sha": "0920bc77c4dacf4f511197d916616c6f58b162be",
+      "merge_commit": "a3bfd105849ff4cca557d920dcd78deef90cea86",
+      "reconciled": true,
+      "reconciled_at": "2026-09-26T09:14:01.108593+00:00"
     }
   ],
   "backlog": [
-    {
-      "id": "RES-REQ-0005",
-      "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
-      "requirements": [
-        "REQ-0005"
-      ],
-      "kind": "research",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 1,
-      "depends_on": [],
-      "notes": "Prompt: prompts/next/res-req-0005-explained-shortfall-reporting.md. Maintainer: knowing why a feature could not be converted is crucial."
-    },
     {
       "id": "SHORT-01",
       "title": "Shortfall record for every refused, degraded or dropped feature (kind, location, reason code, evidence, disposition); no silent gap",

@@ -2,31 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: GOV-03 — Active-task PR discovery and fail-closed binding
+**Task**: RES-REQ-0005 — Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/gov-03-active-task-pr-discovery`
+**PR Branch**: `feat/res-req-0005-explained-shortfalls`
 
-**Pull Request**: 703
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The dispatcher must never report no PR while one exists for the active task's repository, branch and base; route a discovered PR as bound for author and reviewer actions, fail closed on ambiguity, and keep the merge gate requiring the authority PR number.
+Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.
 
 ## Allowed paths
 
-- `scripts/score2gp_go_bootstrap.py`
-- `scripts/score2gp_got_bootstrap.py`
-- `scripts/score2gp_orca_control.py`
-- `scripts/score2gp_governance_audit.py`
-- `tests/test_score2gp_orca_control.py`
-- `tests/test_score2gp_dispatch.py`
-- `tests/test_governance_audit.py`
+- `projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**`
+- `projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md`
+- `projects/score2gp/requirements/README.md`
 
 ## Validation commands
 
