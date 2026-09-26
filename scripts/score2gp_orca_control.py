@@ -55,6 +55,8 @@ def load_json(path: Path) -> dict[str, Any]:
         raise ControlError(f"cannot load JSON from {path}: {error}") from error
     if not isinstance(value, dict):
         raise ControlError(f"expected JSON object in {path}")
+    if Path(path).name == "ORCHESTRATION_STATE.json":
+        check_registered_requirements(value, Path(path))
     return value
 
 
@@ -193,6 +195,148 @@ def validate_authority(authority: dict[str, Any]) -> None:
                     f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
                 )
             active_branches[branch] = tid
+    validate_backlog(authority, registered_requirements(authority))
+
+
+BACKLOG_KINDS = {"research", "implementation", "governance", "decision"}
+BACKLOG_STATUSES = {"IDEA", "NEEDS_RESEARCH", "NEEDS_DETAIL", "READY", "PROMOTED", "DONE", "DROPPED"}
+BACKLOG_TERMINAL = {"DONE", "DROPPED"}
+BACKLOG_REQUIRED = ("id", "title", "requirements", "kind", "repository", "status", "priority", "depends_on", "notes")
+TERMINAL_TASK_STATUSES = {"COMPLETED", "COMPLETE", "MERGED", "RESOLVED", "RECONCILED"}
+# An authority backlog item cites a registered requirement (optionally one REQ-0001 obligation U01-U14) or a
+# declared control-plane or programme need.
+REQUIREMENT_REF = re.compile(r"^(REQ-\d{4})(?::U(?:0[1-9]|1[0-4]))?$")
+REQUIREMENT_ID = re.compile(r"^REQ-\d{4}$")
+NAMED_NEEDS = {"control-plane:records", "control-plane:skills", "control-plane:workspace", "control-plane:review-gate",
+               "programme:multimodal"}
+REPOSITORY_REF = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+REGISTER_ROW = re.compile(r"^\| (REQ-\d{4}) \| [^|]+ \| `([A-Z_]+)` \|", re.M)
+
+
+def registered_requirements(authority: dict[str, Any]) -> set[str] | None:
+    """The requirement IDs the authority records as registered (``registered_requirements``).
+
+    It mirrors the requirements register (requirements/README.md), so the normal validation path can
+    reject unregistered citations without reading files. An authority backlog without that record is refused.
+    """
+    if not authority.get("backlog"):
+        return None
+    recorded = authority.get("registered_requirements")
+    if not isinstance(recorded, list) or not recorded or not all(isinstance(r, str) and REQUIREMENT_ID.match(r) for r in recorded):
+        raise ControlError("authority registered_requirements must list the registered REQ-NNNN IDs when the authority's backlog is non-empty")
+    return set(recorded)
+
+
+def check_registered_requirements(authority: dict[str, Any], authority_path: Path) -> None:
+    """At the loading boundary: the authority's backlog cites only requirements in the real register.
+
+    The authority's ``registered_requirements`` snapshot must equal the register beside it, so a citation
+    cannot be legitimised by editing the snapshot alone.
+    """
+    if not authority.get("backlog"):
+        return
+    register = register_requirement_ids(authority_path)
+    if registered_requirements(authority) != register:
+        raise ControlError("authority registered_requirements differs from the requirements register")
+    validate_backlog(authority, register)
+
+
+def register_requirement_ids(authority_path: Path) -> set[str]:
+    """Requirement IDs listed in the register beside the authority (requirements/README.md)."""
+    register = authority_path.parent / "requirements" / "README.md"
+    if not register.is_file():
+        raise ControlError(f"requirements register missing: {register}")
+    return {req for req, _status in REGISTER_ROW.findall(register.read_text(encoding="utf-8"))}
+
+
+def _known_task_ids(authority: dict[str, Any]) -> dict[str, str]:
+    """Every task ID the authority knows, mapped to its status: active, proposed, awaiting promotion or completed."""
+    known: dict[str, str] = {}
+    for t in [authority.get("task"), authority.get("next_task_proposal"), *authority.get("queued_task_proposals", []),
+              *authority.get("completed_tasks", [])]:
+        if isinstance(t, dict) and t.get("id"):
+            known[str(t["id"])] = str(t.get("status", "")).upper()
+    return known
+
+
+def validate_backlog(authority: dict[str, Any], known_requirements: set[str] | None = None) -> None:
+    """Validate the authority's light ``backlog`` list: field types, unique IDs, references, dependencies and cycles.
+
+    Items not yet detailed enough to promote live here; promotion converts one to the full proposal
+    schema. Dependencies may name the authority's backlog items or any other task it knows. When the register's
+    ``known_requirements`` are given, every cited requirement must be registered.
+    """
+    items = authority.get("backlog", [])
+    if not isinstance(items, list):
+        raise ControlError("authority backlog must be a list")
+    tasks = _known_task_ids(authority)
+    ids: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict):
+            raise ControlError("authority backlog items must be objects")
+        missing = [f for f in BACKLOG_REQUIRED if f not in item]
+        if missing:
+            raise ControlError(f"authority backlog item {item.get('id', '?')} fields missing: {', '.join(missing)}")
+        for field in ("id", "title", "notes"):
+            if not isinstance(item[field], str) or (field != "notes" and not item[field].strip()):
+                raise ControlError(f"authority backlog item {item.get('id', '?')} {field} must be a {'string' if field == 'notes' else 'non-empty string'}")
+        if not isinstance(item["repository"], str) or not REPOSITORY_REF.match(item["repository"]):
+            raise ControlError(f"authority backlog item {item['id']} repository must be owner/name")
+        iid = item["id"]
+        if iid in ids or iid in tasks:
+            raise ControlError(f"authority backlog item ID {iid!r} is empty or duplicated")
+        ids.add(iid)
+        if item["kind"] not in BACKLOG_KINDS:
+            raise ControlError(f"authority backlog item {iid} has unsupported kind {item['kind']!r}")
+        if item["status"] not in BACKLOG_STATUSES:
+            raise ControlError(f"authority backlog item {iid} has unsupported status {item['status']!r}")
+        if not isinstance(item["priority"], int) or isinstance(item["priority"], bool) or item["priority"] < 1:
+            raise ControlError(f"authority backlog item {iid} priority must be a positive integer")
+        if not isinstance(item["requirements"], list) or not item["requirements"]:
+            raise ControlError(f"authority backlog item {iid} must cite at least one requirement or control-plane need")
+        for ref in item["requirements"]:
+            match = REQUIREMENT_REF.match(ref) if isinstance(ref, str) else None
+            if not match and ref not in NAMED_NEEDS:
+                raise ControlError(f"authority backlog item {iid} cites an unknown requirement reference {ref!r}")
+            if match and known_requirements is not None and match.group(1) not in known_requirements:
+                raise ControlError(f"authority backlog item {iid} cites unregistered requirement {match.group(1)}")
+        if not isinstance(item["depends_on"], list) or not all(isinstance(d, str) and d for d in item["depends_on"]):
+            raise ControlError(f"authority backlog item {iid} depends_on must be a list of IDs")
+    graph = {str(i["id"]): [str(d) for d in i["depends_on"]] for i in items}
+    for iid, deps in graph.items():
+        for dep in deps:
+            if dep not in graph and dep not in tasks:
+                raise ControlError(f"authority backlog item {iid} depends on unknown item {dep}")
+    state: dict[str, int] = {}
+
+    def visit(node: str, path: list[str]) -> None:
+        if state.get(node) == 2:
+            return
+        if state.get(node) == 1:
+            raise ControlError(f"authority backlog dependency cycle: {' -> '.join([*path, node])}")
+        state[node] = 1
+        for dep in graph.get(node, []):
+            visit(dep, [*path, node])
+        state[node] = 2
+
+    for node in graph:
+        visit(node, [])
+
+
+def ready_frontier(authority: dict[str, Any]) -> list[dict[str, Any]]:
+    """Authority backlog items that could be promoted now: READY, with every dependency terminal, by priority."""
+    validate_backlog(authority)
+    items = authority.get("backlog", [])
+    status = {str(i["id"]): str(i["status"]) for i in items}
+    tasks = _known_task_ids(authority)
+
+    def terminal(dep: str) -> bool:
+        if dep in status:
+            return status[dep] in BACKLOG_TERMINAL
+        return tasks.get(dep, "") in TERMINAL_TASK_STATUSES
+
+    frontier = [i for i in items if i["status"] == "READY" and all(terminal(str(d)) for d in i["depends_on"])]
+    return sorted(frontier, key=lambda i: (i["priority"], str(i["id"])))
 
 
 def validate_legacy_alignment(authority: dict[str, Any], active_task_text: str) -> None:
@@ -910,7 +1054,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile"),
+        choices=("snapshot", "advance", "resolve", "assign", "validate", "merge-check", "merge", "reconcile", "frontier"),
     )
     parser.add_argument("--authority", type=Path, default=Path("projects/score2gp/ORCHESTRATION_STATE.json"))
     parser.add_argument("--live", type=Path, help="Live-state JSON captured by the supervisor")
@@ -933,6 +1077,11 @@ def main() -> None:
             raise ControlError(f"expected GitHub login {args.github_login}, authenticated as {login}")
         receipt = execute_merge(load_json(args.authority), args.repository, args.pull_request, login)
         print(json.dumps(receipt, indent=2, sort_keys=True))
+        return
+    if args.command == "frontier":
+        authority = load_json(args.authority)
+        check_registered_requirements(authority, args.authority)
+        print(json.dumps([{k: i[k] for k in ("id", "priority", "kind", "repository", "title")} for i in ready_frontier(authority)], indent=2))
         return
     if args.live is None:
         raise ControlError(f"{args.command} requires --live")

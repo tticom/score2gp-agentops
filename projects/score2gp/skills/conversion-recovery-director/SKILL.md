@@ -12,7 +12,7 @@ Read, in order:
 
 1. AGENT_CONTROL.md, ACTIVE_TASK.md, and the skills lock and profile;
 2. programmes/2026-08-09-conversion-recovery.md;
-3. tasks/2026-08-09-conversion-recovery-backlog.md;
+3. the task authority's `backlog` in ORCHESTRATION_STATE.json (it replaced the recovery file retired by PLAN-01);
 4. the master diagnosis and every source report at its exact revision;
 5. the current product call graph and open PR state.
 

@@ -35,7 +35,7 @@ cd /home/tticom-automation/work/score2gp-workspace/score2gp-agentops
 git status --short --branch
 git fetch --all --prune
 sed -n '1,220p' projects/score2gp/ACTIVE_TASK.md
-tail -n 260 projects/score2gp/PLANNING_DATA.md
+python -c "import json; authority = json.load(open('projects/score2gp/ORCHESTRATION_STATE.json', encoding='utf-8')); print(json.dumps(authority['backlog'], indent=1))"
 python3 scripts/score2gp_governance_audit.py
 
 cd /home/tticom-automation/work/score2gp-workspace/score2gp
@@ -102,7 +102,7 @@ The Project Director may:
 
 The Project Director must not:
 
-- invent product direction that is not supported by backlog/review evidence;
+- invent product direction that is not supported by the task authority's backlog or review evidence;
 - hide blockers;
 - bypass required validation;
 - run `git reset --hard` or `git clean` with deletion flags during

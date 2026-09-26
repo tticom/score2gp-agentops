@@ -24,7 +24,7 @@ review its own work, interpret incident prose, or merge.
    credential for that role. The authenticated login must match the policy;
    command-line text cannot claim an identity.
 7. Give the worker only that assignment, its referenced prompt, and its
-   worktree. Do not give it queue-selection or continuation authority.
+   worktree. Do not give it work-selection or continuation authority.
 8. Collect the exact head, validation receipts, evidence classifications, and
    unresolved risks.
 9. Discard the snapshot, capture fresh live facts, and resolve again.
