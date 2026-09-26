@@ -285,6 +285,11 @@
    "layout_warning_codes": [],
    "playable": 265,
    "playable_with_unsafe_candidate_code": 147,
+   "structural_signal_counts": {
+    "lyrics": 0,
+    "repeats": 0,
+    "sections": 11
+   },
    "top_level_distinct_codes": 20,
    "top_level_warning_count": 91
   }
@@ -628,6 +633,11 @@
    "layout_warning_codes": [],
    "playable": 60,
    "playable_with_unsafe_candidate_code": 60,
+   "structural_signal_counts": {
+    "lyrics": 12,
+    "repeats": 0,
+    "sections": 1
+   },
    "top_level_distinct_codes": 30,
    "top_level_warning_count": 55
   }
@@ -910,6 +920,11 @@
    "layout_warning_codes": [],
    "playable": 473,
    "playable_with_unsafe_candidate_code": 24,
+   "structural_signal_counts": {
+    "lyrics": 13,
+    "repeats": 0,
+    "sections": 0
+   },
    "top_level_distinct_codes": 13,
    "top_level_warning_count": 178
   }
@@ -1192,6 +1207,11 @@
    "layout_warning_codes": [],
    "playable": 556,
    "playable_with_unsafe_candidate_code": 64,
+   "structural_signal_counts": {
+    "lyrics": 20,
+    "repeats": 0,
+    "sections": 0
+   },
    "top_level_distinct_codes": 13,
    "top_level_warning_count": 224
   }
@@ -1480,6 +1500,11 @@
    "layout_warning_codes": [],
    "playable": 440,
    "playable_with_unsafe_candidate_code": 229,
+   "structural_signal_counts": {
+    "lyrics": 10,
+    "repeats": 0,
+    "sections": 0
+   },
    "top_level_distinct_codes": 15,
    "top_level_warning_count": 110
   }
@@ -1758,6 +1783,11 @@
    "layout_warning_codes": [],
    "playable": 235,
    "playable_with_unsafe_candidate_code": 69,
+   "structural_signal_counts": {
+    "lyrics": 27,
+    "repeats": 0,
+    "sections": 0
+   },
    "top_level_distinct_codes": 14,
    "top_level_warning_count": 92
   }
@@ -2037,6 +2067,11 @@
    "layout_warning_codes": [],
    "playable": 624,
    "playable_with_unsafe_candidate_code": 131,
+   "structural_signal_counts": {
+    "lyrics": 60,
+    "repeats": 0,
+    "sections": 7
+   },
    "top_level_distinct_codes": 14,
    "top_level_warning_count": 218
   }

@@ -1,0 +1,139 @@
+{
+ "schema": "res-req-0005.aggregate-preview.v0",
+ "sources": 7,
+ "source_bars_total": 275,
+ "rows": [
+  {
+   "user_reason": "timing-not-in-source",
+   "family": "missing_observation",
+   "engine_code": "pdf_only_tab_missing_timing_evidence",
+   "disposition": "refused_document",
+   "level": "document",
+   "occurrences": 7,
+   "bars_affected": 275,
+   "sources_affected": 7,
+   "proposed": false,
+   "rank": 1
+  },
+  {
+   "user_reason": "input-required",
+   "family": "invalid_input",
+   "engine_code": "missing_musicxml",
+   "disposition": "refused_document",
+   "level": "document",
+   "occurrences": 7,
+   "bars_affected": 275,
+   "sources_affected": 7,
+   "proposed": false,
+   "rank": 2
+  },
+  {
+   "user_reason": "internal-error",
+   "family": "internal_error",
+   "engine_code": "sidecar_generation_measure_capacity_invalid",
+   "disposition": "refused_document",
+   "level": "document",
+   "occurrences": 7,
+   "bars_affected": 275,
+   "sources_affected": 7,
+   "proposed": true,
+   "rank": 3
+  },
+  {
+   "user_reason": "bar-overfull",
+   "family": "contradictory_evidence",
+   "engine_code": "pdf_only_tab_measure_overcapacity",
+   "disposition": "refused_region",
+   "level": "bar",
+   "occurrences": 107,
+   "bars_affected": 107,
+   "sources_affected": 5,
+   "proposed": true,
+   "rank": 4
+  },
+  {
+   "user_reason": "approximated",
+   "family": "missing_observation",
+   "engine_code": "pdf_only_tab_inferred_timing",
+   "disposition": "approximated",
+   "level": "bar",
+   "occurrences": 105,
+   "bars_affected": 105,
+   "sources_affected": 7,
+   "proposed": false,
+   "rank": 5
+  },
+  {
+   "user_reason": "approximated",
+   "family": "missing_observation",
+   "engine_code": "measure_fill_rest_synthesised",
+   "disposition": "synthesised",
+   "level": "bar",
+   "occurrences": 68,
+   "bars_affected": 68,
+   "sources_affected": 7,
+   "proposed": true,
+   "rank": 6
+  },
+  {
+   "user_reason": "fret-unreadable|note-position-uncertain",
+   "family": "ambiguous_evidence",
+   "engine_code": "non_exempt_candidate_level_codes",
+   "disposition": "approximated|omitted",
+   "level": "note",
+   "occurrences": 724,
+   "bars_affected": 65,
+   "sources_affected": 7,
+   "proposed": true,
+   "rank": 7
+  },
+  {
+   "user_reason": "rhythm-ambiguous",
+   "family": "ambiguous_evidence",
+   "engine_code": "pdf_only_tab_ambiguous_duration",
+   "disposition": "refused_region",
+   "level": "bar",
+   "occurrences": 63,
+   "bars_affected": 63,
+   "sources_affected": 7,
+   "proposed": true,
+   "rank": 8
+  },
+  {
+   "user_reason": "layout-unreadable",
+   "family": "ambiguous_evidence",
+   "engine_code": "pdf_only_tab_grouping_unsafe",
+   "disposition": "refused_document",
+   "level": "document",
+   "occurrences": 1,
+   "bars_affected": 16,
+   "sources_affected": 1,
+   "proposed": false,
+   "rank": 9
+  },
+  {
+   "user_reason": "feature-not-supported",
+   "family": "unsupported_feature",
+   "engine_code": "pdf_text_candidate_not_converted",
+   "disposition": "omitted",
+   "level": "feature",
+   "occurrences": 1318,
+   "bars_affected": null,
+   "sources_affected": 7,
+   "proposed": true,
+   "rank": 10
+  },
+  {
+   "user_reason": "feature-not-supported",
+   "family": "unsupported_feature",
+   "engine_code": "pdf_lyrics_not_converted",
+   "disposition": "omitted",
+   "level": "feature",
+   "occurrences": 142,
+   "bars_affected": null,
+   "sources_affected": 6,
+   "proposed": true,
+   "rank": 11
+  }
+ ]
+}

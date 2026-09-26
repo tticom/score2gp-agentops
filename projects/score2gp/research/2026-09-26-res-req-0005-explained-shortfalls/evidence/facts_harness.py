@@ -167,6 +167,7 @@ def main() -> None:
                 1 for c in playable if set((c.get("raw") or {}).get("assignment_warnings") or []) - SAFE),
             "layout_class": tab.get("pdf_layout_class"),
             "layout_warning_codes": sorted(set(tab.get("pdf_layout_warnings") or [])),
+            "structural_signal_counts": {k: len(v) for k, v in (tab.get("structural_signals") or {}).items()},
         }
         rec["sim_pdfonly"] = simulate(tp, False)
         rec["sim_draft"] = simulate(tp, True)

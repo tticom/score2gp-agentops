@@ -104,7 +104,7 @@ Every run delivers what passes the per-bar gate in `--out`, with gap bars, and r
 
 | Rule | Result |
 |---|---|
-| FC2, FC7 | Holds only if every caller reads the status. `--out` now exists for partial runs. Existing callers equate a written GP with success: `batch.py:90-91` sets `status = "success"` once `write_gp` returns, and `batch.py:59-75` reports a cached artifact as `success`. **Fails** FC7 for those callers. |
+| FC2, FC7 | Holds only if every caller reads the status. `--out` now exists for partial runs. Existing callers equate a written GP with success: `batch.py:91-92` sets `status = "success"` once `write_gp` returns, and `batch.py:59-75` reports a cached artifact as `success`. **Fails** FC7 for those callers. |
 | Others | As Option A. |
 
 Verdict: **rejected.** It changes the meaning of `--out` for every caller, and allows an

@@ -41,7 +41,10 @@ unless a `docs/` or `tests/` path is given.
    failure code equals the product's actual refusal code in all 12 routes that reached
    measure assembly, which is the check that it replays the product faithfully.
 4. **Counts-only evidence**: `evidence/run-matrix-facts.json` holds counts, codes, stage names and
-   flags. A scan of every key and string value in it found only code-shaped tokens.
+   flags. `evidence/corpus-aggregate-preview.json` is derived from it alone by
+   `evidence/aggregate_preview.py`. Every key and string value in both files matches
+   `^[A-Za-z0-9_:.\-|<>]+$` (`<none>` marks a warning with no severity), and every number is a
+   count or an exit code.
 
 ### Sources
 
