@@ -20,6 +20,8 @@ A note's duration is written in its **note type**, and **grouping** relates the 
 
 Beams group notes within a beat. The bar's total must then match the time signature. That total is a check on what was read, never a source of durations.
 
+**Every note carries its own duration.** Counts are irrelevant. One note can fill half a bar and the next eight can be thirty-second notes (maintainer, 2026-09-26: "Jettison the count rule, counts are irrelevant ... Music does not work like that."). So no rule may assign one duration to several notes, or derive a duration from how many notes there are, how far apart they are, or a default.
+
 At product `3af1925`, the PDF-only route reads none of this:
 
 - `select_pdf_tab_grid_spacing_and_duration_name` (`src/score2gp/pdf_tab_measure_timing.py`) gives **every** event in a bar the same duration, chosen from the number of events: up to 8 become eighths, up to 16 sixteenths, up to 32 thirty-seconds, and more become sixty-fourths.
@@ -38,7 +40,7 @@ No GP output may contain a duration or rest that was not read from note types an
 
 ## Acceptance
 
-1. The count-based duration choice, the editable-draft quarter-note default and the remainder rest padding are removed from every code path that can produce output. No function in `src/` derives a duration from an event count, from note spacing or from a fixed default.
+1. The count-based duration choice, the editable-draft quarter-note default and the remainder rest padding are **deleted**, not bypassed. No function in `src/` assigns one duration to a group of notes, or derives a duration from an event count, note spacing or a fixed default.
 2. `convert --pdf-only-tab` and `convert --editable-draft` refuse on a public PDF fixture and on the real `Lesson-5.pdf`:
    - they exit non-zero with refusal code `pdf_rhythm_not_read` (stage `measure-assembly`);
    - the refusal gives the page, system and bar where rhythm was needed;
