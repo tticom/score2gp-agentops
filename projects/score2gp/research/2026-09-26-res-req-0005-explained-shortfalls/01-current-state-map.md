@@ -225,9 +225,58 @@ nor the location reaches a user surface.
 | G19 | MusicXML articulations, fermata, glissando, arpeggiate, most ornaments ignored | drop silent | Code |
 | G20 | `--pages` removes document-level warnings | record lost | Observed |
 | G21 | PDF-only build drops source bars with no playable candidate; output bar numbers shift | drop silent | Observed (layout inventory, §1.3a) |
-| G22 | A failed rerun leaves an earlier run's `--out` and intermediates in place, unmarked (E8) | stale result | Observed (03 §3.3a) |
+| G22 | A failed rerun leaves an earlier run's `--out` and intermediates in place, unmarked (E8); `batch` does the same and serves cache hits across product versions (B4) | stale result | Observed (03 §3.3a; §1.9 B4) |
+| G23 | Notation bridge skips unusable or unplayable outcomes without a record (N3) | drop silent | Code |
+| G24 | Notation bridge invents tuning, fingering, tempo, time signature and confidence 1.0 without a label (N4) | fabricated default | Code |
+| G25 | `batch` discards build and GP-writer warnings (B2) | reason hidden | Observed + code |
+| G26 | `batch` reports `success` without validating the GP; a `diagnose` round-trip of that output failed (B3) | false success risk | Observed |
+| G27 | `diagnose` drops the failure reason of failed payloads (DG2) | reason dropped | Observed |
 
-Not claimed: this map covers the `convert` and `generate-sidecar` routes and the modules they
-call. The standalone notation export commands (`cli.py:743-835, 1409-1497`), `batch`, `omr`
-and `diagnose` were not mapped. No MusicXML or ASCII route could be exercised on this corpus set,
-so rows R11, R12, D7-D9, D11, X3-X8 are code-only.
+Scope: this map covers every command that produces a converted score: `convert` and
+`generate-sidecar` (§1.2-1.5), and the standalone notation export commands, `batch`, `diagnose`
+and `omr` (§1.9). No MusicXML or ASCII route could be exercised on this corpus set, so rows R11,
+R12, D7-D9, D11, X3-X8 are code-only.
+
+## 1.9 Other entrypoints: standalone notation export, `batch`, `diagnose`, `omr`
+
+These routes do not go through `convert`. Each row gives the stage, code, location and user reach,
+as in §1.2-1.5. Probe runs used the product venv, with outputs under the gitignored
+`<product>/work/res-req-0005/probe/routes/`:
+
+- **notation export:** `notation-{whole,half,quarter,eighth}-note-export --pdf <src> --out <gp>`
+  on L5 and on `PUB`. That is 8 runs, all exit 1 with no GP written: L5 4/4
+  `cumulative_duration_exceeds_one_4_4_bar`, `PUB` 4/4 `no_valid_notation_outcomes_found`.
+  Each printed one stderr line and no traceback.
+- **`omr`** on L5 with no `--audiveris`: exit 1, stderr `Error: audiveris_not_configured`,
+  `omr_manifest.json` `refusal_code: audiveris_not_configured`.
+- **`batch`, twice, then `diagnose`**, one manifest, three payloads. Public MusicXML fixtures
+  were paired with `extract-tab` output of `PUB`. The manifest held `b1` (valid pair), `b2` (MusicXML
+  path does not exist, and its `out` file was seeded beforehand) and `b3`
+  (`audiveris_like_overfull_bar.musicxml`).
+
+| ID | Route / stage | Where | What happens | Code emitted | Location | Reaches user | Evidence | Gap |
+|---|---|---|---|---|---|---|---|---|
+| N1 | notation export: recognition | `cli.py:755-758, 803-806, 1415-1418` | Recognition returns nothing | None; free text `Error: Recognition failed…`, exit 1 | n/a | stderr only; no JSON report, no HTML | Code | uncoded (as G6) |
+| N2 | notation export: bridge refusals | `notation_bridge.py:98, 338, 373` and `unsupported_duration_value_*` | Refuse the run | `no_valid_notation_outcomes_found`, `cumulative_duration_exceeds_one_4_4_bar`, `no_playable_notation_outcomes_found`, as `NotationBridgeInputError: <code>`, exit 1 | None | Code on stderr only; no report file | Observed 8/8 (above) | Unlocated (as G3) |
+| N3 | notation export: bridge input filter | `notation_bridge.py:65-93` | Outcomes that are not `association_status: success`, have an invalid or mismatched duration, lack a clef-resolved pitch, or have a bad bbox are skipped. Unplayable pitches (no fret ≤ 36 on standard tuning) are skipped at `:321-324, 332-333` | None | — | No; the run succeeds on what is left, or refuses with N2 when nothing is left | Code | **G23** drop silent |
+| N4 | notation export: bridge defaults | `notation_bridge.py:35, 306-320, 330, 384, 389` | Standard tuning, string and fret invented as the lowest fret, note confidence 1.0, tempo 120, 4/4, all without a warning | None | — | No | Code | **G24** fabricated defaults unlabelled |
+| N5 | notation export: single-note gate | whole `cli.py:760-777`, half `cli.py:815-821`, others `cli.py:1427-1437` | The quarter to 64th routes require exactly one event. The whole route counts only whole-note candidates and checks the first event. The half route checks only the first event, so a bar with more events can pass | Free text, exit 1 | n/a | stderr | Code; not exercised (no public multi-note fixture passed the bridge) | inconsistent gate; **Unverified** |
+| N6 | notation export: GP write | `cli.py:782-790, 827-835, 1446-1454` | `write_gp` writes straight to `--out`, with no temp file and no `validate_gp` (unlike `convert`, `cli.py:1296-1309`). A writer exception prints `GP Writer failed` (exit 1); whether a partial file remains is **Unverified**. Warnings are printed as `warning: <text>` without a code. A refused run leaves an existing `--out` in place, as in E8 | None (free text) | None | stderr only | Code | G10, G22 |
+| N7 | notation export: clef | `cli.py:748` (whole route only), `372` (`note-candidate-recognition`) | `--assume-treble-clef` is opt-in and not recorded in the GP or on stdout | None | — | No | Code | opt-in, but unrecorded (as G15) |
+| B1 | `batch`: per-payload refusal | `batch.py:98-102`; summary `cli.py:185-188` | The payload fails and the batch exits 1 | `error_code` = `BuildIrInputRiskError.category`, or the exception class name (e.g. `ValueError` for a missing input, `batch.py:53-54`); no stage | None; the per-measure detail `convert` writes (e.g. `musicxml-timing-diagnostics.html`) is not produced | stdout JSON, code plus message | Observed: `b2` → `pdf_input_class_missing_musicxml_sidecar` for a path that does not exist; `b3` → `musicxml_timing_risk`, message only | stage lost; location lost |
+| B2 | `batch`: warnings | `batch.py:81-91` | Build diagnostics are assigned and never used. ScoreIR warnings exist only in the sandbox `score.ir.json`, and the `write_gp` warning list is discarded. So every degradation and drop in D5-D11 and X3-X7 is invisible in batch output | None | — | No: the per-payload result has no warnings field | Observed: `b1` `success` result carries no warnings; code | **G25** degradations dropped from batch output |
+| B3 | `batch`: output validation | `batch.py:91-92` | `success` once `write_gp` returns; no `validate_gp` and no round-trip | — | — | Reported as success | Observed: `b1` `success`. The `diagnose` round-trip of the same output then fails with an exception reading an event with no note. `validate` on it passes. Whether the writer or the reader is at fault is **Unverified** | **G26** success without output validation |
+| B4 | `batch`: stale output and cache | `batch.py:59-75, 91`; `cache.py:14-47` | A failing payload leaves an existing `out` file untouched. A cache hit is reported as `success`. The cache key hashes options and input contents but not the product version | — | — | Reported as success on a hit | Observed: `b2`'s seeded file unchanged after its failure; `b1` `hit` on the second run. Product-version exclusion is code | G22 (stale result) |
+| DG1 | `diagnose`: round-trip | `diagnostics.py:69, 86-106`; exit `cli.py:200-201` | Runs `batch` with the cache forced on, then round-trips only `success` payloads, reading `batch_worker_<id>/score.ir.json`, which is keyed by payload id, not by hash. On a cache hit that IR can be from an earlier run (**Unverified**) | None; `roundtrip_errors` holds free text | None | stdout JSON; exit 1 | Observed: `b1` `roundtrip_valid: false`, 1 exception text, `success_count` still 1 | uncoded |
+| DG2 | `diagnose`: failure reason | `diagnostics.py:113-121` (compare `batch.py:106-116`) | The per-payload result keeps `status` but drops `error` and `error_code` from the batch result | Dropped | — | No: `diagnose` output says `failed` with no reason | Observed: `b2`, `b3` results carry no error code | **G27** reason dropped |
+| O1 | `omr`: refusals | `cli.py:432-436, 459-463, 478-490, 516-520`; manifest `cli.py:530-546` | Refuse when Audiveris is not configured, fails, or produces none, several, or an invalid MusicXML | `audiveris_not_configured`, `omr_execution_failed`, `omr_artifact_missing`, `omr_artifact_ambiguous`, `omr_artifact_invalid`; exit 1 | n/a (document) | Code on stderr and in `omr_manifest.json` | Observed: `audiveris_not_configured` on L5 | None: coded and reported |
+| O2 | `omr`: output binding | `cli.py:416-417, 465-476, 525` | Each run writes to its own `run_<uuid>` directory. Artifact discovery is confined to it, and the manifest records the artifact SHA-256 | — | — | Yes | Code | Positive precedent for 03 §3.3a |
+| O3 | `omr` → `convert --musicxml` | `cli.py:526` (`next_handoff`) | The OMR MusicXML enters the `convert` MusicXML path, where R11, D7-D9, D11 and X3-X7 apply | as those rows | as those rows | as those rows | Code | as G12-G14, G18, G19 |
+
+The CLI's other commands (`cli.py:53-640, 1500-1517`) are inspection, validation, comparison,
+schema-export and sidecar-evaluation tools (`inspect-gp`, `validate`, `compare`, `compare-ir`,
+`compare-bars`, `validate-ir`, `validate-roundtrip`, `export-schema`, `inspect-pdf`, `extract-tab`,
+`whole-note-recognition`, `note-candidate-recognition`, `eval-sidecar`). They produce no converted
+score, so they are not shortfall sites. The two remaining converters, `build-ir` and `write-gp`, are
+the `convert` stages mapped in §1.2-1.5, called directly. They share those rows, but have no JSON
+report and no stale-output handling (G22).

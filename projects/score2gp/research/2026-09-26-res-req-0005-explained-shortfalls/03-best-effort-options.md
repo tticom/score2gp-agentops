@@ -122,8 +122,8 @@ After S3, `w1/` still holds S1's `score.ir.json` and `symbol-attachment-diagnost
 input. Code: `cli.py:1296-1309` writes `temp_output.gp` and moves it to `--out` only on success.
 No refusal or failure path removes or marks an existing `--out` (the refusal branches only pass
 `output_written=False` to the report, e.g. `cli.py:1252, 1283, 1336`), and no stage clears the work
-directory. `batch.py:91` writes straight to its output path, and `batch.py:59-75` reports a cache
-hit as `success`.
+directory. `batch.py:91` writes straight to its output path; a failing payload leaves an earlier file there
+(observed, map §1.9 B4). `batch.py:59-75` reports a cache hit as `success`.
 
 So a file's presence alone never proves "this run succeeded", today or under any option. The
 JSON report is rewritten on every run that reaches a handled exit. It does not cover a run that
@@ -147,8 +147,9 @@ dies before `_write_convert_report` (the `generate-sidecar` traceback, G5, has n
    known artifact names are removed at preflight. Stale `score.ir.json` next to a newer
    `tab_raw.json` (S3) cannot then happen.
 5. **Atomic write.** Keep `temp_output.gp` → validate → move (`cli.py:1296-1309`) for both
-   artifacts. Apply the same pattern to `batch.py:91`, and bind the batch cache to input content
-   hashes, not paths.
+   artifacts. Apply the same pattern to `batch.py:91`. The batch cache key already
+   hashes options and input contents (`cache.py:14-47`); add the product version, so that a hit
+   cannot serve an artifact built by different code.
 
 **Repeat-run cases the contract must pass** (acceptance negative controls; REQ-0005 A5):
 

@@ -168,6 +168,11 @@ proposals.
 | G20 | (no new code) the `--pages` filter must keep document-level records | — | — | — |
 | G21 | `pdf_only_tab_source_bar_without_playable_candidate`, with the located non-playable candidates as evidence | missing_observation | bar-content-not-found | refused_region |
 | G22 | `output_exists` (preflight refusal without `--overwrite`; 03 §3.3a) | invalid_input | input-invalid | refused_document |
+| G23 | `notation_outcome_skipped` (subtype: association, duration, pitch, bbox, unplayable) | ambiguous_evidence / target_limit | notation-symbol-unread | omitted |
+| G24 | `notation_default_applied` (subtype: tuning, fingering, tempo, time_signature) | missing_observation | defaulted | defaulted |
+| G25 | (no new code) `batch` carries each payload's shortfall records or its `shortfall-records.json` path | — | — | — |
+| G26 | `gp_output_validation_failed` (batch runs `validate_gp` and refuses on errors) | internal_error | internal-error | refused_document |
+| G27 | (no new code) `diagnose` keeps `error_code` and stage from the batch result | — | — | — |
 
 ## 2.5 How the existing cause taxonomy fits
 

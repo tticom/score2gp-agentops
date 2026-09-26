@@ -15,7 +15,7 @@ Grounds:
 - The requirement is feasible without weakening the fail-closed rules. Option B in 03 meets all
   eight rules, with two conditions: the run-bound output contract for repeat runs (03 §3.3a) and
   the GP gap-bar representation (decision D3).
-- The research found 22 silent gaps (map §1.8). Several of them already break existing fail-closed
+- The research found 27 silent gaps (map §1.8). Several of them already break existing fail-closed
   rules in shipped code, independent of REQ-0005: G7 (inferred rhythm reported as `success`), G8
   (synthesised rests at confidence 1.0) and G5 (sidecar crash without a code). That raises the
   requirement's value. It does not decide its priority.
@@ -36,10 +36,10 @@ evidence motivated it.
 
 | Criterion (REQ-0005) | Closes gaps | Motivating evidence |
 |---|---|---|
-| A1 Records exist and are complete | G1, G4, G6, G9, G11-G19, G21 | Map §1.3-1.6: one code per run; 18-31 candidate codes per source never reach the user; the layout inventory finds 2 source bars that no bar-keyed check sees (§1.3a) |
+| A1 Records exist and are complete | G1, G4, G6, G9, G11-G19, G21, G23, G25, G27 | Map §1.3-1.6: one code per run; 18-31 candidate codes per source never reach the user; the layout inventory finds 2 source bars that no bar-keyed check sees (§1.3a) |
 | A2 Every record is located in the source frame | G2, G3, G20 | Map R5, R6, X9 |
 | A3 Every record has a registered reason; no uncoded failure | G5, G6, G10, E6 | 190 unregistered literals; the `generate-sidecar` traceback on 7/7 sources |
-| A4 Status honesty | G7, G8, E1, E2 | `PUB` success with inferred rhythm; `total_candidates` 0 on 21/21 runs; `--strict` no-op |
+| A4 Status honesty | G7, G8, G24, G26, E1, E2 | `PUB` success with inferred rhythm; `total_candidates` 0 on 21/21 runs; `--strict` no-op |
 | A5 Best-effort output, checked by an independent oracle | G4, G7, G8, G21, G22 | Replay: 105 of 275 replayed bars assemble, 17 clean; layout inventory 277 |
 | A6 User report | E3, E4 | The refusal is 1 of 54-225 HTML items; no location, severity or action shown |
 | A7 Corpus aggregate ranks reasons | — | Aggregate preview (04 §4.6) |
@@ -70,4 +70,6 @@ recommendation.
 - The per-bar replay reproduces the product's assembler, not a future gated builder. Its counts
   are upper bounds on what per-bar gating could deliver today.
 - Bend-point completeness in the GP writer and GP gap-bar behaviour are **Unverified**.
-- The standalone notation-export commands, `batch`, `omr` and `diagnose` were not mapped.
+- The standalone notation-export commands, `batch`, `omr` and `diagnose` are mapped in map §1.9
+  from code and probe runs. The notation-export success path, and a multi-note bar passing the
+  whole-note and half-note gates, were not exercised.

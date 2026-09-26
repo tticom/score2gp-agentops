@@ -30,7 +30,8 @@ unless a `docs/` or `tests/` path is given.
 
 1. **Code reading** at the pinned product SHA: `cli.py` (convert orchestration and user-facing
    surfaces), `report.py`, `build_ir.py`, `pdf.py`, `pdf_tab_*`, `musicxml.py`, `gpif.py`,
-   `notation_omr/musicxml_generator.py`, and `docs/`.
+   `notation_omr/musicxml_generator.py`, `notation_bridge.py`, `batch.py`, `cache.py`,
+   `diagnostics.py`, and `docs/`.
 2. **Real runs** on the seven corpus sources named by the task, using the product venv
    (`<product>/.venv/Scripts/python.exe -m score2gp.cli`), import path
    `<product>/src/score2gp` (recorded in every `convert-report.json`). Raw outputs stay in the
@@ -91,6 +92,10 @@ No corpus run wrote a GP file. See the map for what each outcome tells the user.
 Repeat-run probe (review follow-up): three further `convert` runs (`PUB` then L5 twice, same
 `--out`) under `<product>/work/res-req-0005/probe/stale/` test whether a failed rerun leaves an
 earlier output in place. It does ([03 §3.3a](03-best-effort-options.md#33a-repeat-runs-and-stale-outputs-applies-to-every-option)).
+
+Entrypoint probe (review follow-up): 8 notation-export runs (L5 and `PUB`), 1 `omr` run (L5),
+two `batch` runs and one `diagnose` run over a three-payload public manifest, under
+`<product>/work/res-req-0005/probe/routes/` ([map §1.9](01-current-state-map.md#19-other-entrypoints-standalone-notation-export-batch-diagnose-omr)).
 
 ## Privacy
 
