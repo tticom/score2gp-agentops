@@ -32,7 +32,9 @@ launcher-isolated `GH_TOKEN`, and requires that login to own the workspace
 holding the checkout and to match its Git author and committer.
 `worktrees/auto` belongs to `tticom-automation`, which selects author `go`;
 `worktrees/gov` belongs to `tticomgov-code` and `worktrees/codex` to
-`tticom-codex`, which select governance/reviewer `got`. Unknown logins, a login
+`tticom-codex`, which select governance/reviewer `got`, except that a login an
+active task assigns as its `author_login` selects author `go` in its own
+workspace (see Author assignment below). Unknown logins, a login
 in another identity's workspace, and authentication failures fail closed. Do
 not spoof OS username variables or use environment role values such as
 `SCORE2GP_AGENT_ROLE`; they never select privileges.
@@ -81,6 +83,22 @@ a prior managed task.
 - `PROMOTE_MERGED_TASK` / `PROMOTE_RESOLVED_TASK`: verify merged main and prepare the next governance
   promotion. A status-only response is a dispatcher failure; historical
   reviews must not override `MERGED`.
+
+## Author assignment and crossed review
+
+A task or proposal may name its author in `author_login`, which must be a login
+holding the task's `owner_role`. When it is set, only that login may author the
+task, from its own workspace: `tticom-codex` authors from `worktrees/codex`
+through `go`. Any other login gets the terminal state
+`ASSIGNED_TO_ANOTHER_AUTHOR`, which names the assigned author; report it and
+stop. When it is unset, routing is unchanged and `tticom-automation` authors
+from `worktrees/auto`. Governance assigns research and architecture tasks to
+`tticom-codex` by default and product-code tasks to `tticom-automation`, and may
+override either per task.
+
+Review stays crossed: no login reviews or merges a PR it authored. A
+Codex-authored PR is reviewed by `tticom-automation` or `tticomgov-code`; a
+Claude-authored PR is reviewed by `tticom-codex`.
 
 `tticom-automation` never merges. `tticom-codex` and `tticomgov-code` merge only
 through the merge executor (`python scripts/score2gp_orca_control.py merge

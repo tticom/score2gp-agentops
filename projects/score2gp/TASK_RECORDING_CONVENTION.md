@@ -21,6 +21,17 @@ All planned work lives in `projects/score2gp/ORCHESTRATION_STATE.json`:
 
 Record planned work nowhere but the task authority: no `TASKS.md` files, sub-folder records or cycle files.
 
+### Author assignment
+
+A task or proposal may record its author in `author_login`. The login must hold the task's `owner_role`; `validate_authority` rejects any other. When it is set, only that login may author the task, from its own workspace, and any other login gets the terminal state `ASSIGNED_TO_ANOTHER_AUTHOR`. When it is unset, `tticom-automation` authors the task as before.
+
+Governance records `author_login` when it promotes a task:
+- research and architecture tasks default to `tticom-codex`;
+- product-code tasks default to `tticom-automation`;
+- either default may be overridden per task.
+
+Review stays crossed: a Codex-authored PR is reviewed by `tticom-automation` or `tticomgov-code`, and a Claude-authored PR by `tticom-codex`. No login reviews or merges a PR it authored.
+
 ## 3. How to do it: task prompts
 
 Each promoted task has exactly one prompt file, `projects/score2gp/prompts/next/<task>.md`. The prompt at the authority revision that promoted the task is the operative instruction. Its validation commands are in the task's `validation_commands`.
