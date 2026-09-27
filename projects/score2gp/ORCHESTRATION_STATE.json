@@ -3094,9 +3094,9 @@
     },
     {
       "id": "OMIT-05",
-      "title": "Page header and footer text: carry the document's header and footer into the GP score information (Lesson 3: first-page header, first-page footer, page footer)",
+      "title": "Title and credits: carry the source's title and credits into the GP score information instead of invented placeholders (Lesson 3: 'Major Triad Exercises', music by Rick Beato)",
       "requirements": [
-        "REQ-0001"
+        "REQ-0001:U07"
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
@@ -3105,7 +3105,7 @@
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no header or footer; the writer template also adds a Copyright field the reference lacks, which should come from the source or be left empty."
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27). The output writes an invented Score/Title 'PDF-Only Inferred Score' and Score/Music 'Unknown Composer', where the reference has 'Major Triad Exercises' and 'Rick Beato' (REQ-0001 U07: preserve source title and credits). Read them from the source; when they cannot be read, leave the fields empty and record why, never invent them. The reference's FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro template placeholders (%TITLE% ... and Page %page%/%pages%), not document text: keep the template, do not write literal header text. The writer template's Copyright field, absent from the reference, should likewise come from the source or stay empty."
     }
   ],
   "registered_requirements": [
