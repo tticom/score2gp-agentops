@@ -1,64 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 59,
+  "authority_revision": 60,
   "task": {
-    "id": "DUR-01",
-    "title": "Read note durations from note types",
-    "objective": "Every note and rest carries its own duration, read from its note type (notehead, stem, flag glyphs or beam lines, dots, rest glyphs) and grouping (beams, tuplets, ties): a symbol-cited duration record per event on the notation staff, unread with a located reason when ambiguous, never guessed, validated per event against Lesson-3.gp through the independent oracle.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 466,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/dur-01-note-durations-from-note-types",
-    "prompt": "projects/score2gp/prompts/next/dur-01-read-note-durations-from-note-types.md",
-    "allowed_paths": [
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/recognition/**",
-      "src/score2gp/note_duration*.py",
-      "src/score2gp/pdf.py",
-      "src/score2gp/cli.py",
-      "tests/test_dur_01_*.py",
-      "tests/test_notation_omr*.py",
-      "tests/fixtures/pdf/dur_01/**",
-      "scripts/dur_01_*.py",
-      "docs/design/note-duration-recognition.md",
-      "docs/architecture.md",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Every duration record is derived from symbols: notehead kind and stem give the base value; a flag count is a count of identified flag glyphs, never of drawing segments; a beam count is the number of distinct beam lines meeting that stem; dots, rest glyphs, tuplets and ties are read; each field cites its source symbols.",
-      "No duration comes from event counts, note spacing, a default or the bar total; the bar total against the time signature is a reported check only; an ambiguous event is recorded as unread with a located reason.",
-      "Committed, generated public PDF fixtures read 100% correctly: a bar mixing a half note and eight thirty-second notes; dotted and double-dotted notes; an eighth beamed to two sixteenths and a partial beam; a triplet; each rest type, whole through sixty-fourth; a tie across a barline.",
-      "Lesson-3.pdf compared per event with Lesson-3.gp through the independent oracle reader: every event of the first system read and equal to ground truth; whole-document coverage, match rate and every mismatch or unread event reported by page, bar and event index with its cause; committed reports hold counts, indices and codes only.",
-      "Mutation checks fail the tests: flag-glyph identification replaced by a segment count; dots ignored; tuplets ignored; values derived from the number of events in a group.",
-      "python -m pytest, export-schema (no unintended schema diff), validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "GOV-03"
-    ],
-    "stop_conditions": [
-      "duration_guess_introduced",
-      "gate_loosened",
-      "conversion_route_changed",
-      "private_content_would_be_committed"
-    ]
-  },
-  "next_task_proposal": {
     "id": "CP-13",
     "title": "Let Codex author assigned tasks, with crossed review",
     "objective": "The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -105,71 +53,71 @@
       "product_edit_required"
     ]
   },
+  "next_task_proposal": {
+    "id": "DUR-02",
+    "title": "Convert with note-type durations; delete the count rule",
+    "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-02-convert-with-note-type-durations",
+    "prompt": "projects/score2gp/prompts/next/dur-02-convert-with-note-type-durations.md",
+    "allowed_paths": [
+      "src/score2gp/pdf_tab_measure_timing.py",
+      "src/score2gp/pdf_tab_bar_assembler.py",
+      "src/score2gp/pdf_tab_event_factory.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/cli.py",
+      "src/score2gp/ir.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/note_duration*.py",
+      "tests/test_cli_convert.py",
+      "tests/test_pdf_only_tab*.py",
+      "tests/test_pdf_tab_*.py",
+      "tests/test_dur_02_*.py",
+      "docs/design/pdf-tab-duration-candidate-extraction.md",
+      "docs/musicxml-tabraw-build-ir.md",
+      "docs/architecture.md",
+      "schemas/**",
+      "src/score2gp/pdf_tab_duration_associator.py",
+      "src/score2gp/pdf_tab_duration_types.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_geometry_candidate_extraction.py",
+      "tests/test_pdf_tab_duration_associator.py",
+      "tests/test_tabraw_duration_metadata.py"
+    ],
+    "acceptance": [
+      "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
+      "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
+      "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
+      "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
+      "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
+      "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
+      "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-01"
+    ],
+    "stop_conditions": [
+      "duration_guess_introduced",
+      "gate_loosened",
+      "musicxml_route_broken",
+      "private_content_would_be_committed"
+    ]
+  },
   "queued_task_proposals": [
-    {
-      "id": "DUR-02",
-      "title": "Convert with note-type durations; delete the count rule",
-      "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/dur-02-convert-with-note-type-durations",
-      "prompt": "projects/score2gp/prompts/next/dur-02-convert-with-note-type-durations.md",
-      "allowed_paths": [
-        "src/score2gp/pdf_tab_measure_timing.py",
-        "src/score2gp/pdf_tab_bar_assembler.py",
-        "src/score2gp/pdf_tab_event_factory.py",
-        "src/score2gp/build_ir.py",
-        "src/score2gp/cli.py",
-        "src/score2gp/ir.py",
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/note_duration*.py",
-        "tests/test_cli_convert.py",
-        "tests/test_pdf_only_tab*.py",
-        "tests/test_pdf_tab_*.py",
-        "tests/test_dur_02_*.py",
-        "docs/design/pdf-tab-duration-candidate-extraction.md",
-        "docs/musicxml-tabraw-build-ir.md",
-        "docs/architecture.md",
-        "schemas/**",
-        "src/score2gp/pdf_tab_duration_associator.py",
-        "src/score2gp/pdf_tab_duration_types.py",
-        "src/score2gp/tabraw.py",
-        "src/score2gp/pdf.py",
-        "src/score2gp/pdf_geometry_candidate_extraction.py",
-        "tests/test_pdf_tab_duration_associator.py",
-        "tests/test_tabraw_duration_metadata.py"
-      ],
-      "acceptance": [
-        "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
-        "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
-        "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
-        "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
-        "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
-        "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
-        "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-01"
-      ],
-      "stop_conditions": [
-        "duration_guess_introduced",
-        "gate_loosened",
-        "musicxml_route_broken",
-        "private_content_would_be_committed"
-      ]
-    },
     {
       "id": "RES-REQ-0005",
       "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
@@ -1476,6 +1424,62 @@
       "merge_commit": "a3bfd105849ff4cca557d920dcd78deef90cea86",
       "reconciled": true,
       "reconciled_at": "2026-09-26T09:14:01.108593+00:00"
+    },
+    {
+      "id": "DUR-01",
+      "title": "Read note durations from note types",
+      "objective": "Every note and rest carries its own duration, read from its note type (notehead, stem, flag glyphs or beam lines, dots, rest glyphs) and grouping (beams, tuplets, ties): a symbol-cited duration record per event on the notation staff, unread with a located reason when ambiguous, never guessed, validated per event against Lesson-3.gp through the independent oracle.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 466,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-01-note-durations-from-note-types",
+      "prompt": "projects/score2gp/prompts/next/dur-01-read-note-durations-from-note-types.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/note_duration*.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/cli.py",
+        "tests/test_dur_01_*.py",
+        "tests/test_notation_omr*.py",
+        "tests/fixtures/pdf/dur_01/**",
+        "scripts/dur_01_*.py",
+        "docs/design/note-duration-recognition.md",
+        "docs/architecture.md",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Every duration record is derived from symbols: notehead kind and stem give the base value; a flag count is a count of identified flag glyphs, never of drawing segments; a beam count is the number of distinct beam lines meeting that stem; dots, rest glyphs, tuplets and ties are read; each field cites its source symbols.",
+        "No duration comes from event counts, note spacing, a default or the bar total; the bar total against the time signature is a reported check only; an ambiguous event is recorded as unread with a located reason.",
+        "Committed, generated public PDF fixtures read 100% correctly: a bar mixing a half note and eight thirty-second notes; dotted and double-dotted notes; an eighth beamed to two sixteenths and a partial beam; a triplet; each rest type, whole through sixty-fourth; a tie across a barline.",
+        "Lesson-3.pdf compared per event with Lesson-3.gp through the independent oracle reader: every event of the first system read and equal to ground truth; whole-document coverage, match rate and every mismatch or unread event reported by page, bar and event index with its cause; committed reports hold counts, indices and codes only.",
+        "Mutation checks fail the tests: flag-glyph identification replaced by a segment count; dots ignored; tuplets ignored; values derived from the number of events in a group.",
+        "python -m pytest, export-schema (no unintended schema diff), validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-03"
+      ],
+      "stop_conditions": [
+        "duration_guess_introduced",
+        "gate_loosened",
+        "conversion_route_changed",
+        "private_content_would_be_committed"
+      ],
+      "head_sha": "b93e13beed1363fcd6ac30f7824e376421082178",
+      "merge_commit": "6af89ae9bd781aa273535d5c6c14424172ef52ef",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T02:22:34.517435+00:00"
     }
   ],
   "backlog": [
@@ -2985,6 +2989,19 @@
         "DUR-01"
       ],
       "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms."
+    },
+    {
+      "id": "CP-15",
+      "title": "Merge gate: a COMMENTED review (for example a thread reply) must not displace the same reviewer's earlier APPROVE at the head",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 5,
+      "depends_on": [],
+      "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
     }
   ],
   "registered_requirements": [
