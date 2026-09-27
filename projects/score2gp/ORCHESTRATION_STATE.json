@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 62,
+  "authority_revision": 63,
   "task": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
@@ -65,7 +65,8 @@
       "musicxml_route_broken",
       "private_content_would_be_committed"
     ],
-    "author_login": "tticom-automation"
+    "author_login": "tticom-codex",
+    "notes": "Reassigned 2026-09-27 from tticom-automation to tticom-codex by maintainer decision: Claude's weekly usage limit (resets 2026-10-01 16:00 Europe/London) stopped the automation author after 17 pushed commits on the task branch, all by tticom-automation (main..40eb903, first d0e4d67) with no PR open. Codex completes the branch and opens the PR; tticomgov-code reviews it, disclosing that it directed the earlier automation commits."
   },
   "next_task_proposal": {
     "id": "RES-REQ-0005",
