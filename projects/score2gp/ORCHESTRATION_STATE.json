@@ -3094,7 +3094,7 @@
     },
     {
       "id": "OMIT-05",
-      "title": "Title and credits: carry the source's title and credits into the GP score information instead of invented placeholders (Lesson 3: 'Major Triad Exercises', music by Rick Beato)",
+      "title": "Title, credits and page header/footer: carry the source title and credits into Score/Title and Score/Music, and write Guitar Pro's header/footer templates instead of empty fields",
       "requirements": [
         "REQ-0001:U07"
       ],
@@ -3105,7 +3105,7 @@
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27). The output writes an invented Score/Title 'PDF-Only Inferred Score' and Score/Music 'Unknown Composer', where the reference has 'Major Triad Exercises' and 'Rick Beato' (REQ-0001 U07: preserve source title and credits). Read them from the source; when they cannot be read, leave the fields empty and record why, never invent them. The reference's FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro template placeholders (%TITLE% ... and Page %page%/%pages%), not document text: keep the template, do not write literal header text. The writer template's Copyright field, absent from the reference, should likewise come from the source or stay empty."
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): no header or footer is shown, and the title and credit are wrong. Three parts, all required: (1) Read the printed title and credit into Score/Title and Score/Music (reference: 'Major Triad Exercises', 'Rick Beato'); remove the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown'; when a value cannot be read, leave it empty and record why (REQ-0001 U07). (2) Write Guitar Pro's header/footer templates in FirstPageHeader, FirstPageFooter, PageHeader and PageFooter instead of the empty strings the writer hard-codes (src/score2gp/gpif.py:412-415 at score2gp 40eb903). Match the reference's templates, for example FirstPageHeader '%TITLE% %SUBTITLE% %ARTIST% %ALBUM% %WORDS&MUSIC%' and PageFooter 'Page %page%/%pages%', and never write literal header text. (3) The Copyright field, which the reference lacks, comes from the source or stays empty. Acceptance evidence: the four header/footer fields and Title/Music equal the reference's in Lesson-3.gp."
     }
   ],
   "registered_requirements": [
