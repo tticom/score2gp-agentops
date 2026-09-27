@@ -37,4 +37,4 @@ still wait for priority.
 | REQ-0002 | Pluggable, version-selectable Guitar Pro output (GP8/GP7 first; GP5/GP6 and future versions bolt-on) | `RESEARCHED` | Unprioritised; containment task recommended early | [REQ-0002](REQ-0002-pluggable-gp-output-targets.md) |
 | REQ-0003 | Dependency licences compatible with a proprietary product | `PROPOSED` | Unprioritised; before release | [REQ-0003](REQ-0003-dependency-licence-compatibility.md) |
 | REQ-0004 | Runtime provenance recorded for every conversion (FS-01/FS-02) | `ACCEPTED` | Partly implemented; PROV-01 | [REQ-0004](REQ-0004-conversion-runtime-provenance.md) |
-| REQ-0005 | Explained shortfalls and best-effort output: what could not be converted, where and why | `PROPOSED` | Maintainer direction 2026-09-25 | [REQ-0005](REQ-0005-explained-shortfall-reporting.md) |
+| REQ-0005 | Explained shortfalls and best-effort output: what could not be converted, where and why | `RESEARCHED` | Maintainer direction 2026-09-25; `ACCEPTED` recommended pending decisions D1-D10 | [REQ-0005](REQ-0005-explained-shortfall-reporting.md) |
