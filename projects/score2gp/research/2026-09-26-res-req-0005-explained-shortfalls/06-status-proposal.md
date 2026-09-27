@@ -16,7 +16,9 @@ Grounds:
   eight rules, with two conditions: the run-bound output contract for repeat runs (03 §3.3a) and
   the GP gap-bar representation (decision D3). The contract binds success to the caller's own run
   record (`run_id`, status, output hash); file presence alone is never proof of success, and FC7 is
-  not claimed for a consumer that relies on it.
+  not claimed for a consumer that relies on it. The `run_id` is a path-safe single component,
+  refused otherwise (`invalid_run_id`), and every derived path is checked for resolved
+  containment under the run root before any mkdir, write or move (`run_path_escape`).
 - The research found 27 silent gaps (map §1.8). Several of them already break existing fail-closed
   rules in shipped code, independent of REQ-0005: G7 (inferred rhythm reported as `success`), G8
   (synthesised rests at confidence 1.0) and G5 (sidecar crash without a code). That raises the

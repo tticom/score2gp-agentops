@@ -94,7 +94,9 @@ Repeat-run probe (review follow-up): three further `convert` runs (`PUB` then L5
 earlier output in place. It does ([03 §3.3a](03-best-effort-options.md#33a-repeat-runs-and-stale-outputs-applies-to-every-option)). The proposed run-bound
 output contract is checked by a model, not the product: `evidence/run_contract_check.py` (no
 product import) runs the repeat-run cases against a conforming, a presence-only and a status-only
-consumer, and its self-test shows that only the conforming consumer avoids a false success.
+consumer, and its self-test shows that only the conforming consumer avoids a false success. It
+also checks the run-ID grammar and path containment (03 §3.3a rule 0): traversal, absolute and
+linked-root cases are refused without moving the earlier output, and a valid explicit ID passes.
 
 Entrypoint probe (review follow-up): 8 notation-export runs (L5 and `PUB`), 1 `omr` run (L5),
 two `batch` runs and one `diagnose` run over a three-payload public manifest, under

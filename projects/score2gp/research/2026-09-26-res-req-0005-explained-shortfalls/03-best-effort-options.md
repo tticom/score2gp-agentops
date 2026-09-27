@@ -152,6 +152,22 @@ returns).
 
 Producer rules:
 
+0. **Path-safe run ID and containment.** The `run_id` becomes a path component (rules 2-4), so it
+   is validated before any path is derived from it. It must fully match `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`
+   (one component of 1-64 characters: no `/`, `\`, `:`, drive letter, UNC prefix, whitespace or
+   newline), must not contain `..`, must not end in `.`, and must not be a Windows device name
+   (`CON`, `PRN`, `AUX`, `NUL`, `COM0-9`, `LPT0-9`, with or without an extension). A generated
+   UUID4 matches. Any other value is refused at argument validation with the stable code
+   `invalid_run_id` (family `invalid_input`, user reason `input-invalid`), exit 1, and a record
+   with `run_id: null` (the rejected value is not echoed), before rule 1 and with no mkdir, write
+   or move under the output or work directory. Then, before any mkdir, write or move of prior
+   output, every derived path is checked by resolved-path containment: with every symlink and
+   junction resolved, the run root must be exactly `<resolved out-dir>/.score2gp-runs`, the
+   staging directory exactly `<resolved run root>/<run_id>` and must not already exist, and each
+   `previous/` target and staged artifact exactly the expected child of that staging directory.
+   A failure refuses with `run_path_escape` (family `invalid_input`, exit 1, record `refused` for
+   this `run_id`) and touches neither the existing outputs nor anything else. The staging path is
+   re-checked after it is created. Rule 4's `<work-dir>/runs/<run_id>/` follows the same rule.
 1. **Run record first.** Before any stage and before the preflight, atomically write the report
    with `status: running`, the `run_id`, `output_written: false` and an empty output list. Rewrite
    it atomically at every handled exit. A run that dies after this point leaves `running` for its
@@ -192,20 +208,32 @@ at `--out`) and a status-only consumer (report says `success`, no `run_id` or ha
 | S4′ | report from an earlier successful run | uncaught exception after rule 1 | record for this `run_id` `running`, never `success` | reject | reject | reject |
 | S5′ | work directory from an earlier run | any | no artifact in this run's work directory predates the run | — | — | — |
 | S6′ | this run's successful `--out` | file replaced afterwards | hash differs from the record | reject | **false success** | **false success** |
+| S7′a | complete `--out` from an earlier run | `--run-id` with traversal or an invalid form (`../../outside/leak`, `..`, `a/../b`, 65 characters, `NUL`, ...), `--overwrite` | exit 1 `invalid_run_id`; old file untouched in place; nothing created or moved anywhere except the report | reject | **false success** | reject |
+| S7′b | same | absolute `--run-id` (POSIX, drive, drive-relative, UNC), `--overwrite` | same as S7′a | reject | **false success** | reject |
+| S7′c | same, and the run root or the staging directory is a symlink or junction to a sibling directory | valid `--run-id`, `--overwrite` | exit 1 `run_path_escape`; old file untouched in place; nothing written through the link | reject | **false success** | reject |
+| S7′d | same | valid explicit `--run-id`, complete, `--overwrite` (positive control) | exit 0; earlier file under `.score2gp-runs/<run_id>/previous/`, inside the resolved run root | accept | accept | accept |
 
 The bold cells are the point of the controls. S2′a and S2′d show that a presence-only consumer is
 given a false success under the contract, so the contract forbids that consumer rather than
 claiming to protect it. S2′d and S6′ show why the status alone is not enough: the `run_id` and
-the hash are required. The conforming consumer accepts only the successful runs.
+the hash are required. The conforming consumer accepts only the successful runs. S7′a-c show that
+an unsafe `run_id` or a linked run root cannot relocate an earlier output outside the run root
+(the review probe moved it to a sibling directory before rule 0 existed).
 
 **Model check.** `evidence/run_contract_check.py` models the producer rules on a temporary
-directory (no product import) and runs the three consumers through S2′a-d, S3′, S4′, S6′ and a
-fresh-success positive control. Its self-test passes: the conforming consumer accepts exactly the
-two successful runs, and the presence-only and status-only consumers give the false successes
-marked above. S5′ is not modelled. This is a check of the design's logic, not of the product.
+directory (no product import) and runs the three consumers through S2′a-d, S3′, S4′, S6′, S7′a-d
+and a fresh-success positive control: 13 traversal or invalid IDs and 8 absolute IDs, each with
+`--overwrite` over an earlier output, a symlink or junction at the run root and at the staging
+directory, and one valid explicit ID. Every S7′ refusal is checked against a snapshot of the whole
+temporary tree: only the report changed. Its self-test passes (32 controls): the conforming
+consumer accepts exactly the three successful runs, and the presence-only and status-only
+consumers give the false successes marked above. With the grammar or the containment check
+disabled, the S7′ controls fail (an ID of `../../outside/leak` then exits 0 and moves the earlier
+file out of the run root). S5′ is not modelled. This is a check of the design's logic, not of the
+product.
 
 Status of the contract: **Unverified in the product**. The product has no `--run-id`,
-`--overwrite`, run staging or preflight today. Case S2′a is the observed failure S2 turned into a
+`--overwrite`, run-ID validation, run staging or preflight today. Case S2′a is the observed failure S2 turned into a
 test, and its required result is that a conforming consumer rejects the run, not that the old file
 disappears.
 
