@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 60,
+  "authority_revision": 61,
   "task": {
     "id": "CP-13",
     "title": "Let Codex author assigned tasks, with crossed review",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 713,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -2927,9 +2927,9 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 4,
+      "priority": 1,
       "depends_on": [],
-      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1."
+      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1. Raised to priority 1 on 2026-09-27: without PYTHONUTF8 the governance audit's gh reads hit UnicodeDecodeError on review-summary text, returned no comments, and reported a false violation (tticom/score2gp-agentops#712 merged without a merge-executor receipt, although the receipt is present and matches). The same bug crashed the merge executor on #708. Launchers force PYTHONUTF8=1 as a stopgap."
     },
     {
       "id": "CP-11",
