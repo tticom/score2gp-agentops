@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 69,
+  "authority_revision": 70,
   "task": {
-    "id": "RES-REQ-0005",
-    "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
-    "objective": "Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 706,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/res-req-0005-explained-shortfalls",
-    "prompt": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
-    "allowed_paths": [
-      "projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**",
-      "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
-      "projects/score2gp/requirements/README.md"
-    ],
-    "acceptance": [
-      "A current-state map in projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/ lists every place the product refuses, degrades or drops a feature at a pinned tticom/score2gp SHA: stage, emitted code, and whether the location and reason reach the user; every silent gap is named. Evidence comes from code references and from real runs on Lessons 3-7, Ex 2 Hands Up and Can't Find My Way Home.",
-      "A reason-code taxonomy proposal builds on docs/diagnostics_failure_taxonomy.md in the product repo, with stable codes and a user-facing layer.",
-      "At least two best-effort delivery options are evaluated against the fail-closed rules; none allows an unlabelled wrong result.",
-      "A shortfall record and aggregation design is given; everything committed holds counts and codes only.",
-      "A report mock-up is generated from a real run's records.",
-      "REQ-0005's draft acceptance criteria are rewritten as testable criteria, its status moves to RESEARCHED in the requirement file and the register, and the decisions left to the maintainer are listed; ACCEPTED is recommended, not set.",
-      "No product code change; no private musical content or coordinates committed; python -m pytest and the governance audit pass; git diff --check is clean."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "GOV-03"
-    ],
-    "stop_conditions": [
-      "product_edit_required",
-      "private_content_would_be_committed",
-      "maintainer_decision_required"
-    ],
-    "author_login": "tticom-automation",
-    "notes": "Parked 2026-09-26: the maintainer made note-duration recognition the highest priority. PR #706 stays open and resumes when this task is re-promoted."
-  },
-  "next_task_proposal": {
     "id": "OMIT-01",
     "title": "Key signature: read it from the notation and write it on every bar",
     "objective": "Read the key signature from the notation staff and write it as GPIF `Key` (accidental count from the source; mode only where independently evidenced) on every master bar, including key changes. In the reference Lesson-3.gp every one of the 66 master bars has 1 sharp, G major. The DUR-02 output has no `Key`, so Guitar Pro shows C major and every F sharp carries an accidental.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -104,65 +61,65 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-02",
+    "title": "Double barlines: detect section-ending double barlines and write them",
+    "objective": "Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-02-double-barlines",
+    "prompt": "projects/score2gp/prompts/next/omit-02-double-barlines.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/recognition/**",
+      "src/score2gp/ir.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
+      "src/score2gp/version_adapter.py",
+      "src/score2gp/cli.py",
+      "schemas/**",
+      "tests/test_dur_02_oracle.py",
+      "docs/design/**",
+      "docs/architecture.md",
+      "tests/test_omit_02_*.py",
+      "tests/fixtures/pdf/omit_02/**"
+    ],
+    "acceptance": [
+      "Double barlines are distinguished from single barlines, repeat barlines (which already have their own meaning under REQ-0001, recognising bar ends and their meanings) and final barlines. The barline topology and painted-contour primitives from L3-01 are reused.",
+      "Each recognised double barline sets DoubleBar on the master bar it closes, citing its source strokes.",
+      "Lesson-3.gp has DoubleBar at exactly the 11 reference bars. Lessons 4-7 and Ex 2 Hands Up are compared, and every difference is reported.",
+      "A barline whose kind cannot be decided is recorded with a located reason, never promoted or demoted by guess.",
+      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-02",
-      "title": "Double barlines: detect section-ending double barlines and write them",
-      "objective": "Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-02-double-barlines",
-      "prompt": "projects/score2gp/prompts/next/omit-02-double-barlines.md",
-      "allowed_paths": [
-        "src/score2gp/pdf.py",
-        "src/score2gp/pdf_*.py",
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/recognition/**",
-        "src/score2gp/ir.py",
-        "src/score2gp/tabraw.py",
-        "src/score2gp/build_ir.py",
-        "src/score2gp/gpif.py",
-        "src/score2gp/gp_package.py",
-        "src/score2gp/version_adapter.py",
-        "src/score2gp/cli.py",
-        "schemas/**",
-        "tests/test_dur_02_oracle.py",
-        "docs/design/**",
-        "docs/architecture.md",
-        "tests/test_omit_02_*.py",
-        "tests/fixtures/pdf/omit_02/**"
-      ],
-      "acceptance": [
-        "Double barlines are distinguished from single barlines, repeat barlines (which already have their own meaning under REQ-0001, recognising bar ends and their meanings) and final barlines. The barline topology and painted-contour primitives from L3-01 are reused.",
-        "Each recognised double barline sets DoubleBar on the master bar it closes, citing its source strokes.",
-        "Lesson-3.gp has DoubleBar at exactly the 11 reference bars. Lessons 4-7 and Ex 2 Hands Up are compared, and every difference is reported.",
-        "A barline whose kind cannot be decided is recorded with a located reason, never promoted or demoted by guess.",
-        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-05",
       "title": "Title, credits and page header/footer",
@@ -1794,6 +1751,53 @@
       "merge_commit": "af4c246af391e554f42630cb07e3285fa342bfdb",
       "reconciled": true,
       "reconciled_at": "2026-09-27T17:31:15.282288+00:00"
+    },
+    {
+      "id": "RES-REQ-0005",
+      "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
+      "objective": "Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 706,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/res-req-0005-explained-shortfalls",
+      "prompt": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
+      "allowed_paths": [
+        "projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**",
+        "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
+        "projects/score2gp/requirements/README.md"
+      ],
+      "acceptance": [
+        "A current-state map in projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/ lists every place the product refuses, degrades or drops a feature at a pinned tticom/score2gp SHA: stage, emitted code, and whether the location and reason reach the user; every silent gap is named. Evidence comes from code references and from real runs on Lessons 3-7, Ex 2 Hands Up and Can't Find My Way Home.",
+        "A reason-code taxonomy proposal builds on docs/diagnostics_failure_taxonomy.md in the product repo, with stable codes and a user-facing layer.",
+        "At least two best-effort delivery options are evaluated against the fail-closed rules; none allows an unlabelled wrong result.",
+        "A shortfall record and aggregation design is given; everything committed holds counts and codes only.",
+        "A report mock-up is generated from a real run's records.",
+        "REQ-0005's draft acceptance criteria are rewritten as testable criteria, its status moves to RESEARCHED in the requirement file and the register, and the decisions left to the maintainer are listed; ACCEPTED is recommended, not set.",
+        "No product code change; no private musical content or coordinates committed; python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-03"
+      ],
+      "stop_conditions": [
+        "product_edit_required",
+        "private_content_would_be_committed",
+        "maintainer_decision_required"
+      ],
+      "author_login": "tticom-automation",
+      "notes": "Parked 2026-09-26: the maintainer made note-duration recognition the highest priority. PR #706 stays open and resumes when this task is re-promoted.",
+      "head_sha": "dd573ea6a94faab9fdcb6013380f894cb32446e2",
+      "merge_commit": "de6929d9481dfc55f54a525bca088e57c2fc6fb1",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T19:18:01.689977+00:00"
     }
   ],
   "backlog": [

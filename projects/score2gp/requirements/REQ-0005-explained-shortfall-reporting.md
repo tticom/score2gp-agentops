@@ -68,7 +68,15 @@ those runs may be committed.
 7. **A7 — Aggregate.** A rollup over the corpus ranks reasons by bars affected, then by sources affected. It is produced from sanitised aggregates only.
 8. **A8 — Private.** A validator rejects any sanitised aggregate that contains free text, coordinates, page/system/bar values, candidate ids or an unhashed input identity. The test includes a seeded adversarial record.
 
-## Decisions for the maintainer (before `ACCEPTED`)
+## Decisions (recorded 2026-09-27; `ACCEPTED`)
+
+The maintainer delegated these decisions on 2026-09-26: "You know what the plan and the acceptance criteria are, please just keep going." Governance (`tticomgov-code`) took the research's recommendation for every decision where one exists (06-status-proposal.md §6.4), and records here the two that need more than that. Each stays reversible by the maintainer.
+
+- **D1-D2, D4-D9: the research's recommendations, as listed below.** D1 is option B with the run-bound output contract, and `batch` follows its consumer rule. D2 is yes: runs that write refused bars empty (G28) report `partial`, never `success`.
+- **D3: pending the maintainer's check.** Governance will ask the maintainer to open one gap-bar GP file in the pinned Guitar Pro version, and confirm it is not repaired into a rest, before the delivery task that writes gap bars starts.
+- **D10: after the Lesson 3 omission tasks.** OMIT-01 to OMIT-05 are what the maintainer sees in Guitar Pro, so they come first. REQ-0005 delivery follows in the D8 order, and the G28 `partial` status goes in its first slice.
+
+Options as researched:
 
 1. **D1** Delivery option: separate partial artifact (recommended) or a mode switch writing the partial GP to `--out`; and repeat-run behaviour (recommended: the run-bound output contract, under which success comes only from the caller's run record, artifacts are published atomically from a run-unique path, and an existing output is refused unless `--overwrite`).
 2. **D2** Whether PDF-only and editable-draft runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change; recommended yes). Since DUR-02 (product `af4c246`) no run infers or defaults rhythm. The same question applies to a PDF-only run that writes refused bars empty and reports `success` (G28, [map §1.10](../research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md#110-changes-since-the-pinned-revision)); recommended yes.
