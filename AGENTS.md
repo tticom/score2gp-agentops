@@ -38,7 +38,12 @@ login to own the workspace holding the checkout
 `worktrees/codex` → `tticom-codex`) and to match the checkout's Git author and
 committer. Plain `go` in `worktrees/auto` is the author continuation under the
 implementation role; `got` in `worktrees/gov` or `worktrees/codex` runs the
-governance/reviewer bootstrap. An explicit review request (`--review-repo` and
+governance/reviewer bootstrap. Since CP-13, a task may name its author in
+`author_login`: only that login may author it, from its own workspace, so
+`tticom-codex` runs `go` in `worktrees/codex` for a task assigned to it, and any
+other login gets `ASSIGNED_TO_ANOTHER_AUTHOR`. Research and architecture tasks
+default to `tticom-codex`, product-code tasks to `tticom-automation`, and review
+stays crossed (see `CLAUDE.md`). An explicit review request (`--review-repo` and
 `--review-pr`) routes any identity granted the reviewer role to the reviewer
 bootstrap, including `tticom-automation`. A reviewer may review any PR it did
 not author. Self-review is always rejected, and reviewer capability never
