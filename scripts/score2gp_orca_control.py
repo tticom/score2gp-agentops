@@ -20,10 +20,10 @@ from typing import Any
 
 try:
     from scripts.score2gp_orchestrator import advance as advance_orchestration
-    from scripts.verify_identity import IdentityError, github_login
+    from scripts.verify_identity import WORKSPACE_LOGINS, IdentityError, github_login
 except ModuleNotFoundError:
     from score2gp_orchestrator import advance as advance_orchestration
-    from verify_identity import IdentityError, github_login
+    from verify_identity import WORKSPACE_LOGINS, IdentityError, github_login
 
 STATES = {
     "BLOCKED",
@@ -279,7 +279,44 @@ def validate_authority(authority: dict[str, Any]) -> None:
                     f"cross-task branch reuse detected: branch '{branch}' shared between {active_branches[branch]} and {tid}"
                 )
             active_branches[branch] = tid
+    validate_author_logins(authority)
     validate_backlog(authority, registered_requirements(authority))
+
+
+def validate_author_logins(authority: dict[str, Any]) -> None:
+    """An ``author_login`` must be a login holding the task's own ``owner_role`` (CP-13)."""
+    records: list[Any] = [authority.get("task"), authority.get("next_task_proposal")]
+    records.extend(authority.get("queued_task_proposals") or [])
+    if isinstance(authority.get("task_registry"), dict):
+        records.extend(authority["task_registry"].values())
+    if isinstance(authority.get("tasks"), list):
+        records.extend(authority["tasks"])
+    for record in records:
+        if not isinstance(record, dict) or record.get("author_login") is None:
+            continue
+        login = record["author_login"]
+        owner_role = record.get("owner_role")
+        if not isinstance(login, str) or not login or login not in _role_logins(authority, owner_role):
+            raise ControlError(
+                f"task {record.get('id', '?')} author_login {login} does not hold its owner_role {owner_role}"
+            )
+
+
+def _role_logins(authority: dict[str, Any], role: Any) -> list[str]:
+    policy = authority.get("roles", {}).get(role) if isinstance(role, str) else None
+    return list(policy.get("github_logins") or []) if isinstance(policy, dict) else []
+
+
+def assigned_author(task: dict[str, Any]) -> str | None:
+    """The login a task assigns as its author, or None when any author-role login may author it."""
+    login = task.get("author_login")
+    return str(login) if login else None
+
+
+def pr_author_is_not_assigned(task: dict[str, Any], pr: dict[str, Any]) -> bool:
+    """Whether an assigned task's PR was authored by a login other than its author_login."""
+    author = assigned_author(task)
+    return author is not None and str(pr.get("author", "")) != author
 
 
 BACKLOG_KINDS = {"research", "implementation", "governance", "decision"}
@@ -682,6 +719,9 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
         return result("BLOCKED", "live_pr_does_not_match_authority", task)
     if str(pr.get("head_branch", "")) != str(task["branch"]):
         return result("BLOCKED", "live_branch_does_not_match_authority", task)
+    # Recorded or discovered, an assigned task's PR must be by its assigned author (CP-13).
+    if pr_author_is_not_assigned(task, pr):
+        return result("BLOCKED", "active_task_pr_author_not_assigned_author", task, **binding)
 
     pr_state = str(pr.get("state", "")).upper()
     if pr_state == "MERGED":
@@ -751,6 +791,8 @@ def _discovered_binding(
     implementation = authority.get("roles", {}).get("implementation", {}).get("github_logins") or []
     if not author or author not in implementation:
         return blocked("active_task_pr_author_not_implementation")
+    if assigned_author(task) not in {None, author}:
+        return blocked("active_task_pr_author_not_assigned_author")
     state = str(candidate.get("state", "")).upper()
     if state == "CLOSED":
         return blocked("active_task_pr_closed_unmerged")
@@ -782,12 +824,35 @@ def _discovered_binding(
 def result(state: str, reason: str, task: dict[str, Any], **extra: Any) -> dict[str, Any]:
     if state not in STATES:
         raise ControlError(f"invalid operational state {state}")
+    # Author work on an assigned task names its author; nothing changes for an unassigned task.
+    author = assigned_author(task)
+    if author and extra.get("dispatch_role") == task.get("owner_role", "implementation"):
+        extra["author_login"] = author
     return {
         "schema_version": 1,
         "state": state,
         "reason": reason,
         "task_id": str(task["id"]),
         **extra,
+    }
+
+
+def assigned_author_conflict(resolved: dict[str, Any], github_login: str) -> dict[str, Any] | None:
+    """The terminal, non-authorising state for a login other than a task's assigned author (CP-13)."""
+    author = resolved.get("author_login")
+    if not author or author == github_login:
+        return None
+    slot = next((s for s, login in WORKSPACE_LOGINS.items() if login == author), None)
+    where = f"worktrees/{slot}" if slot else "its own workspace"
+    return {
+        "ok": False,
+        "state": "ASSIGNED_TO_ANOTHER_AUTHOR",
+        "reason": "task_assigned_to_another_author",
+        "task_id": resolved["task_id"],
+        "dispatch_role": resolved.get("dispatch_role"),
+        "assigned_author": author,
+        "github_login": github_login,
+        "next_action": f"{author} must author task {resolved['task_id']} from {where}; {github_login} stops",
     }
 
 
@@ -825,6 +890,11 @@ def build_assignment(
         task["repository"] = str((live.get("snapshot") or {}).get("repository", task["repository"]))
         task["branch"] = str((live.get("pull_request") or {}).get("head_branch", task["branch"]))
         task["pull_request"] = (live.get("pull_request") or {}).get("number")
+    author = assigned_author(task) if role == task.get("owner_role", "implementation") else None
+    if author and identity.github_login != author:
+        raise ControlError(
+            f"task {task['id']} is assigned to {author}; {identity.github_login or '<none>'} may not author it"
+        )
     pr = live.get("pull_request") or {}
     role_policy = authority["roles"][role]
     authority_facts = {
@@ -851,6 +921,8 @@ def build_assignment(
         "acceptance": task.get("acceptance", []),
         "required_evidence": task.get("required_evidence", []),
     }
+    if author:
+        work["author_login"] = author
     if _is_explicit_review(live):
         context = _explicit_review_context(authority, live)
         if context is None:
@@ -1019,6 +1091,15 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append("task_pull_request_not_recorded")
         elif _parse_strict_positive_int(pr.get("number")) != task_pr:
             failures.append("pull_request_mismatch")
+    # The assignment binds the task's own PR on every branch; the governance-branch exemption
+    # covers only governance PRs for other work (CP-13).
+    task_pr_number = _parse_strict_positive_int(task.get("pull_request"))
+    is_task_pr = repository == str(task["repository"]) and (
+        head_branch == str(task["branch"])
+        or (task_pr_number is not None and _parse_strict_positive_int(pr.get("number")) == task_pr_number)
+    )
+    if (is_task_pr or not governance_pr) and pr_author_is_not_assigned(task, pr):
+        failures.append("pr_author_not_assigned_author")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):
