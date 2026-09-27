@@ -456,6 +456,44 @@ def test_merge_gate_denies_a_recorded_pr_not_by_the_assigned_author() -> None:
     assert verify_merge_gate(config, merge_facts(config, CODEX, AUTO, GOV))["decision"] == "ALLOW"
 
 
+# --- 6. Review of 55bc333: the governance-branch exemption ---------------------
+
+
+def governance_branch_facts(config: dict, author: str, approver: str, branch: str, number: int = 713) -> dict:
+    facts = merge_facts(config, author, approver, GOV)
+    facts["pull_request"].update(head_branch=branch, number=number)
+    return facts
+
+
+@pytest.mark.parametrize("prefix", ["architect/", "governance/"])
+@pytest.mark.parametrize("recorded", [713, None])
+def test_merge_gate_denies_an_assigned_governance_branch_pr_not_by_the_assigned_author(prefix, recorded) -> None:
+    branch = f"{prefix}cp13-fixture"
+    config = authority(CODEX, branch=branch, pull_request=recorded, status="RUNNING")
+    decision = verify_merge_gate(config, governance_branch_facts(config, AUTO, CODEX, branch))
+    assert decision["governance_pr"] is True
+    assert (decision["decision"], decision["failures"]) == ("DENY", ["pr_author_not_assigned_author"])
+    # Negative control: the assigned author's PR on the same branch, independently approved, is allowed.
+    allowed = verify_merge_gate(config, governance_branch_facts(config, CODEX, AUTO, branch))
+    assert (allowed["decision"], allowed["failures"]) == ("ALLOW", [])
+
+
+@pytest.mark.parametrize("prefix", ["architect/", "governance/"])
+def test_merge_gate_denies_the_recorded_pr_number_on_another_governance_branch(prefix) -> None:
+    config = authority(CODEX, branch=f"{prefix}cp13-fixture", pull_request=713, status="RUNNING")
+    decision = verify_merge_gate(config, governance_branch_facts(config, AUTO, CODEX, f"{prefix}renamed"))
+    assert (decision["decision"], decision["failures"]) == ("DENY", ["pr_author_not_assigned_author"])
+
+
+@pytest.mark.parametrize("task_branch", ["architect/cp13-fixture", "feat/cp-13-fixture"])
+def test_an_unrelated_governance_pr_is_unaffected_by_the_assignment(task_branch) -> None:
+    config = authority(CODEX, branch=task_branch, pull_request=713, status="RUNNING")
+    facts = governance_branch_facts(config, GOV, CODEX, "governance/record-other-work", number=714)
+    facts["merge_controller_login"] = CODEX
+    decision = verify_merge_gate(config, facts)
+    assert (decision["decision"], decision["failures"]) == ("ALLOW", [])
+
+
 @pytest.mark.parametrize("author", [AUTO, CODEX])
 def test_an_unassigned_task_accepts_either_implementation_author(author) -> None:
     config = authority(pull_request=713, status="RUNNING")

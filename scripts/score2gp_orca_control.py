@@ -1091,8 +1091,15 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append("task_pull_request_not_recorded")
         elif _parse_strict_positive_int(pr.get("number")) != task_pr:
             failures.append("pull_request_mismatch")
-        if pr_author_is_not_assigned(task, pr):
-            failures.append("pr_author_not_assigned_author")
+    # The assignment binds the task's own PR on every branch; the governance-branch exemption
+    # covers only governance PRs for other work (CP-13).
+    task_pr_number = _parse_strict_positive_int(task.get("pull_request"))
+    is_task_pr = repository == str(task["repository"]) and (
+        head_branch == str(task["branch"])
+        or (task_pr_number is not None and _parse_strict_positive_int(pr.get("number")) == task_pr_number)
+    )
+    if (is_task_pr or not governance_pr) and pr_author_is_not_assigned(task, pr):
+        failures.append("pr_author_not_assigned_author")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):
