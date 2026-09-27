@@ -71,7 +71,7 @@ synthesised content; each field is either observed or carries disposition `appro
 | Rule | Result |
 |---|---|
 | FC1 | Holds if the gate is strict. Approximated rhythm must be labelled per bar, not per document. |
-| FC2, FC7 | Holds: `partial` is a non-success status with a non-zero exit. |
+| FC2, FC7 | Holds for callers that follow the run-bound output contract (§3.3a): `partial` is a non-success status with a non-zero exit, recorded against the caller's `run_id`. A partial GP at `--out` misleads any caller that tests only for the file, so the contract's consumer rule is mandatory here. |
 | FC3 | Holds: records carry page/system/source bar (design 04). |
 | FC4 | Holds only if "every source bar" means the independent layout inventory (map §1.3a). A bar with no playable candidate must become a gap bar too (G21); a builder keyed on playable candidates silently drops it. |
 | FC6 | **Risk.** GP has no "unknown" bar content. An empty or gap bar is rendered, and played back, as silence. That is invented material unless the marker is in the file. Whether GPIF can hold a bar with no beats that GP 7/8 opens without repairing to a rest is **Unverified** (maintainer decision D3). |
@@ -97,13 +97,15 @@ and the verdict below holds only with it.
 | Rule | Result |
 |---|---|
 | FC1, FC3, FC4, FC6 | As Option A, with the same GP gap-bar condition (D3). |
-| FC2, FC7 | **Holds only with the run-bound output contract (§3.3a).** Without it, the file at `--out` can be an earlier run's complete output. A failed rerun then leaves it unchanged, and a caller that tests for the file sees success. That was observed at the pinned SHA (§3.3a, run S2). With the contract, the file at `--out` after a run is either this run's complete output or absent. So a caller that tests for the file cannot mistake a partial or failed run for success. |
-| FC8 | Holds with the contract: the file name, title and notice all say partial, a partial file never overwrites a complete one, and a stale partial from an earlier run is removed before a later run starts (§3.3a, case S3). |
+| FC2, FC7 | **Holds only for callers that follow the run-bound output contract (§3.3a).** The file at `--out` can be an earlier run's complete output, and a failed rerun can leave it unchanged (observed at the pinned SHA, §3.3a run S2). No file-system rule removes that for every run: a refused rerun without `--overwrite`, or a run that dies before its first write, still leaves the old file (§3.3a model, control 2). So the contract does not promise "this run's output or absent". It defines success as the caller's own run record (matching `run_id`, `status: success`, exit 0, and the SHA-256 of the file at `--out` equal to the recorded hash), and it states that **file presence alone is never proof of success**. A caller that tests only for the file is outside the contract, and FC7 is not claimed for it. |
+| FC8 | Holds with the contract: the file name, title and notice all say partial, a partial file is never published to `--out`, and with `--overwrite` a stale partial from an earlier run is moved out of place before a later run's stages start (§3.3a, case S3′). |
 
 Verdict: **acceptable; recommended, conditional on the run-bound output contract (§3.3a).** It
 keeps the strict contract of `--out` and adds the partial artifact beside it. That also separates
 the two for pricing (partial output with located gaps could be priced lower than complete
-output).
+output). The recommendation assumes every consumer that decides "success" (the CLI user,
+`batch`, integrators) reads the run record. Callers that only test for the file, such as
+`batch.py:91-92` today, must change; the design does not make them safe.
 
 ### 3.3a Repeat runs and stale outputs (applies to every option)
 
@@ -129,39 +131,83 @@ So a file's presence alone never proves "this run succeeded", today or under any
 JSON report is rewritten on every run that reaches a handled exit. It does not cover a run that
 dies before `_write_convert_report` (the `generate-sidecar` traceback, G5, has no report at all).
 
-**Run-bound output contract** (proposed; required for Option B and for A):
+**Run-bound output contract** (proposed; required for Option B and for A).
 
-1. **Preflight, before any stage.** If `--out` or `<name>.partial.gp` exists and `--overwrite`
-   was not given, refuse at once with a new code `output_exists` (family `invalid_input`, user
-   reason `input-invalid`), exit 1, and touch nothing. With `--overwrite`, remove both paths
-   before any stage runs. A failed rerun then leaves no primary output, never the old one. The
-   user asked for the overwrite, so losing the old file is an explicit choice, not a silent one.
-2. **Report first.** Write the JSON report with `status: running`, a fresh `run_id` and
-   `output_written: false` before any stage, and rewrite it at the end. A run that dies without
-   a handled exit leaves `running`, never a stale `success`.
-3. **Bind artifacts to the run.** The final report records `run_id` and the SHA-256 of each
-   artifact written (`--out` or `<name>.partial.gp`). The GP file carries the `run_id` in its
-   notice or metadata, and `shortfall-records.json` carries it too. A caller checks the report
-   status and the hash, not file presence.
+The contract's rule for consumers comes first, because no file-system behaviour can replace it.
+**File presence at `--out`, or at `<name>.partial.gp`, is never proof of success.** A refused
+rerun without `--overwrite` leaves the earlier file in place by design (rule 3), and a run that
+dies before its first write (argument error, kill, crash in start-up) cannot remove anything. A
+consumer accepts a run as successful only when all of these hold:
+
+- the process exit code is 0;
+- the run record (the JSON report) carries the `run_id` the consumer supplied for this run
+  (`--run-id`; when absent, the product generates one and prints it on stdout before any stage);
+- the record says `status: success` and lists exactly one `primary` output;
+- the SHA-256 of the file at `--out` equals the hash recorded for it.
+
+A stale report fails the `run_id` check; a stale or replaced file fails the hash check. The CLI
+help, the report schema and the user documentation must state this rule. `batch` and every other
+in-product consumer must apply it (today `batch.py:91-92` sets `success` once `write_gp`
+returns).
+
+Producer rules:
+
+1. **Run record first.** Before any stage and before the preflight, atomically write the report
+   with `status: running`, the `run_id`, `output_written: false` and an empty output list. Rewrite
+   it atomically at every handled exit. A run that dies after this point leaves `running` for its
+   own `run_id`, never a stale `success`.
+2. **Run-unique staging and atomic publish.** Every artifact is built in
+   `<out-dir>/.score2gp-runs/<run_id>/` (same file system as `--out`), validated and hashed there,
+   and only then published with one atomic rename: to `--out` on `success`, to
+   `<name>.partial.gp` on `partial`, nowhere on refusal. The GP carries the `run_id` in its notice or
+   metadata, and `shortfall-records.json` carries it too. The final record lists each published
+   artifact with its role, path and SHA-256. This keeps `temp_output.gp` → validate → move
+   (`cli.py:1296-1309`), makes the temporary path unique per run, and applies the same pattern to
+   `batch.py:91`.
+3. **Preflight.** If `--out` or `<name>.partial.gp` exists and `--overwrite` was not given, refuse
+   with a new code `output_exists` (family `invalid_input`, user reason `input-invalid`), exit 1,
+   record `status: refused` and touch neither file. The old file stays, and the record for this
+   `run_id` says no output was written, so a conforming consumer rejects the run. With
+   `--overwrite`, move both existing files into `.score2gp-runs/<run_id>/previous/` before any
+   stage. A non-success rerun then leaves nothing at `--out`, and the earlier file is kept, not
+   deleted. This is defence in depth for careless readers; it is not the success signal.
 4. **Per-run work directory.** Intermediate artifacts go to `<work-dir>/runs/<run_id>/`, or the
    known artifact names are removed at preflight. Stale `score.ir.json` next to a newer
    `tab_raw.json` (S3) cannot then happen.
-5. **Atomic write.** Keep `temp_output.gp` → validate → move (`cli.py:1296-1309`) for both
-   artifacts. Apply the same pattern to `batch.py:91`. The batch cache key already
-   hashes options and input contents (`cache.py:14-47`); add the product version, so that a hit
-   cannot serve an artifact built by different code.
+5. **Cache.** The batch cache key already hashes options and input contents (`cache.py:14-47`);
+   add the product version, so that a hit cannot serve an artifact built by different code. A
+   cache hit gets its own `run_id` and record, with the artifact hash.
 
-**Repeat-run cases the contract must pass** (acceptance negative controls; REQ-0005 A5):
+**Repeat-run cases the contract must pass** (acceptance negative controls; REQ-0005 A5). Each case
+is checked with three consumers: the conforming rule above, a presence-only consumer (file exists
+at `--out`) and a status-only consumer (report says `success`, no `run_id` or hash check).
 
-| Case | Before the run | Run outcome | Required state after |
-|---|---|---|---|
-| S2′ | complete `--out` from an earlier run | partial or refused | without `--overwrite`: exit 1 `output_exists`, old file untouched and reported as not from this run; with `--overwrite`: no file at `--out`, `<name>.partial.gp` from this run (or none if refused), report `output_written: false` |
-| S3′ | stale `<name>.partial.gp` | complete | `--out` from this run, no `.partial.gp` left |
-| S4′ | report from an earlier successful run | uncaught exception (fault injection) | report `status: running` (or `failed`), never `success` |
-| S5′ | work directory from an earlier run | any | no artifact in this run's work directory predates the run |
+| Case | Before the run | Run | Required state after | Conforming | Presence-only | Status-only |
+|---|---|---|---|---|---|---|
+| S2′a | complete `--out` from an earlier run | partial, no `--overwrite` | exit 1 `output_exists`; old file untouched; record for this `run_id` `refused`, no outputs | reject | **false success** | reject |
+| S2′b | same | partial, `--overwrite` | exit 6; no file at `--out`; `<name>.partial.gp` from this run; earlier file under `previous/` | reject | reject | reject |
+| S2′c | same | refused, `--overwrite` | exit 2; no file at `--out`, no partial | reject | reject | reject |
+| S2′d | complete `--out` and `success` report from an earlier run | dies before its first write | both files unchanged; no exit code | reject | **false success** | **false success** |
+| S3′ | stale `<name>.partial.gp` | complete, `--overwrite` | `--out` from this run, no `.partial.gp` left | accept | accept | accept |
+| S4′ | report from an earlier successful run | uncaught exception after rule 1 | record for this `run_id` `running`, never `success` | reject | reject | reject |
+| S5′ | work directory from an earlier run | any | no artifact in this run's work directory predates the run | — | — | — |
+| S6′ | this run's successful `--out` | file replaced afterwards | hash differs from the record | reject | **false success** | **false success** |
 
-Status of the contract: **Unverified**. It is a design; the product has no `--overwrite`,
-`run_id` or preflight today. Case S2′ is the observed failure S2 turned into a test.
+The bold cells are the point of the controls. S2′a and S2′d show that a presence-only consumer is
+given a false success under the contract, so the contract forbids that consumer rather than
+claiming to protect it. S2′d and S6′ show why the status alone is not enough: the `run_id` and
+the hash are required. The conforming consumer accepts only the successful runs.
+
+**Model check.** `evidence/run_contract_check.py` models the producer rules on a temporary
+directory (no product import) and runs the three consumers through S2′a-d, S3′, S4′, S6′ and a
+fresh-success positive control. Its self-test passes: the conforming consumer accepts exactly the
+two successful runs, and the presence-only and status-only consumers give the false successes
+marked above. S5′ is not modelled. This is a check of the design's logic, not of the product.
+
+Status of the contract: **Unverified in the product**. The product has no `--run-id`,
+`--overwrite`, run staging or preflight today. Case S2′a is the observed failure S2 turned into a
+test, and its required result is that a conforming consumer rejects the run, not that the old file
+disappears.
 
 ### Option C: per-measure gating always on, no mode
 
@@ -173,7 +219,10 @@ Every run delivers what passes the per-bar gate in `--out`, with gap bars, and r
 | Others | As Option A. |
 
 Verdict: **rejected.** It changes the meaning of `--out` for every caller, and allows an
-unlabelled false success in tools that only check file presence.
+unlabelled false success in tools that only check file presence. Option B does not make such
+tools safe either (§3.3a, S2′a and S2′d), but it never publishes a non-success output at `--out`,
+so on a fresh path or with `--overwrite` a presence-only tool is not misled. Under C even a
+first run on a fresh path misleads it.
 
 ### Option D: labelled regions without gap bars (omit failing bars entirely)
 
@@ -196,9 +245,12 @@ Verdict: **rejected.**
 | D omit failing bars | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✗ | rejected |
 
 FC5 holds for A, B and C because approximated rhythm can only appear in a non-success artifact
-with per-bar labels. FC2 and FC7 hold for A and B only with the run-bound output contract of
-§3.3a: without it, a stale earlier output at `--out` survives a failed rerun (observed S2). With
-the contract, none of the accepted options lets an unlabelled wrong result reach the user.
+with per-bar labels. FC2 and FC7 hold for A and B only for consumers that follow the run-bound
+output contract of §3.3a. A stale earlier output at `--out` survives a failed rerun (observed
+S2), and under the contract it still can (S2′a, S2′d). The contract therefore makes the caller's
+own run record, not file presence, the only evidence of success. With that consumer rule, none of
+the accepted options lets a consumer take a wrong or stale result as this run's success. A
+consumer that relies on file presence alone is outside the contract, and no option protects it.
 
 ## 3.5 Preconditions that apply to any accepted option
 
@@ -209,8 +261,10 @@ the contract, none of the accepted options lets an unlabelled wrong result reach
    supports that without changing its checks.
 3. `status: success` must mean complete and faithful. Inferred rhythm moves to a non-success
    status (fixes G7).
-4. The run-bound output contract (§3.3a) is in place. No stale primary output, partial artifact,
-   report or intermediate can be read as this run's result (fixes G22).
+4. The run-bound output contract (§3.3a) is in place, and every in-product consumer (`batch`
+   included) follows its consumer rule. A stale primary output, partial artifact, report or
+   intermediate cannot pass the `run_id` and hash checks as this run's result (fixes G22). File
+   presence is documented as never being proof of success.
 5. An independent oracle (REQ-0005 acceptance 2) must check the delivered bars against the
    reference GP. For L3-L7, EX2 and CFMWH the private corpus holds reference `.gp` files, so this
    is feasible locally without committing content.

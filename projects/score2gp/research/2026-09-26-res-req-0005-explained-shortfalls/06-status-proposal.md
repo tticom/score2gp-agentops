@@ -14,7 +14,9 @@ Grounds:
   the test that decides it (§6.3).
 - The requirement is feasible without weakening the fail-closed rules. Option B in 03 meets all
   eight rules, with two conditions: the run-bound output contract for repeat runs (03 §3.3a) and
-  the GP gap-bar representation (decision D3).
+  the GP gap-bar representation (decision D3). The contract binds success to the caller's own run
+  record (`run_id`, status, output hash); file presence alone is never proof of success, and FC7 is
+  not claimed for a consumer that relies on it.
 - The research found 27 silent gaps (map §1.8). Several of them already break existing fail-closed
   rules in shipped code, independent of REQ-0005: G7 (inferred rhythm reported as `success`), G8
   (synthesised rests at confidence 1.0) and G5 (sidecar crash without a code). That raises the
@@ -24,7 +26,7 @@ Grounds:
 
 | # | Open question | Answer | Where |
 |---|---|---|---|
-| 1 | How best effort coexists with strict refusal | A complete-or-nothing primary `--out`, plus a separate labelled `<name>.partial.gp` and report, run status `partial`, non-success exit, with a run-bound output contract so that a stale earlier output cannot pass for this run's result (03 §3.3a). Per-bar gating (Option A) is acceptable under conditions. Always-on gating (C) and omitting failing bars (D) are rejected. | [03](03-best-effort-options.md) |
+| 1 | How best effort coexists with strict refusal | A complete-or-nothing primary `--out`, plus a separate labelled `<name>.partial.gp` and report, run status `partial`, non-success exit, with a run-bound output contract: artifacts are staged under a run-unique path and published atomically, and a consumer accepts success only from its own run record (matching `run_id`, `status: success`, output hash). A stale earlier output can still be present after a failed rerun; file presence alone is never proof of success (03 §3.3a). Per-bar gating (Option A) is acceptable under conditions. Always-on gating (C) and omitting failing bars (D) are rejected. | [03](03-best-effort-options.md) |
 | 2 | Extend the existing codes or define a user-facing layer | Both. Register and freeze the existing engine codes (a stability rule and a completeness test), and add two stable layers above them: 8 reason families and 17 user reasons. Every shortfall also carries a feature kind and a disposition. `docs/diagnostics_failure_taxonomy.md` is a cause taxonomy for one recogniser and becomes an optional `cause` field. | [02](02-reason-code-taxonomy.md) |
 | 3 | Where records live, how they are aggregated privately | Private per-run `shortfall-records.json` in the work directory. A sanitised counts-and-codes aggregate, with an enforced privacy validator, is appended to a local ledger. A ranked rollup (bars affected, then sources) may be committed to agentops and feeds backlog proposals. | [04](04-shortfall-record-and-aggregation.md) |
 | 4 | What the report looks like, which formats | Headline status and coverage, then "not converted" by user reason with source locations, then "converted but check", then "not supported yet", then support details. Rendered as Markdown, HTML and JSON from the same records. | [05](05-report-mockup.md) |
@@ -52,7 +54,7 @@ recommendation.
 
 | # | Decision | Recommendation |
 |---|---|---|
-| D1 | Best-effort delivery option: B (separate partial artifact) or A (mode switch, partial GP in `--out`), and the repeat-run behaviour: refuse on an existing output unless `--overwrite` (03 §3.3a) | B, with the run-bound output contract |
+| D1 | Best-effort delivery option: B (separate partial artifact) or A (mode switch, partial GP in `--out`), and the repeat-run behaviour: success only from the caller's run record, run-unique staging with atomic publish, and refuse on an existing output unless `--overwrite` (03 §3.3a) | B, with the run-bound output contract, and `batch` changed to follow its consumer rule |
 | D2 | Whether `--pdf-only-tab` and `--editable-draft` runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change that fixes G7) | Yes; the L3 contract already forbids layout-inferred rhythm in a successful result. At product `af4c246` rhythm is no longer inferred (map §1.10). The question moves to runs that write refused bars empty under `success` (G28): yes |
 | D3 | How a gap bar is represented in GP, and who verifies it opens in Guitar Pro without being repaired into a rest (**Unverified** today) | Maintainer verifies in the pinned Guitar Pro version before delivery starts |
 | D4 | Whether a labelled omission of an unsupported feature (lyrics, text, dynamics) blocks `success` | Blocks `success` (FC2 reading), with a per-feature allowlist the maintainer can grant later |
