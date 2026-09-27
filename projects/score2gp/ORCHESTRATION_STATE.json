@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 54,
+  "authority_revision": 68,
   "task": {
     "id": "RES-REQ-0005",
     "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 706,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -41,7 +41,9 @@
       "product_edit_required",
       "private_content_would_be_committed",
       "maintainer_decision_required"
-    ]
+    ],
+    "author_login": "tticom-automation",
+    "notes": "Parked 2026-09-26: the maintainer made note-duration recognition the highest priority. PR #706 stays open and resumes when this task is re-promoted."
   },
   "next_task_proposal": null,
   "queued_task_proposals": [],
@@ -1308,6 +1310,198 @@
       "merge_commit": "a3bfd105849ff4cca557d920dcd78deef90cea86",
       "reconciled": true,
       "reconciled_at": "2026-09-26T09:14:01.108593+00:00"
+    },
+    {
+      "id": "DUR-01",
+      "title": "Read note durations from note types",
+      "objective": "Every note and rest carries its own duration, read from its note type (notehead, stem, flag glyphs or beam lines, dots, rest glyphs) and grouping (beams, tuplets, ties): a symbol-cited duration record per event on the notation staff, unread with a located reason when ambiguous, never guessed, validated per event against Lesson-3.gp through the independent oracle.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 466,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-01-note-durations-from-note-types",
+      "prompt": "projects/score2gp/prompts/next/dur-01-read-note-durations-from-note-types.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/note_duration*.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/cli.py",
+        "tests/test_dur_01_*.py",
+        "tests/test_notation_omr*.py",
+        "tests/fixtures/pdf/dur_01/**",
+        "scripts/dur_01_*.py",
+        "docs/design/note-duration-recognition.md",
+        "docs/architecture.md",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Every duration record is derived from symbols: notehead kind and stem give the base value; a flag count is a count of identified flag glyphs, never of drawing segments; a beam count is the number of distinct beam lines meeting that stem; dots, rest glyphs, tuplets and ties are read; each field cites its source symbols.",
+        "No duration comes from event counts, note spacing, a default or the bar total; the bar total against the time signature is a reported check only; an ambiguous event is recorded as unread with a located reason.",
+        "Committed, generated public PDF fixtures read 100% correctly: a bar mixing a half note and eight thirty-second notes; dotted and double-dotted notes; an eighth beamed to two sixteenths and a partial beam; a triplet; each rest type, whole through sixty-fourth; a tie across a barline.",
+        "Lesson-3.pdf compared per event with Lesson-3.gp through the independent oracle reader: every event of the first system read and equal to ground truth; whole-document coverage, match rate and every mismatch or unread event reported by page, bar and event index with its cause; committed reports hold counts, indices and codes only.",
+        "Mutation checks fail the tests: flag-glyph identification replaced by a segment count; dots ignored; tuplets ignored; values derived from the number of events in a group.",
+        "python -m pytest, export-schema (no unintended schema diff), validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-03"
+      ],
+      "stop_conditions": [
+        "duration_guess_introduced",
+        "gate_loosened",
+        "conversion_route_changed",
+        "private_content_would_be_committed"
+      ],
+      "head_sha": "b93e13beed1363fcd6ac30f7824e376421082178",
+      "merge_commit": "6af89ae9bd781aa273535d5c6c14424172ef52ef",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T02:22:34.517435+00:00"
+    },
+    {
+      "id": "CP-13",
+      "title": "Let Codex author assigned tasks, with crossed review",
+      "objective": "The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 713,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-13-codex-author-lane",
+      "prompt": "projects/score2gp/prompts/next/cp-13-codex-author-lane.md",
+      "allowed_paths": [
+        "scripts/score2gp_dispatch.py",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_orchestrator.py",
+        "scripts/verify_identity.py",
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "tests/test_score2gp_dispatch.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_orchestrator.py",
+        "tests/test_cp_13_*.py",
+        "CLAUDE.md",
+        "projects/score2gp/AGENT_CONTROL.md",
+        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+        "projects/score2gp/ORCA_WORKFLOW.md"
+      ],
+      "acceptance": [
+        "SLOT_ROLES['codex'] allows architect and implementation as well as governance and reviewer; the auto and gov slots are unchanged.",
+        "A task or proposal may declare author_login; validate_authority rejects a login not in the owner_role's github_logins; when set, only that login is authorised for the author role and any other login gets a terminal non-authorising state naming the assigned author; when unset, behaviour is unchanged.",
+        "A reviewer assignment is refused when the reviewer authored the PR, and the merge gate still denies a merger who authored it; tests cover both for a Codex-authored PR.",
+        "Routing tests: a task assigned to tticom-codex is authorised in worktrees/codex and refused in worktrees/auto; an unassigned task keeps today's routing; a characterisation test shows resolution of the current task is unchanged.",
+        "CLAUDE.md, AGENT_CONTROL.md and TASK_RECORDING_CONVENTION.md describe author assignment, crossed review, and the convention that research and architecture tasks default to tticom-codex and product-code tasks to tticom-automation.",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-03"
+      ],
+      "stop_conditions": [
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "product_edit_required"
+      ],
+      "head_sha": "329153f87b5318648b663daf2349841694bf3408",
+      "merge_commit": "89c79218d8616b908c4a06fbe16202dcaa2be5e3",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T04:02:31.887776+00:00"
+    },
+    {
+      "id": "DUR-02",
+      "title": "Convert with note-type durations; delete the count rule",
+      "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 467,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-02-convert-with-note-type-durations",
+      "prompt": "projects/score2gp/prompts/next/dur-02-convert-with-note-type-durations.md",
+      "allowed_paths": [
+        "src/score2gp/pdf_tab_measure_timing.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "src/score2gp/pdf_tab_event_factory.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/cli.py",
+        "src/score2gp/ir.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/note_duration*.py",
+        "tests/test_cli_convert.py",
+        "tests/test_pdf_only_tab*.py",
+        "tests/test_pdf_tab_*.py",
+        "tests/test_dur_02_*.py",
+        "docs/design/pdf-tab-duration-candidate-extraction.md",
+        "docs/musicxml-tabraw-build-ir.md",
+        "docs/architecture.md",
+        "schemas/**",
+        "src/score2gp/pdf_tab_duration_associator.py",
+        "src/score2gp/pdf_tab_duration_types.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_geometry_candidate_extraction.py",
+        "tests/test_pdf_tab_duration_associator.py",
+        "tests/test_tabraw_duration_metadata.py",
+        "tests/test_build_ir_structural.py",
+        "tests/test_cr07_embellishment_attachments.py",
+        "tests/test_pdf_only_chord_event_grouper_event_grouping.py",
+        "tests/test_system_integration_diagnostics.py",
+        "src/score2gp/gpif.py",
+        "src/score2gp/gp_package.py",
+        "tests/test_gpif*.py",
+        "tests/test_gp_package*.py",
+        "tests/test_npg03b_floating.py"
+      ],
+      "acceptance": [
+        "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
+        "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
+        "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
+        "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
+        "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
+        "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
+        "GPIF NoteValue spellings match Guitar Pro's own. For every value present in the private reference .gp files (Whole, Half, Quarter, Eighth, 16th, 32nd) a test pins the writer's spelling to the reference spelling; 64th, which no reference file contains, is pinned to a separately named independent oracle (alphaTab's GPIF importer NoteValue mapping, cited by source file and revision). Negative controls fail on the word spellings (Sixteenth, ThirtySecond, SixtyFourth) and on any reader fallback that silently maps an unknown value to a quarter. The DUR-02 comparison needs no spelling normalisation.",
+        "The legacy tests that convert without a note-duration source (test_build_ir_structural.py, test_cr07_embellishment_attachments.py, test_pdf_only_chord_event_grouper_event_grouping.py, test_npg03b_floating.py, whose private acceptance test raises pdf_only_tab_note_durations_missing locally and passes in CI only by returning early when its sibling-repository path is absent) are brought into line by supplying note-type records or asserting refusal, never by restoring a default or padding; the diagnose CLI failure in test_system_integration_diagnostics.py is fixed if DUR-02 caused it, or shown to fail identically on main.",
+        "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-01"
+      ],
+      "stop_conditions": [
+        "duration_guess_introduced",
+        "gate_loosened",
+        "musicxml_route_broken",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Reassigned 2026-09-27 from tticom-automation to tticom-codex by maintainer decision: Claude's weekly usage limit (resets 2026-10-01 16:00 Europe/London) stopped the automation author after 17 pushed commits on the task branch, all by tticom-automation (main..40eb903, first d0e4d67) with no PR open. Codex completes the branch and opens the PR; tticomgov-code reviews it, disclosing that it directed the earlier automation commits. Scope widened 2026-09-27 after the first Codex run (draft tticom/score2gp#467): nine legacy tests outside allowed_paths still assumed a default or padding, and the GP writer's NoteValue spelling differs from Guitar Pro's.",
+      "head_sha": "4564a87a345504c9bc1a676a9fffa484247eacf1",
+      "merge_commit": "af4c246af391e554f42630cb07e3285fa342bfdb",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T17:31:15.282288+00:00"
     }
   ],
   "backlog": [
@@ -1747,7 +1941,7 @@
       "depends_on": [
         "TOP-02"
       ],
-      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-10. Absorbs RHY-01, NPG-04C future."
+      "notes": "Detail: tasks/2026-08-27-recognition-architecture-backlog.md@9a37927 §REC-10. Absorbs RHY-01, NPG-04C future. Maintainer 2026-09-26: rhythm comes only from note types (noteheads, stems, flags, beams, dots, rests) and their grouping (beams, tuplets); every note carries its own duration; counts are irrelevant. DUR-01 and DUR-02 deliver this first for the PDF route."
     },
     {
       "id": "NPG-05A",
@@ -2755,9 +2949,9 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 4,
+      "priority": 1,
       "depends_on": [],
-      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1."
+      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1. Raised to priority 1 on 2026-09-27: without PYTHONUTF8 the governance audit's gh reads hit UnicodeDecodeError on review-summary text, returned no comments, and reported a false violation (tticom/score2gp-agentops#712 merged without a merge-executor receipt, although the receipt is present and matches). The same bug crashed the merge executor on #708. Launchers force PYTHONUTF8=1 as a stopgap."
     },
     {
       "id": "CP-11",
@@ -2786,6 +2980,199 @@
       "priority": 23,
       "depends_on": [],
       "notes": "Found 2026-09-26 after PLAN-01 merged (the 'Promotion Rule' section, line 42). tests/test_single_backlog.py did not flag it because the line uses no planning-container word; the fix should also close that oracle gap or record why it is out of scope."
+    },
+    {
+      "id": "CP-14",
+      "title": "Two task lanes: run a Codex-authored research or architecture task in parallel with a Claude-authored product task",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 6,
+      "depends_on": [
+        "CP-13"
+      ],
+      "notes": "Maintainer 2026-09-27: use Codex's usage allowance for research and architecture. Needs one active task per lane in the authority, per-lane PR binding, lane-aware dispatch and audit, and crossed review."
+    },
+    {
+      "id": "DUR-01-FU1",
+      "title": "Unrecognisable glyphs overlapping a notehead or stem become located unread events, not reason counts",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-01"
+      ],
+      "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms."
+    },
+    {
+      "id": "CP-15",
+      "title": "Merge gate: a COMMENTED review (for example a thread reply) must not displace the same reviewer's earlier APPROVE at the head",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 5,
+      "depends_on": [],
+      "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
+    },
+    {
+      "id": "CP-16",
+      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [],
+      "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
+    },
+    {
+      "id": "OMIT-01",
+      "title": "Key signature: read it from the notation and write it on every master bar (Lesson 3: 1 sharp, G major, all 66 bars)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no Key element, so Guitar Pro shows C major and F-sharp notes carry accidentals."
+    },
+    {
+      "id": "OMIT-02",
+      "title": "Double barlines: detect section-ending double barlines and write them (Lesson 3: 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53, 59)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has single barlines where sections end. Distinguish plain double barlines from repeat and final barlines (REQ-0001 bar-end meanings)."
+    },
+    {
+      "id": "OMIT-03",
+      "title": "Text labels: carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates (Lesson 3: 12 labels)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no FreeText. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (G16); place each label on its beat or record why not."
+    },
+    {
+      "id": "OMIT-04",
+      "title": "Arpeggio marks: detect rolled-chord marks and write them on their beats (Lesson 3: 2)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no Arpeggio on the two rolled chords."
+    },
+    {
+      "id": "OMIT-05",
+      "title": "Title, credits and page header/footer: carry the source title and credits into Score/Title and Score/Music, and write Guitar Pro's header/footer templates instead of empty fields",
+      "requirements": [
+        "REQ-0001:U07"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): no header or footer is shown, and the title and credit are wrong. Three parts, all required: (1) Read the printed title and credit into Score/Title and Score/Music (reference: 'Major Triad Exercises', 'Rick Beato'); remove the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown'; when a value cannot be read, leave it empty and record why (REQ-0001 U07). (2) Write Guitar Pro's header/footer templates where the reference has them (FirstPageHeader, FirstPageFooter and PageFooter; the reference leaves PageHeader empty, so it stays empty) instead of the empty strings the writer hard-codes (src/score2gp/gpif.py:412-415 at score2gp 40eb903). Match the reference's templates, for example FirstPageHeader '%TITLE% %SUBTITLE% %ARTIST% %ALBUM% %WORDS&MUSIC%' and PageFooter 'Page %page%/%pages%', and never write literal header text. (3) The Copyright field, which the reference lacks, comes from the source or stays empty. Acceptance evidence: all four header/footer fields (including the empty PageHeader) and Title/Music equal the reference's in Lesson-3.gp."
+    },
+    {
+      "id": "DUR-02-FU1",
+      "title": "Within-bar HOPO pairing requires the marker to lie between the two notes, with a backward cross-bar counterpart for markers keyed to the destination bar",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N1 at src/score2gp/build_ir.py:4194 (pre-existing rule, not triggered by Lessons 3-7): the intra-bar loop ranks pairs by midpoint distance without requiring x1 < marker.x < x2, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first note pair. Require betweenness, add the backward counterpart, and refuse with a located reason when ambiguous."
+    },
+    {
+      "id": "DUR-02-FU2",
+      "title": "test_npg03b_floating asserts the refusal this source causes (no notation staff), not the generic missing-durations guard",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars."
+    },
+    {
+      "id": "DUR-02-FU3",
+      "title": "A slide mark with no extracted candidate produces a located diagnostic, not a silent omission",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Lesson 5 bar 17 (zero-based 16), event 0: the PDF shows a curved slide mark but TabRaw has no slide or technique-text candidate, so no slide is written and no warning is emitted. The DUR-02 handback called this a located refusal with code pdf_slide_without_unambiguous_candidate, which exists nowhere in src, tests or docs. Detect or at least report unextracted technique marks, per REQ-0005's no-silent-omission rule."
+    },
+    {
+      "id": "DUR-02-FU4",
+      "title": "Write the slide type the source shows instead of one fixed slide type for every slide",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Every slide is written as Flags 2 regardless of the source mark (shift, legato, slide in or out). Read the type from the source or record why it cannot be read."
     }
   ],
   "registered_requirements": [

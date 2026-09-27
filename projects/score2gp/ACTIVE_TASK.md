@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/res-req-0005-explained-shortfalls`
 
-**Pull Request**: TBD
+**Pull Request**: 706
 
 **Owner Role**: implementation
 

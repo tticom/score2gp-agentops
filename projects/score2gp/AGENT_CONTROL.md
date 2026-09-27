@@ -68,7 +68,7 @@ starts from its own checkout below one workspace root:
 ```text
 <workspace-root>/worktrees/auto/score2gp-agentops    tticom-automation (author)
 <workspace-root>/worktrees/gov/score2gp-agentops     tticomgov-code (governance)
-<workspace-root>/worktrees/codex/score2gp-agentops   tticom-codex (independent reviewer)
+<workspace-root>/worktrees/codex/score2gp-agentops   tticom-codex (independent reviewer; author of tasks assigned to it)
 ```
 
 The product checkout `score2gp` and the skills checkout `agentops-claude-skills`
@@ -192,6 +192,43 @@ non-author reviewer. The maintainer `tticom` may also merge. The executor is the
 sanctioned path, not an enforced one: the maintainer accepted on 2026-09-24 that
 delegated credentials can technically merge outside it, and the governance
 audit flags any delegated merge without a matching executor receipt.
+
+## Author Assignment and Crossed Review
+
+Maintainer direction 2026-09-27: delegate research and architecture work to
+Codex so its usage allowance is used. A task or proposal in
+`ORCHESTRATION_STATE.json` may therefore name its author in `author_login`:
+
+- `validate_authority` rejects an `author_login` that is not listed in the
+  `github_logins` of the task's `owner_role`.
+- When `author_login` is set, the dispatcher authorises the author role only
+  for that login, from its own workspace. `tticom-codex` authors an assigned
+  task from `worktrees/codex` through `go`, under the task's `owner_role`
+  (`implementation` or `architect`). Any other login gets the terminal,
+  non-authorising state `ASSIGNED_TO_ANOTHER_AUTHOR`, which names the assigned
+  author, and stops.
+- When `author_login` is unset, routing is unchanged: the task is authored by
+  `tticom-automation` from `worktrees/auto`, and `worktrees/codex` may not run
+  an author role.
+- An assigned task's PR, recorded or discovered, must be authored by the
+  assigned author. Otherwise resolution is `BLOCKED` with
+  `active_task_pr_author_not_assigned_author` and the merge gate denies with
+  `pr_author_not_assigned_author`.
+
+Governance assigns research and architecture tasks to `tticom-codex` by default
+and product-code tasks to `tticom-automation`. Either default may be overridden
+per task by setting `author_login`.
+
+Review stays crossed. No identity reviews or merges its own PR, whoever
+authored it:
+
+- a Codex-authored PR is reviewed by `tticom-automation` or `tticomgov-code`;
+- a Claude-authored PR is reviewed by `tticom-codex`;
+- the merge executor denies a merger who authored the PR, and an approval by
+  the PR's author never counts toward the merge gate.
+
+Assignment widens only which workspace may author an assigned task. It does not
+relax the identity, workspace, self-review or merge gates.
 
 ## Continuous Forward Motion and Real-World Validation
 
