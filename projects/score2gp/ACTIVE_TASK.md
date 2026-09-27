@@ -51,6 +51,7 @@ The PDF conversion route takes every duration from DUR-01's note-type reader and
 - `src/score2gp/gp_package.py`
 - `tests/test_gpif*.py`
 - `tests/test_gp_package*.py`
+- `tests/test_npg03b_floating.py`
 
 ## Validation commands
 
