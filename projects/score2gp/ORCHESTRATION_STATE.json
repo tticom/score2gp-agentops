@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 65,
+  "authority_revision": 66,
   "task": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
@@ -46,7 +46,8 @@
       "src/score2gp/gpif.py",
       "src/score2gp/gp_package.py",
       "tests/test_gpif*.py",
-      "tests/test_gp_package*.py"
+      "tests/test_gp_package*.py",
+      "tests/test_npg03b_floating.py"
     ],
     "acceptance": [
       "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
@@ -56,7 +57,7 @@
       "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
       "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
       "GPIF NoteValue spellings match Guitar Pro's own. For every value present in the private reference .gp files (Whole, Half, Quarter, Eighth, 16th, 32nd) a test pins the writer's spelling to the reference spelling; 64th, which no reference file contains, is pinned to a separately named independent oracle (alphaTab's GPIF importer NoteValue mapping, cited by source file and revision). Negative controls fail on the word spellings (Sixteenth, ThirtySecond, SixtyFourth) and on any reader fallback that silently maps an unknown value to a quarter. The DUR-02 comparison needs no spelling normalisation.",
-      "The legacy tests that convert without a note-duration source (test_build_ir_structural.py, test_cr07_embellishment_attachments.py, test_pdf_only_chord_event_grouper_event_grouping.py) are brought into line by supplying note-type records or asserting refusal, never by restoring a default or padding; the diagnose CLI failure in test_system_integration_diagnostics.py is fixed if DUR-02 caused it, or shown to fail identically on main.",
+      "The legacy tests that convert without a note-duration source (test_build_ir_structural.py, test_cr07_embellishment_attachments.py, test_pdf_only_chord_event_grouper_event_grouping.py, test_npg03b_floating.py, whose private acceptance test raises pdf_only_tab_note_durations_missing locally and passes in CI only by returning early when its sibling-repository path is absent) are brought into line by supplying note-type records or asserting refusal, never by restoring a default or padding; the diagnose CLI failure in test_system_integration_diagnostics.py is fixed if DUR-02 caused it, or shown to fail identically on main.",
       "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
     ],
     "validation_commands": [
