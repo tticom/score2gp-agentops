@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 66,
+  "authority_revision": 67,
   "task": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
@@ -3107,6 +3107,67 @@
         "DUR-02"
       ],
       "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): no header or footer is shown, and the title and credit are wrong. Three parts, all required: (1) Read the printed title and credit into Score/Title and Score/Music (reference: 'Major Triad Exercises', 'Rick Beato'); remove the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown'; when a value cannot be read, leave it empty and record why (REQ-0001 U07). (2) Write Guitar Pro's header/footer templates where the reference has them (FirstPageHeader, FirstPageFooter and PageFooter; the reference leaves PageHeader empty, so it stays empty) instead of the empty strings the writer hard-codes (src/score2gp/gpif.py:412-415 at score2gp 40eb903). Match the reference's templates, for example FirstPageHeader '%TITLE% %SUBTITLE% %ARTIST% %ALBUM% %WORDS&MUSIC%' and PageFooter 'Page %page%/%pages%', and never write literal header text. (3) The Copyright field, which the reference lacks, comes from the source or stays empty. Acceptance evidence: all four header/footer fields (including the empty PageHeader) and Title/Music equal the reference's in Lesson-3.gp."
+    },
+    {
+      "id": "DUR-02-FU1",
+      "title": "Within-bar HOPO pairing requires the marker to lie between the two notes, with a backward cross-bar counterpart for markers keyed to the destination bar",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N1 at src/score2gp/build_ir.py:4194 (pre-existing rule, not triggered by Lessons 3-7): the intra-bar loop ranks pairs by midpoint distance without requiring x1 < marker.x < x2, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first note pair. Require betweenness, add the backward counterpart, and refuse with a located reason when ambiguous."
+    },
+    {
+      "id": "DUR-02-FU2",
+      "title": "test_npg03b_floating asserts the refusal this source causes (no notation staff), not the generic missing-durations guard",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars."
+    },
+    {
+      "id": "DUR-02-FU3",
+      "title": "A slide mark with no extracted candidate produces a located diagnostic, not a silent omission",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Lesson 5 bar 17 (zero-based 16), event 0: the PDF shows a curved slide mark but TabRaw has no slide or technique-text candidate, so no slide is written and no warning is emitted. The DUR-02 handback called this a located refusal with code pdf_slide_without_unambiguous_candidate, which exists nowhere in src, tests or docs. Detect or at least report unextracted technique marks, per REQ-0005's no-silent-omission rule."
+    },
+    {
+      "id": "DUR-02-FU4",
+      "title": "Write the slide type the source shows instead of one fixed slide type for every slide",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Every slide is written as Flags 2 regardless of the source mark (shift, legato, slide in or out). Read the type from the source or record why it cannot be read."
     }
   ],
   "registered_requirements": [
