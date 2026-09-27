@@ -203,14 +203,17 @@ Codex so its usage allowance is used. A task or proposal in
   `github_logins` of the task's `owner_role`.
 - When `author_login` is set, the dispatcher authorises the author role only
   for that login, from its own workspace. `tticom-codex` authors an assigned
-  task from `worktrees/codex` through `go`. Any other login gets the terminal,
+  task from `worktrees/codex` through `go`, under the task's `owner_role`
+  (`implementation` or `architect`). Any other login gets the terminal,
   non-authorising state `ASSIGNED_TO_ANOTHER_AUTHOR`, which names the assigned
   author, and stops.
 - When `author_login` is unset, routing is unchanged: the task is authored by
   `tticom-automation` from `worktrees/auto`, and `worktrees/codex` may not run
   an author role.
-- A PR discovered on an assigned task's branch must be authored by the
-  assigned author.
+- An assigned task's PR, recorded or discovered, must be authored by the
+  assigned author. Otherwise resolution is `BLOCKED` with
+  `active_task_pr_author_not_assigned_author` and the merge gate denies with
+  `pr_author_not_assigned_author`.
 
 Governance assigns research and architecture tasks to `tticom-codex` by default
 and product-code tasks to `tticom-automation`. Either default may be overridden

@@ -313,6 +313,12 @@ def assigned_author(task: dict[str, Any]) -> str | None:
     return str(login) if login else None
 
 
+def pr_author_is_not_assigned(task: dict[str, Any], pr: dict[str, Any]) -> bool:
+    """Whether an assigned task's PR was authored by a login other than its author_login."""
+    author = assigned_author(task)
+    return author is not None and str(pr.get("author", "")) != author
+
+
 BACKLOG_KINDS = {"research", "implementation", "governance", "decision"}
 BACKLOG_STATUSES = {"IDEA", "NEEDS_RESEARCH", "NEEDS_DETAIL", "READY", "PROMOTED", "DONE", "DROPPED"}
 BACKLOG_TERMINAL = {"DONE", "DROPPED"}
@@ -713,6 +719,9 @@ def resolve_state(authority: dict[str, Any], live: dict[str, Any], task_id: str 
         return result("BLOCKED", "live_pr_does_not_match_authority", task)
     if str(pr.get("head_branch", "")) != str(task["branch"]):
         return result("BLOCKED", "live_branch_does_not_match_authority", task)
+    # Recorded or discovered, an assigned task's PR must be by its assigned author (CP-13).
+    if pr_author_is_not_assigned(task, pr):
+        return result("BLOCKED", "active_task_pr_author_not_assigned_author", task, **binding)
 
     pr_state = str(pr.get("state", "")).upper()
     if pr_state == "MERGED":
@@ -1082,6 +1091,8 @@ def verify_merge_gate(authority: dict[str, Any], live: dict[str, Any]) -> dict[s
             failures.append("task_pull_request_not_recorded")
         elif _parse_strict_positive_int(pr.get("number")) != task_pr:
             failures.append("pull_request_mismatch")
+        if pr_author_is_not_assigned(task, pr):
+            failures.append("pr_author_not_assigned_author")
     head = str(pr.get("head_sha", ""))
     reviewed_head = str(live.get("governance", {}).get("reviewed_head_sha", ""))
     if policy["require_reviewed_head"] and (not head or reviewed_head != head):

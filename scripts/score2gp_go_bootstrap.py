@@ -117,7 +117,10 @@ def main() -> None:
             json.dump(capture_task_live(agentops, authority_path), f)
 
         resolved = resolve_live(agentops, authority_path, live_file)
-        if resolved.get("dispatch_role") != "implementation":
+        role = resolved.get("dispatch_role")
+        # An architect task is authored here only when it assigns an author (CP-13);
+        # the Orca path then refuses any other login as ASSIGNED_TO_ANOTHER_AUTHOR.
+        if not (role == "implementation" or (role == "architect" and resolved.get("author_login"))):
             if args.json:
                 print(json.dumps({"ok": False, **resolved}, indent=2))
             else:
@@ -128,7 +131,7 @@ def main() -> None:
             sys.executable, "scripts/score2gp_dispatch.py",
             "--agentops", str(agentops),
             "--product", str(product),
-            "--orca-role", "implementation",
+            "--orca-role", role,
             "--live", live_file,
             "--github-login", login
         ]

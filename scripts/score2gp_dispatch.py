@@ -124,6 +124,7 @@ def select_bootstrap(
     roles: dict[str, Any],
     review_pr: int | None = None,
     author_login: str | None = None,
+    owner_role: str = "implementation",
 ) -> str:
     """Select the bootstrap for an authenticated login in its own workspace.
 
@@ -132,7 +133,8 @@ def select_bootstrap(
     author bootstrap under the implementation role, and the ``gov`` and
     ``codex`` workspaces run the review/governance bootstrap. The exception is
     an active task whose ``author_login`` assigns it to the ``codex`` login:
-    that login runs the author bootstrap from its own workspace.
+    that login, holding the task's ``owner_role``, runs the author bootstrap
+    from its own workspace.
     """
     try:
         slot = verify_workspace_login(login, agentops)
@@ -149,9 +151,9 @@ def select_bootstrap(
             )
         return "score2gp_go_bootstrap.py"
     if slot in ASSIGNED_ONLY_SLOT_ROLES and author_login == login:
-        if login not in _role_logins(roles, "implementation"):
+        if owner_role not in ASSIGNED_ONLY_SLOT_ROLES[slot] or login not in _role_logins(roles, owner_role):
             raise DispatchError(
-                f"unsupported Score2GP worker identity: {login} lacks the implementation role"
+                f"unsupported Score2GP worker identity: {login} lacks the {owner_role} role"
             )
         return "score2gp_go_bootstrap.py"
     if login not in _role_logins(roles, "reviewer") | _role_logins(roles, "governance"):
@@ -281,6 +283,7 @@ def main() -> None:
         authority.get("roles", {}),
         review_pr=args.review_pr,
         author_login=(authority.get("task") or {}).get("author_login"),
+        owner_role=str((authority.get("task") or {}).get("owner_role") or "implementation"),
     )
     helper = agentops / "scripts" / bootstrap
     command = [

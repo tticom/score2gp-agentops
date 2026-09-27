@@ -8,6 +8,7 @@ from copy import deepcopy
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -415,3 +416,186 @@ def test_characterisation_current_cp_13_task_resolution_is_unchanged() -> None:
         "task_id": "CP-13",
         "dispatch_role": "implementation",
     }
+
+
+# --- 5. Review of 26c8825: recorded PRs and the architect author lane -----------
+
+
+@pytest.mark.parametrize("review", [None, "APPROVED", "CHANGES_REQUESTED"])
+def test_a_recorded_pr_on_an_assigned_task_must_be_by_the_assigned_author(review) -> None:
+    config = authority(CODEX, pull_request=713, status="RUNNING")
+    reviews = [{"author": GOV, "state": review, "head_sha": HEAD}] if review else []
+    blocked = resolve_state(config, open_pr(AUTO, reviews))
+    assert (blocked["state"], blocked["reason"]) == ("BLOCKED", "active_task_pr_author_not_assigned_author")
+    assert "dispatch_role" not in blocked
+    # Negative control: the same PR by the assigned author routes normally.
+    assert resolve_state(config, open_pr(CODEX, reviews))["state"] != "BLOCKED"
+
+
+def test_a_merged_recorded_pr_not_by_the_assigned_author_is_blocked() -> None:
+    config = authority(CODEX, pull_request=713, status="RUNNING")
+    live = open_pr(AUTO)
+    live["pull_request"]["state"] = "MERGED"
+    resolved = resolve_state(config, live)
+    assert (resolved["state"], resolved["reason"]) == ("BLOCKED", "active_task_pr_author_not_assigned_author")
+
+
+def merge_facts(config: dict, author: str, approver: str, merger: str) -> dict:
+    facts = open_pr(author, [{"author": approver, "state": "APPROVED", "head_sha": HEAD}])
+    facts["governance"] = derive_governance_go(config, facts)
+    facts["merge_controller_login"] = merger
+    return facts
+
+
+def test_merge_gate_denies_a_recorded_pr_not_by_the_assigned_author() -> None:
+    config = authority(CODEX, pull_request=713, status="RUNNING")
+    decision = verify_merge_gate(config, merge_facts(config, AUTO, CODEX, GOV))
+    assert decision["decision"] == "DENY"
+    assert decision["failures"] == ["pr_author_not_assigned_author"]
+    # Negative control: the assigned author's PR, independently approved, is allowed.
+    assert verify_merge_gate(config, merge_facts(config, CODEX, AUTO, GOV))["decision"] == "ALLOW"
+
+
+@pytest.mark.parametrize("author", [AUTO, CODEX])
+def test_an_unassigned_task_accepts_either_implementation_author(author) -> None:
+    config = authority(pull_request=713, status="RUNNING")
+    assert resolve_state(config, open_pr(author))["state"] == "REVIEW_REQUIRED"
+    approver = CODEX if author == AUTO else AUTO
+    assert verify_merge_gate(config, merge_facts(config, author, approver, GOV))["decision"] == "ALLOW"
+
+
+class GoRunner:
+    """Scripted subprocess.run for the go bootstrap; resolves with the real resolver."""
+
+    def __init__(self, login: str):
+        self.login = login
+        self.dispatched: list[tuple[list[str], dict]] = []
+
+    def __call__(self, command, **kwargs):
+        command = [str(part) for part in command]
+
+        def done(stdout=""):
+            return SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+        if command[0] == "git":
+            return done()
+        if command[:3] == ["gh", "api", "user"]:
+            return done(self.login + "\n")
+        if "task-live" in command:
+            return done(json.dumps({"discovery": {
+                "repository": TASK["repository"], "branch": TASK["branch"], "base_branch": "main",
+                "candidates": [], "branch_ahead_by": 0}}))
+        if "resolve" in command:
+            config = json.loads(Path(command[command.index("--authority") + 1]).read_text(encoding="utf-8"))
+            live = json.loads(Path(command[command.index("--live") + 1]).read_text(encoding="utf-8"))
+            return done(json.dumps(resolve_state(config, live)))
+        if command[1].endswith("score2gp_dispatch.py"):
+            live = json.loads(Path(command[command.index("--live") + 1]).read_text(encoding="utf-8"))
+            self.dispatched.append((command, live))
+            return done()
+        raise AssertionError(f"unexpected command {command}")
+
+
+def run_legacy_router(monkeypatch, agentops: Path, login: str) -> list[str]:
+    """Run ``score2gp_dispatch.py`` without --orca-role and return the bootstrap command it launches."""
+    import scripts.score2gp_dispatch as dispatch
+
+    launched: list[list[str]] = []
+
+    def launch(command, **kwargs):
+        launched.append([str(part) for part in command])
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(dispatch, "_authenticated_login", lambda: login)
+    monkeypatch.setattr(dispatch, "verify_git_identity", lambda login, path: None)
+    monkeypatch.setattr(dispatch, "synchronize_agentops_main", lambda path: None)
+    with monkeypatch.context() as patch:
+        patch.setattr(dispatch.subprocess, "run", launch)
+        patch.setattr(sys, "argv", ["score2gp_dispatch.py", "--agentops", str(agentops),
+                                    "--product", str(agentops.parent / "score2gp"), "--json"])
+        with pytest.raises(SystemExit) as stopped:
+            main()
+    assert stopped.value.code == 0
+    [command] = launched
+    return command
+
+
+def run_go_bootstrap(monkeypatch, agentops: Path, login: str) -> tuple[int, GoRunner]:
+    from scripts import score2gp_go_bootstrap
+
+    runner = GoRunner(login)
+    with monkeypatch.context() as patch:
+        patch.setattr("subprocess.run", runner)
+        patch.setattr(sys, "argv", ["score2gp_go_bootstrap.py", "--agentops", str(agentops),
+                                    "--product", str(agentops.parent / "score2gp"), "--json"])
+        with pytest.raises(SystemExit) as stopped:
+            score2gp_go_bootstrap.main()
+    return stopped.value.code, runner
+
+
+def run_dispatched_orca_path(monkeypatch, tmp_path: Path, dispatched: list[str], live: dict, login: str) -> None:
+    """Run the Orca command the go bootstrap launched, exactly as it was built."""
+    live_file = tmp_path / "dispatched-live.json"
+    live_file.write_text(json.dumps(live), encoding="utf-8")
+    dispatched = list(dispatched)
+    dispatched[dispatched.index("--live") + 1] = str(live_file)
+    monkeypatch.setattr("scripts.score2gp_orca_control.authenticated_github_login", lambda: login)
+    monkeypatch.setattr("scripts.score2gp_orca_control.git_head", lambda root: SHA)
+    monkeypatch.setattr(sys, "argv", dispatched[1:])
+    main()
+
+
+def test_go_delivers_an_architect_task_assigned_to_codex_end_to_end(tmp_path, monkeypatch, capsys) -> None:
+    agentops = orca_checkout(tmp_path, "codex", authority(CODEX, owner_role="architect"))
+
+    # 1. The legacy router selects the author bootstrap for the assigned author.
+    command = run_legacy_router(monkeypatch, agentops, CODEX)
+    assert Path(command[1]).name == GO
+
+    # 2. The go bootstrap hands the resolved architect role to the Orca path.
+    code, runner = run_go_bootstrap(monkeypatch, agentops, CODEX)
+    assert code == 0, capsys.readouterr().out
+    [(dispatched, live)] = runner.dispatched
+    assert dispatched[dispatched.index("--orca-role") + 1] == "architect"
+    assert dispatched[dispatched.index("--github-login") + 1] == CODEX
+
+    # 3. The Orca path assigns the architect role to the assigned author.
+    capsys.readouterr()
+    run_dispatched_orca_path(monkeypatch, tmp_path, dispatched, live, CODEX)
+    assignment = json.loads(capsys.readouterr().out)
+    assert assignment["worker"]["role"] == "architect"
+    assert assignment["worker"]["github_login"] == CODEX
+    assert assignment["work"]["author_login"] == CODEX
+
+
+def test_go_still_refuses_an_unassigned_architect_task(tmp_path, monkeypatch, capsys) -> None:
+    agentops = orca_checkout(tmp_path, "auto", authority(owner_role="architect"))
+    code, runner = run_go_bootstrap(monkeypatch, agentops, AUTO)
+    assert code == 1
+    out = json.loads(capsys.readouterr().out)
+    assert (out["ok"], out["dispatch_role"]) == (False, "architect")
+    assert runner.dispatched == []
+
+
+def test_go_stops_another_login_at_an_architect_task_assigned_to_codex(tmp_path, monkeypatch, capsys) -> None:
+    agentops = orca_checkout(tmp_path, "auto", authority(CODEX, owner_role="architect"))
+    code, runner = run_go_bootstrap(monkeypatch, agentops, AUTO)
+    assert code == 0
+    [(dispatched, live)] = runner.dispatched
+    capsys.readouterr()
+    with pytest.raises(SystemExit) as stopped:
+        run_dispatched_orca_path(monkeypatch, tmp_path, dispatched, live, AUTO)
+    assert stopped.value.code == 1
+    out = json.loads(capsys.readouterr().out)
+    assert (out["state"], out["dispatch_role"], out["assigned_author"]) == (
+        "ASSIGNED_TO_ANOTHER_AUTHOR", "architect", CODEX)
+    assert "assignment_type" not in out
+
+
+def test_legacy_router_requires_the_assigned_author_to_hold_the_owner_role(tmp_path) -> None:
+    roles = deepcopy(ROLES)
+    roles["architect"]["github_logins"] = [AUTO]
+    with pytest.raises(DispatchError, match="lacks the architect role"):
+        select_bootstrap(CODEX, checkout(tmp_path, "codex"), roles, author_login=CODEX, owner_role="architect")
+    assert select_bootstrap(CODEX, checkout(tmp_path / "x", "codex"), ROLES,
+                            author_login=CODEX, owner_role="architect") == GO
