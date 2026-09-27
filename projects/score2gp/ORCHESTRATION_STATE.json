@@ -2992,7 +2992,7 @@
     },
     {
       "id": "CP-15",
-      "title": "Merge gate reads the latest decisive review at the head: a COMMENTED review (for example a thread reply) must not displace an APPROVE",
+      "title": "Merge gate: a COMMENTED review (for example a thread reply) must not displace the same reviewer's earlier APPROVE at the head",
       "requirements": [
         "control-plane:review-gate"
       ],
@@ -3001,7 +3001,7 @@
       "status": "READY",
       "priority": 5,
       "depends_on": [],
-      "notes": "Seen 2026-09-27 on tticom/score2gp#466: the reviewer's thread reply created a COMMENTED review at the approved head, so current_head_review returned COMMENTED and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix current_head_review to ignore COMMENTED reviews, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test both."
+      "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
     }
   ],
   "registered_requirements": [
