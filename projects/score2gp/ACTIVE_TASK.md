@@ -2,61 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-02 — Convert with note-type durations; delete the count rule
+**Task**: RES-REQ-0005 — Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/dur-02-convert-with-note-type-durations`
+**PR Branch**: `feat/res-req-0005-explained-shortfalls`
 
-**Pull Request**: 467
+**Pull Request**: 706
 
 **Owner Role**: implementation
 
 ## Objective
 
-The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.
+Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.
 
 ## Allowed paths
 
-- `src/score2gp/pdf_tab_measure_timing.py`
-- `src/score2gp/pdf_tab_bar_assembler.py`
-- `src/score2gp/pdf_tab_event_factory.py`
-- `src/score2gp/build_ir.py`
-- `src/score2gp/cli.py`
-- `src/score2gp/ir.py`
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/note_duration*.py`
-- `tests/test_cli_convert.py`
-- `tests/test_pdf_only_tab*.py`
-- `tests/test_pdf_tab_*.py`
-- `tests/test_dur_02_*.py`
-- `docs/design/pdf-tab-duration-candidate-extraction.md`
-- `docs/musicxml-tabraw-build-ir.md`
-- `docs/architecture.md`
-- `schemas/**`
-- `src/score2gp/pdf_tab_duration_associator.py`
-- `src/score2gp/pdf_tab_duration_types.py`
-- `src/score2gp/tabraw.py`
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_geometry_candidate_extraction.py`
-- `tests/test_pdf_tab_duration_associator.py`
-- `tests/test_tabraw_duration_metadata.py`
-- `tests/test_build_ir_structural.py`
-- `tests/test_cr07_embellishment_attachments.py`
-- `tests/test_pdf_only_chord_event_grouper_event_grouping.py`
-- `tests/test_system_integration_diagnostics.py`
-- `src/score2gp/gpif.py`
-- `src/score2gp/gp_package.py`
-- `tests/test_gpif*.py`
-- `tests/test_gp_package*.py`
-- `tests/test_npg03b_floating.py`
+- `projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**`
+- `projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md`
+- `projects/score2gp/requirements/README.md`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python -m score2gp.cli export-schema --out schemas`
-- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
-- `python scripts/artifact_audit.py`
+- `python scripts/score2gp_governance_audit.py`
 - `git diff --check`
