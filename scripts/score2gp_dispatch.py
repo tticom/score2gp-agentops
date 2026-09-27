@@ -76,14 +76,27 @@ def _authenticated_login() -> str:
 SLOT_ROLES = {
     "auto": frozenset({"implementation", "architect"}),
     "gov": frozenset({"governance", "reviewer"}),
-    "codex": frozenset({"governance", "reviewer"}),
+    "codex": frozenset({"governance", "reviewer", "architect", "implementation"}),
+}
+# Author roles a slot may run only for a task whose author_login is the slot's
+# own login (CP-13). An unassigned task is still authored from worktrees/auto.
+ASSIGNED_ONLY_SLOT_ROLES = {
+    "codex": frozenset({"architect", "implementation"}),
 }
 
 
 def check_workspace_role(
-    login: str, agentops: Path, role: str, explicit_review: bool = False
+    login: str,
+    agentops: Path,
+    role: str,
+    explicit_review: bool = False,
+    author_login: str | None = None,
 ) -> str:
-    """Require ``login`` to own the slot holding ``agentops`` and the slot to allow ``role``."""
+    """Require ``login`` to own the slot holding ``agentops`` and the slot to allow ``role``.
+
+    A slot's assignment-only author roles also require the task to assign
+    ``login`` as its ``author_login``.
+    """
     try:
         slot = verify_workspace_login(login, agentops)
     except IdentityError as error:
@@ -91,6 +104,10 @@ def check_workspace_role(
     allowed = SLOT_ROLES[slot] | ({"reviewer"} if explicit_review else set())
     if role not in allowed:
         raise DispatchError(f"worktrees/{slot} may not run the {role} role")
+    if role in ASSIGNED_ONLY_SLOT_ROLES.get(slot, ()) and author_login != login:
+        raise DispatchError(
+            f"worktrees/{slot} may not run the {role} role for a task not assigned to {login}"
+        )
     return slot
 
 
@@ -106,13 +123,16 @@ def select_bootstrap(
     agentops: Path,
     roles: dict[str, Any],
     review_pr: int | None = None,
+    author_login: str | None = None,
 ) -> str:
     """Select the bootstrap for an authenticated login in its own workspace.
 
     The login must own the workspace containing ``agentops``. An explicit
     review needs the reviewer role; otherwise the ``auto`` workspace runs the
     author bootstrap under the implementation role, and the ``gov`` and
-    ``codex`` workspaces run the review/governance bootstrap.
+    ``codex`` workspaces run the review/governance bootstrap. The exception is
+    an active task whose ``author_login`` assigns it to the ``codex`` login:
+    that login runs the author bootstrap from its own workspace.
     """
     try:
         slot = verify_workspace_login(login, agentops)
@@ -123,6 +143,12 @@ def select_bootstrap(
             raise DispatchError(f"unsupported Score2GP worker identity: {login} lacks the reviewer role")
         return "score2gp_got_bootstrap.py"
     if slot == "auto":
+        if login not in _role_logins(roles, "implementation"):
+            raise DispatchError(
+                f"unsupported Score2GP worker identity: {login} lacks the implementation role"
+            )
+        return "score2gp_go_bootstrap.py"
+    if slot in ASSIGNED_ONLY_SLOT_ROLES and author_login == login:
         if login not in _role_logins(roles, "implementation"):
             raise DispatchError(
                 f"unsupported Score2GP worker identity: {login} lacks the implementation role"
@@ -166,6 +192,7 @@ def main() -> None:
             from scripts.score2gp_orca_control import (
                 RuntimeIdentity,
                 ControlError,
+                assigned_author_conflict,
                 authenticated_github_login,
                 build_assignment,
                 git_head,
@@ -177,6 +204,7 @@ def main() -> None:
             from score2gp_orca_control import (
                 RuntimeIdentity,
                 ControlError,
+                assigned_author_conflict,
                 authenticated_github_login,
                 build_assignment,
                 git_head,
@@ -202,8 +230,21 @@ def main() -> None:
             raise DispatchError(
                 f"expected GitHub login {args.github_login}, authenticated as {login}"
             )
+        # Identity first: a login outside its own workspace learns nothing more.
+        try:
+            verify_workspace_login(login, agentops)
+        except IdentityError as error:
+            raise DispatchError(f"unsupported Score2GP worker identity: {error}") from error
+        conflict = assigned_author_conflict(resolved, login)
+        if conflict is not None:
+            print(json.dumps(conflict, indent=2, sort_keys=True))
+            raise SystemExit(1)
         check_workspace_role(
-            login, agentops, args.orca_role, explicit_review=args.review_pr is not None
+            login,
+            agentops,
+            args.orca_role,
+            explicit_review=args.review_pr is not None,
+            author_login=resolved.get("author_login"),
         )
         try:
             assignment = build_assignment(
@@ -235,7 +276,11 @@ def main() -> None:
         (agentops / "projects/score2gp/ORCHESTRATION_STATE.json").read_text(encoding="utf-8")
     )
     bootstrap = select_bootstrap(
-        login, agentops, authority.get("roles", {}), review_pr=args.review_pr
+        login,
+        agentops,
+        authority.get("roles", {}),
+        review_pr=args.review_pr,
+        author_login=(authority.get("task") or {}).get("author_login"),
     )
     helper = agentops / "scripts" / bootstrap
     command = [
