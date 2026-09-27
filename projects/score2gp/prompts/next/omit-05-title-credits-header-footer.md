@@ -16,9 +16,13 @@ Carry the printed title and credits into `Score/Title` and `Score/Music`, and wr
 
 1. The printed title and credit on page 1 are read into Score/Title and Score/Music. For Lesson-3.gp these must equal the reference: 'Major Triad Exercises' and 'Rick Beato'. A value that cannot be read is left empty with a located diagnostic.
 2. The invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown' are removed from every output path.
-3. FirstPageHeader, FirstPageFooter and PageFooter carry Guitar Pro's templates as the reference does, for example '%TITLE% %SUBTITLE% %ARTIST% %ALBUM% %WORDS&MUSIC%' and 'Page %page%/%pages%'. PageHeader stays empty, as in the reference. Literal header text is never written.
+3. FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro page-layout templates, not values printed in the PDF. They are therefore governed by a project-owned GP formatting policy, separate from the PDF-derived title and credit, and exempt from the source-or-refuse rule, which applies to musical and textual content.
+   - **The policy:** constants in the writer that reproduce Guitar Pro's own default templates in its own format (GP stores them as rich text wrapping tokens such as %TITLE%, %SUBTITLE%, %ARTIST%, %ALBUM%, %WORDS&MUSIC%, %page% and %pages%). Each constant is documented with its provenance.
+   - PageHeader stays empty, as in the reference.
+   - The policy never reads reference GP fields during conversion. Literal title or credit text is never written into a template.
+   - **Comparison:** each field is compared semantically, by the ordered sequence of template tokens extracted from its rich text, not by byte equality of the markup.
 4. Copyright comes from the source or stays empty.
-5. All four header/footer fields and Title/Music equal the reference in Lesson-3.gp. Lessons 4-7 are compared, and every difference is reported.
+5. Title/Music equal the reference exactly in Lesson-3.gp, and the four header/footer fields match it semantically (template token sequence, PageHeader empty). Lessons 4-7 are compared, and every difference is reported.
 
 ## Rules
 

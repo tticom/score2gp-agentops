@@ -15,8 +15,8 @@ Read the key signature from the notation staff and write it as GPIF `Key` (accid
 ## Acceptance
 
 1. The key signature is recognised from the accidental glyphs that follow the clef at the start of each system: their count and kind (sharps or flats), and a key change wherever a new signature appears mid-piece. Each value cites its source glyphs.
-2. Every master bar carries the key in force. Lesson-3.gp has AccidentalCount 1 and mode Major on all 66 bars, equal to the reference.
-3. The mode is Major unless the source shows otherwise. If the mode cannot be read, record that as a located diagnostic; do not guess minor or major from pitch content.
+2. Every master bar carries the accidental count in force. Lesson-3.gp has AccidentalCount 1 on all 66 bars, equal to the reference.
+3. A signature's accidental count does not determine its mode: one sharp is G major or E minor. The mode is written only when the source gives independent evidence, such as a printed key name. Otherwise it is recorded as `key_mode_unresolved`, with a located diagnostic. GPIF requires a Mode element, so an unevidenced mode is written as the format's default under a documented project convention and marked unresolved in the diagnostics. It never counts as recognised. The mode is never inferred from pitch content or copied from the reference. The comparison checks AccidentalCount on every bar, and checks Mode only where it is evidenced.
 4. An ambiguous or partially read signature is refused with a located reason. It never falls back to C major silently.
 5. Lessons 4-7 are compared for Key, and every difference is reported.
 

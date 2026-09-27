@@ -48,7 +48,7 @@
   "next_task_proposal": {
     "id": "OMIT-01",
     "title": "Key signature: read it from the notation and write it on every bar",
-    "objective": "Read the key signature from the notation staff and write it as GPIF `Key` (accidental count and mode) on every master bar, including key changes. In the reference Lesson-3.gp every one of the 66 master bars has 1 sharp, G major. The DUR-02 output has no `Key`, so Guitar Pro shows C major and every F sharp carries an accidental.",
+    "objective": "Read the key signature from the notation staff and write it as GPIF `Key` (accidental count from the source; mode only where independently evidenced) on every master bar, including key changes. In the reference Lesson-3.gp every one of the 66 master bars has 1 sharp, G major. The DUR-02 output has no `Key`, so Guitar Pro shows C major and every F sharp carries an accidental.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -79,8 +79,8 @@
     ],
     "acceptance": [
       "The key signature is recognised from the accidental glyphs that follow the clef at the start of each system: their count and kind (sharps or flats), and a key change wherever a new signature appears mid-piece. Each value cites its source glyphs.",
-      "Every master bar carries the key in force. Lesson-3.gp has AccidentalCount 1 and mode Major on all 66 bars, equal to the reference.",
-      "The mode is Major unless the source shows otherwise. If the mode cannot be read, record that as a located diagnostic; do not guess minor or major from pitch content.",
+      "Every master bar carries the accidental count in force. Lesson-3.gp has AccidentalCount 1 on all 66 bars, equal to the reference.",
+      "A signature's accidental count does not determine its mode: one sharp is G major or E minor. The mode is written only when the source gives independent evidence, such as a printed key name. Otherwise it is recorded as `key_mode_unresolved`, with a located diagnostic. GPIF requires a Mode element, so an unevidenced mode is written as the format's default under a documented project convention and marked unresolved in the diagnostics. It never counts as recognised. The mode is never inferred from pitch content or copied from the reference. The comparison checks AccidentalCount on every bar, and checks Mode only where it is evidenced.",
       "An ambiguous or partially read signature is refused with a located reason. It never falls back to C major silently.",
       "Lessons 4-7 are compared for Key, and every difference is reported.",
       "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
@@ -198,9 +198,9 @@
       "acceptance": [
         "The printed title and credit on page 1 are read into Score/Title and Score/Music. For Lesson-3.gp these must equal the reference: 'Major Triad Exercises' and 'Rick Beato'. A value that cannot be read is left empty with a located diagnostic.",
         "The invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown' are removed from every output path.",
-        "FirstPageHeader, FirstPageFooter and PageFooter carry Guitar Pro's templates as the reference does, for example '%TITLE% %SUBTITLE% %ARTIST% %ALBUM% %WORDS&MUSIC%' and 'Page %page%/%pages%'. PageHeader stays empty, as in the reference. Literal header text is never written.",
+        "FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro page-layout templates, not values printed in the PDF. They are therefore governed by a project-owned GP formatting policy, separate from the PDF-derived title and credit, and exempt from the source-or-refuse rule, which applies to musical and textual content. - **The policy:** constants in the writer that reproduce Guitar Pro's own default templates in its own format (GP stores them as rich text wrapping tokens such as %TITLE%, %SUBTITLE%, %ARTIST%, %ALBUM%, %WORDS&MUSIC%, %page% and %pages%). Each constant is documented with its provenance. - PageHeader stays empty, as in the reference. - The policy never reads reference GP fields during conversion. Literal title or credit text is never written into a template. - **Comparison:** each field is compared semantically, by the ordered sequence of template tokens extracted from its rich text, not by byte equality of the markup.",
         "Copyright comes from the source or stays empty.",
-        "All four header/footer fields and Title/Music equal the reference in Lesson-3.gp. Lessons 4-7 are compared, and every difference is reported.",
+        "Title/Music equal the reference exactly in Lesson-3.gp, and the four header/footer fields match it semantically (template token sequence, PageHeader empty). Lessons 4-7 are compared, and every difference is reported.",
         "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
         "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
       ],
