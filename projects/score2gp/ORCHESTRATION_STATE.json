@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 57,
+  "authority_revision": 58,
   "task": {
     "id": "DUR-01",
     "title": "Read note durations from note types",
@@ -55,70 +55,121 @@
     ]
   },
   "next_task_proposal": {
-    "id": "DUR-02",
-    "title": "Convert with note-type durations; delete the count rule",
-    "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
+    "id": "CP-13",
+    "title": "Let Codex author assigned tasks, with crossed review",
+    "objective": "The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.",
     "status": "PROPOSED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/dur-02-convert-with-note-type-durations",
-    "prompt": "projects/score2gp/prompts/next/dur-02-convert-with-note-type-durations.md",
+    "branch": "feat/cp-13-codex-author-lane",
+    "prompt": "projects/score2gp/prompts/next/cp-13-codex-author-lane.md",
     "allowed_paths": [
-      "src/score2gp/pdf_tab_measure_timing.py",
-      "src/score2gp/pdf_tab_bar_assembler.py",
-      "src/score2gp/pdf_tab_event_factory.py",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/cli.py",
-      "src/score2gp/ir.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/note_duration*.py",
-      "tests/test_cli_convert.py",
-      "tests/test_pdf_only_tab*.py",
-      "tests/test_pdf_tab_*.py",
-      "tests/test_dur_02_*.py",
-      "docs/design/pdf-tab-duration-candidate-extraction.md",
-      "docs/musicxml-tabraw-build-ir.md",
-      "docs/architecture.md",
-      "schemas/**",
-      "src/score2gp/pdf_tab_duration_associator.py",
-      "src/score2gp/pdf_tab_duration_types.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_geometry_candidate_extraction.py",
-      "tests/test_pdf_tab_duration_associator.py",
-      "tests/test_tabraw_duration_metadata.py"
+      "scripts/score2gp_dispatch.py",
+      "scripts/score2gp_orca_control.py",
+      "scripts/score2gp_orchestrator.py",
+      "scripts/verify_identity.py",
+      "scripts/score2gp_go_bootstrap.py",
+      "scripts/score2gp_got_bootstrap.py",
+      "tests/test_score2gp_dispatch.py",
+      "tests/test_score2gp_orca_control.py",
+      "tests/test_score2gp_orchestrator.py",
+      "tests/test_cp_13_*.py",
+      "CLAUDE.md",
+      "projects/score2gp/AGENT_CONTROL.md",
+      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+      "projects/score2gp/ORCA_WORKFLOW.md"
     ],
     "acceptance": [
-      "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
-      "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
-      "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
-      "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
-      "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
-      "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
-      "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      "SLOT_ROLES['codex'] allows architect and implementation as well as governance and reviewer; the auto and gov slots are unchanged.",
+      "A task or proposal may declare author_login; validate_authority rejects a login not in the owner_role's github_logins; when set, only that login is authorised for the author role and any other login gets a terminal non-authorising state naming the assigned author; when unset, behaviour is unchanged.",
+      "A reviewer assignment is refused when the reviewer authored the PR, and the merge gate still denies a merger who authored it; tests cover both for a Codex-authored PR.",
+      "Routing tests: a task assigned to tticom-codex is authorised in worktrees/codex and refused in worktrees/auto; an unassigned task keeps today's routing; a characterisation test shows resolution of the current task is unchanged.",
+      "CLAUDE.md, AGENT_CONTROL.md and TASK_RECORDING_CONVENTION.md describe author assignment, crossed review, and the convention that research and architecture tasks default to tticom-codex and product-code tasks to tticom-automation.",
+      "python -m pytest and the governance audit pass; git diff --check is clean."
     ],
     "validation_commands": [
       "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
+      "python scripts/score2gp_governance_audit.py",
       "git diff --check"
     ],
     "dependencies": [
-      "DUR-01"
+      "GOV-03"
     ],
     "stop_conditions": [
-      "duration_guess_introduced",
-      "gate_loosened",
-      "musicxml_route_broken",
-      "private_content_would_be_committed"
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "product_edit_required"
     ]
   },
   "queued_task_proposals": [
+    {
+      "id": "DUR-02",
+      "title": "Convert with note-type durations; delete the count rule",
+      "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-02-convert-with-note-type-durations",
+      "prompt": "projects/score2gp/prompts/next/dur-02-convert-with-note-type-durations.md",
+      "allowed_paths": [
+        "src/score2gp/pdf_tab_measure_timing.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "src/score2gp/pdf_tab_event_factory.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/cli.py",
+        "src/score2gp/ir.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/note_duration*.py",
+        "tests/test_cli_convert.py",
+        "tests/test_pdf_only_tab*.py",
+        "tests/test_pdf_tab_*.py",
+        "tests/test_dur_02_*.py",
+        "docs/design/pdf-tab-duration-candidate-extraction.md",
+        "docs/musicxml-tabraw-build-ir.md",
+        "docs/architecture.md",
+        "schemas/**",
+        "src/score2gp/pdf_tab_duration_associator.py",
+        "src/score2gp/pdf_tab_duration_types.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_geometry_candidate_extraction.py",
+        "tests/test_pdf_tab_duration_associator.py",
+        "tests/test_tabraw_duration_metadata.py"
+      ],
+      "acceptance": [
+        "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
+        "The conversion route takes each event's duration from DUR-01's records and positions from the TAB, matched by column with the match recorded.",
+        "A bar with an unread event, a notation/TAB mismatch or a total disagreeing with the time signature is refused with a located reason code, never written with invented values.",
+        "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
+        "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
+        "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
+        "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-01"
+      ],
+      "stop_conditions": [
+        "duration_guess_introduced",
+        "gate_loosened",
+        "musicxml_route_broken",
+        "private_content_would_be_committed"
+      ]
+    },
     {
       "id": "RES-REQ-0005",
       "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
@@ -2903,6 +2954,21 @@
       "priority": 23,
       "depends_on": [],
       "notes": "Found 2026-09-26 after PLAN-01 merged (the 'Promotion Rule' section, line 42). tests/test_single_backlog.py did not flag it because the line uses no planning-container word; the fix should also close that oracle gap or record why it is out of scope."
+    },
+    {
+      "id": "CP-14",
+      "title": "Two task lanes: run a Codex-authored research or architecture task in parallel with a Claude-authored product task",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "NEEDS_DETAIL",
+      "priority": 6,
+      "depends_on": [
+        "CP-13"
+      ],
+      "notes": "Maintainer 2026-09-27: use Codex's usage allowance for research and architecture. Needs one active task per lane in the authority, per-lane PR binding, lane-aware dispatch and audit, and crossed review."
     }
   ],
   "registered_requirements": [
