@@ -1,6 +1,6 @@
 # REQ-0005 — Explained shortfalls and best-effort output
 
-- **Status:** `RESEARCHED` (2026-09-26, RES-REQ-0005). `ACCEPTED` is recommended once the maintainer answers the decisions below.
+- **Status:** `ACCEPTED` (2026-09-27), after `RESEARCHED` (2026-09-26, RES-REQ-0005). The maintainer delegated the decisions, which are recorded below. D3 (gap-bar rendering) remains pending the maintainer's Guitar Pro check before any gap-bar delivery.
 - **Owner:** maintainer (`tticom`)
 - **Recorded:** 2026-09-25, from maintainer direction
 - **Research:** [2026-09-26-res-req-0005-explained-shortfalls](../research/2026-09-26-res-req-0005-explained-shortfalls/README.md), at product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`
