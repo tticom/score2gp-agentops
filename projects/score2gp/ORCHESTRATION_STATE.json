@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 63,
+  "authority_revision": 64,
   "task": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 467,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -38,7 +38,15 @@
       "src/score2gp/pdf.py",
       "src/score2gp/pdf_geometry_candidate_extraction.py",
       "tests/test_pdf_tab_duration_associator.py",
-      "tests/test_tabraw_duration_metadata.py"
+      "tests/test_tabraw_duration_metadata.py",
+      "tests/test_build_ir_structural.py",
+      "tests/test_cr07_embellishment_attachments.py",
+      "tests/test_pdf_only_chord_event_grouper_event_grouping.py",
+      "tests/test_system_integration_diagnostics.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
+      "tests/test_gpif*.py",
+      "tests/test_gp_package*.py"
     ],
     "acceptance": [
       "The count-based fallback (select_pdf_tab_grid_spacing_and_duration_name), the 960-tick equal_spacing_fallback quarter emitted by pdf_tab_duration_associator.py, the editable-draft quarter default and decompose_pdf_tab_measure_remainder_to_rests are deleted from src/; no producer emits equal_spacing_fallback and the source type no longer admits it (TabRaw contract version bumped if its payload shape changes); no code path assigns one duration to a group of notes or derives a duration from an event count, note spacing, a default or a bar total; no other gate is weakened.",
@@ -47,6 +55,8 @@
       "Converting Lesson-3.pdf produces a GP whose every written bar matches Lesson-3.gp through the independent oracle comparator (durations including dots, tuplets and ties; rests; string and fret), with coverage and every difference reported by bar and event index.",
       "The same comparison runs for Lessons 4-7, with coverage and differences reported.",
       "Tests asserting count-derived durations or padded rests become note-type or refusal assertions, none deleted without replacement; restoring the count rule makes them fail.",
+      "GPIF NoteValue spellings match Guitar Pro's own. For every value present in the private reference .gp files (Whole, Half, Quarter, Eighth, 16th, 32nd) a test pins the writer's spelling to the reference spelling; 64th, which no reference file contains, is pinned to a separately named independent oracle (alphaTab's GPIF importer NoteValue mapping, cited by source file and revision). Negative controls fail on the word spellings (Sixteenth, ThirtySecond, SixtyFourth) and on any reader fallback that silently maps an unknown value to a quarter. The DUR-02 comparison needs no spelling normalisation.",
+      "The legacy tests that convert without a note-duration source (test_build_ir_structural.py, test_cr07_embellishment_attachments.py, test_pdf_only_chord_event_grouper_event_grouping.py) are brought into line by supplying note-type records or asserting refusal, never by restoring a default or padding; the diagnose CLI failure in test_system_integration_diagnostics.py is fixed if DUR-02 caused it, or shown to fail identically on main.",
       "python -m pytest, export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
     ],
     "validation_commands": [
@@ -66,7 +76,7 @@
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex",
-    "notes": "Reassigned 2026-09-27 from tticom-automation to tticom-codex by maintainer decision: Claude's weekly usage limit (resets 2026-10-01 16:00 Europe/London) stopped the automation author after 17 pushed commits on the task branch, all by tticom-automation (main..40eb903, first d0e4d67) with no PR open. Codex completes the branch and opens the PR; tticomgov-code reviews it, disclosing that it directed the earlier automation commits."
+    "notes": "Reassigned 2026-09-27 from tticom-automation to tticom-codex by maintainer decision: Claude's weekly usage limit (resets 2026-10-01 16:00 Europe/London) stopped the automation author after 17 pushed commits on the task branch, all by tticom-automation (main..40eb903, first d0e4d67) with no PR open. Codex completes the branch and opens the PR; tticomgov-code reviews it, disclosing that it directed the earlier automation commits. Scope widened 2026-09-27 after the first Codex run (draft tticom/score2gp#467): nine legacy tests outside allowed_paths still assumed a default or padding, and the GP writer's NoteValue spelling differs from Guitar Pro's."
   },
   "next_task_proposal": {
     "id": "RES-REQ-0005",

@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dur-02-convert-with-note-type-durations`
 
-**Pull Request**: TBD
+**Pull Request**: 467
 
 **Owner Role**: implementation
 
@@ -43,6 +43,14 @@ The PDF conversion route takes every duration from DUR-01's note-type reader and
 - `src/score2gp/pdf_geometry_candidate_extraction.py`
 - `tests/test_pdf_tab_duration_associator.py`
 - `tests/test_tabraw_duration_metadata.py`
+- `tests/test_build_ir_structural.py`
+- `tests/test_cr07_embellishment_attachments.py`
+- `tests/test_pdf_only_chord_event_grouper_event_grouping.py`
+- `tests/test_system_integration_diagnostics.py`
+- `src/score2gp/gpif.py`
+- `src/score2gp/gp_package.py`
+- `tests/test_gpif*.py`
+- `tests/test_gp_package*.py`
 
 ## Validation commands
 
