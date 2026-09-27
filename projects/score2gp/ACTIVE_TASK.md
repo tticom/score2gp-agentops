@@ -2,41 +2,52 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CP-13 — Let Codex author assigned tasks, with crossed review
+**Task**: DUR-02 — Convert with note-type durations; delete the count rule
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cp-13-codex-author-lane`
+**PR Branch**: `feat/dur-02-convert-with-note-type-durations`
 
-**Pull Request**: 713
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.
+The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.
 
 ## Allowed paths
 
-- `scripts/score2gp_dispatch.py`
-- `scripts/score2gp_orca_control.py`
-- `scripts/score2gp_orchestrator.py`
-- `scripts/verify_identity.py`
-- `scripts/score2gp_go_bootstrap.py`
-- `scripts/score2gp_got_bootstrap.py`
-- `tests/test_score2gp_dispatch.py`
-- `tests/test_score2gp_orca_control.py`
-- `tests/test_score2gp_orchestrator.py`
-- `tests/test_cp_13_*.py`
-- `CLAUDE.md`
-- `projects/score2gp/AGENT_CONTROL.md`
-- `projects/score2gp/TASK_RECORDING_CONVENTION.md`
-- `projects/score2gp/ORCA_WORKFLOW.md`
+- `src/score2gp/pdf_tab_measure_timing.py`
+- `src/score2gp/pdf_tab_bar_assembler.py`
+- `src/score2gp/pdf_tab_event_factory.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/cli.py`
+- `src/score2gp/ir.py`
+- `src/score2gp/notation_omr/**`
+- `src/score2gp/note_duration*.py`
+- `tests/test_cli_convert.py`
+- `tests/test_pdf_only_tab*.py`
+- `tests/test_pdf_tab_*.py`
+- `tests/test_dur_02_*.py`
+- `docs/design/pdf-tab-duration-candidate-extraction.md`
+- `docs/musicxml-tabraw-build-ir.md`
+- `docs/architecture.md`
+- `schemas/**`
+- `src/score2gp/pdf_tab_duration_associator.py`
+- `src/score2gp/pdf_tab_duration_types.py`
+- `src/score2gp/tabraw.py`
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_geometry_candidate_extraction.py`
+- `tests/test_pdf_tab_duration_associator.py`
+- `tests/test_tabraw_duration_metadata.py`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python scripts/score2gp_governance_audit.py`
+- `python -m score2gp.cli export-schema --out schemas`
+- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
+- `python scripts/artifact_audit.py`
 - `git diff --check`

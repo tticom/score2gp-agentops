@@ -1,63 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 61,
+  "authority_revision": 62,
   "task": {
-    "id": "CP-13",
-    "title": "Let Codex author assigned tasks, with crossed review",
-    "objective": "The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 713,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cp-13-codex-author-lane",
-    "prompt": "projects/score2gp/prompts/next/cp-13-codex-author-lane.md",
-    "allowed_paths": [
-      "scripts/score2gp_dispatch.py",
-      "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_orchestrator.py",
-      "scripts/verify_identity.py",
-      "scripts/score2gp_go_bootstrap.py",
-      "scripts/score2gp_got_bootstrap.py",
-      "tests/test_score2gp_dispatch.py",
-      "tests/test_score2gp_orca_control.py",
-      "tests/test_score2gp_orchestrator.py",
-      "tests/test_cp_13_*.py",
-      "CLAUDE.md",
-      "projects/score2gp/AGENT_CONTROL.md",
-      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
-      "projects/score2gp/ORCA_WORKFLOW.md"
-    ],
-    "acceptance": [
-      "SLOT_ROLES['codex'] allows architect and implementation as well as governance and reviewer; the auto and gov slots are unchanged.",
-      "A task or proposal may declare author_login; validate_authority rejects a login not in the owner_role's github_logins; when set, only that login is authorised for the author role and any other login gets a terminal non-authorising state naming the assigned author; when unset, behaviour is unchanged.",
-      "A reviewer assignment is refused when the reviewer authored the PR, and the merge gate still denies a merger who authored it; tests cover both for a Codex-authored PR.",
-      "Routing tests: a task assigned to tticom-codex is authorised in worktrees/codex and refused in worktrees/auto; an unassigned task keeps today's routing; a characterisation test shows resolution of the current task is unchanged.",
-      "CLAUDE.md, AGENT_CONTROL.md and TASK_RECORDING_CONVENTION.md describe author assignment, crossed review, and the convention that research and architecture tasks default to tticom-codex and product-code tasks to tticom-automation.",
-      "python -m pytest and the governance audit pass; git diff --check is clean."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "GOV-03"
-    ],
-    "stop_conditions": [
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
-      "product_edit_required"
-    ]
-  },
-  "next_task_proposal": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
     "objective": "The PDF conversion route takes every duration from DUR-01's note-type reader and positions from the TAB; the count-based fallback, the equal_spacing_fallback quarter, the editable-draft quarter default and the remainder rest padding are deleted; the first real-source GP (Lesson 3) with real rhythm is produced for the maintainer to test in Guitar Pro.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -115,52 +64,53 @@
       "gate_loosened",
       "musicxml_route_broken",
       "private_content_would_be_committed"
-    ]
+    ],
+    "author_login": "tticom-automation"
   },
-  "queued_task_proposals": [
-    {
-      "id": "RES-REQ-0005",
-      "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
-      "objective": "Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "pull_request": 706,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/res-req-0005-explained-shortfalls",
-      "prompt": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
-      "allowed_paths": [
-        "projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**",
-        "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
-        "projects/score2gp/requirements/README.md"
-      ],
-      "acceptance": [
-        "A current-state map in projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/ lists every place the product refuses, degrades or drops a feature at a pinned tticom/score2gp SHA: stage, emitted code, and whether the location and reason reach the user; every silent gap is named. Evidence comes from code references and from real runs on Lessons 3-7, Ex 2 Hands Up and Can't Find My Way Home.",
-        "A reason-code taxonomy proposal builds on docs/diagnostics_failure_taxonomy.md in the product repo, with stable codes and a user-facing layer.",
-        "At least two best-effort delivery options are evaluated against the fail-closed rules; none allows an unlabelled wrong result.",
-        "A shortfall record and aggregation design is given; everything committed holds counts and codes only.",
-        "A report mock-up is generated from a real run's records.",
-        "REQ-0005's draft acceptance criteria are rewritten as testable criteria, its status moves to RESEARCHED in the requirement file and the register, and the decisions left to the maintainer are listed; ACCEPTED is recommended, not set.",
-        "No product code change; no private musical content or coordinates committed; python -m pytest and the governance audit pass; git diff --check is clean."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python scripts/score2gp_governance_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "GOV-03"
-      ],
-      "stop_conditions": [
-        "product_edit_required",
-        "private_content_would_be_committed",
-        "maintainer_decision_required"
-      ],
-      "notes": "Parked 2026-09-26: the maintainer made note-duration recognition the highest priority. PR #706 stays open and resumes when this task is re-promoted."
-    }
-  ],
+  "next_task_proposal": {
+    "id": "RES-REQ-0005",
+    "title": "Research to take REQ-0005 to ACCEPTED: map every silent gap, reason-code taxonomy, best-effort delivery options, shortfall record and report design",
+    "objective": "Answer REQ-0005's open questions with evidence from the product code and real corpus runs, and turn its draft acceptance criteria into testable ones, so the maintainer can accept the requirement and implementation can be planned.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": 706,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/res-req-0005-explained-shortfalls",
+    "prompt": "projects/score2gp/prompts/next/res-req-0005-explained-shortfall-reporting.md",
+    "allowed_paths": [
+      "projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/**",
+      "projects/score2gp/requirements/REQ-0005-explained-shortfall-reporting.md",
+      "projects/score2gp/requirements/README.md"
+    ],
+    "acceptance": [
+      "A current-state map in projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/ lists every place the product refuses, degrades or drops a feature at a pinned tticom/score2gp SHA: stage, emitted code, and whether the location and reason reach the user; every silent gap is named. Evidence comes from code references and from real runs on Lessons 3-7, Ex 2 Hands Up and Can't Find My Way Home.",
+      "A reason-code taxonomy proposal builds on docs/diagnostics_failure_taxonomy.md in the product repo, with stable codes and a user-facing layer.",
+      "At least two best-effort delivery options are evaluated against the fail-closed rules; none allows an unlabelled wrong result.",
+      "A shortfall record and aggregation design is given; everything committed holds counts and codes only.",
+      "A report mock-up is generated from a real run's records.",
+      "REQ-0005's draft acceptance criteria are rewritten as testable criteria, its status moves to RESEARCHED in the requirement file and the register, and the decisions left to the maintainer are listed; ACCEPTED is recommended, not set.",
+      "No product code change; no private musical content or coordinates committed; python -m pytest and the governance audit pass; git diff --check is clean."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "GOV-03"
+    ],
+    "stop_conditions": [
+      "product_edit_required",
+      "private_content_would_be_committed",
+      "maintainer_decision_required"
+    ],
+    "notes": "Parked 2026-09-26: the maintainer made note-duration recognition the highest priority. PR #706 stays open and resumes when this task is re-promoted.",
+    "author_login": "tticom-automation"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -1480,6 +1430,61 @@
       "merge_commit": "6af89ae9bd781aa273535d5c6c14424172ef52ef",
       "reconciled": true,
       "reconciled_at": "2026-09-27T02:22:34.517435+00:00"
+    },
+    {
+      "id": "CP-13",
+      "title": "Let Codex author assigned tasks, with crossed review",
+      "objective": "The dispatcher lets a task's assigned author_login author it from its own slot, so tticom-codex can author research, architecture and product tasks (for example when Claude's usage allowance is exhausted), with crossed review and the non-author merge gate unchanged.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 713,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-13-codex-author-lane",
+      "prompt": "projects/score2gp/prompts/next/cp-13-codex-author-lane.md",
+      "allowed_paths": [
+        "scripts/score2gp_dispatch.py",
+        "scripts/score2gp_orca_control.py",
+        "scripts/score2gp_orchestrator.py",
+        "scripts/verify_identity.py",
+        "scripts/score2gp_go_bootstrap.py",
+        "scripts/score2gp_got_bootstrap.py",
+        "tests/test_score2gp_dispatch.py",
+        "tests/test_score2gp_orca_control.py",
+        "tests/test_score2gp_orchestrator.py",
+        "tests/test_cp_13_*.py",
+        "CLAUDE.md",
+        "projects/score2gp/AGENT_CONTROL.md",
+        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+        "projects/score2gp/ORCA_WORKFLOW.md"
+      ],
+      "acceptance": [
+        "SLOT_ROLES['codex'] allows architect and implementation as well as governance and reviewer; the auto and gov slots are unchanged.",
+        "A task or proposal may declare author_login; validate_authority rejects a login not in the owner_role's github_logins; when set, only that login is authorised for the author role and any other login gets a terminal non-authorising state naming the assigned author; when unset, behaviour is unchanged.",
+        "A reviewer assignment is refused when the reviewer authored the PR, and the merge gate still denies a merger who authored it; tests cover both for a Codex-authored PR.",
+        "Routing tests: a task assigned to tticom-codex is authorised in worktrees/codex and refused in worktrees/auto; an unassigned task keeps today's routing; a characterisation test shows resolution of the current task is unchanged.",
+        "CLAUDE.md, AGENT_CONTROL.md and TASK_RECORDING_CONVENTION.md describe author assignment, crossed review, and the convention that research and architecture tasks default to tticom-codex and product-code tasks to tticom-automation.",
+        "python -m pytest and the governance audit pass; git diff --check is clean."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "GOV-03"
+      ],
+      "stop_conditions": [
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "product_edit_required"
+      ],
+      "head_sha": "329153f87b5318648b663daf2349841694bf3408",
+      "merge_commit": "89c79218d8616b908c4a06fbe16202dcaa2be5e3",
+      "reconciled": true,
+      "reconciled_at": "2026-09-27T04:02:31.887776+00:00"
     }
   ],
   "backlog": [
@@ -3002,6 +3007,19 @@
       "priority": 5,
       "depends_on": [],
       "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
+    },
+    {
+      "id": "CP-16",
+      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [],
+      "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
     }
   ],
   "registered_requirements": [
