@@ -53,7 +53,7 @@ recommendation.
 | # | Decision | Recommendation |
 |---|---|---|
 | D1 | Best-effort delivery option: B (separate partial artifact) or A (mode switch, partial GP in `--out`), and the repeat-run behaviour: refuse on an existing output unless `--overwrite` (03 §3.3a) | B, with the run-bound output contract |
-| D2 | Whether `--pdf-only-tab` and `--editable-draft` runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change that fixes G7) | Yes; the L3 contract already forbids layout-inferred rhythm in a successful result |
+| D2 | Whether `--pdf-only-tab` and `--editable-draft` runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change that fixes G7) | Yes; the L3 contract already forbids layout-inferred rhythm in a successful result. At product `af4c246` rhythm is no longer inferred (map §1.10). The question moves to runs that write refused bars empty under `success` (G28): yes |
 | D3 | How a gap bar is represented in GP, and who verifies it opens in Guitar Pro without being repaired into a rest (**Unverified** today) | Maintainer verifies in the pinned Guitar Pro version before delivery starts |
 | D4 | Whether a labelled omission of an unsupported feature (lyrics, text, dynamics) blocks `success` | Blocks `success` (FC2 reading), with a per-feature allowlist the maintainer can grant later |
 | D5 | Where committed rollups live, and whether the local ledger is on by default | `projects/score2gp/shortfalls/` in agentops; ledger on by default, local only; nothing sent off the machine |
@@ -73,3 +73,6 @@ recommendation.
 - The standalone notation-export commands, `batch`, `omr` and `diagnose` are mapped in map §1.9
   from code and probe runs. The notation-export success path, and a multi-note bar passing the
   whole-note and half-note gates, were not exercised.
+- The evidence is pinned at product `3af1925`. DUR-01 and DUR-02 (merged to `af4c246`) closed
+  G3, G4, G7, G8 and G21 in the PDF-only route and narrowed G2. They opened G28 and G29 (map
+  §1.10, from code; the corpus was not re-run at `af4c246`).

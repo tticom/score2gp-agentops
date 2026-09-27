@@ -71,7 +71,7 @@ those runs may be committed.
 ## Decisions for the maintainer (before `ACCEPTED`)
 
 1. **D1** Delivery option: separate partial artifact (recommended) or a mode switch writing the partial GP to `--out`; and repeat-run behaviour (recommended: refuse on an existing output unless `--overwrite`, with the run-bound output contract).
-2. **D2** Whether PDF-only and editable-draft runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change; recommended yes).
+2. **D2** Whether PDF-only and editable-draft runs with inferred or defaulted rhythm change from `success` to `partial` (a CLI contract change; recommended yes). Since DUR-02 (product `af4c246`) no run infers or defaults rhythm. The same question applies to a PDF-only run that writes refused bars empty and reports `success` (G28, [map §1.10](../research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md#110-changes-since-the-pinned-revision)); recommended yes.
 3. **D3** How a gap bar is represented in Guitar Pro, and who verifies in the pinned Guitar Pro version that it is not repaired into a rest (unverified today).
 4. **D4** Whether a labelled omission of an unsupported feature (lyrics, text, dynamics) blocks `success` (recommended: yes, with an allowlist the maintainer can grant).
 5. **D5** Where committed rollups live (recommended `projects/score2gp/shortfalls/`), and whether the local ledger is on by default (recommended: on, local only).

@@ -3,6 +3,9 @@
 Product SHA `3af19250bcc716ccc8a3e2b2102db897f78e56e5`. Code references are `src/score2gp/<file>:<line>`.
 Status tags: **Observed** (corpus or `PUB` run), **Code** (code reading only), **Unverified**.
 
+The product has changed since this SHA. §1.10 names the gaps that DUR-01 and DUR-02 closed and
+the ones that remain at `af4c246`.
+
 ## 1.1 What "reaches the user" means today
 
 A `convert` run has four user-facing surfaces. Everything else is an intermediate artifact that
@@ -280,3 +283,62 @@ schema-export and sidecar-evaluation tools (`inspect-gp`, `validate`, `compare`,
 score, so they are not shortfall sites. The two remaining converters, `build-ir` and `write-gp`, are
 the `convert` stages mapped in §1.2-1.5, called directly. They share those rows, but have no JSON
 report and no stale-output handling (G22).
+
+## 1.10 Changes since the pinned revision
+
+This map, its counts and its evidence stay pinned at `3af1925`. Two product PRs have merged since:
+DUR-01 (tticom/score2gp#466, `6af89ae`) and DUR-02 (tticom/score2gp#467, `af4c246`). This section
+reads the code at `af4c246` (**Code**; no corpus run was repeated). Line references in this
+section are at `af4c246`.
+
+**Rhythm at `af4c246`.** In the PDF-only route every note carries its own duration, read from its
+note type and grouping (note type, dots, tuplet, tie). Counts never set a duration. DUR-01 reads
+the records (`notation_omr/note_duration.py`, schema `note-duration-records.v0.2`, `:52`), and an
+event it cannot read is recorded `unread` with a located reason (`:14`). DUR-02 builds each event's
+duration from its record (`pdf_tab_event_factory.py:41-88`, duration at `:79`). The TAB supplies
+only string and fret, matched by column (`pdf_tab_bar_assembler.py:83-130`). `convert` reads the
+records itself (`cli.py:1175-1188`), and `read-note-durations` (`cli.py:1543-1567`) writes them
+without converting. DUR-02 deleted the count-based duration rule (`pdf_tab_measure_timing.py` now
+holds only `ticks_for_quarters`, `:28-38`) and the `equal_spacing_fallback` quarter (at `3af1925`
+`pdf_tab_duration_associator.py:411`; no `src/` reference remains). It also
+deleted `--editable-draft` and its quarter default (`cli.py:857-860` is now `--time-signature`)
+and the rest padding. A bar with an unread event, a notation/TAB mismatch or a wrong total is
+refused with a located reason and written empty (`pdf_tab_bar_assembler.py:1-10, 194-228`).
+
+| Pinned item | At `af4c246` | Status |
+|---|---|---|
+| D1, **G7** (count-based rhythm reported as `success`) | No duration comes from a count, spacing or default. `inferred_rhythm_status` is `note_type` (`cli.py:1347, 1375`). The info code `pdf_only_tab_note_type_timing` (`build_ir.py:1772-1777`) replaces `pdf_only_tab_inferred_timing` | **Closed** |
+| D2 (editable draft: every duration a quarter) | Option and quarter default deleted | **Closed** |
+| D3, **G8** (filler rests at confidence 1.0, no label) | No rest is added to fill a bar. Rests come only from the notation, and a rest over a TAB digit refuses the bar (`pdf_tab_bar_assembler.py:95-97`) | **Closed**. Residual: notation rests and tie continuations still get confidence 1.0 and empty provenance (`pdf_tab_event_factory.py:67, 86`), because the note-duration record is not linked as provenance. A4's no-confident-synthesis test needs that link |
+| E7 (timing message wrongly says "horizontal layout positioning") | Replaced by `build_ir.py:1775` | **Closed** |
+| **G3** (`pdf_only_tab_ambiguous_duration`, no location), R5, R6 | Both codes deleted. Per-bar reasons are `note_duration_event_unread`, `bar_without_notation_event`, `rest_over_tab_digit`, `notation_note_without_tab_digit`, `notation_tab_column_ambiguous`, `notehead_digit_count_mismatch`, `tab_digit_without_notation_event` and `bar_total_mismatch` (`pdf_tab_bar_assembler.py:97-205`) | **Closed** |
+| **G4** (first failing bar masks the rest) | Every notation bar is written or refused on its own (`pdf_tab_bar_assembler.py:176-230`). `pdf_only_tab_no_bar_written` refuses the run only when none is written (`build_ir.py:1762-1768`) | **Closed** |
+| **G2** (over-capacity location is an output bar index) | A refused bar carries page, system, source bar and event in `note-type-route.json` (`pdf_tab_bar_assembler.py:220-228`; `cli.py:837-839`). In `warnings.json` the location is only in the message text of `pdf_only_tab_bar_refused` (`build_ir.py:1779-1791`): `WarningItem` has no location field (`ir.py:702-708`) | **Narrowed**: located, but not as structured fields on a user surface |
+| **G21** (source bars with no playable candidate dropped; bar numbers shift) | Output bars come from the notation staff's bars, one per bar check, and output index = source bar + 1 (`pdf_tab_bar_assembler.py:176-181`). An empty bar is refused `bar_without_notation_event` | **Closed** for the PDF-only route. A1's inventory should still be independent of the route's own bar source (layout, 04 §4.5) |
+| **G1**, **G9**, **G16**, **G17**, **G20** | Unchanged: first unsafe layout code only (`build_ir.py:1698-1717`); candidate confidence passes into notes with no user surface (`pdf_tab_event_factory.py:67`); only `chord-symbol` and `technique-text` are warned, `candidate-text` is still dropped (`build_ir.py:1793-1802`); lyrics have no consumer; the `--pages` filter is untouched | **Remain** |
+| **G5**, **G6**, **G10-G15**, **G18**, **G19**, **G22-G27** | The `generate-sidecar`, MusicXML, GP-writer, stale-output, notation-export, `batch`, `diagnose` and `omr` code paths are not changed by DUR-01/02 | **Remain** |
+
+Two gaps are new at `af4c246`. They carry the next numbers so the pinned G1-G27 keep their
+meaning.
+
+| Gap | Where (`af4c246`) | What happens | Kind |
+|---|---|---|---|
+| G28 | `build_ir.py:1754-1791`; `cli.py:1369-1397` | A PDF-only run with some refused bars writes them **empty into `--out`** and reports `status: success`, exit 0. Only `pdf_only_tab_bar_refused` warnings say so. The GP file has no gap marker, and its title is still "PDF-Only Inferred Score" (`build_ir.py:1806`) | partial output reported as success; gap unmarked in the artifact |
+| G29 | `pdf_tab_bar_assembler.py:52-80, 244, 252` | A TAB digit that `place_tab_digits` cannot place in any notation bar is listed only in `note-type-route.json` (`unplaced_tab_digits`). No warning, no refusal | drop silent |
+
+**What this changes in the recommendations.** The evidence counts (275/277 bars, 107
+`pdf_only_tab_measure_overcapacity`, 63 `pdf_only_tab_ambiguous_duration`) describe `3af1925`. They
+are not re-measured. The design stands, with these adjustments:
+
+- **Option B (03)** now targets G28 directly. Refused bars must go to `<name>.partial.gp` as marked
+  gap bars. They must not go into `--out` as empty bars under `success`. D3 (how GP shows a gap
+  bar) still applies.
+- **D2** is overtaken: no run infers or defaults rhythm now. The open question is whether a run with
+  refused bars written empty (G28) is `partial`. The recommendation is yes, as for D2.
+- **Taxonomy (02):** the `approximated` rhythm disposition and `measure_fill_rest_synthesised` no
+  longer apply to the PDF-only route. The new route codes need registering: `bar_total_mismatch`
+  → `bar-overfull`; `note_duration_event_unread` → `notation-symbol-unread`;
+  `bar_without_notation_event` → `bar-content-not-found`; the matching reasons →
+  `note-position-uncertain`; `pdf_only_tab_time_signature_unread` → `input-required`.
+- **Mock-up (05)** shows the pinned route. At `af4c246` the "converted, but check" rhythm row
+  would be empty, and those bars would appear under "not converted" with their per-bar reason.
