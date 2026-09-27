@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 58,
+  "authority_revision": 59,
   "task": {
     "id": "DUR-01",
     "title": "Read note durations from note types",
@@ -2969,6 +2969,22 @@
         "CP-13"
       ],
       "notes": "Maintainer 2026-09-27: use Codex's usage allowance for research and architecture. Needs one active task per lane in the authority, per-lane PR binding, lane-aware dispatch and audit, and crossed review."
+    },
+    {
+      "id": "DUR-01-FU1",
+      "title": "Unrecognisable glyphs overlapping a notehead or stem become located unread events, not reason counts",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0005"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-01"
+      ],
+      "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms."
     }
   ],
   "registered_requirements": [
