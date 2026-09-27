@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 64,
+  "authority_revision": 65,
   "task": {
     "id": "DUR-02",
     "title": "Convert with note-type durations; delete the count rule",
@@ -3031,6 +3031,81 @@
       "priority": 4,
       "depends_on": [],
       "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
+    },
+    {
+      "id": "OMIT-01",
+      "title": "Key signature: read it from the notation and write it on every master bar (Lesson 3: 1 sharp, G major, all 66 bars)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no Key element, so Guitar Pro shows C major and F-sharp notes carry accidentals."
+    },
+    {
+      "id": "OMIT-02",
+      "title": "Double barlines: detect section-ending double barlines and write them (Lesson 3: 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53, 59)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has single barlines where sections end. Distinguish plain double barlines from repeat and final barlines (REQ-0001 bar-end meanings)."
+    },
+    {
+      "id": "OMIT-03",
+      "title": "Text labels: carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates (Lesson 3: 12 labels)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no FreeText. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (G16); place each label on its beat or record why not."
+    },
+    {
+      "id": "OMIT-04",
+      "title": "Arpeggio marks: detect rolled-chord marks and write them on their beats (Lesson 3: 2)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no Arpeggio on the two rolled chords."
+    },
+    {
+      "id": "OMIT-05",
+      "title": "Page header and footer text: carry the document's header and footer into the GP score information (Lesson 3: first-page header, first-page footer, page footer)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Maintainer review of the first real output (DUR-02, Lesson-3.gp from Lesson-3.pdf, 2026-09-27): durations, strings and frets all match, but the reference Lesson-3.gp has this and the output does not. Output has no header or footer; the writer template also adds a Copyright field the reference lacks, which should come from the source or be left empty."
     }
   ],
   "registered_requirements": [
