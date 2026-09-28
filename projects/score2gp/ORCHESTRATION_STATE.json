@@ -3409,6 +3409,36 @@
         "DUR-02"
       ],
       "notes": "Found by Codex's OMIT-01 round-3 acceptance run (tticom/score2gp#468 at 1882f64, 2026-09-28): converting Can't Find My Way Home, 9 of 21 bars are written; in them the independent comparator reports 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference .gp. The event data is unchanged against the prior DUR-02 output, so the differences predate OMIT-01. Diagnose each against the source and reference (the DUR-02 F1 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous), fix the cause, and add a regression per distinct cause."
+    },
+    {
+      "id": "OMIT-01-FU1",
+      "title": "A one-accidental mid-system key change followed within 1.5 sp by a first note at that accidental's pitch is read, or refused, never carried as the old key",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-01"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real note accidentals sit 0.19-0.31 sp from their head, which supports the window, so decide by source geometry or refuse with a located reason."
+    },
+    {
+      "id": "OMIT-01-FU2",
+      "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-01"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures."
     }
   ],
   "registered_requirements": [
