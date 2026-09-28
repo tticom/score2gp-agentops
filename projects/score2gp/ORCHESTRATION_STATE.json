@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 71,
+  "authority_revision": 72,
   "task": {
     "id": "OMIT-01",
     "title": "Key signature: read it from the notation and write it on every bar",
@@ -3394,6 +3394,21 @@
         "DUR-02"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Every slide is written as Flags 2 regardless of the source mark (shift, legato, slide in or out). Read the type from the source or record why it cannot be read."
+    },
+    {
+      "id": "DUR-02-FU5",
+      "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (4 HOPO origin, 4 HOPO destination, 1 slide)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Found by Codex's OMIT-01 round-3 acceptance run (tticom/score2gp#468 at 1882f64, 2026-09-28): converting Can't Find My Way Home, 9 of 21 bars are written; in them the independent comparator reports 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference .gp. The event data is unchanged against the prior DUR-02 output, so the differences predate OMIT-01. Diagnose each against the source and reference (the DUR-02 F1 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous), fix the cause, and add a regression per distinct cause."
     }
   ],
   "registered_requirements": [
