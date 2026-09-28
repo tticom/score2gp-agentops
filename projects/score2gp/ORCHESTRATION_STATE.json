@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 71,
+  "authority_revision": 72,
   "task": {
     "id": "OMIT-01",
     "title": "Key signature: read it from the notation and write it on every bar",
@@ -3394,6 +3394,51 @@
         "DUR-02"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Every slide is written as Flags 2 regardless of the source mark (shift, legato, slide in or out). Read the type from the source or record why it cannot be read."
+    },
+    {
+      "id": "DUR-02-FU5",
+      "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (4 HOPO origin, 4 HOPO destination, 1 slide)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Found by Codex's OMIT-01 round-3 acceptance run (tticom/score2gp#468 at 1882f64, 2026-09-28): converting Can't Find My Way Home, 9 of 21 bars are written; in them the independent comparator reports 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference .gp. The event data is unchanged against the prior DUR-02 output, so the differences predate OMIT-01. Diagnose each against the source and reference (the DUR-02 F1 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous), fix the cause, and add a regression per distinct cause."
+    },
+    {
+      "id": "OMIT-01-FU1",
+      "title": "A one-accidental mid-system key change followed within 1.5 sp by a first note at that accidental's pitch is read, or refused, never carried as the old key",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-01"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change)."
+    },
+    {
+      "id": "OMIT-01-FU2",
+      "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-01"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures."
     }
   ],
   "registered_requirements": [
