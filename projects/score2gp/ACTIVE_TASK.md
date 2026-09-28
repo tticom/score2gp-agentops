@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-01 — Key signature: read it from the notation and write it on every bar
+**Task**: OMIT-02 — Double barlines: detect section-ending double barlines and write them
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-01-key-signature`
+**PR Branch**: `feat/omit-02-double-barlines`
 
-**Pull Request**: 468
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Read the key signature from the notation staff and write it as GPIF `Key` (accidental count from the source; mode only where independently evidenced) on every master bar, including key changes. In the reference Lesson-3.gp every one of the 66 master bars has 1 sharp, G major. The DUR-02 output has no `Key`, so Guitar Pro shows C major and every F sharp carries an accidental.
+Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.
 
 ## Allowed paths
 
@@ -35,8 +35,8 @@ Read the key signature from the notation staff and write it as GPIF `Key` (accid
 - `tests/test_dur_02_oracle.py`
 - `docs/design/**`
 - `docs/architecture.md`
-- `tests/test_omit_01_*.py`
-- `tests/fixtures/pdf/omit_01/**`
+- `tests/test_omit_02_*.py`
+- `tests/fixtures/pdf/omit_02/**`
 
 ## Validation commands
 
