@@ -2,39 +2,31 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: LAYOUT-01 — Reproduce the source's bars-per-row layout: write the track SystemsLayout from the PDF systems
+**Task**: MEM-01 — IR provenance: stop copying the full raw candidate into every event and note
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/layout-01-source-row-layout`
+**PR Branch**: `feat/mem-01-ir-provenance-footprint`
 
-**Pull Request**: 471
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Write each track's SystemsLayout (bars per row) from the systems read in the source PDF, so Guitar Pro breaks rows where the source does. Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. The references encode line breaks per track as <SystemsLayout> (bars per row); the writer emits a fixed 3 per row. For Lessons 3-7 the systems found by read_note_durations equal the reference SystemsLayout exactly (23, 29, 14, 34 and 25 rows), and every reference DoubleBar ends a row (0 exceptions), while some rows end without one. Write SystemsLayout (and SystemsDefautLayout) from the source systems, or fall back to a documented default with a located diagnostic when systems are unknown; extend the independent comparator to compare it; assert equality for Lessons 3-7. Maintainer request 2026-09-29: reproduce the original format.
+Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_*.py`
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/ir.py`
-- `src/score2gp/tabraw.py`
-- `src/score2gp/build_ir.py`
-- `src/score2gp/gpif.py`
-- `src/score2gp/gp_package.py`
-- `src/score2gp/version_adapter.py`
-- `src/score2gp/cli.py`
+- `src/score2gp/**`
 - `schemas/**`
-- `tests/test_dur_02_oracle.py`
 - `docs/design/**`
-- `tests/test_layout_01_*.py`
-- `tests/fixtures/pdf/layout_01/**`
+- `docs/architecture.md`
+- `scripts/artifact_audit.py`
+- `tests/test_mem_01_*.py`
+- `tests/fixtures/**`
 
 ## Validation commands
 
