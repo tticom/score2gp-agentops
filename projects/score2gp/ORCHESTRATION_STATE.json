@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 74,
+  "authority_revision": 75,
   "task": {
     "id": "OMIT-02",
     "title": "Double barlines: detect section-ending double barlines and write them",
@@ -3443,6 +3443,64 @@
         "OMIT-01"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures."
+    },
+    {
+      "id": "OMIT-02-FU1",
+      "title": "Write double bars in the reference GPIF shape only: DoubleBar (and Repeat), no extra <Barline> MasterBar element",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "OMIT-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Thread at src/score2gp/gpif.py:1535 (N1): the writer emits <Barline>Double</Barline> beside <DoubleBar/> on every recognised double (probe P2: 11, 17, 6, 23 and 21 elements for Lessons 3-7), while the five reference GPs contain 0 <Barline> elements and encode the same bars with <DoubleBar/> only. The convention predates OMIT-02 and compare_gp does not read it. Emit only the reference shape (DoubleBar, Repeat, start flag), extend the comparator to fail on non-reference MasterBar children, and confirm with the maintainer's Guitar Pro open test."
+    },
+    {
+      "id": "OMIT-02-FU2",
+      "title": "Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Thread at docs/design/omit-02-double-barlines.md:78 (N2): Gloria.pdf (Guitar Pro 7, macOS Quartz export) draws repeat dots as filled vector drawings with no music font; the reader reads its bars 2, 5 and 8 as repeat-end from two drawing dots each (bar 2 checked visually). The doc calls the vector form unestablished; say it is a real engraving form and cite the count. Documentation only."
+    },
+    {
+      "id": "OMIT-02-FU3",
+      "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-02"
+      ],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font."
+    },
+    {
+      "id": "OMIT-02-FU4",
+      "title": "Remove the pytest-dependent GPIF layout switch in gpif.build_gpif",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [],
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N4: build_gpif writes a legacy hierarchical GPIF whenever 'pytest' is in sys.modules or any argv, including output paths, instead of the production relational GP8 GPIF. It made the new OMIT-02 private test fail only in CI at ad46f0f (output under /tmp/pytest-of-runner). Pre-existing; about 391 legacy tests rely on it. Replace it with an explicit writer option, migrate the legacy tests, and assert production layout in every CLI acceptance test."
     }
   ],
   "registered_requirements": [
