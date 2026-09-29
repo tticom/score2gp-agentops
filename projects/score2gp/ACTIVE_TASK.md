@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-02 — Double barlines: detect section-ending double barlines and write them
+**Task**: OMIT-05 — Title, credits and page header/footer
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-02-double-barlines`
+**PR Branch**: `feat/omit-05-title-credits-header-footer`
 
-**Pull Request**: 469
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.
+Carry the printed title and credits into `Score/Title` and `Score/Music`, and write Guitar Pro's header/footer templates where the reference has them. The output currently writes the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown', and hard-codes all four header/footer fields as empty (`gpif.py`, around lines 412-415).
 
 ## Allowed paths
 
@@ -35,8 +35,8 @@ Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` 
 - `tests/test_dur_02_oracle.py`
 - `docs/design/**`
 - `docs/architecture.md`
-- `tests/test_omit_02_*.py`
-- `tests/fixtures/pdf/omit_02/**`
+- `tests/test_omit_05_*.py`
+- `tests/fixtures/pdf/omit_05/**`
 
 ## Validation commands
 
