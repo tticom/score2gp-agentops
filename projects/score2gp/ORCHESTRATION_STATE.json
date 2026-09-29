@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 76,
+  "authority_revision": 77,
   "task": {
     "id": "OMIT-05",
     "title": "Title, credits and page header/footer",
@@ -3505,6 +3505,134 @@
       "priority": 3,
       "depends_on": [],
       "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N4: build_gpif writes a legacy hierarchical GPIF whenever 'pytest' is in sys.modules or any argv, including output paths, instead of the production relational GP8 GPIF. It made the new OMIT-02 private test fail only in CI at ad46f0f (output under /tmp/pytest-of-runner). Pre-existing; about 391 legacy tests rely on it. Replace it with an explicit writer option, migrate the legacy tests, and assert production layout in every CLI acceptance test."
+    },
+    {
+      "id": "LAYOUT-01",
+      "title": "Reproduce the source's bars-per-row layout: write the track SystemsLayout from the PDF systems",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 1,
+      "depends_on": [
+        "OMIT-02"
+      ],
+      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. The references encode line breaks per track as <SystemsLayout> (bars per row); the writer emits a fixed 3 per row. For Lessons 3-7 the systems found by read_note_durations equal the reference SystemsLayout exactly (23, 29, 14, 34 and 25 rows), and every reference DoubleBar ends a row (0 exceptions), while some rows end without one. Write SystemsLayout (and SystemsDefautLayout) from the source systems, or fall back to a documented default with a located diagnostic when systems are unknown; extend the independent comparator to compare it; assert equality for Lessons 3-7. Maintainer request 2026-09-29: reproduce the original format."
+    },
+    {
+      "id": "MEM-01",
+      "title": "IR provenance: stop copying the full raw candidate into every event and note",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 1,
+      "depends_on": [],
+      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change."
+    },
+    {
+      "id": "MEM-02",
+      "title": "Conversion report: replace the 49 MB pretty-printed barline-candidate dump with a bounded summary",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [],
+      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. conversion-report.html for Lesson 3 is 50 MB, almost all one <pre> block pretty-printing every rejected barline candidate's geometry. Summarise by reason with counts and located examples; write the full dump only on an explicit debug flag."
+    },
+    {
+      "id": "MEM-03",
+      "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "MEM-01",
+        "MEM-02"
+      ],
+      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. One Lesson 3 conversion writes 160 MB in 23 files: score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice (inspect/ and tab/inspect/). Author worktrees accumulate 3-5 GB of work/ each. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add CI budgets for peak RSS and bytes written per bar so regressions fail. Full product suite on this host: 12 min, test processes peak about 700 MB combined."
+    },
+    {
+      "id": "CFW-01",
+      "title": "Can't Find My Way Home: resolve or locate the 5 bars refused for bar_total_mismatch",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Found in the OMIT-02 round-4 acceptance run (tticom/score2gp#469 at ad46f0f): 9 of 21 bars written, 12 refused. 5 refusals are bar_total_mismatch. Diagnose each against the source and reference .gp (missing or extra event, wrong note type, tuplet, grace note or tie), fix the cause, and add a regression per distinct cause; refusals that remain must name the unread symbol."
+    },
+    {
+      "id": "CFW-02",
+      "title": "Can't Find My Way Home: resolve or locate the 5 bars refused for note_duration_event_unread",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause."
+    },
+    {
+      "id": "CFW-03",
+      "title": "Can't Find My Way Home: resolve or locate the 2 bars refused for notehead_digit_count_mismatch, and the unplaced attachments",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-02"
+      ],
+      "notes": "Same run as CFW-01: 2 refusals are notehead_digit_count_mismatch; the run also reports 84 pdf_only_tab_attachment_bar_unplaced, 54 tabraw-technique-text-not-aligned and 30 tabraw-chord-symbol-not-aligned warnings (chord symbols overlap NPG-05C). Classify each by cause, fix or split into further items, and report the counts before and after."
+    },
+    {
+      "id": "CP-18",
+      "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [],
+      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does."
+    },
+    {
+      "id": "CP-19",
+      "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-agentops",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [],
+      "notes": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback."
     }
   ],
   "registered_requirements": [
