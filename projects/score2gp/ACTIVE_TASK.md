@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-02-double-barlines`
 
-**Pull Request**: TBD
+**Pull Request**: 469
 
 **Owner Role**: implementation
 
