@@ -1,71 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 79,
+  "authority_revision": 80,
   "task": {
-    "id": "OMIT-05",
-    "title": "Title, credits and page header/footer",
-    "objective": "Carry the printed title and credits into `Score/Title` and `Score/Music`, and write Guitar Pro's header/footer templates where the reference has them. The output currently writes the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown', and hard-codes all four header/footer fields as empty (`gpif.py`, around lines 412-415).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 470,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-05-title-credits-header-footer",
-    "prompt": "projects/score2gp/prompts/next/omit-05-title-credits-header-footer.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/recognition/**",
-      "src/score2gp/ir.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/gpif.py",
-      "src/score2gp/gp_package.py",
-      "src/score2gp/version_adapter.py",
-      "src/score2gp/cli.py",
-      "schemas/**",
-      "tests/test_dur_02_oracle.py",
-      "docs/design/**",
-      "docs/architecture.md",
-      "tests/test_omit_05_*.py",
-      "tests/fixtures/pdf/omit_05/**"
-    ],
-    "acceptance": [
-      "The printed title and credit on page 1 are read into Score/Title and Score/Music. For Lesson-3.gp these must equal the reference: 'Major Triad Exercises' and 'Rick Beato'. A value that cannot be read is left empty with a located diagnostic.",
-      "The invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown' are removed from every output path.",
-      "FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro page-layout templates, not values printed in the PDF. They are therefore governed by a project-owned GP formatting policy, separate from the PDF-derived title and credit, and exempt from the source-or-refuse rule, which applies to musical and textual content. - **The policy:** constants in the writer that reproduce Guitar Pro's own default templates in its own format (GP stores them as rich text wrapping tokens such as %TITLE%, %SUBTITLE%, %ARTIST%, %ALBUM%, %WORDS&MUSIC%, %page% and %pages%). Each constant is documented with its provenance. - PageHeader stays empty, as in the reference. - The policy never reads reference GP fields during conversion. Literal title or credit text is never written into a template. - **Comparison:** each field is compared semantically, by the ordered sequence of template tokens extracted from its rich text, not by byte equality of the markup.",
-      "Copyright comes from the source or stays empty.",
-      "Title/Music equal the reference exactly in Lesson-3.gp, and the four header/footer fields match it semantically (template token sequence, PageHeader empty). Lessons 4-7 are compared, and every difference is reported.",
-      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "LAYOUT-01",
     "title": "Reproduce the source's bars-per-row layout: write the track SystemsLayout from the PDF systems",
     "objective": "Write each track's SystemsLayout (bars per row) from the systems read in the source PDF, so Guitar Pro breaks rows where the source does. Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. The references encode line breaks per track as <SystemsLayout> (bars per row); the writer emits a fixed 3 per row. For Lessons 3-7 the systems found by read_note_durations equal the reference SystemsLayout exactly (23, 29, 14, 34 and 25 rows), and every reference DoubleBar ends a row (0 exceptions), while some rows end without one. Write SystemsLayout (and SystemsDefautLayout) from the source systems, or fall back to a documented default with a located diagnostic when systems are unknown; extend the independent comparator to compare it; assert equality for Lessons 3-7. Maintainer request 2026-09-29: reproduce the original format.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -117,55 +58,55 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "MEM-01",
+    "title": "IR provenance: stop copying the full raw candidate into every event and note",
+    "objective": "Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/mem-01-ir-provenance-footprint",
+    "prompt": "projects/score2gp/prompts/next/mem-01-ir-provenance-footprint.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "schemas/**",
+      "docs/design/**",
+      "docs/architecture.md",
+      "scripts/artifact_audit.py",
+      "tests/test_mem_01_*.py",
+      "tests/fixtures/**"
+    ],
+    "acceptance": [
+      "Event and note provenance keeps only the raw candidate id, page, system, bar and bbox; the full raw candidate stays once in tab_raw.json, reachable by id; any schema change is intended, documented and version-bumped.",
+      "score.ir.json for Lesson 3 shrinks by at least 80%; peak working set and IR size before and after are recorded for Lessons 3 and 6 with the method stated.",
+      "A regression budget test fails if IR bytes per bar exceed a stated bound on a public fixture, and fails at the base.",
+      "Every consumer of the removed fields still works or reads by id, with grep evidence listing each consumer.",
+      "score.gpif for Lessons 3-7 is byte-identical before and after, or every difference is explained as intended.",
+      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques), OMIT-01 Key or OMIT-02 DoubleBar in any written bar of Lessons 3-7.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-02"
+    ],
+    "stop_conditions": [
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "MEM-01",
-      "title": "IR provenance: stop copying the full raw candidate into every event and note",
-      "objective": "Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/mem-01-ir-provenance-footprint",
-      "prompt": "projects/score2gp/prompts/next/mem-01-ir-provenance-footprint.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "schemas/**",
-        "docs/design/**",
-        "docs/architecture.md",
-        "scripts/artifact_audit.py",
-        "tests/test_mem_01_*.py",
-        "tests/fixtures/**"
-      ],
-      "acceptance": [
-        "Event and note provenance keeps only the raw candidate id, page, system, bar and bbox; the full raw candidate stays once in tab_raw.json, reachable by id; any schema change is intended, documented and version-bumped.",
-        "score.ir.json for Lesson 3 shrinks by at least 80%; peak working set and IR size before and after are recorded for Lessons 3 and 6 with the method stated.",
-        "A regression budget test fails if IR bytes per bar exceed a stated bound on a public fixture, and fails at the base.",
-        "Every consumer of the removed fields still works or reads by id, with grep evidence listing each consumer.",
-        "score.gpif for Lessons 3-7 is byte-identical before and after, or every difference is explained as intended.",
-        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques), OMIT-01 Key or OMIT-02 DoubleBar in any written bar of Lessons 3-7.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-02"
-      ],
-      "stop_conditions": [
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-03",
       "title": "Text labels: carry printed text onto the beat it annotates",
@@ -1910,6 +1851,69 @@
       "merge_commit": "2e8c00bac7998b3a579a8fc52b1da55759caecb9",
       "reconciled": true,
       "reconciled_at": "2026-09-29T01:39:31.575525+00:00"
+    },
+    {
+      "id": "OMIT-05",
+      "title": "Title, credits and page header/footer",
+      "objective": "Carry the printed title and credits into `Score/Title` and `Score/Music`, and write Guitar Pro's header/footer templates where the reference has them. The output currently writes the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown', and hard-codes all four header/footer fields as empty (`gpif.py`, around lines 412-415).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 470,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-05-title-credits-header-footer",
+      "prompt": "projects/score2gp/prompts/next/omit-05-title-credits-header-footer.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/ir.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/gpif.py",
+        "src/score2gp/gp_package.py",
+        "src/score2gp/version_adapter.py",
+        "src/score2gp/cli.py",
+        "schemas/**",
+        "tests/test_dur_02_oracle.py",
+        "docs/design/**",
+        "docs/architecture.md",
+        "tests/test_omit_05_*.py",
+        "tests/fixtures/pdf/omit_05/**"
+      ],
+      "acceptance": [
+        "The printed title and credit on page 1 are read into Score/Title and Score/Music. For Lesson-3.gp these must equal the reference: 'Major Triad Exercises' and 'Rick Beato'. A value that cannot be read is left empty with a located diagnostic.",
+        "The invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown' are removed from every output path.",
+        "FirstPageHeader, FirstPageFooter and PageFooter are Guitar Pro page-layout templates, not values printed in the PDF. They are therefore governed by a project-owned GP formatting policy, separate from the PDF-derived title and credit, and exempt from the source-or-refuse rule, which applies to musical and textual content. - **The policy:** constants in the writer that reproduce Guitar Pro's own default templates in its own format (GP stores them as rich text wrapping tokens such as %TITLE%, %SUBTITLE%, %ARTIST%, %ALBUM%, %WORDS&MUSIC%, %page% and %pages%). Each constant is documented with its provenance. - PageHeader stays empty, as in the reference. - The policy never reads reference GP fields during conversion. Literal title or credit text is never written into a template. - **Comparison:** each field is compared semantically, by the ordered sequence of template tokens extracted from its rich text, not by byte equality of the markup.",
+        "Copyright comes from the source or stays empty.",
+        "Title/Music equal the reference exactly in Lesson-3.gp, and the four header/footer fields match it semantically (template token sequence, PageHeader empty). Lessons 4-7 are compared, and every difference is reported.",
+        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "8535eef20cab0ab2351f7c7d9a12c6e098753a18",
+      "merge_commit": "3b30f395781cad6fbd7aac6dc20b6f635b953e34",
+      "reconciled": true,
+      "reconciled_at": "2026-09-29T14:50:00.100932+00:00"
     }
   ],
   "backlog": [
@@ -3708,6 +3712,36 @@
       "priority": 3,
       "depends_on": [],
       "notes": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback."
+    },
+    {
+      "id": "OMIT-05-FU1",
+      "title": "Header/footer templates: reproduce Guitar Pro's default rich-text font sizes",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-05"
+      ],
+      "notes": "Non-blocking follow-up N3 from tticomgov-code's approving round-2 review 5351193754 of tticom/score2gp#470 (OMIT-05) at 8535eef. The minimal template markup drops GP's default rich-text font sizes (for example the 35 pt title), which the token-semantic acceptance allows but which is a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants (provenance documented, never read from a reference file during conversion), extend the oracle to compare them, and confirm in the maintainer's Guitar Pro open test."
+    },
+    {
+      "id": "OMIT-05-FU2",
+      "title": "Remove the 'Compiled Score' placeholder title in scoreir_compiler.py",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-05"
+      ],
+      "notes": "Non-blocking follow-up N4 from tticomgov-code's approving round-2 review 5351193754 of tticom/score2gp#470 (OMIT-05) at 8535eef. src/score2gp/scoreir_compiler.py:240 still invents title='Compiled Score' on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source or leave it empty with a located diagnostic, and add a test on that route."
     }
   ],
   "registered_requirements": [
