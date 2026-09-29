@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 80,
+  "authority_revision": 81,
   "task": {
     "id": "LAYOUT-01",
     "title": "Reproduce the source's bars-per-row layout: write the track SystemsLayout from the PDF systems",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 471,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
