@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/mem-01-ir-provenance-footprint`
 
-**Pull Request**: TBD
+**Pull Request**: 472
 
 **Owner Role**: implementation
 
@@ -27,6 +27,8 @@ Cut score.ir.json size and build memory by referencing raw candidates by id; res
 - `scripts/artifact_audit.py`
 - `tests/test_mem_01_*.py`
 - `tests/fixtures/**`
+- `tests/test_build_ir.py`
+- `tests/test_pdf_tab_duration_regression_audit.py`
 
 ## Validation commands
 

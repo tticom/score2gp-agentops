@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 82,
+  "authority_revision": 83,
   "task": {
     "id": "MEM-01",
     "title": "IR provenance: stop copying the full raw candidate into every event and note",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 472,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -22,7 +22,9 @@
       "docs/architecture.md",
       "scripts/artifact_audit.py",
       "tests/test_mem_01_*.py",
-      "tests/fixtures/**"
+      "tests/fixtures/**",
+      "tests/test_build_ir.py",
+      "tests/test_pdf_tab_duration_regression_audit.py"
     ],
     "acceptance": [
       "Event and note provenance keeps only the raw candidate id, page, system, bar and bbox; the full raw candidate stays once in tab_raw.json, reachable by id; any schema change is intended, documented and version-bumped.",

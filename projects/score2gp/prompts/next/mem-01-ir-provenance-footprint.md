@@ -33,3 +33,12 @@ Governance measurement (2026-09-29, main 2e8c00b, Windows host):
 - **Private tests convert under `<repo>/work`** (see OMIT-02-FU4).
 - **Pass the product checklist:** pytest (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check`.
 - **Keep private material out of the repo.** Commit sizes and counts only.
+
+## Scope amendment (governance, 2026-09-29)
+
+Exact-head CI at `0b30024` on tticom/score2gp#472 (runs 36607439301 and 36607444896: 2 failed, 1681 passed, 14 skipped, 1 xfailed) shows that the required ScoreIR contract bump from 0.1.0 to 0.1.1 fails exactly two existing assertions of the old version:
+
+- `tests/test_build_ir.py::test_build_ir_creates_valid_scoreir_from_synthetic_musicxml_and_tabraw`
+- `tests/test_pdf_tab_duration_regression_audit.py::test_privacy_sanitization_and_no_leakage_audit`
+
+MEM-01 may edit those two test files, **only** to change the expected schema version from `0.1.0` to `0.1.1` (or to read it from the contract constant). No other change to them, no weakened assertion, no skipped test. The task's other allowed paths are unchanged.
