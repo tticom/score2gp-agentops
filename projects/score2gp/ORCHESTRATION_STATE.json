@@ -1,70 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 75,
+  "authority_revision": 76,
   "task": {
-    "id": "OMIT-02",
-    "title": "Double barlines: detect section-ending double barlines and write them",
-    "objective": "Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 469,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-02-double-barlines",
-    "prompt": "projects/score2gp/prompts/next/omit-02-double-barlines.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/recognition/**",
-      "src/score2gp/ir.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/gpif.py",
-      "src/score2gp/gp_package.py",
-      "src/score2gp/version_adapter.py",
-      "src/score2gp/cli.py",
-      "schemas/**",
-      "tests/test_dur_02_oracle.py",
-      "docs/design/**",
-      "docs/architecture.md",
-      "tests/test_omit_02_*.py",
-      "tests/fixtures/pdf/omit_02/**"
-    ],
-    "acceptance": [
-      "Double barlines are distinguished from single barlines, repeat barlines (which already have their own meaning under REQ-0001, recognising bar ends and their meanings) and final barlines. The barline topology and painted-contour primitives from L3-01 are reused.",
-      "Each recognised double barline sets DoubleBar on the master bar it closes, citing its source strokes.",
-      "Lesson-3.gp has DoubleBar at exactly the 11 reference bars. Lessons 4-7 and Ex 2 Hands Up are compared, and every difference is reported.",
-      "A barline whose kind cannot be decided is recorded with a located reason, never promoted or demoted by guess.",
-      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-05",
     "title": "Title, credits and page header/footer",
     "objective": "Carry the printed title and credits into `Score/Title` and `Score/Music`, and write Guitar Pro's header/footer templates where the reference has them. The output currently writes the invented placeholders 'PDF-Only Inferred Score', 'Unknown Composer' and 'Unknown', and hard-codes all four header/footer fields as empty (`gpif.py`, around lines 412-415).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -119,65 +61,65 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-03",
+    "title": "Text labels: carry printed text onto the beat it annotates",
+    "objective": "Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-03-text-labels",
+    "prompt": "projects/score2gp/prompts/next/omit-03-text-labels.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/recognition/**",
+      "src/score2gp/ir.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
+      "src/score2gp/version_adapter.py",
+      "src/score2gp/cli.py",
+      "schemas/**",
+      "tests/test_dur_02_oracle.py",
+      "docs/design/**",
+      "docs/architecture.md",
+      "tests/test_omit_03_*.py",
+      "tests/fixtures/pdf/omit_03/**"
+    ],
+    "acceptance": [
+      "Text candidates above the staff are classified. Section and example labels and other free text are distinguished from technique text (H, P, sl.), chord symbols, tempo marks, titles and page furniture, which have their own handling.",
+      "Each free-text label is attached to the beat it annotates by a stated, tested rule, citing its source text span. Anything that cannot be placed unambiguously is recorded with a located reason.",
+      "Lesson-3.gp carries the 12 reference labels on the reference beats, with the text equal. Lessons 4-7 are compared, and every difference is reported.",
+      "Dropped text candidates are counted by reason in the diagnostics, never silently discarded.",
+      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-03",
-      "title": "Text labels: carry printed text onto the beat it annotates",
-      "objective": "Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-03-text-labels",
-      "prompt": "projects/score2gp/prompts/next/omit-03-text-labels.md",
-      "allowed_paths": [
-        "src/score2gp/pdf.py",
-        "src/score2gp/pdf_*.py",
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/recognition/**",
-        "src/score2gp/ir.py",
-        "src/score2gp/tabraw.py",
-        "src/score2gp/build_ir.py",
-        "src/score2gp/gpif.py",
-        "src/score2gp/gp_package.py",
-        "src/score2gp/version_adapter.py",
-        "src/score2gp/cli.py",
-        "schemas/**",
-        "tests/test_dur_02_oracle.py",
-        "docs/design/**",
-        "docs/architecture.md",
-        "tests/test_omit_03_*.py",
-        "tests/fixtures/pdf/omit_03/**"
-      ],
-      "acceptance": [
-        "Text candidates above the staff are classified. Section and example labels and other free text are distinguished from technique text (H, P, sl.), chord symbols, tempo marks, titles and page furniture, which have their own handling.",
-        "Each free-text label is attached to the beat it annotates by a stated, tested rule, citing its source text span. Anything that cannot be placed unambiguously is recorded with a located reason.",
-        "Lesson-3.gp carries the 12 reference labels on the reference beats, with the text equal. Lessons 4-7 are compared, and every difference is reported.",
-        "Dropped text candidates are counted by reason in the diagnostics, never silently discarded.",
-        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-04",
       "title": "Arpeggio marks: detect rolled-chord marks and write them",
@@ -1802,6 +1744,68 @@
       "merge_commit": "92c9419d241e0382013ab08ae69fd0b62f85d76a",
       "reconciled": true,
       "reconciled_at": "2026-09-28T11:21:32.191907+00:00"
+    },
+    {
+      "id": "OMIT-02",
+      "title": "Double barlines: detect section-ending double barlines and write them",
+      "objective": "Detect double barlines in the notation or TAB staves and write GPIF `DoubleBar` on the master bar they close. The reference Lesson-3.gp has 11, at bars 3, 7, 13, 18, 25, 28, 34, 40, 49, 53 and 59; the output has none.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 469,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-02-double-barlines",
+      "prompt": "projects/score2gp/prompts/next/omit-02-double-barlines.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/ir.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/gpif.py",
+        "src/score2gp/gp_package.py",
+        "src/score2gp/version_adapter.py",
+        "src/score2gp/cli.py",
+        "schemas/**",
+        "tests/test_dur_02_oracle.py",
+        "docs/design/**",
+        "docs/architecture.md",
+        "tests/test_omit_02_*.py",
+        "tests/fixtures/pdf/omit_02/**"
+      ],
+      "acceptance": [
+        "Double barlines are distinguished from single barlines, repeat barlines (which already have their own meaning under REQ-0001, recognising bar ends and their meanings) and final barlines. The barline topology and painted-contour primitives from L3-01 are reused.",
+        "Each recognised double barline sets DoubleBar on the master bar it closes, citing its source strokes.",
+        "Lesson-3.gp has DoubleBar at exactly the 11 reference bars. Lessons 4-7 and Ex 2 Hands Up are compared, and every difference is reported.",
+        "A barline whose kind cannot be decided is recorded with a located reason, never promoted or demoted by guess.",
+        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "d7eef3fbfe9c0c9807b69beb0782970461ddfc72",
+      "merge_commit": "2e8c00bac7998b3a579a8fc52b1da55759caecb9",
+      "reconciled": true,
+      "reconciled_at": "2026-09-29T01:39:31.575525+00:00"
     }
   ],
   "backlog": [
@@ -3487,7 +3491,7 @@
       "depends_on": [
         "OMIT-02"
       ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font."
+      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal)."
     },
     {
       "id": "OMIT-02-FU4",
