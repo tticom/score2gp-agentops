@@ -1,12 +1,62 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 86,
+  "authority_revision": 88,
   "task": {
+    "id": "DUR-03",
+    "title": "Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)",
+    "objective": "Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.",
+    "status": "PROMOTED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-03-tab-staff-detection",
+    "prompt": "projects/score2gp/prompts/next/dur-03-tab-staff-detection.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/tabraw.py",
+      "tests/test_dur_02_oracle.py",
+      "tests/test_pdf_*.py",
+      "tests/test_dur_03_*.py",
+      "tests/fixtures/pdf/dur_03/**",
+      "docs/design/**"
+    ],
+    "acceptance": [
+      "Diagnosis first: on Lessons 4, 5 and 6, per TAB staff, the lines drawn, the lines after merging and the exact gate that drops the group are measured and reported (counts and distances only); the mechanism in the prompt is confirmed or corrected.",
+      "TAB staves drawn with broken or partly missing lines are recovered by a measured rule; each digit's string comes from its position on a recovered line, and a digit on no line or between two lines is recorded with a located reason and not written. No string is guessed.",
+      "Tuplet numbers, page numbers, timestamps, bar numbers, legend numbers and the ghost-note parentheses are not read as frets; counts of each across the corpus are shown before and after.",
+      "Lesson 6 is compared bar by bar with the reference through the independent GPIF reader in tests/test_dur_02_oracle.py (note count, string, fret): the number of bars written is reported, every bar still refused has a located reason, and no bar is paired wrongly.",
+      "Lessons 3 and 7 and Can't Find My Way Home produce byte-identical GPIF; on Lessons 4, 5 and 6 every bar written today is byte-identical, and every newly written bar is compared with the reference and reported; the OMIT-03 label coverage on Lessons 4-7 is re-measured and reported.",
+      "A committed synthetic public fixture engraved like Lesson 6 (TAB lines split into segments around the digits, strings 1-3 only) fails at the base and passes now; a fixture with a digit on no line or between two lines still refuses; mutants that revert the recovery or recover a staff from too few lines each fail a test.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass; any edit to an existing test asserting the old detection is listed with its reason."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "next_task_proposal": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
     "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-    "status": "PROMOTED",
+    "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -60,7 +110,6 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3849,7 +3898,7 @@
     },
     {
       "id": "OMIT-03-FU2",
-      "title": "Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
+      "title": "SUPERSEDED by DUR-03: Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
       "requirements": [
         "REQ-0001"
       ],
@@ -3860,7 +3909,7 @@
       "depends_on": [
         "OMIT-03"
       ],
-      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events."
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach."
     },
     {
       "id": "OMIT-03-FU3",
