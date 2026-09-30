@@ -22,23 +22,12 @@ Recover TAB staves drawn with broken or partly missing lines, so their fret digi
 
 - `src/score2gp/pdf.py`
 - `src/score2gp/pdf_*.py`
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/recognition/**`
-- `src/score2gp/ir.py`
 - `src/score2gp/tabraw.py`
-- `src/score2gp/build_ir.py`
-- `src/score2gp/gpif.py`
-- `src/score2gp/gp_package.py`
-- `src/score2gp/version_adapter.py`
-- `src/score2gp/cli.py`
-- `schemas/**`
 - `tests/test_dur_02_oracle.py`
-- `docs/design/**`
-- `docs/architecture.md`
-- `src/score2gp/pdf_tab_*.py`
 - `tests/test_pdf_*.py`
 - `tests/test_dur_03_*.py`
 - `tests/fixtures/pdf/dur_03/**`
+- `docs/design/**`
 
 ## Validation commands
 
