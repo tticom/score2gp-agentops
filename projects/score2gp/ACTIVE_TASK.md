@@ -2,33 +2,41 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-01 — IR provenance: stop copying the full raw candidate into every event and note
+**Task**: OMIT-03 — Text labels: carry printed text onto the beat it annotates
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/mem-01-ir-provenance-footprint`
+**PR Branch**: `feat/omit-03-text-labels`
 
-**Pull Request**: 472
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.
+Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).
 
 ## Allowed paths
 
-- `src/score2gp/**`
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_*.py`
+- `src/score2gp/notation_omr/**`
+- `src/score2gp/recognition/**`
+- `src/score2gp/ir.py`
+- `src/score2gp/tabraw.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/gpif.py`
+- `src/score2gp/gp_package.py`
+- `src/score2gp/version_adapter.py`
+- `src/score2gp/cli.py`
 - `schemas/**`
+- `tests/test_dur_02_oracle.py`
 - `docs/design/**`
 - `docs/architecture.md`
-- `scripts/artifact_audit.py`
-- `tests/test_mem_01_*.py`
-- `tests/fixtures/**`
-- `tests/test_build_ir.py`
-- `tests/test_pdf_tab_duration_regression_audit.py`
+- `tests/test_omit_03_*.py`
+- `tests/fixtures/pdf/omit_03/**`
 
 ## Validation commands
 
