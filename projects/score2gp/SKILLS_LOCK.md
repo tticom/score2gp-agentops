@@ -4,9 +4,13 @@
 
 - Repository: `https://github.com/tticom/agentops-claude-skills`
 - Required source commit:
-  `4fc96725f20910b57717c50bd06dc0cc0fba7ec4`
+  `c51d4469bff70ee90b2a99c0690d7c41554ba9de`
 - Includes: `https://github.com/tticom/agentops-claude-skills/pull/4` (review
   publisher reads inline comments back from the pull request comment list).
+- Includes: `https://github.com/tticom/agentops-claude-skills/pull/6` (the reviewer owns its own review
+  threads: before an APPROVE it re-checks each of them at the exact head, replies and resolves the verified
+  ones, and the publisher refuses an APPROVE while the publishing login has unresolved threads; the author
+  never resolves reviewer threads).
 - Replaces: `https://github.com/tticom/agy-skills` (last pinned at
   `439404f7342f4e324147efb6b0276f698fbf2bdb`), by maintainer direction on
   2026-09-23, adopted under `WIN-01`.
