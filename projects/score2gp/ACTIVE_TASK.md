@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-03-text-labels`
 
-**Pull Request**: TBD
+**Pull Request**: 473
 
 **Owner Role**: implementation
 
