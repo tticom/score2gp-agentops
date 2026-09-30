@@ -1,70 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 85,
+  "authority_revision": 86,
   "task": {
-    "id": "OMIT-03",
-    "title": "Text labels: carry printed text onto the beat it annotates",
-    "objective": "Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 473,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-03-text-labels",
-    "prompt": "projects/score2gp/prompts/next/omit-03-text-labels.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/recognition/**",
-      "src/score2gp/ir.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/gpif.py",
-      "src/score2gp/gp_package.py",
-      "src/score2gp/version_adapter.py",
-      "src/score2gp/cli.py",
-      "schemas/**",
-      "tests/test_dur_02_oracle.py",
-      "docs/design/**",
-      "docs/architecture.md",
-      "tests/test_omit_03_*.py",
-      "tests/fixtures/pdf/omit_03/**"
-    ],
-    "acceptance": [
-      "Text candidates above the staff are classified. Section and example labels and other free text are distinguished from technique text (H, P, sl.), chord symbols, tempo marks, titles and page furniture, which have their own handling.",
-      "Each free-text label is attached to the beat it annotates by a stated, tested rule, citing its source text span. Anything that cannot be placed unambiguously is recorded with a located reason.",
-      "Lesson-3.gp carries the 12 reference labels on the reference beats, with the text equal. Lessons 4-7 are compared, and every difference is reported.",
-      "Dropped text candidates are counted by reason in the diagnostics, never silently discarded.",
-      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
     "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -118,6 +60,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -1923,6 +1866,68 @@
       "merge_commit": "f14120b62833a5ddea847a3dc360c04f81b4ce66",
       "reconciled": true,
       "reconciled_at": "2026-09-30T06:59:58.958649+00:00"
+    },
+    {
+      "id": "OMIT-03",
+      "title": "Text labels: carry printed text onto the beat it annotates",
+      "objective": "Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 473,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-03-text-labels",
+      "prompt": "projects/score2gp/prompts/next/omit-03-text-labels.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/ir.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/gpif.py",
+        "src/score2gp/gp_package.py",
+        "src/score2gp/version_adapter.py",
+        "src/score2gp/cli.py",
+        "schemas/**",
+        "tests/test_dur_02_oracle.py",
+        "docs/design/**",
+        "docs/architecture.md",
+        "tests/test_omit_03_*.py",
+        "tests/fixtures/pdf/omit_03/**"
+      ],
+      "acceptance": [
+        "Text candidates above the staff are classified. Section and example labels and other free text are distinguished from technique text (H, P, sl.), chord symbols, tempo marks, titles and page furniture, which have their own handling.",
+        "Each free-text label is attached to the beat it annotates by a stated, tested rule, citing its source text span. Anything that cannot be placed unambiguously is recorded with a located reason.",
+        "Lesson-3.gp carries the 12 reference labels on the reference beats, with the text equal. Lessons 4-7 are compared, and every difference is reported.",
+        "Dropped text candidates are counted by reason in the diagnostics, never silently discarded.",
+        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "51f8f053c3b4fffb60af0d3cda805fd787ef8cf7",
+      "merge_commit": "7d4426617651cb669cafee956e90b46bcfc22198",
+      "reconciled": true,
+      "reconciled_at": "2026-09-30T17:15:27.972905+00:00"
     }
   ],
   "backlog": [
@@ -3826,6 +3831,66 @@
         "MEM-01"
       ],
       "notes": "Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version=\"0.1.0\" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item."
+    },
+    {
+      "id": "OMIT-03-FU1",
+      "title": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "OMIT-03"
+      ],
+      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails."
+    },
+    {
+      "id": "OMIT-03-FU2",
+      "title": "Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 2,
+      "depends_on": [
+        "OMIT-03"
+      ],
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events."
+    },
+    {
+      "id": "OMIT-03-FU3",
+      "title": "Labels: a source-role rule for the 51 corpus lines between five and seven staff spaces above the staff, and a distinct code for the rotated tab glyph",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-03"
+      ],
+      "notes": "Non-blocking follow-up 3 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. The label band is a fixed five staff spaces above the top staff line. One real Lesson 4 reference label sits 6.4 spaces above and is refused, and 51 corpus lines between five and seven spaces still need a measured source-role rule before the band can widen without admitting a wrong read. In Lesson 4 pdf_text_outside_annotation_band also holds the rotated tab clef glyph, so the missing label is identifiable only by its located bbox: give that glyph its own reason code."
+    },
+    {
+      "id": "OMIT-03-FU4",
+      "title": "pdf_text_labels: split attach_pdf_text_labels and move the late import to module level",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 5,
+      "depends_on": [
+        "OMIT-03"
+      ],
+      "notes": "Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical."
     }
   ],
   "registered_requirements": [

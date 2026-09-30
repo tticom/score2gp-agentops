@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-03 — Text labels: carry printed text onto the beat it annotates
+**Task**: OMIT-04 — Arpeggio marks: detect rolled-chord marks and write them
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-03-text-labels`
+**PR Branch**: `feat/omit-04-arpeggio-marks`
 
-**Pull Request**: 473
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).
+Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.
 
 ## Allowed paths
 
@@ -35,8 +35,8 @@ Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as G
 - `tests/test_dur_02_oracle.py`
 - `docs/design/**`
 - `docs/architecture.md`
-- `tests/test_omit_03_*.py`
-- `tests/fixtures/pdf/omit_03/**`
+- `tests/test_omit_04_*.py`
+- `tests/fixtures/pdf/omit_04/**`
 
 ## Validation commands
 
