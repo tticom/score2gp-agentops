@@ -1,62 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 83,
+  "authority_revision": 84,
   "task": {
-    "id": "MEM-01",
-    "title": "IR provenance: stop copying the full raw candidate into every event and note",
-    "objective": "Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 472,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/mem-01-ir-provenance-footprint",
-    "prompt": "projects/score2gp/prompts/next/mem-01-ir-provenance-footprint.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "schemas/**",
-      "docs/design/**",
-      "docs/architecture.md",
-      "scripts/artifact_audit.py",
-      "tests/test_mem_01_*.py",
-      "tests/fixtures/**",
-      "tests/test_build_ir.py",
-      "tests/test_pdf_tab_duration_regression_audit.py"
-    ],
-    "acceptance": [
-      "Event and note provenance keeps only the raw candidate id, page, system, bar and bbox; the full raw candidate stays once in tab_raw.json, reachable by id; any schema change is intended, documented and version-bumped.",
-      "score.ir.json for Lesson 3 shrinks by at least 80%; peak working set and IR size before and after are recorded for Lessons 3 and 6 with the method stated.",
-      "A regression budget test fails if IR bytes per bar exceed a stated bound on a public fixture, and fails at the base.",
-      "Every consumer of the removed fields still works or reads by id, with grep evidence listing each consumer.",
-      "score.gpif for Lessons 3-7 is byte-identical before and after, or every difference is explained as intended.",
-      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques), OMIT-01 Key or OMIT-02 DoubleBar in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-02"
-    ],
-    "stop_conditions": [
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-03",
     "title": "Text labels: carry printed text onto the beat it annotates",
     "objective": "Carry printed text such as 'Example 1 - [0:13]' onto the beat it annotates, as GPIF `FreeText`. The reference Lesson-3.gp has 12 labels; the output has none. RES-REQ-0005 found 1,318 text candidates dropped silently from PDF-only builds (gap G16).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -110,66 +60,65 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "OMIT-04",
-      "title": "Arpeggio marks: detect rolled-chord marks and write them",
-      "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-04-arpeggio-marks",
-      "prompt": "projects/score2gp/prompts/next/omit-04-arpeggio-marks.md",
-      "allowed_paths": [
-        "src/score2gp/pdf.py",
-        "src/score2gp/pdf_*.py",
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/recognition/**",
-        "src/score2gp/ir.py",
-        "src/score2gp/tabraw.py",
-        "src/score2gp/build_ir.py",
-        "src/score2gp/gpif.py",
-        "src/score2gp/gp_package.py",
-        "src/score2gp/version_adapter.py",
-        "src/score2gp/cli.py",
-        "schemas/**",
-        "tests/test_dur_02_oracle.py",
-        "docs/design/**",
-        "docs/architecture.md",
-        "tests/test_omit_04_*.py",
-        "tests/fixtures/pdf/omit_04/**"
-      ],
-      "acceptance": [
-        "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
-        "Each recognised mark sets Arpeggio on its chord's beat. Lesson-3.gp has the 2 reference arpeggios on the reference beats, with the direction equal.",
-        "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
-        "Lessons 4-7 are compared, and every difference is reported.",
-        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "OMIT-04",
+    "title": "Arpeggio marks: detect rolled-chord marks and write them",
+    "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-04-arpeggio-marks",
+    "prompt": "projects/score2gp/prompts/next/omit-04-arpeggio-marks.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/recognition/**",
+      "src/score2gp/ir.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
+      "src/score2gp/version_adapter.py",
+      "src/score2gp/cli.py",
+      "schemas/**",
+      "tests/test_dur_02_oracle.py",
+      "docs/design/**",
+      "docs/architecture.md",
+      "tests/test_omit_04_*.py",
+      "tests/fixtures/pdf/omit_04/**"
+    ],
+    "acceptance": [
+      "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
+      "Each recognised mark sets Arpeggio on its chord's beat. Lesson-3.gp has the 2 reference arpeggios on the reference beats, with the direction equal.",
+      "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
+      "Lessons 4-7 are compared, and every difference is reported.",
+      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -1920,6 +1869,60 @@
       "merge_commit": "582ff200fbe25ab9cb25c9529f10fb67f088ad3c",
       "reconciled": true,
       "reconciled_at": "2026-09-29T16:30:11.362344+00:00"
+    },
+    {
+      "id": "MEM-01",
+      "title": "IR provenance: stop copying the full raw candidate into every event and note",
+      "objective": "Cut score.ir.json size and build memory by referencing raw candidates by id; resource use is cost (maintainer direction 2026-09-29). Promoted from the backlog item added by #731; its measurement: Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. score.ir.json for Lesson 3 (66 bars) is 25 MB compact / 51 MB on disk: bars[].events[] carry about 25 KB of provenance each (full raw candidate, bbox and grouping evidence), duplicated again on each note. Reference raw candidates by id (tab_raw.json already holds them), keep only what the writer and diagnostics consume, and add a regression budget (IR bytes per bar). Peak working set of one CLI conversion is about 400 MB (Lessons 3 and 6, 30 s each); measure again after the change.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 472,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/mem-01-ir-provenance-footprint",
+      "prompt": "projects/score2gp/prompts/next/mem-01-ir-provenance-footprint.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "schemas/**",
+        "docs/design/**",
+        "docs/architecture.md",
+        "scripts/artifact_audit.py",
+        "tests/test_mem_01_*.py",
+        "tests/fixtures/**",
+        "tests/test_build_ir.py",
+        "tests/test_pdf_tab_duration_regression_audit.py"
+      ],
+      "acceptance": [
+        "Event and note provenance keeps only the raw candidate id, page, system, bar and bbox; the full raw candidate stays once in tab_raw.json, reachable by id; any schema change is intended, documented and version-bumped.",
+        "score.ir.json for Lesson 3 shrinks by at least 80%; peak working set and IR size before and after are recorded for Lessons 3 and 6 with the method stated.",
+        "A regression budget test fails if IR bytes per bar exceed a stated bound on a public fixture, and fails at the base.",
+        "Every consumer of the removed fields still works or reads by id, with grep evidence listing each consumer.",
+        "score.gpif for Lessons 3-7 is byte-identical before and after, or every difference is explained as intended.",
+        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques), OMIT-01 Key or OMIT-02 DoubleBar in any written bar of Lessons 3-7.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-02"
+      ],
+      "stop_conditions": [
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "caf71f3682ee45dc22a5aeb6d4034144c61974c5",
+      "merge_commit": "f14120b62833a5ddea847a3dc360c04f81b4ce66",
+      "reconciled": true,
+      "reconciled_at": "2026-09-30T06:59:58.958649+00:00"
     }
   ],
   "backlog": [
@@ -3793,6 +3796,36 @@
         "LAYOUT-01"
       ],
       "notes": "Non-blocking follow-up 3 from review 5355475879 of tticom/score2gp#471 at b612713. tests/test_layout_01_public.py:55 asserts source_system_bars is None immediately after the test assigned counts, which is already None. The real assertions on the helper return and warning.provenance carry the check, so replace the line with an assertion that can fail, or delete it."
+    },
+    {
+      "id": "MEM-01-FU1",
+      "title": "Tighten the MEM-01 IR bytes-per-bar budget once more public fixtures exist",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "MEM-01"
+      ],
+      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail."
+    },
+    {
+      "id": "MEM-01-FU2",
+      "title": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "MEM-01"
+      ],
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version=\"0.1.0\" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item."
     }
   ],
   "registered_requirements": [
