@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 88,
+  "authority_revision": 89,
   "task": {
     "id": "DUR-03",
     "title": "Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 474,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -23,7 +23,8 @@
       "tests/test_pdf_*.py",
       "tests/test_dur_03_*.py",
       "tests/fixtures/pdf/dur_03/**",
-      "docs/design/**"
+      "docs/design/**",
+      "tests/test_omit_03_private.py"
     ],
     "acceptance": [
       "Diagnosis first: on Lessons 4, 5 and 6, per TAB staff, the lines drawn, the lines after merging and the exact gate that drops the group are measured and reported (counts and distances only); the mechanism in the prompt is confirmed or corrected.",
