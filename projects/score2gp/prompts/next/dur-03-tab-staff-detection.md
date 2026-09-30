@@ -42,3 +42,7 @@ These are the project's standing rules:
 - **Private tests convert under `<repo>/work`,** in a `tempfile.TemporaryDirectory`, never pytest's `tmp_path` (`gpif.build_gpif` switches layout when "pytest" appears in a path).
 - **Pass the product checklist:** pytest, export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check`. The exact-head CI run is the full-suite result. List any local Windows baseline failures by ID.
 - **Keep private material out of the repo.** Commit no private musical content, note or fret data, or coordinates; real-source outputs stay under `work/`.
+
+## Scope amendment (governance, 2026-09-30)
+
+The first authoring run (tticom/score2gp#474) recovered the segmented TAB staves and, as a result, the OMIT-03 labels on Lesson 6 that were refused for lack of written events now attach (5 of 26 before, 26 of 26 after). `tests/test_omit_03_private.py` asserts the old exact Lesson 6 coverage, so it is added to `allowed_paths` **only** to update that exact-coverage assertion (and its matching missing/extra position digests) for that correct reason. Verify independently that the newly attached labels are the reference labels at the reference beats with equal text, state the reason in the handback, and change no other assertion in that file.

@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dur-03-tab-staff-detection`
 
-**Pull Request**: TBD
+**Pull Request**: 474
 
 **Owner Role**: implementation
 
@@ -28,6 +28,7 @@ Recover TAB staves drawn with broken or partly missing lines, so their fret digi
 - `tests/test_dur_03_*.py`
 - `tests/fixtures/pdf/dur_03/**`
 - `docs/design/**`
+- `tests/test_omit_03_private.py`
 
 ## Validation commands
 
