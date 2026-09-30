@@ -29,6 +29,7 @@ Recover TAB staves drawn with broken or partly missing lines, so their fret digi
 - `tests/fixtures/pdf/dur_03/**`
 - `docs/design/**`
 - `tests/test_omit_03_private.py`
+- `tests/test_pdf.py`
 
 ## Validation commands
 
