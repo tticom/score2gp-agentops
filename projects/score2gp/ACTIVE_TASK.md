@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04 — Arpeggio marks: detect rolled-chord marks and write them
+**Task**: DUR-03 — Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-arpeggio-marks`
+**PR Branch**: `feat/dur-03-tab-staff-detection`
 
 **Pull Request**: TBD
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.
+Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.
 
 ## Allowed paths
 
@@ -35,8 +35,10 @@ Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write G
 - `tests/test_dur_02_oracle.py`
 - `docs/design/**`
 - `docs/architecture.md`
-- `tests/test_omit_04_*.py`
-- `tests/fixtures/pdf/omit_04/**`
+- `src/score2gp/pdf_tab_*.py`
+- `tests/test_pdf_*.py`
+- `tests/test_dur_03_*.py`
+- `tests/fixtures/pdf/dur_03/**`
 
 ## Validation commands
 

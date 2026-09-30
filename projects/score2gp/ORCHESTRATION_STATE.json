@@ -1,12 +1,72 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 86,
+  "authority_revision": 87,
   "task": {
+    "id": "DUR-03",
+    "title": "Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)",
+    "objective": "Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.",
+    "status": "PROMOTED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-03-tab-staff-detection",
+    "prompt": "projects/score2gp/prompts/next/dur-03-tab-staff-detection.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/recognition/**",
+      "src/score2gp/ir.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
+      "src/score2gp/version_adapter.py",
+      "src/score2gp/cli.py",
+      "schemas/**",
+      "tests/test_dur_02_oracle.py",
+      "docs/design/**",
+      "docs/architecture.md",
+      "src/score2gp/pdf_tab_*.py",
+      "tests/test_pdf_*.py",
+      "tests/test_dur_03_*.py",
+      "tests/fixtures/pdf/dur_03/**"
+    ],
+    "acceptance": [
+      "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
+      "Each recognised mark sets Arpeggio on its chord's beat. Lesson-3.gp has the 2 reference arpeggios on the reference beats, with the direction equal.",
+      "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
+      "Lessons 4-7 are compared, and every difference is reported.",
+      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "next_task_proposal": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
     "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-    "status": "PROMOTED",
+    "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -60,7 +120,6 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3849,7 +3908,7 @@
     },
     {
       "id": "OMIT-03-FU2",
-      "title": "Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
+      "title": "SUPERSEDED by DUR-03: Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
       "requirements": [
         "REQ-0001"
       ],
@@ -3860,7 +3919,7 @@
       "depends_on": [
         "OMIT-03"
       ],
-      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events."
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach."
     },
     {
       "id": "OMIT-03-FU3",
