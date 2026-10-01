@@ -1,5 +1,15 @@
 # CUTOVER: from the live framework to the lean one
 
+> **Status update (2026-10-01): superseded in part, to be reworked as `MIGRATION.md`.**
+> The maintainer's decision is branch-from-`main`, chop, merge `slim-governance` in, prove,
+> merge to `main`, in the SAME repositories. The fresh-history private repository in
+> Phase B was a misreading: a fresh repository is only for the Rust component, a separate
+> evidence-gated decision. Do not assume a drain either: the old framework keeps running.
+> The current plan, conflict analysis and step mapping are in `MERGE-READINESS.md`
+> (section 10 maps each step below). The reversibility labels, the scan step and the list
+> of irreversible items still apply. Nothing here is to be actioned now.
+
+
 Status: DRAFT checklist for the maintainer (tticom). **Nothing here has been
 executed.** The old framework keeps running on `main` (CFW-04 is live under it).
 Decisions this checklist rests on are recorded as decided in `SLIM-PROPOSAL.md`
@@ -71,7 +81,7 @@ All of it remains in the archived-private old repos if it is ever needed.
    files promoted to their final paths. Do not copy `.git`.
 5. **[R] Scan the snapshot before anything is pushed anywhere**: no `.pdf`, `.gp`,
    `.gpx`, `.mxl`, `.png` or other binary; no file over 1 MB; no absolute local
-   paths (`C:\Users\...`); no emails you do not want; no tokens
+   paths (`<drive>:\Users\<name>\...`); no emails you do not want; no tokens
    (`gh_`, `ghp_`, `github_pat_`, `sk-`, `-----BEGIN`); no fixture names from the
    private fixtures manifest. Fix the snapshot, not the scan. Undo: none needed.
 6. **[R] Run the lean tests on the snapshot**: `python -m pytest lean/tests` (or
