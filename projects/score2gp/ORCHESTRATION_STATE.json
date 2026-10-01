@@ -41,7 +41,8 @@
       "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
       "Lessons 4-7 are compared, and every difference is reported.",
       "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass.",
+      "The reader agrees with the writer: gp_package.py reads Guitar Pro's element-text arpeggio (<Arpeggio>Down</Arpeggio>) without raising, so write_gp followed by extract_score_ir_from_gp round-trips the public beat-symbols fixture, and validate_roundtrip, compare_gp and scripts/oracle.py still work; a read of a real reference with arpeggios (Lesson 3: 2) returns the written direction; covered by tests in tests/test_omit_04_*.py."
     ],
     "validation_commands": [
       "python -m pytest",
@@ -4111,21 +4112,6 @@
         "DUR-03"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical."
-    },
-    {
-      "id": "OMIT-04-FU1",
-      "title": "gp_package.py: read the Arpeggio direction from the element text, as Guitar Pro writes it",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "OMIT-04"
-      ],
-      "notes": "Found while amending OMIT-04's scope (tticom/score2gp#475). Guitar Pro stores an arpeggio as element text, <Arpeggio>Down</Arpeggio>, with no Arpeggio property (verified on the private reference Lesson-3.gp: 2 elements, 0 properties). src/score2gp/gp_package.py (about line 972) reads arpeggio.get(\"direction\"), an attribute, so an arpeggio in a real Guitar Pro file is read as None. Read the text, keep the direction, and add a read round-trip test; the OMIT-04 writer already writes the reference form."
     }
   ],
   "registered_requirements": [
