@@ -37,6 +37,6 @@ Read the grace notes, stemless small heads and non-note glyphs from the source a
 - **Private tests convert under `<repo>/work`** in a `tempfile.TemporaryDirectory`, never pytest's `tmp_path`. Commit no private content; counts, codes and distances only.
 - **Pass the product checklist:** pytest, export-schema, validate-ir, `scripts/artifact_audit.py`, `git diff --check`; exact-head CI is the full-suite result. List the two known Windows baseline failures by ID if they fail locally.
 
-## Scope amendment (2026-10-01)
+## Scope amendment (governance, 2026-10-01, authority revision 95)
 
 The first authoring run (branch `feat/cfw-04-grace-small-heads`, `febfc66`) writes 18 of 21 Can't Find My Way Home bars and stopped at two full-suite failures. `tests/test_omit_04_private.py` is added to `allowed_paths` **only** to update `test_other_reference_arpeggios_have_located_refusals`, which asserts that the output has no arpeggios; four now appear on newly written bars. Verify each of the four against the source and the reference, then change the assertion to expect exactly those, with located refusals for the rest. Do not suppress or loosen anything to keep the old count. The second failure, `tests/test_pdf_tab_route_support.py::test_synthetic_records_have_the_readers_shape`, is fixed inside `note_duration.py` by emitting the `grace` field only on grace records. Rerun the whole suite and the product checklist, then hand back.
