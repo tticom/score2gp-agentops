@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 95,
+  "authority_revision": 96,
   "task": {
     "id": "CFW-04",
     "title": "Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 476,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
