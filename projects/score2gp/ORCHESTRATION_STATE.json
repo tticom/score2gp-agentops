@@ -3828,7 +3828,7 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "DUR-02"
@@ -3843,7 +3843,7 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "DUR-02"
