@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-04-arpeggio-marks`
 
-**Pull Request**: TBD
+**Pull Request**: 475
 
 **Owner Role**: implementation
 
@@ -37,6 +37,7 @@ Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write G
 - `docs/architecture.md`
 - `tests/test_omit_04_*.py`
 - `tests/fixtures/pdf/omit_04/**`
+- `tests/test_gp_writer.py`
 
 ## Validation commands
 

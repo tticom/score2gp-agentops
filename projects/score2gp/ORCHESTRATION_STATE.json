@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 92,
+  "authority_revision": 93,
   "task": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 475,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
@@ -32,7 +32,8 @@
       "docs/design/**",
       "docs/architecture.md",
       "tests/test_omit_04_*.py",
-      "tests/fixtures/pdf/omit_04/**"
+      "tests/fixtures/pdf/omit_04/**",
+      "tests/test_gp_writer.py"
     ],
     "acceptance": [
       "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
@@ -40,7 +41,8 @@
       "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
       "Lessons 4-7 are compared, and every difference is reported.",
       "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass.",
+      "The reader agrees with the writer: gp_package.py reads Guitar Pro's element-text arpeggio (<Arpeggio>Down</Arpeggio>) without raising, so write_gp followed by extract_score_ir_from_gp round-trips the public beat-symbols fixture, and validate_roundtrip, compare_gp and scripts/oracle.py still work; a read of a real reference with arpeggios (Lesson 3: 2) returns the written direction; covered by tests in tests/test_omit_04_*.py."
     ],
     "validation_commands": [
       "python -m pytest",
