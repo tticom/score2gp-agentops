@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 96,
+  "authority_revision": 97,
   "task": {
     "id": "CFW-04",
     "title": "Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written",
@@ -21,6 +21,7 @@
       "src/score2gp/ir.py",
       "src/score2gp/build_ir.py",
       "src/score2gp/gpif.py",
+      "src/score2gp/gp_package.py",
       "schemas/**",
       "docs/design/**",
       "tests/test_dur_02_oracle.py",
@@ -37,7 +38,8 @@
       "Can't Find My Way Home is compared bar by bar with the reference through the independent GPIF reader (note count, string, fret, written value, grace tag): the number of bars written is reported, every refused bar has a located reason, and no bar is paired wrongly.",
       "Lessons 3-7 and every PDF without a small head produce byte-identical GPIF; every changed bar on PDFs with small heads and no reference is reported with evidence or refused.",
       "Public synthetic fixtures engraved like the real source fail at the base and pass now; mutants (no grace handling, grace in the bar total, stemless heads kept, absolute-point threshold) each fail a test; tests are CI-safe (work/ created, proven on a clean git archive).",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass.",
+      "The reader agrees with the writer for grace notes: gp_package.py reads a beat tagged GraceNotes (OnBeat) as a zero-tick grace in the ScoreIR (the existing grace field), so write_gp followed by extract_score_ir_from_gp round-trips a written grace without a bar-length error; covered by a round-trip test in tests/test_cfw_04_*.py on the public grace fixture. Only the GraceNotes read is in scope: other reader gaps are not fixed here."
     ],
     "validation_commands": [
       "python -m pytest",
