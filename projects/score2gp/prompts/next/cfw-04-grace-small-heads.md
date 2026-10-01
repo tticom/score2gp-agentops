@@ -6,7 +6,7 @@
 - **Depends on:** DUR-03
 - **Branch:** `feat/cfw-04-grace-small-heads`
 
-This comes from a read-only governance diagnosis (2026-10-01, main 3cb2079; full report `C:\Users\niall\src\score2gp-workspace\launchers\cfw-diagnosis.md`, model-written: treat every number as a lead and re-measure it). It supersedes backlog items CFW-01 and CFW-02.
+This comes from a read-only governance diagnosis (2026-10-01, main 3cb2079; full report `C:\Users\niall\src\score2gp-workspace\launchers\cfw-diagnosis.md`, model-written: treat every number as a lead and re-measure it). It supersedes CFW-01 and CFW-02.
 
 ## What governance measured (leads to VERIFY)
 
