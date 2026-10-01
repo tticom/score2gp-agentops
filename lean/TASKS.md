@@ -6,14 +6,18 @@ git and the merged PR, not here. The maintainer edits this file (or an agent
 proposes an edit in a PR); an agent never invents a task.
 
 Order is priority: take the first `todo` unless the maintainer names another.
-At most one `doing` entry per agent.
+At most one `doing` entry per agent. Claiming: the claim is the pushed branch
+`task/<id>`, not an edit to this file (an edit on a branch is invisible to other
+authors). Before starting, `git ls-remote --heads origin task/<id>`: if it exists,
+the task is taken. Push an empty branch to claim, then work.
+A task that cannot start until another is merged is `blocked` (say on what).
 
 ## Entry format
 
 ```
 ### <ID>: <one-sentence outcome>
 
-- status: todo | doing
+- status: todo | doing | blocked
 - risk: normal | risky
 - serves: <requirement id, e.g. REQ-0003, or "none (tooling)">
 - allowed paths: <globs the PR may touch; anything else is out of scope>

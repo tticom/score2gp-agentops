@@ -1,0 +1,26 @@
+# Lean CI gate. Promoted at cutover to .github/workflows/ci.yml in the new repo.
+# It is NOT under .github/workflows here, so it does not run in the live repo.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pytest
+      # Forbidden file types, size, credential-shaped tokens, absolute local paths.
+      - run: python lean/scripts/repo_scan.py
+      # -ra lists every skip: a skipped test is NOT_EVALUATED, not a pass.
+      - run: python -m pytest -q -ra
+      - run: git diff --check

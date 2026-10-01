@@ -16,6 +16,7 @@ This is a convention aid, not server enforcement: `git push --no-verify` skips i
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -63,6 +64,7 @@ def install(repo: Path, force: bool = False) -> int:
     wanted = read_bytes(HOOK_SOURCE)
     if target.exists():
         if read_bytes(target) == wanted:
+            target.chmod(0o755)
             print(f"ALREADY_INSTALLED {target}")
             return 0
         if not force:
@@ -85,6 +87,9 @@ def check(repo: Path) -> int:
         return 1
     if read_bytes(target) != read_bytes(HOOK_SOURCE):
         print(f"DIFFERS {target}")
+        return 1
+    if os.name != "nt" and not os.access(target, os.X_OK):
+        print(f"NOT_EXECUTABLE {target} (git would skip it); run install again")
         return 1
     print(f"OK {target}")
     return 0

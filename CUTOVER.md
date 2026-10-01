@@ -62,7 +62,10 @@ All of it remains in the archived-private old repos if it is ever needed.
    `ORCHESTRATION_STATE.json` at the freeze tag and write open items into
    `TASKS.md` by hand or with a one-off script run on a copy. Keep only tasks you
    still want; mark each `normal` or `risky`. Undo: discard the file.
-4. **[R] Build the snapshot tree** in a scratch directory outside every repo:
+4. **[R] Build the snapshot tree** in a scratch directory outside every repo
+   (layout: `CLAUDE.md`, `AGENTS.md`, `TASKS.md` at the root, the PR template at
+   `.github/`, everything else of `lean/` stays under `lean/` so the paths the
+   guidance names are valid; `lean/tests` verifies the guidance paths exist):
    `git archive` of the freeze tag (old knowledge files) and of the
    `slim-governance` tip (lean files) for the files listed above only, plus the lean
    files promoted to their final paths. Do not copy `.git`.
@@ -102,13 +105,17 @@ Decision point: stop here until you are satisfied with the snapshot contents.
     chosen option in `CLAUDE.md`. Undo: remove the collaborator, revoke the token.
     To confirm before relying on it: GitHub allows private forks and
     read-collaborators on free private repositories (check the plan page).
-11. **[R] CI.** Add the lean CI workflow in the new repo (unit tests with skip
-    report, forbidden-file and secret scan, `git diff --check`) when you want it;
-    the lean pieces here do not require it to start. Private-repo Actions minutes
-    on the free plan are limited. Undo: delete the workflow.
-12. **[R] Trial.** Run one `normal` and one `risky` task end to end in the new
+11. **[R] CI, before any trial.** Copy `lean/ci-slim.yml` to
+    `.github/workflows/ci.yml` in the new repo (forbidden-file, size, token and
+    local-path scan via `lean/scripts/repo_scan.py`, tests with a skip report,
+    `git diff --check`). On the free plan nothing makes it a required check, so
+    the maintainer looks at it before merging; that is the agreed convention.
+    Private-repo Actions minutes on the free plan are limited. Undo: delete the
+    workflow.
+12. **[R*] Trial.** Run one `normal` and one `risky` task end to end in the new
     repo (PR, local real-fixture check, optional review, you merge). Compare with
-    the old flow. Undo: abandon the new repo; the old framework is still intact.
+    the old flow. Undo: abandon the new repo and discard the trial merges; the old
+    framework is still intact, but the trial changes themselves are not carried back.
 
 Decision point: go or no-go on switching the old framework off.
 
@@ -140,7 +147,7 @@ Decision point: go or no-go on switching the old framework off.
 Before step 17, finish these checks, because making a repo private does not unpublish what
 was already public:
 
-16. **[R] History audit and credential rotation.** Public history has been
+16. **[I] History audit and credential rotation.** Public history has been
     visible since each repo was created. Scan old history for private fixture
     content and secrets (`git log --all -p` against the patterns in step 5, and the
     private-fixtures manifest). Rotate any credential that ever appeared in logs

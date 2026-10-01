@@ -67,16 +67,19 @@ with no review; the maintainer may still ask for one.
 
 ## Author flow
 
-1. Take the next `todo` entry in `TASKS.md` (or the one the maintainer names).
-   Set it to `doing` in your branch.
+1. Pick the first `todo` entry in `TASKS.md` (or the one the maintainer names) and
+   **claim it by pushing the branch first**: run `git ls-remote --heads origin
+   task/<id>`; if the branch exists, someone has it, so pick another. Otherwise
+   push an empty `task/<id>` branch at once. The pushed branch is the claim; a
+   `doing` edit in `TASKS.md` on your branch is only for the record.
 2. Create a worktree and a `task/<id>` branch from `main` (`safe-git` skill).
 3. Implement (`implement` skill): tests first where practical, full suite at the
    end, clean-head pre-flight.
 4. For `risky` tasks, on the maintainer machine:
    `python lean/scripts/real_fixture_check.py --product <product checkout>`.
-   It must report PASS (NOT_EVALUATED is not a pass). Put the sanitised counts in
-   the PR.
-5. Open a draft PR from `lean/PULL_REQUEST_TEMPLATE.md`. Mark it ready when CI is
+   It must report PASS: NOT_EVALUATED (fixtures missing, a skipped test, a tool that
+   processed nothing) is not a pass. Put the sanitised table in the PR.
+5. Open a draft PR from the PR template (`.github/PULL_REQUEST_TEMPLATE.md`; `lean/PULL_REQUEST_TEMPLATE.md` before cutover). Mark it ready when CI is
    green. Remove the task from `TASKS.md` in the same PR (done entries are
    deleted; git history is the record). The PR is now "ready to merge": the
    maintainer merges, in their own time and in batches.
@@ -105,6 +108,14 @@ or a per-task log is only useful for making the next decision, not for posterity
 - Not versioned, delete after the decision: raw logs, full run outputs, generated
   conversion artifacts, per-task prompts, handbacks, review transcripts, status
   reports. Raw output stays in a local log directory outside the repository.
+
+## Paths
+
+The tooling stays under `lean/` after cutover (`lean/scripts/`, `lean/hooks/`,
+`lean/reports/`). Only this file, `AGENTS.md`, `TASKS.md` and the PR template are
+copied to the repository root / `.github/`. CI runs `lean/scripts/repo_scan.py`
+and the test suite on every PR (`lean/ci-slim.yml`, promoted to
+`.github/workflows/ci.yml`).
 
 ## Local setup (once per clone)
 

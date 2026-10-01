@@ -323,3 +323,20 @@ become 6 (`implement`, `review` with an adversarial mode, `address-review`,
 5. Upstream-derived skills (`review`, `implement`): keep the MIT notices (done
    in `lean/skills/*/NOTICE.md` in the skills repo), or rewrite independently?
 6. Confirm the review defaults in item 1 (adversarial for risky, none for normal).
+
+## 8. Independent review of the lean design (Codex, advisory)
+
+One read-only `codex exec` review of `lean/`, `CUTOVER.md` and the skills. Nine
+findings, all judged valid and folded in:
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | Real-fixture check could PASS when a private tool exited 0 after processing nothing | Fixed: steps declare a result file that must be fresh and non-empty, else NOT_EVALUATED; status distributions are shown. Limit: scores that "fail cleanly" are counted, not failed; compare counts with the previous run |
+| 2 | Skips or failures in a pytest summary could still PASS | Fixed: failures or errors in the summary are FAIL; any skip is NOT_EVALUATED unless `--allow-skips` |
+| 3 | Cutover ran trials before a CI gate existed | Fixed: `lean/ci-slim.yml` and `lean/scripts/repo_scan.py` added; CUTOVER step 11 is now before the trial |
+| 4 | Force-push guard skipped remote heads absent locally | Fixed: fails closed with a "fetch first" message |
+| 5 | `install_hooks.py --check` ignored a lost executable bit | Fixed (POSIX) |
+| 6 | A failed git query became a privacy-invariant PASS | Fixed: NOT_EVALUATED |
+| 7 | `TASKS.md` could not coordinate concurrent authors | Fixed: claim by pushing `task/<id>` after `git ls-remote`; `blocked` status |
+| 8 | Promotion to the repo root left guidance paths wrong | Fixed: tooling stays under `lean/`; a test checks every named path exists |
+| 9 | Two CUTOVER steps mislabelled reversible | Fixed: step 12 is `[R*]`, step 16 is `[I]` |

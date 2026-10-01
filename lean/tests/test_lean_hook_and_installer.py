@@ -107,6 +107,19 @@ class PrePushHookTest(unittest.TestCase):
         result = self.fx.push("origin", "main", env={"LEAN_ALLOW_PROTECTED_PUSH": "1"})
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_unknown_remote_head_fails_closed(self):
+        # A second clone moves a branch; this clone has never fetched it.
+        other = Path(self.tmp.name) / "other"
+        subprocess.run(["git", "clone", "-q", str(self.fx.remote), str(other)], check=True, capture_output=True)
+        git(other, "checkout", "-q", "-b", "task/x")
+        commit(other, "o.txt")
+        git(other, "push", "-q", "origin", "task/x")
+        git(self.fx.work, "checkout", "-q", "-b", "task/x")
+        commit(self.fx.work, "w.txt")
+        result = self.fx.push("--force", "origin", "task/x")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("git fetch", result.stderr)
+
     def test_no_verify_bypasses_the_hook(self):
         # Documented limitation: this is convention plus hook, not server enforcement.
         commit(self.fx.work, "b.txt")
@@ -137,6 +150,14 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(install_hooks.main(["--repo", str(self.repo)]), 0)  # idempotent
         self.assertEqual(install_hooks.main(["--repo", str(self.repo), "--uninstall"]), 0)
         self.assertFalse(self.hook.exists())
+
+    @unittest.skipIf(os.name == "nt", "POSIX executable bit")
+    def test_check_detects_lost_executable_bit(self):
+        self.assertEqual(install_hooks.main(["--repo", str(self.repo)]), 0)
+        self.hook.chmod(0o644)
+        self.assertEqual(install_hooks.main(["--repo", str(self.repo), "--check"]), 1)
+        self.assertEqual(install_hooks.main(["--repo", str(self.repo)]), 0)  # reinstall repairs it
+        self.assertEqual(install_hooks.main(["--repo", str(self.repo), "--check"]), 0)
 
     def test_refuses_to_overwrite_foreign_hook_unless_forced(self):
         self.hook.parent.mkdir(parents=True, exist_ok=True)

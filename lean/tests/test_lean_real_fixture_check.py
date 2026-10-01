@@ -51,7 +51,7 @@ class RealFixtureCheckTest(unittest.TestCase):
         self.logs.mkdir()
 
     def run_check(self, product, cfg, **kw):
-        return rfc.run(product, cfg, sys.executable, self.logs, kw.get("fail_on_skips", False), kw.get("require_clean", False))
+        return rfc.run(product, cfg, sys.executable, self.logs, kw.get("allow_skips", False), kw.get("require_clean", False))
 
     def test_pass(self):
         product = make_product(self.root)
@@ -72,16 +72,44 @@ class RealFixtureCheckTest(unittest.TestCase):
         self.assertEqual(out["result"], rfc.NOT_EVALUATED)
         self.assertEqual(rfc.EXIT[out["result"]], 2)
 
-    def test_pytest_counts_and_skips(self):
+    def test_pytest_counts_failures_and_skips(self):
         product = make_product(self.root)
-        fake = "print('1 failed, 4 passed, 2 skipped in 0.1s')"
-        step = cmd("t", fake, kind="pytest")
+        # A summary with failures is FAIL even though the process exited 0.
+        step = cmd("t", "print('1 failed, 4 passed in 0.1s')", kind="pytest")
         out = self.run_check(product, config(step))
-        self.assertEqual(out["steps"][0]["counts"], {"failed": 1, "passed": 4, "skipped": 2})
-        self.assertEqual(out["result"], rfc.PASS)  # exit code 0 here; count parsing is separate
+        self.assertEqual(out["steps"][0]["counts"], {"failed": 1, "passed": 4})
+        self.assertEqual(out["result"], rfc.FAIL)
+        # Skips are NOT_EVALUATED by default, accepted only with allow_skips.
         skip_only = cmd("t", "print('5 passed, 2 skipped in 0.1s')", kind="pytest")
-        self.assertEqual(self.run_check(product, config(skip_only), fail_on_skips=True)["result"], rfc.FAIL)
-        self.assertEqual(self.run_check(product, config(skip_only))["result"], rfc.PASS)
+        self.assertEqual(self.run_check(product, config(skip_only))["result"], rfc.NOT_EVALUATED)
+        self.assertEqual(self.run_check(product, config(skip_only), allow_skips=True)["result"], rfc.PASS)
+
+    def test_summary_step_needs_fresh_nonempty_results(self):
+        product = make_product(self.root)
+        out_file = product / "work" / "res.json"
+        out_file.parent.mkdir()
+        spec = {"file": "work/res.json", "status_key": "s"}
+        write = "import json,pathlib; pathlib.Path('work/res.json').write_text(json.dumps(%s))"
+        # exit 0 but nothing processed -> NOT_EVALUATED
+        step = {"name": "e", "kind": "command", "required": True, "argv": ["{python}", "-c", write % "[]"], "summary": spec}
+        self.assertEqual(self.run_check(product, config(step))["result"], rfc.NOT_EVALUATED)
+        # exit 0, results written -> PASS with a distribution
+        step["argv"] = ["{python}", "-c", write % "[{'s': 'pass'}, {'s': 'fail'}, {'s': 'pass'}]".replace("'", '"')]
+        out = self.run_check(product, config(step))
+        self.assertEqual(out["result"], rfc.PASS)
+        self.assertEqual(out["steps"][0]["distribution"], {"by_s": {"pass": 2, "fail": 1}})
+        # exit 0 but the file is stale (tool wrote nothing this time) -> NOT_EVALUATED
+        import os
+        os.utime(out_file, (1, 1))
+        step["argv"] = ["{python}", "-c", "pass"]
+        self.assertEqual(self.run_check(product, config(step))["result"], rfc.NOT_EVALUATED)
+
+    def test_git_failure_is_not_a_clean_pass(self):
+        product = make_product(self.root)
+        step = {"name": "inv", "kind": "tracked-files", "paths": ["fixtures/private"], "allowed": [], "required": True}
+        broken = self.root / "notarepo"
+        broken.mkdir()
+        self.assertEqual(rfc.run_step(step, broken, sys.executable, self.logs, False)["status"], rfc.NOT_EVALUATED)
 
     def test_pytest_without_summary_or_zero_passed_is_not_evaluated(self):
         product = make_product(self.root)
@@ -96,7 +124,7 @@ class RealFixtureCheckTest(unittest.TestCase):
         git(product, "add", "-f", "fixtures/private/s0.pdf")
         out = self.run_check(product, config(step))
         self.assertEqual(out["result"], rfc.FAIL)
-        self.assertEqual(out["steps"][0]["tracked_unexpected"], 1)
+        self.assertEqual(out["steps"][0]["counts"], {"tracked_unexpected": 1})
 
     def test_unstartable_required_step_is_not_evaluated(self):
         product = make_product(self.root)

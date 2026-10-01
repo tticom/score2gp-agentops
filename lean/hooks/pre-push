@@ -3,7 +3,9 @@
 #
 # Blocks, for every remote:
 #   - a push that updates or deletes a protected branch (default: main, master);
-#   - a non-fast-forward (force) update of any branch.
+#   - a non-fast-forward (force) update of any branch, and any update whose
+#     remote head is not in this clone (fetch first), because a fast-forward
+#     cannot then be proven.
 # Deleting other branches or tags is not blocked.
 #
 # This is convention plus a local hook, NOT server enforcement. It is bypassed by
@@ -11,7 +13,7 @@
 #
 # Overrides (maintainer use; an agent must never set these):
 #   LEAN_ALLOW_PROTECTED_PUSH=1   allow pushing to a protected branch
-#   LEAN_ALLOW_FORCE=1            allow non-fast-forward updates
+#   LEAN_ALLOW_FORCE=1            allow non-fast-forward / unverifiable updates
 # Configuration:
 #   LEAN_PROTECTED_BRANCHES       space separated, default "main master"
 
@@ -36,7 +38,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
         done
     fi
 
-    # Non-fast-forward check: only when the remote object is known locally.
+    # Non-fast-forward check. If the remote head is not in this clone we cannot prove
+    # a fast-forward, so fail closed: fetch first (git itself rejects a true
+    # non-fast-forward anyway, so this costs nothing for normal pushes).
     if [ "$local_sha" != "$zero" ] && [ "$remote_sha" != "$zero" ] \
         && [ "${LEAN_ALLOW_FORCE:-}" != "1" ]; then
         if git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
@@ -44,6 +48,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
                 echo "pre-push: refusing non-fast-forward update of '$remote_ref' (force push)." >&2
                 rc=1
             fi
+        else
+            echo "pre-push: remote head of '$remote_ref' is not in this clone; run 'git fetch' so a fast-forward can be verified." >&2
+            rc=1
         fi
     fi
 done
