@@ -40,3 +40,12 @@ Read the grace notes, stemless small heads and non-note glyphs from the source a
 ## Scope amendment (governance, 2026-10-01, authority revision 95)
 
 The first authoring run (branch `feat/cfw-04-grace-small-heads`, `febfc66`) writes 18 of 21 Can't Find My Way Home bars and stopped at two full-suite failures. `tests/test_omit_04_private.py` is added to `allowed_paths` **only** to update `test_other_reference_arpeggios_have_located_refusals`, which asserts that the output has no arpeggios; four now appear on newly written bars. Verify each of the four against the source and the reference, then change the assertion to expect exactly those, with located refusals for the rest. Do not suppress or loosen anything to keep the old count. The second failure, `tests/test_pdf_tab_route_support.py::test_synthetic_records_have_the_readers_shape`, is fixed inside `note_duration.py` by emitting the `grace` field only on grace records. Rerun the whole suite and the product checklist, then hand back.
+
+## Scope amendment 2 (governance, 2026-10-02, authority revision 97)
+
+Hard review of tticom/score2gp#476 at `8c65715` (tticomgov-code, CHANGES_REQUESTED) found two blocking gaps. Both are fixed inside CFW-04:
+
+1. **The reader.** The writer now emits a 32nd beat tagged `<GraceNotes>OnBeat</GraceNotes>`, but `gp_package.py` ignores the tag, so `extract_score_ir_from_gp` (used by `validate-roundtrip`, `compare_gp` and `scripts/oracle.py`) counts the grace as a full 32nd and raises `ValidationError: event exceeds bar 1` on `tests/fixtures/pdf/cfw_04/grace_stemless_wave.pdf`. `src/score2gp/gp_package.py` is added to `allowed_paths` **only** to read the grace: a beat with a `GraceNotes` element is read as a zero-tick grace in the existing ScoreIR grace field (no schema change), and a write-then-read round-trip test on the public grace fixture is added in `tests/test_cfw_04_*.py`. Do not fix other reader gaps (tuplets, rests) here; report any you meet. #476 must not merge with the grace unreadable.
+2. **Tests that bite.** Every fail-closed grace and small-head gate needs a public vector fixture with a located-refusal assertion that fails when the gate is removed: `grace_note_beat_too_far`, `grace_note_before_rest`, `grace_note_without_flag`, `small_notehead_mixed_with_full_size`, `grace_note_beat_unattached` and the tie-over-grace exclusion. Prove each with a mutant (remove the gate; the new test must fail). Do not weaken a gate to make a fixture pass.
+
+Rerun the whole suite and the product checklist, then hand back.

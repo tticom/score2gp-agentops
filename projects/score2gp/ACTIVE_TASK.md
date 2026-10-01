@@ -25,6 +25,7 @@ Read grace notes (small flagged heads), stemless small heads and non-note wave g
 - `src/score2gp/ir.py`
 - `src/score2gp/build_ir.py`
 - `src/score2gp/gpif.py`
+- `src/score2gp/gp_package.py`
 - `schemas/**`
 - `docs/design/**`
 - `tests/test_dur_02_oracle.py`
