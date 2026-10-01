@@ -1,8 +1,12 @@
 # SLIM-PROPOSAL: a slimmer governance framework
 
-Status: DRAFT proposal for the maintainer (tticom). Nothing here is applied.
-`main` keeps running the current framework untouched. Nothing is deleted or
-rewritten by this PR; it only adds this file.
+Status: the maintainer (tticom) has answered the open questions (section 6,
+marked DECIDED). The lean framework is now implemented as inert files under
+`lean/` on this branch, with `CUTOVER.md` as the ordered switch-over checklist.
+**The cutover has not been executed.** `main` keeps running the current framework
+untouched (CFW-04 is live under it). `slim-governance` is the long-running trunk of
+the lean experiment and stands in for `main` until the maintainer decides; this PR
+is the review surface for it, not something to merge now.
 
 Companion document (same branch name, other repo):
 [`agentops-claude-skills` `SLIM-PROPOSAL.md`](https://github.com/tticom/agentops-claude-skills/blob/slim-governance/SLIM-PROPOSAL.md).
@@ -223,6 +227,8 @@ fixture runner); tests from about 11,200 to a few hundred.
 
 ## 4. Migration plan (side by side)
 
+Superseded in detail by `CUTOVER.md` (ordered, with what is reversible). Kept here for context.
+
 Rule throughout: `main` and its dispatcher, launchers and `worktrees/codex|gov|auto` are not touched.
 
 0. **Now.** This proposal on branch `slim-governance`, draft PRs, no merge.
@@ -262,28 +268,58 @@ become 6 (`implement`, `review` with an adversarial mode, `address-review`,
 `safe-git`, `workspace-cleanup`, `durable-handoff`); `dispatch-task`,
 `governance-author`, `governed-development-loop`, `publish-pr-handback` retire.
 
-## 6. Open questions for the maintainer
+## 6. Decisions (answers received from the maintainer)
 
-1. Is it acceptable that "no self-approval" becomes "agents cannot merge and
-   the maintainer merges", with independent review optional and advisory? Or
-   do you want review required for every PR (more protection, more cost)?
-2. Private repos: does your GitHub plan enforce rulesets on private
-   repositories? On a free plan it does not, so protection against direct
-   main pushes would need an agent token that cannot push to main at all (or
-   a local hook). Which plan and which token approach?
-3. Should the five lasting ADRs/incidents/research notes be kept in the
-   product repo or moved to a separate notes repo before going private?
-4. Is `TASKS.md` enough, or do you want GitHub issues/Projects as the list?
-5. History: keep full public history when going private, or start a fresh
-   history? Public history contains 750 PRs of agent logs.
-6. Real-fixture checks: must they remain local to your machine, or should a
-   private CI runner be set up?
-7. Should the old accounts (`tticom-automation`, `tticom-codex`,
-   `tticomgov-code`) be retired or kept for optional independent review?
-8. How aggressive on archiving: delete the 600+ per-task files at cutover, or
-   move them to an `archive/` branch or tag?
-9. Are the derived skills (`code-review`, `verified-implementation`, from the
-   upstream collection) licence-compatible with a private, all-rights-reserved
-   repo?
-10. Is it acceptable for the old dispatcher to be switched off entirely at
-    cutover, i.e. no `go`/`got` command afterwards?
+1. **Review. DECIDED.** Agents never merge; the maintainer merges. Independent
+   review is optional and advisory, used for risky changes: conversion fidelity,
+   parsers, geometry, timing, any fallback, anything touching private fixtures,
+   CI/hooks/guidance files, or a disputed PR. The maintainer answered "don't
+   know" for everything else, so the rule chosen here (and written into
+   `lean/CLAUDE.md`) is: `normal` tasks need only green CI; the author proceeds
+   without waiting; `risky` tasks get one fresh-session adversarial review as
+   advice, requested by the author in parallel with further work. Nobody waits on
+   the maintainer.
+2. **Plan and branch protection. DECIDED.** GitHub plan is free: no branch
+   protection or rulesets on private repos. "No direct push to main" is enforced
+   by (a) a committed pre-push hook (`lean/hooks/pre-push`) with an installer
+   (`lean/scripts/install_hooks.py`) and (b) agents using an identity or token
+   without push rights to `main` where practical (`CUTOVER.md` step 10). This is
+   convention plus a local hook, not server enforcement; `--no-verify` bypasses
+   it. Documented as such in `lean/README.md`.
+3. **What is versioned. DECIDED (revised).** Never version what can be recreated
+   or is not useful. Run outputs and per-task paperwork are only useful for the
+   next decision. So: no per-task logs, prompts, handbacks or reviews; the 600+
+   per-task files and the old authority state machine are not carried over. A run
+   that led to a decision is summarised in a short decision report
+   (`lean/reports/TEMPLATE.md`), versioned with its evidence; the rest is deleted
+   after the decision. The new home is a fresh-history private repo with a
+   current-state snapshot; the old repos are archived-private, not deleted
+   (`CUTOVER.md`).
+4. **Task list. DECIDED.** `TASKS.md` replaces the authority state machine
+   (`lean/TASKS.md`). The old dispatcher (`go`/`got`) is switched off at cutover
+   and the three role accounts retired (optional reviewer use allowed).
+5. **History. DECIDED (recommendation adopted).** Fresh history in a new private
+   repo with a snapshot. Old repos archived and made private, nothing deleted.
+6. **Real-fixture checks. DECIDED.** Local on the maintainer machine, must pass
+   before handing back a risky conversion task; no private CI runner
+   (`lean/scripts/real_fixture_check.py`).
+7. **Old accounts. DECIDED.** Retired at cutover; optional reviewer use allowed.
+8. **Archiving. DECIDED.** Not carried over, not deleted: old repos stay as
+   archived-private.
+9. **Dispatcher. DECIDED.** Off at cutover.
+
+## 7. Still needed from the maintainer
+
+1. Product repo `score2gp`: fresh history too (recommended: its public history
+   holds 475 PRs of agent logs and is hard to audit for private data), or keep
+   its history?
+2. Agent credential: separate agent account working from a private fork with
+   read-only access to the repo (true server-side protection for `main`, one
+   account kept), or a write token plus the hook only? (`CUTOVER.md` step 10)
+3. Where the six lean skills live: inside the new repo under `skills/`
+   (recommended, one repo fewer) or a separate private repo.
+4. Which old research and reports are worth condensing into decision reports
+   (default: none carried).
+5. Upstream-derived skills (`review`, `implement`): keep the MIT notices (done
+   in `lean/skills/*/NOTICE.md` in the skills repo), or rewrite independently?
+6. Confirm the review defaults in item 1 (adversarial for risky, none for normal).

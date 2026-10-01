@@ -1,0 +1,51 @@
+#!/bin/sh
+# Lean framework pre-push guard.
+#
+# Blocks, for every remote:
+#   - a push that updates or deletes a protected branch (default: main, master);
+#   - a non-fast-forward (force) update of any branch.
+# Deleting other branches or tags is not blocked.
+#
+# This is convention plus a local hook, NOT server enforcement. It is bypassed by
+# `git push --no-verify` or by removing the hook. See lean/README.md.
+#
+# Overrides (maintainer use; an agent must never set these):
+#   LEAN_ALLOW_PROTECTED_PUSH=1   allow pushing to a protected branch
+#   LEAN_ALLOW_FORCE=1            allow non-fast-forward updates
+# Configuration:
+#   LEAN_PROTECTED_BRANCHES       space separated, default "main master"
+
+protected="${LEAN_PROTECTED_BRANCHES:-main master}"
+zero=0000000000000000000000000000000000000000
+rc=0
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    [ -z "$remote_ref" ] && continue
+    branch="${remote_ref#refs/heads/}"
+
+    if [ "$branch" != "$remote_ref" ]; then
+        for p in $protected; do
+            if [ "$branch" = "$p" ] && [ "${LEAN_ALLOW_PROTECTED_PUSH:-}" != "1" ]; then
+                if [ "$local_sha" = "$zero" ]; then
+                    echo "pre-push: refusing to delete protected branch '$branch'." >&2
+                else
+                    echo "pre-push: refusing to push to protected branch '$branch'. Push a task branch and open a PR; the maintainer merges." >&2
+                fi
+                rc=1
+            fi
+        done
+    fi
+
+    # Non-fast-forward check: only when the remote object is known locally.
+    if [ "$local_sha" != "$zero" ] && [ "$remote_sha" != "$zero" ] \
+        && [ "${LEAN_ALLOW_FORCE:-}" != "1" ]; then
+        if git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+            if ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+                echo "pre-push: refusing non-fast-forward update of '$remote_ref' (force push)." >&2
+                rc=1
+            fi
+        fi
+    fi
+done
+
+exit $rc
