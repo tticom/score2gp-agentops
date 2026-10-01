@@ -1,72 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 93,
+  "authority_revision": 94,
   "task": {
-    "id": "OMIT-04",
-    "title": "Arpeggio marks: detect rolled-chord marks and write them",
-    "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 475,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-04-arpeggio-marks",
-    "prompt": "projects/score2gp/prompts/next/omit-04-arpeggio-marks.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/recognition/**",
-      "src/score2gp/ir.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/gpif.py",
-      "src/score2gp/gp_package.py",
-      "src/score2gp/version_adapter.py",
-      "src/score2gp/cli.py",
-      "schemas/**",
-      "tests/test_dur_02_oracle.py",
-      "docs/design/**",
-      "docs/architecture.md",
-      "tests/test_omit_04_*.py",
-      "tests/fixtures/pdf/omit_04/**",
-      "tests/test_gp_writer.py"
-    ],
-    "acceptance": [
-      "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
-      "Each recognised mark sets Arpeggio on its chord's beat. Lesson-3.gp has the 2 reference arpeggios on the reference beats, with the direction equal.",
-      "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
-      "Lessons 4-7 are compared, and every difference is reported.",
-      "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass.",
-      "The reader agrees with the writer: gp_package.py reads Guitar Pro's element-text arpeggio (<Arpeggio>Down</Arpeggio>) without raising, so write_gp followed by extract_score_ir_from_gp round-trips the public beat-symbols fixture, and validate_roundtrip, compare_gp and scripts/oracle.py still work; a read of a real reference with arpeggios (Lesson 3: 2) returns the written direction; covered by tests in tests/test_omit_04_*.py."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CFW-04",
     "title": "Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written",
     "objective": "Read grace notes (small flagged heads), stemless small heads and non-note wave glyphs from the source, write the grace the way the reference does (GraceNotes OnBeat) and write the bars they unblock. The diagnosis expects Can't Find My Way Home to go from 9 to 18 of 21 bars written with none paired wrongly; whatever cannot be read unambiguously (tied chords, a dead-note head) stays refused with a located reason.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -116,57 +56,56 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "SCALE-01",
-      "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
-      "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/scale-01-scale-relative-constants",
-      "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
-      "allowed_paths": [
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/pdf_*.py",
-        "docs/design/**",
-        "tests/test_dur_02_oracle.py",
-        "tests/test_note_duration*.py",
-        "tests/test_pdf*.py",
-        "tests/test_scale_01_*.py",
-        "tests/fixtures/pdf/scale_01/**"
-      ],
-      "acceptance": [
-        "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
-        "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
-        "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
-        "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
-        "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-03"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "SCALE-01",
+    "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
+    "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/scale-01-scale-relative-constants",
+    "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
+    "allowed_paths": [
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/pdf_*.py",
+      "docs/design/**",
+      "tests/test_dur_02_oracle.py",
+      "tests/test_note_duration*.py",
+      "tests/test_pdf*.py",
+      "tests/test_scale_01_*.py",
+      "tests/fixtures/pdf/scale_01/**"
+    ],
+    "acceptance": [
+      "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
+      "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
+      "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
+      "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
+      "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-03"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -2089,6 +2028,70 @@
       "merge_commit": "3cb20796c92a194ab4fe3b4242c976ea6035c0bc",
       "reconciled": true,
       "reconciled_at": "2026-10-01T07:41:32.588431+00:00"
+    },
+    {
+      "id": "OMIT-04",
+      "title": "Arpeggio marks: detect rolled-chord marks and write them",
+      "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 475,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-arpeggio-marks",
+      "prompt": "projects/score2gp/prompts/next/omit-04-arpeggio-marks.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/recognition/**",
+        "src/score2gp/ir.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/gpif.py",
+        "src/score2gp/gp_package.py",
+        "src/score2gp/version_adapter.py",
+        "src/score2gp/cli.py",
+        "schemas/**",
+        "tests/test_dur_02_oracle.py",
+        "docs/design/**",
+        "docs/architecture.md",
+        "tests/test_omit_04_*.py",
+        "tests/fixtures/pdf/omit_04/**",
+        "tests/test_gp_writer.py"
+      ],
+      "acceptance": [
+        "The arpeggio mark is recognised as a vertical wavy line spanning a chord's notes on the notation or TAB staff, with its direction (up or down) where an arrow shows it. It cites its source strokes.",
+        "Each recognised mark sets Arpeggio on its chord's beat. Lesson-3.gp has the 2 reference arpeggios on the reference beats, with the direction equal.",
+        "A wavy mark that cannot be tied to one chord unambiguously is recorded with a located reason.",
+        "Lessons 4-7 are compared, and every difference is reported.",
+        "No regression in the DUR-02 comparison (durations, rests, strings, frets, techniques) in any written bar of Lessons 3-7.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass.",
+        "The reader agrees with the writer: gp_package.py reads Guitar Pro's element-text arpeggio (<Arpeggio>Down</Arpeggio>) without raising, so write_gp followed by extract_score_ir_from_gp round-trips the public beat-symbols fixture, and validate_roundtrip, compare_gp and scripts/oracle.py still work; a read of a real reference with arpeggios (Lesson 3: 2) returns the written direction; covered by tests in tests/test_omit_04_*.py."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "3c5536dc3195136a3f50822b3089589601a447ba",
+      "merge_commit": "8b03fb6f29e7394c6ee12ff97950430333661ef0",
+      "reconciled": true,
+      "reconciled_at": "2026-10-01T11:04:53.772827+00:00"
     }
   ],
   "backlog": [
@@ -4112,6 +4115,67 @@
         "DUR-03"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical."
+    },
+    {
+      "id": "OMIT-04-FU1",
+      "title": "Read a whole real Guitar Pro file with noteless non-rest beats (extract_score_ir_from_gp refuses real Lesson-3.gp)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-04"
+      ],
+      "notes": "Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference."
+    },
+    {
+      "id": "OMIT-04-FU2",
+      "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 4,
+      "depends_on": [
+        "OMIT-04"
+      ],
+      "notes": "Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio."
+    },
+    {
+      "id": "OMIT-04-FU3",
+      "title": "Write the five Can't Find My Way Home arpeggios refused for lack of written events (bars 2, 6, 7, 18 and 19)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "OMIT-04",
+        "CFW-04"
+      ],
+      "notes": "From tticom/score2gp#475 (OMIT-04) and tticomgov-code's review 5378371016: five arpeggio marks in Can't Find My Way Home sit in bars 2, 6, 7, 18 and 19, which have no written events, so they are refused with pdf_arpeggio_beat_unavailable (the refusal is correct). They attach once those bars are written: re-measure after CFW-04 and close this item if they attach with the reference direction."
+    },
+    {
+      "id": "OMIT-04-FU4",
+      "title": "attach_pdf_arpeggios: split the long, deeply nested function",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 5,
+      "depends_on": [
+        "OMIT-04"
+      ],
+      "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical."
     }
   ],
   "registered_requirements": [
