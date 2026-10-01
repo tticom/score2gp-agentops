@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 91,
+  "authority_revision": 92,
   "task": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
@@ -60,8 +60,111 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "CFW-04",
+    "title": "Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written",
+    "objective": "Read grace notes (small flagged heads), stemless small heads and non-note wave glyphs from the source, write the grace the way the reference does (GraceNotes OnBeat) and write the bars they unblock. The diagnosis expects Can't Find My Way Home to go from 9 to 18 of 21 bars written with none paired wrongly; whatever cannot be read unambiguously (tied chords, a dead-note head) stays refused with a located reason.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cfw-04-grace-small-heads",
+    "prompt": "projects/score2gp/prompts/next/cfw-04-grace-small-heads.md",
+    "allowed_paths": [
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/ir.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "schemas/**",
+      "docs/design/**",
+      "tests/test_dur_02_oracle.py",
+      "tests/test_note_duration*.py",
+      "tests/test_pdf*.py",
+      "tests/test_cfw_04_*.py",
+      "tests/fixtures/pdf/cfw_04/**"
+    ],
+    "acceptance": [
+      "Head sizes, the grace and stemless-head classification and the wave glyphs are re-measured on Can't Find My Way Home and every other PDF with a small flagged head (counts and distances only).",
+      "A stated, staff-space-relative rule classifies small heads (grace with stem and flag, stemless small head) and attaches a grace to its beat; a non-note glyph outside the staff band is ignored for the bar total only with a located reason.",
+      "The grace is written as the reference writes it (GraceNotes OnBeat, 32nd note) through the IR and writer; any IR or schema change is documented with contract versions bumped, old 0.1.0 and 0.1.1 files still load.",
+      "Can't Find My Way Home is compared bar by bar with the reference through the independent GPIF reader (note count, string, fret, written value, grace tag): the number of bars written is reported, every refused bar has a located reason, and no bar is paired wrongly.",
+      "Lessons 3-7 and every PDF without a small head produce byte-identical GPIF; every changed bar on PDFs with small heads and no reference is reported with evidence or refused.",
+      "Public synthetic fixtures engraved like the real source fail at the base and pass now; mutants (no grace handling, grace in the bar total, stemless heads kept, absolute-point threshold) each fail a test; tests are CI-safe (work/ created, proven on a clean git archive).",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-03"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "SCALE-01",
+      "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
+      "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/scale-01-scale-relative-constants",
+      "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/pdf_*.py",
+        "docs/design/**",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_note_duration*.py",
+        "tests/test_pdf*.py",
+        "tests/test_scale_01_*.py",
+        "tests/fixtures/pdf/scale_01/**"
+      ],
+      "acceptance": [
+        "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
+        "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
+        "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
+        "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
+        "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3714,7 +3817,7 @@
     },
     {
       "id": "CFW-01",
-      "title": "Can't Find My Way Home: resolve or locate the 5 bars refused for bar_total_mismatch",
+      "title": "SUPERSEDED by CFW-04: Can't Find My Way Home: resolve or locate the 5 bars refused for bar_total_mismatch",
       "requirements": [
         "REQ-0001"
       ],
@@ -3725,11 +3828,11 @@
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Found in the OMIT-02 round-4 acceptance run (tticom/score2gp#469 at ad46f0f): 9 of 21 bars written, 12 refused. 5 refusals are bar_total_mismatch. Diagnose each against the source and reference .gp (missing or extra event, wrong note type, tuplet, grace note or tie), fix the cause, and add a regression per distinct cause; refusals that remain must name the unread symbol."
+      "notes": "Found in the OMIT-02 round-4 acceptance run (tticom/score2gp#469 at ad46f0f): 9 of 21 bars written, 12 refused. 5 refusals are bar_total_mismatch. Diagnose each against the source and reference .gp (missing or extra event, wrong note type, tuplet, grace note or tie), fix the cause, and add a regression per distinct cause; refusals that remain must name the unread symbol. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused."
     },
     {
       "id": "CFW-02",
-      "title": "Can't Find My Way Home: resolve or locate the 5 bars refused for note_duration_event_unread",
+      "title": "SUPERSEDED by CFW-04: Can't Find My Way Home: resolve or locate the 5 bars refused for note_duration_event_unread",
       "requirements": [
         "REQ-0001"
       ],
@@ -3740,7 +3843,7 @@
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause."
+      "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused."
     },
     {
       "id": "CFW-03",
@@ -3755,7 +3858,7 @@
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Same run as CFW-01: 2 refusals are notehead_digit_count_mismatch; the run also reports 84 pdf_only_tab_attachment_bar_unplaced, 54 tabraw-technique-text-not-aligned and 30 tabraw-chord-symbol-not-aligned warnings (chord symbols overlap NPG-05C). Classify each by cause, fix or split into further items, and report the counts before and after."
+      "notes": "Same run as CFW-01: 2 refusals are notehead_digit_count_mismatch; the run also reports 84 pdf_only_tab_attachment_bar_unplaced, 54 tabraw-technique-text-not-aligned and 30 tabraw-chord-symbol-not-aligned warnings (chord symbols overlap NPG-05C). Classify each by cause, fix or split into further items, and report the counts before and after. UPDATE 2026-10-01: the two notehead_digit_count_mismatch bars (3 and 9) are the legitimate tied-chord case (two heads, one printed digit) and stay refused unless a per-head tie reader exists; the 84 unplaced attachments are the 54 technique-text and 30 chord-symbol candidates with no system (see the 2026-10-01 diagnosis)."
     },
     {
       "id": "CP-18",
