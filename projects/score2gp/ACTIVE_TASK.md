@@ -31,6 +31,7 @@ Read grace notes (small flagged heads), stemless small heads and non-note wave g
 - `tests/test_note_duration*.py`
 - `tests/test_pdf*.py`
 - `tests/test_cfw_04_*.py`
+- `tests/test_omit_04_private.py`
 - `tests/fixtures/pdf/cfw_04/**`
 
 ## Validation commands
