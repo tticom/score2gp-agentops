@@ -1,64 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 90,
+  "authority_revision": 91,
   "task": {
-    "id": "DUR-03",
-    "title": "Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)",
-    "objective": "Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 474,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/dur-03-tab-staff-detection",
-    "prompt": "projects/score2gp/prompts/next/dur-03-tab-staff-detection.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/tabraw.py",
-      "tests/test_dur_02_oracle.py",
-      "tests/test_pdf_*.py",
-      "tests/test_dur_03_*.py",
-      "tests/fixtures/pdf/dur_03/**",
-      "docs/design/**",
-      "tests/test_omit_03_private.py",
-      "tests/test_pdf.py"
-    ],
-    "acceptance": [
-      "Diagnosis first: on Lessons 4, 5 and 6, per TAB staff, the lines drawn, the lines after merging and the exact gate that drops the group are measured and reported (counts and distances only); the mechanism in the prompt is confirmed or corrected.",
-      "TAB staves drawn with broken or partly missing lines are recovered by a measured rule; each digit's string comes from its position on a recovered line, and a digit on no line or between two lines is recorded with a located reason and not written. No string is guessed.",
-      "Tuplet numbers, page numbers, timestamps, bar numbers, legend numbers and the ghost-note parentheses are not read as frets; counts of each across the corpus are shown before and after.",
-      "Lesson 6 is compared bar by bar with the reference through the independent GPIF reader in tests/test_dur_02_oracle.py (note count, string, fret): the number of bars written is reported, every bar still refused has a located reason, and no bar is paired wrongly.",
-      "Lessons 3 and 7 and Can't Find My Way Home produce byte-identical GPIF; on Lessons 4, 5 and 6 every bar written today is byte-identical, and every newly written bar is compared with the reference and reported; the OMIT-03 label coverage on Lessons 4-7 is re-measured and reported.",
-      "A committed synthetic public fixture engraved like Lesson 6 (TAB lines split into segments around the digits, strings 1-3 only) fails at the base and passes now; a fixture with a digit on no line or between two lines still refuses; mutants that revert the recovery or recover a staff from too few lines each fail a test.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass; any edit to an existing test asserting the old detection is listed with its reason."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-04",
     "title": "Arpeggio marks: detect rolled-chord marks and write them",
     "objective": "Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -112,6 +60,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -1979,6 +1928,62 @@
       "merge_commit": "7d4426617651cb669cafee956e90b46bcfc22198",
       "reconciled": true,
       "reconciled_at": "2026-09-30T17:15:27.972905+00:00"
+    },
+    {
+      "id": "DUR-03",
+      "title": "Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)",
+      "objective": "Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 474,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-03-tab-staff-detection",
+      "prompt": "projects/score2gp/prompts/next/dur-03-tab-staff-detection.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/tabraw.py",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_pdf_*.py",
+        "tests/test_dur_03_*.py",
+        "tests/fixtures/pdf/dur_03/**",
+        "docs/design/**",
+        "tests/test_omit_03_private.py",
+        "tests/test_pdf.py"
+      ],
+      "acceptance": [
+        "Diagnosis first: on Lessons 4, 5 and 6, per TAB staff, the lines drawn, the lines after merging and the exact gate that drops the group are measured and reported (counts and distances only); the mechanism in the prompt is confirmed or corrected.",
+        "TAB staves drawn with broken or partly missing lines are recovered by a measured rule; each digit's string comes from its position on a recovered line, and a digit on no line or between two lines is recorded with a located reason and not written. No string is guessed.",
+        "Tuplet numbers, page numbers, timestamps, bar numbers, legend numbers and the ghost-note parentheses are not read as frets; counts of each across the corpus are shown before and after.",
+        "Lesson 6 is compared bar by bar with the reference through the independent GPIF reader in tests/test_dur_02_oracle.py (note count, string, fret): the number of bars written is reported, every bar still refused has a located reason, and no bar is paired wrongly.",
+        "Lessons 3 and 7 and Can't Find My Way Home produce byte-identical GPIF; on Lessons 4, 5 and 6 every bar written today is byte-identical, and every newly written bar is compared with the reference and reported; the OMIT-03 label coverage on Lessons 4-7 is re-measured and reported.",
+        "A committed synthetic public fixture engraved like Lesson 6 (TAB lines split into segments around the digits, strings 1-3 only) fails at the base and passes now; a fixture with a digit on no line or between two lines still refuses; mutants that revert the recovery or recover a staff from too few lines each fail a test.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass; any edit to an existing test asserting the old detection is listed with its reason."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "5e52dee4a07f873501501e7766628a723d2e0d55",
+      "merge_commit": "3cb20796c92a194ab4fe3b4242c976ea6035c0bc",
+      "reconciled": true,
+      "reconciled_at": "2026-10-01T07:41:32.588431+00:00"
     }
   ],
   "backlog": [
@@ -3942,6 +3947,66 @@
         "OMIT-03"
       ],
       "notes": "Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical."
+    },
+    {
+      "id": "DUR-03-FU1",
+      "title": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-03"
+      ],
+      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Add a committed synthetic fixture engraved like those systems and a mutant that must fail."
+    },
+    {
+      "id": "DUR-03-FU2",
+      "title": "Validate the new and extended TAB systems on PDFs that have no reference score",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-03"
+      ],
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03). DUR-03 adds 37 TAB systems and extends 12 across the 30 mounted PDFs. The ones in Melodic Expressions, Just-Practice and the scale exercise have no reference .gp and were judged by geometry and rendering only. When references or independent evidence exist, compare the written bars with them, and record any difference as a located finding."
+    },
+    {
+      "id": "DUR-03-FU3",
+      "title": "Write the techniques the PDF-only route does not yet read: let ring (Lesson 5 bar 30) and the Lesson 5 slide (bar 16)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 3,
+      "depends_on": [
+        "DUR-03"
+      ],
+      "notes": "Disclosed by the author of tticom/score2gp#474 (DUR-03) and confirmed by tticomgov-code's review 5376313575: in Lesson 5 two bars lack a technique the reference carries, a let ring in newly written bar 30 and a slide in bar 16, which was already written at the base. The PDF-only route does not read these marks (see also DUR-02-FU3 and DUR-02-FU4 for the slide). Read them from the source or record a located reason."
+    },
+    {
+      "id": "DUR-03-FU4",
+      "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological mutant assertions in the edited duration test",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 5,
+      "depends_on": [
+        "DUR-03"
+      ],
+      "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical."
     }
   ],
   "registered_requirements": [

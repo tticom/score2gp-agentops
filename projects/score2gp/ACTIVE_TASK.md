@@ -2,34 +2,41 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-03 — Detect the TAB staves whose lines are drawn in broken segments so their fret digits are read (Lesson 6: 52 of 72 bars empty)
+**Task**: OMIT-04 — Arpeggio marks: detect rolled-chord marks and write them
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dur-03-tab-staff-detection`
+**PR Branch**: `feat/omit-04-arpeggio-marks`
 
-**Pull Request**: 474
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Recover TAB staves drawn with broken or partly missing lines, so their fret digits reach the assembler with the right string, system and bar, read from the source. Lesson 6 writes 52 of 72 bars empty (226 notes against 844 in the reference) because only 10 of 34 TAB staves are detected; Lessons 4 and 5 lose 2 and 8 bars the same way. Whatever cannot be read unambiguously stays refused with a located reason.
+Detect the vertical wavy arpeggio (rolled-chord) mark beside a chord and write GPIF `Arpeggio` on that beat. The reference Lesson-3.gp has 2; the output has none.
 
 ## Allowed paths
 
 - `src/score2gp/pdf.py`
 - `src/score2gp/pdf_*.py`
+- `src/score2gp/notation_omr/**`
+- `src/score2gp/recognition/**`
+- `src/score2gp/ir.py`
 - `src/score2gp/tabraw.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/gpif.py`
+- `src/score2gp/gp_package.py`
+- `src/score2gp/version_adapter.py`
+- `src/score2gp/cli.py`
+- `schemas/**`
 - `tests/test_dur_02_oracle.py`
-- `tests/test_pdf_*.py`
-- `tests/test_dur_03_*.py`
-- `tests/fixtures/pdf/dur_03/**`
 - `docs/design/**`
-- `tests/test_omit_03_private.py`
-- `tests/test_pdf.py`
+- `docs/architecture.md`
+- `tests/test_omit_04_*.py`
+- `tests/fixtures/pdf/omit_04/**`
 
 ## Validation commands
 
