@@ -53,9 +53,9 @@ When Codex leaves an inline review comment or review thread, the assigned agent 
 - disposition: accepted as blocker, accepted as non-blocking, already fixed, or rejected with reason;
 - fix evidence when the disposition is accepted as blocker or already fixed: commit SHA, changed file(s), and regression test or validation evidence;
 - rationale when the disposition is accepted as non-blocking or rejected with reason;
-- remaining status: resolved, unresolved, or human resolution required.
+- remaining status: fixed and awaiting the opening reviewer's verification, unresolved, or human resolution required (only for a thread opened by an account that cannot re-review, such as an automated bot).
 
-A top-level PR comment is not sufficient for inline Codex feedback. If the agent has permission to resolve the thread, it must resolve it after verifying the fix. If it cannot resolve the thread, it must report that human thread resolution is required and must not mark the PR as READY.
+A top-level PR comment is not sufficient for inline Codex feedback. The agent never resolves a thread opened by someone else, even when it has permission: the opening reviewer re-checks the fix at the new exact head, replies `Verified fixed at <short-sha>: <evidence>` and resolves its own thread before approving (`REVIEW_RULES.md` section 9, "Own-Thread Resolution Before Approval"). After replying to every thread with its disposition and evidence, the agent requests re-review and must not mark the PR as READY until the opening reviewer has resolved its threads. For a thread opened by an account that cannot re-review (for example an automated bot), the agent reports that human thread resolution is required.
 
 If a Codex comment identifies a plausible correctness bug, require or add a regression test unless there is a clear written reason not to.
 

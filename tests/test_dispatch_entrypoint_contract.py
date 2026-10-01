@@ -110,7 +110,8 @@ def test_reviewer_and_merge_role_firewalls_are_explicit() -> None:
 def test_skills_lock_pins_merged_tiered_review_revision() -> None:
     lock = (ROOT / "projects/score2gp/SKILLS_LOCK.md").read_text(encoding="utf-8")
     assert "Repository: `https://github.com/tticom/agentops-claude-skills`" in lock
-    assert "`4fc96725f20910b57717c50bd06dc0cc0fba7ec4`" in lock
+    assert "`c51d4469bff70ee90b2a99c0690d7c41554ba9de`" in lock
     assert "b90d4a9f43034b3196fa6b915fd95c8c89ecb11a" not in lock
+    assert "agentops-claude-skills/pull/6" in lock
     assert "`hard-review`" in lock
     assert "`devils-advocate-review`" in lock
