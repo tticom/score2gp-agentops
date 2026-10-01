@@ -4019,12 +4019,12 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "OMIT-03"
       ],
-      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach."
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach. CLOSED 2026-10-01: DUR-03 (tticom/score2gp#474) wrote Lesson 6 71 of 72 bars with 0 differences from the reference including label text, so the labels attach."
     },
     {
       "id": "OMIT-03-FU3",
