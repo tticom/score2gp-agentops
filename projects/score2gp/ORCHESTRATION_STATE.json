@@ -3251,7 +3251,7 @@
       "status": "NEEDS_DETAIL",
       "priority": 80,
       "depends_on": [],
-      "notes": "Decided in the 2026-09-25 project review."
+      "notes": "Decided in the 2026-09-25 project review. ADDED 2026-10-01: also remove tasks/pdf-to-gp-smoke-v1/ (May 2026 record from the retired four-role method; only referenced by projects/prompts/01-04*.md, whose paths point at a Linux checkout of another repository) together with those four prompts, and remove docs/cycle-preparation-history/ (10 September 2026 AGY cycle preparation notes), dropping its exemption class (c) in tests/test_single_backlog.py and the mentions in the GOV-01 and PLAN-01 prompts in the same change."
     },
     {
       "id": "CP-02",
