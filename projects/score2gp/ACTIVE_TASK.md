@@ -2,38 +2,36 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CFW-04 — Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written
+**Task**: PARTIAL-01 — Write the boxed systems and refuse only the unboxed one instead of refusing the whole file (pdf_partial_grouping_one_system_unboxed)
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cfw-04-grace-small-heads`
+**PR Branch**: `feat/partial-01-per-system-refusal`
 
-**Pull Request**: 476
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Read grace notes (small flagged heads), stemless small heads and non-note wave glyphs from the source, write the grace the way the reference does (GraceNotes OnBeat) and write the bars they unblock. The diagnosis expects Can't Find My Way Home to go from 9 to 18 of 21 bars written with none paired wrongly; whatever cannot be read unambiguously (tied chords, a dead-note head) stays refused with a located reason.
+When exactly the readable systems can be written unambiguously, write them and refuse the unboxed system with a located reason instead of refusing the whole file (9 of 17 private PDFs in the 2026-10-02 investigation are refused for one unboxed system). Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused.
 
 ## Allowed paths
 
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/pdf_*.py`
-- `src/score2gp/ir.py`
 - `src/score2gp/build_ir.py`
-- `src/score2gp/gpif.py`
-- `src/score2gp/gp_package.py`
-- `schemas/**`
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_*.py`
+- `src/score2gp/cli.py`
+- `src/score2gp/report.py`
+- `src/score2gp/notation_omr/**`
 - `docs/design/**`
 - `tests/test_dur_02_oracle.py`
 - `tests/test_note_duration*.py`
 - `tests/test_pdf*.py`
-- `tests/test_cfw_04_*.py`
-- `tests/test_omit_04_private.py`
-- `tests/fixtures/pdf/cfw_04/**`
+- `tests/test_partial_01_*.py`
+- `tests/fixtures/pdf/partial_01/**`
 
 ## Validation commands
 
