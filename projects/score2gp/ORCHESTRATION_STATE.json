@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 97,
+  "authority_revision": 98,
   "task": {
     "id": "CFW-04",
     "title": "Read grace notes, small stemless heads and wave glyphs, so more of Can't Find My Way Home is written",
@@ -60,9 +60,9 @@
     "author_login": "tticom-codex"
   },
   "next_task_proposal": {
-    "id": "SCALE-01",
-    "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
-    "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
+    "id": "PARTIAL-01",
+    "title": "Write the boxed systems and refuse only the unboxed one instead of refusing the whole file (pdf_partial_grouping_one_system_unboxed)",
+    "objective": "When exactly the readable systems can be written unambiguously, write them and refuse the unboxed system with a located reason instead of refusing the whole file (9 of 17 private PDFs in the 2026-10-02 investigation are refused for one unboxed system). Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -70,24 +70,28 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/scale-01-scale-relative-constants",
-    "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
+    "branch": "feat/partial-01-per-system-refusal",
+    "prompt": "projects/score2gp/prompts/next/partial-01-per-system-refusal.md",
     "allowed_paths": [
-      "src/score2gp/notation_omr/**",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/pdf.py",
       "src/score2gp/pdf_*.py",
+      "src/score2gp/cli.py",
+      "src/score2gp/report.py",
+      "src/score2gp/notation_omr/**",
       "docs/design/**",
       "tests/test_dur_02_oracle.py",
       "tests/test_note_duration*.py",
       "tests/test_pdf*.py",
-      "tests/test_scale_01_*.py",
-      "tests/fixtures/pdf/scale_01/**"
+      "tests/test_partial_01_*.py",
+      "tests/fixtures/pdf/partial_01/**"
     ],
     "acceptance": [
-      "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
-      "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
-      "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
-      "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
-      "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
+      "On the private corpus the PDFs refused with pdf_only_tab_grouping_unsafe are listed with their refusal code and the number of boxed and unboxed systems; the lead that 9 of 11 have exactly one unboxed system is confirmed or corrected (counts and codes only).",
+      "A stated per-system rule writes a system only when its string lines, bar boxes, candidate assignment and notation-to-TAB pairing are all unambiguous, and refuses an unboxed or ambiguous system with a located reason (page, system index, code); ambiguous bar order or numbering keeps the whole file refused as today.",
+      "Re-measured on the private corpus only: files changed from whole-file refusal to a partial write, bars written per file, and every written bar compared with the reference through the independent GPIF reader where one exists; no bar is paired wrongly.",
+      "Every PDF that already converts produces byte-identical GPIF at base and head; files that stay refused keep their refusal code.",
+      "Public synthetic fixtures (several systems, exactly one unboxed) fail at the base and pass now; two-unboxed, ambiguous-box and all-boxed fixtures prove no change; mutants (no per-system refusal, refuse-all kept, unboxed system written) each fail a test; tests are CI-safe (work/ created, proven on a clean git archive).",
       "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
     ],
     "validation_commands": [
@@ -108,7 +112,57 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [],
+  "queued_task_proposals": [
+    {
+      "id": "SCALE-01",
+      "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
+      "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/scale-01-scale-relative-constants",
+      "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/pdf_*.py",
+        "docs/design/**",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_note_duration*.py",
+        "tests/test_pdf*.py",
+        "tests/test_scale_01_*.py",
+        "tests/fixtures/pdf/scale_01/**"
+      ],
+      "acceptance": [
+        "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
+        "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
+        "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
+        "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
+        "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
