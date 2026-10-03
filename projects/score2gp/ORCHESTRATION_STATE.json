@@ -1,38 +1,34 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 107,
+  "authority_revision": 108,
   "task": {
-    "id": "PDF-GROUP-01",
-    "title": "Group TAB systems whose last bar ends in a thin+thick double barline and whose first bar has no accepted left barline, using scale-relative rules",
-    "objective": "Group safely the TAB systems whose last bar ends in a thin+thick double barline (C1) and whose first bar has no accepted left barline although fret digits lie left of the first barline (C2), using staff-space-relative limits only. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason. Expected gain is an estimate of 3 to 4 files (03 05 15 28), not 9.",
-    "status": "RESOLVED",
+    "id": "TUPLET-TAB-01",
+    "title": "TAB fret numbers are not tuplet numbers",
+    "objective": "A digit text lying on or between TAB staff lines (or otherwise belonging to the TAB row) is never a tuplet-number candidate, so Melodic Soloing Masterclass bar 7 (no tuplet drawn) is no longer refused with tuplet_number_unassociated; a genuine printed tuplet number with its bracket or beam group must still be found. Never invent a value, never loosen a gate to raise a count.",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/pdf-group-01-final-barline-first-bar-boundary",
-    "prompt": "projects/score2gp/prompts/next/pdf-group-01-final-barline-and-first-bar-boundary.md",
+    "branch": "feat/tuplet-tab-01-fret-numbers-not-tuplets",
+    "prompt": "projects/score2gp/prompts/next/tuplet-tab-01-tab-fret-numbers-are-not-tuplet-numbers.md",
     "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_tab_system_partition.py",
-      "tests/test_pdf*.py",
-      "tests/test_pdf_group_01_*.py",
-      "tests/fixtures/pdf/pdf_group_01/**",
-      "docs/design/**"
+      "src/score2gp/notation_omr/note_duration.py",
+      "tests/test_note_duration*.py",
+      "tests/test_tuplet_tab_01_*.py",
+      "tests/fixtures/pdf/tuplet_tab_01/**",
+      "docs/design/**",
+      "tests/test_npg03b_floating.py"
     ],
     "acceptance": [
-      "**Measure first.** For files 03 05 15 28 14 07 08 04, per affected system: the staff space, the overhang of the final thick stroke, the left-barline offset, the digits left of the first accepted barline, and which gate drops the left systemic barline (counts and distances only). Confirm or correct C1 and C2 and name the second C2 gate.",
-      "**End-of-system tolerance.** A staff-space-relative tolerance at the system end (not 2.0 pt) that takes the thin stroke of a thin+thick pair as the bar boundary; the pair must be recognised by measurement (full height, adjacent, thin plus thick), not by file.",
-      "**First-bar left boundary.** The first bar's left boundary is taken from the system start (or the rejected left systemic stroke within a staff-space multiple) **only when fret digits exist left of the first accepted barline**; with no such digits no boundary is invented. Limits are staff-space multiples with no fixed point value.",
-      "**Synthetic public fixtures** for both cases (double-barline overhang of about 0.57 ss; first-bar digits left of the first barline) that fail at the base and pass now, plus controls proving no change (a system with no left digits; a single barline).",
-      "**Mutants** each fail a test: the absolute 2.0 pt tolerance kept; the absolute 8 pt tolerance kept; a left boundary invented when no digits exist.",
-      "**Corpus table (counts and labels only).** Exit codes and refusal codes before and after for files 03 05 15 28 14 07 08 04. Report files that newly CONVERT separately from files whose refusal CODE merely changes; a changed code is not progress.",
-      "**Nothing that worked may change.** The 13 files that convert today produce byte-identical GPIF at base and head (full XML compared); report any change with evidence.",
-      "**No wrong pairing.** On every newly converting file, compare every written bar with the reference `.gp` where one exists through the independent GPIF reader (note count, string, fret, written value); a bar paired wrongly is worse than a refused bar.",
-      "**Tests are CI-safe:** create `<repo>/work` before using it and prove them on a clean `git archive` copy without `work/`.",
+      "**Measure first.** On Melodic system 3 and bar 7: the zone limits, the TAB line positions, the digit texts inside the zone and which belong to the TAB row (counts and distances only); confirm or correct the diagnosis and record why `find_staves` finds no TAB staff there.",
+      "**The rule.** A digit text on or between TAB staff lines, or otherwise belonging to the TAB row, is excluded as a tuplet-number candidate, by a stated staff-space-relative rule that does not depend on the file. Anything ambiguous stays a candidate or stays refused with a located reason.",
+      "**Melodic against the reference.** Melodic converts with bar 7 holding 16 sixteenths and the bar check `match` on 8 of 8 bars. Notes matched to the reference by string and fret per bar were 66 of 82 before and 82 of 82 are expected after; bar 7's strings and frets are unproven until run, so report the measured result honestly through the independent GPIF reader. A bar paired wrongly is worse than a refused bar.",
+      "**Tests that bite.** A new public synthetic test that puts a fret number inside the zone and shows it is not a tuplet number (fails at base, passes now); a test keeping a real printed tuplet number (with its bracket or beam group) found; a mutant with the rule removed fails a test. Existing tuplet tests pass. Tests are CI-safe: create `<repo>/work` before using it and prove them on a clean `git archive` copy without `work/`.",
+      "**Nothing that worked may change.** The 13 converting files and all other private-corpus files are unchanged in status, and every file that already converts produces byte-identical GPIF at base and head (counts only); report any file whose refusal code changes separately.",
       "`python -m pytest` (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check` pass; list the known Windows baseline failures by ID if they fail locally."
     ],
     "validation_commands": [
@@ -43,7 +39,6 @@
       "git diff --check"
     ],
     "dependencies": [
-      "PARTIAL-01",
       "SCALE-01"
     ],
     "stop_conditions": [
@@ -53,9 +48,7 @@
       "private_content_would_be_committed",
       "second_gate_requires_changing_meaning_not_scale"
     ],
-    "author_login": "tticom-codex",
-    "notes": "Ended 2026-10-03 at the task's own stop condition second_gate_requires_changing_meaning_not_scale: no product change, no branch commit and no PR (the launcher's push was a no-op at product main fb9cd49 and its handback publish failed on an empty PR number; nothing to publish). C1 confirmed on all eight labelled files: a thin 0.6 pt full-height stroke at the staff end plus a 2.4 pt thick stroke 0.57 staff spaces beyond it, at 6.0 pt per staff space. C2 only partly confirmed: left candidates about 2.12 staff spaces left of the system start exist in files 05, 14 and 04 and none in 03, 15 and 28. A probe widening the 8 pt filter admitted a left stroke, but a second gate, the partner-inheritance rule in src/score2gp/pdf.py (around line 5237), still rejected it, and using that stroke would change that rule's meaning rather than its scale. The mounted corpus has 30 PDFs where the investigation says 31, so the investigation's file-label mapping is unreliable and its numbers need re-measuring. C3 untouched. Status RESOLVED is the control plane's terminal task status for a task that ended without a merged PR (there is no more specific status). No successor is promoted; CFW-05 and CP-14 stay READY. Evidence: launchers/codex-author-logs/pdf-group-01/ (final.md, report.md, measurements.txt).",
-    "reconciled": true
+    "author_login": "tticom-codex"
   },
   "next_task_proposal": null,
   "queued_task_proposals": [],

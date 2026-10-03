@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PDF-GROUP-01 — Group TAB systems whose last bar ends in a thin+thick double barline and whose first bar has no accepted left barline, using scale-relative rules
+**Task**: TUPLET-TAB-01 — TAB fret numbers are not tuplet numbers
 
-**Status**: RESOLVED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/pdf-group-01-final-barline-first-bar-boundary`
+**PR Branch**: `feat/tuplet-tab-01-fret-numbers-not-tuplets`
 
 **Pull Request**: TBD
 
@@ -16,16 +16,16 @@
 
 ## Objective
 
-Group safely the TAB systems whose last bar ends in a thin+thick double barline (C1) and whose first bar has no accepted left barline although fret digits lie left of the first barline (C2), using staff-space-relative limits only. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason. Expected gain is an estimate of 3 to 4 files (03 05 15 28), not 9.
+A digit text lying on or between TAB staff lines (or otherwise belonging to the TAB row) is never a tuplet-number candidate, so Melodic Soloing Masterclass bar 7 (no tuplet drawn) is no longer refused with tuplet_number_unassociated; a genuine printed tuplet number with its bracket or beam group must still be found. Never invent a value, never loosen a gate to raise a count.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_tab_system_partition.py`
-- `tests/test_pdf*.py`
-- `tests/test_pdf_group_01_*.py`
-- `tests/fixtures/pdf/pdf_group_01/**`
+- `src/score2gp/notation_omr/note_duration.py`
+- `tests/test_note_duration*.py`
+- `tests/test_tuplet_tab_01_*.py`
+- `tests/fixtures/pdf/tuplet_tab_01/**`
 - `docs/design/**`
+- `tests/test_npg03b_floating.py`
 
 ## Validation commands
 
