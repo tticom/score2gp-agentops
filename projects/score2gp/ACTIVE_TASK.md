@@ -4,7 +4,7 @@
 
 **Task**: BARTOTAL-01 — Bars whose tick total differs from the declared time signature must be refused, not written
 
-**Status**: PROMOTED
+**Status**: RESOLVED
 
 **Repository**: tticom/score2gp
 
