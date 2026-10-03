@@ -4,7 +4,7 @@
 
 **Task**: PDF-GROUP-02 — Bridge TAB string-line gaps at full-chord digit columns
 
-**Status**: PROMOTED
+**Status**: COMPLETED
 
 **Repository**: tticom/score2gp
 
