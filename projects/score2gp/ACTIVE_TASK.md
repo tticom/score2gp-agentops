@@ -4,7 +4,7 @@
 
 **Task**: PDF-GROUP-01 — Group TAB systems whose last bar ends in a thin+thick double barline and whose first bar has no accepted left barline, using scale-relative rules
 
-**Status**: PROMOTED
+**Status**: RESOLVED
 
 **Repository**: tticom/score2gp
 
