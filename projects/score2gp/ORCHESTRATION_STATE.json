@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 101,
+  "authority_revision": 102,
   "task": {
     "id": "SCALE-01",
     "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
@@ -3894,12 +3894,12 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Found in the OMIT-02 round-4 acceptance run (tticom/score2gp#469 at ad46f0f): 9 of 21 bars written, 12 refused. 5 refusals are bar_total_mismatch. Diagnose each against the source and reference .gp (missing or extra event, wrong note type, tuplet, grace note or tie), fix the cause, and add a regression per distinct cause; refusals that remain must name the unread symbol. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused."
+      "notes": "Found in the OMIT-02 round-4 acceptance run (tticom/score2gp#469 at ad46f0f): 9 of 21 bars written, 12 refused. 5 refusals are bar_total_mismatch. Diagnose each against the source and reference .gp (missing or extra event, wrong note type, tuplet, grace note or tie), fix the cause, and add a regression per distinct cause; refusals that remain must name the unread symbol. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused. DROPPED 2026-10-03 (authority revision 102): superseded by CFW-04 (tticom/score2gp#476, merged), which read the small heads (grace notes, stemless heads) and wave glyphs and took Can't Find My Way Home from 9 to 18 of 21 bars written with 0 wrong pairings. The 3 bars still refused carry located reasons: bars 3 and 9 are the tied-chord case (tracked by CFW-03) and bar 6 is the dead-note head (tracked by CFW-05)."
     },
     {
       "id": "CFW-02",
@@ -3909,12 +3909,12 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "DUR-02"
       ],
-      "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused."
+      "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused. DROPPED 2026-10-03 (authority revision 102): superseded by CFW-04 (tticom/score2gp#476, merged), which read the small heads (grace notes, stemless heads) and wave glyphs and took Can't Find My Way Home from 9 to 18 of 21 bars written with 0 wrong pairings. The 3 bars still refused carry located reasons: bars 3 and 9 are the tied-chord case (tracked by CFW-03) and bar 6 is the dead-note head (tracked by CFW-05)."
     },
     {
       "id": "CFW-03",
@@ -4085,12 +4085,12 @@
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 2,
       "depends_on": [
         "OMIT-03"
       ],
-      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach."
+      "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach. CLOSED 2026-10-01: DUR-03 (tticom/score2gp#474) wrote Lesson 6 71 of 72 bars with 0 differences from the reference including label text, so the labels attach. DROPPED 2026-10-03 (authority revision 102)."
     },
     {
       "id": "OMIT-03-FU3",
