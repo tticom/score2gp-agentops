@@ -25,6 +25,7 @@ Replace the absolute-point limits in staff and symbol detection (find_staves ste
 - `docs/design/**`
 - `tests/test_dur_02_oracle.py`
 - `tests/test_note_duration*.py`
+- `tests/test_npg03b_floating.py`
 - `tests/test_pdf*.py`
 - `tests/test_scale_01_*.py`
 - `tests/fixtures/pdf/scale_01/**`
