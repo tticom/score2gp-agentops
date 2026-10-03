@@ -35,3 +35,11 @@ Replace the absolute-point limits by limits derived from the measured staff spac
 - **Stay inside `allowed_paths`;** if you need another path, stop and report it so governance can amend scope.
 - **Private tests convert under `<repo>/work`** in a `tempfile.TemporaryDirectory`, never pytest's `tmp_path`. Commit no private content; counts, codes and distances only.
 - **Pass the product checklist:** pytest, export-schema, validate-ir, `scripts/artifact_audit.py`, `git diff --check`; exact-head CI is the full-suite result. List the two known Windows baseline failures by ID if they fail locally.
+
+## Scope amendment (governance, 2026-10-03, authority revision 104)
+
+The first author run found that the staff-space-relative change makes Melodic Soloing Masterclass locate notation staves (0 to 8 located bars, 7 written bars identical to the reference), which makes `tests/test_npg03b_floating.py::test_private_acceptance_melodic` fail on its stale assertion `records["systems"] == []`. That file is now in `allowed_paths`, for one purpose only:
+
+- Replace that one stale assertion with an assertion of the new located notation behaviour (counts only, converted under `<repo>/work` in a `tempfile.TemporaryDirectory`, nothing private committed).
+- Do not weaken, delete or skip any other assertion in the file. The three TAB-only controls (12 Bar Blues, 5 Must Know, Finger position tips) must still assert 0 notation staves.
+- Touch no other part of that file.

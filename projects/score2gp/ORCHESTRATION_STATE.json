@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 103,
+  "authority_revision": 104,
   "task": {
     "id": "SCALE-01",
     "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
@@ -21,6 +21,7 @@
       "docs/design/**",
       "tests/test_dur_02_oracle.py",
       "tests/test_note_duration*.py",
+      "tests/test_npg03b_floating.py",
       "tests/test_pdf*.py",
       "tests/test_scale_01_*.py",
       "tests/fixtures/pdf/scale_01/**"
