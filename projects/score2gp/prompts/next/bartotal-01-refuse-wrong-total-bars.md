@@ -6,7 +6,7 @@
 - **Depends on:** PDF-GROUP-02 (merged)
 - **Branch:** `feat/bartotal-01-refuse-wrong-total-bars`
 
-This comes from the independent hard review of #482 (PDF-GROUP-02) and the governance record of 2026-10-03 (backlog item queued by agentops#766). Main now includes #478 to #482. Never commit private content; report counts, codes and distances only.
+This comes from the independent hard review of #482 (PDF-GROUP-02) and the governance record of 2026-10-03 (agentops#766). Main now includes #478 to #482. Never commit private content; report counts, codes and distances only.
 
 ## What was measured (leads to VERIFY)
 
