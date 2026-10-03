@@ -18,6 +18,9 @@ At the very start of any conversation session, the agent MUST:
 7. Do not let multiple agents edit the same source worktree.
 8. Do not allow documentation-only churn to masquerade as implementation progress.
 9. Every proposed implementation slice must have a test or a clear explanation of why no test is possible.
+10. **Accuracy first, then parallel, then speed.** Run independent work in parallel whenever it can be done safely (separate worktrees, non-overlapping allowed paths, crossed review kept); never trade a gate for speed and never slow work down on purpose. A single-task limit in the control plane is an implementation limit to remove (CP-14), not a reason to idle.
+11. **Automate; the maintainer is never the bottleneck.** Authorised identities perform authoring, review, merge and reconciliation themselves through the sanctioned launchers and the merge executor. Ask the maintainer only for a decision with no safe default (a scope, policy or private-data call), state the recommended default, and keep working on everything that does not depend on the answer.
+12. **Visible progress.** Every run prints a one-line status when it starts, finishes or blocks (task, PR, head, result, next step), so the maintainer can see the state at any time from the display without asking.
 
 
 ## Role ownership

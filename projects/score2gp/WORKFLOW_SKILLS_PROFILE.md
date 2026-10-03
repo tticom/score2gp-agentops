@@ -9,7 +9,7 @@ This file supplies Score2GP-specific policy to the reusable skills pinned by
 - Fast-lane prompt pointer: `projects/score2gp/prompts/NEXT.md`
 - Informative only (never the task authority), including plans, reports, research, handoffs, and
   suggested next candidates
-- Concurrency: one active task and one task PR
+- Concurrency: one active task and one task PR until CP-14 lands; CP-14 (priority 1) lifts this to parallel lanes by maintainer direction, so the limit is not a policy
 - Product work requires its predecessor governance promotion to be merged
 
 ## Identities and workspaces
