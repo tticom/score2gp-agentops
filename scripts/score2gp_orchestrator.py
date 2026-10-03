@@ -68,7 +68,7 @@ def resolve_task_lifecycle(
     status = str(task.get("status", "")).upper()
     if status == "PROPOSED":
         return "successor_prepared"
-    if status == "RECONCILED" or (status in {"COMPLETED", "COMPLETE"} and task.get("reconciled") is True):
+    if status == "RECONCILED" or (status in {"COMPLETED", "COMPLETE", "RESOLVED"} and task.get("reconciled") is True):
         return "reconciled"
     if status in {"MERGED"}:
         if task.get("reconciled") is True:
