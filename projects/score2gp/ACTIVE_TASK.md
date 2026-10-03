@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: SCALE-01 — Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)
+**Task**: PDF-GROUP-01 — Group TAB systems whose last bar ends in a thin+thick double barline and whose first bar has no accepted left barline, using scale-relative rules
 
-**Status**: COMPLETED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/scale-01-scale-relative-constants`
+**PR Branch**: `feat/pdf-group-01-final-barline-first-bar-boundary`
 
 **Pull Request**: TBD
 
@@ -16,19 +16,16 @@
 
 ## Objective
 
-Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.
+Group safely the TAB systems whose last bar ends in a thin+thick double barline (C1) and whose first bar has no accepted left barline although fret digits lie left of the first barline (C2), using staff-space-relative limits only. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason. Expected gain is an estimate of 3 to 4 files (03 05 15 28), not 9.
 
 ## Allowed paths
 
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/pdf_*.py`
-- `docs/design/**`
-- `tests/test_dur_02_oracle.py`
-- `tests/test_note_duration*.py`
-- `tests/test_npg03b_floating.py`
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_tab_system_partition.py`
 - `tests/test_pdf*.py`
-- `tests/test_scale_01_*.py`
-- `tests/fixtures/pdf/scale_01/**`
+- `tests/test_pdf_group_01_*.py`
+- `tests/fixtures/pdf/pdf_group_01/**`
+- `docs/design/**`
 
 ## Validation commands
 
