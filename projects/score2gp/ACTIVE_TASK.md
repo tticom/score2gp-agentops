@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TUPLET-TAB-01 — TAB fret numbers are not tuplet numbers
+**Task**: PDF-GROUP-02 — Bridge TAB string-line gaps at full-chord digit columns
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tuplet-tab-01-fret-numbers-not-tuplets`
+**PR Branch**: `feat/pdf-group-02-bridge-string-line-gaps`
 
 **Pull Request**: TBD
 
@@ -16,16 +16,15 @@
 
 ## Objective
 
-A digit text lying on or between TAB staff lines (or otherwise belonging to the TAB row) is never a tuplet-number candidate, so Melodic Soloing Masterclass bar 7 (no tuplet drawn) is no longer refused with tuplet_number_unassociated; a genuine printed tuplet number with its bracket or beam group must still be found. Never invent a value, never loosen a gate to raise a count.
+A TAB staff whose six strings are all broken at the same x by fret digits is detected as ONE staff, so its barlines and the joint left stroke are owned by the system, using a scale-relative rule (about 0.8 of the string spacing, aligned across strings or flanked by a digit). Targets A7-Blues-Lick (4 bars, 46 of 46 digits placed) and the grouping of E_Chord_Lick_Chord. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason.
 
 ## Allowed paths
 
-- `src/score2gp/notation_omr/note_duration.py`
-- `tests/test_note_duration*.py`
-- `tests/test_tuplet_tab_01_*.py`
-- `tests/fixtures/pdf/tuplet_tab_01/**`
+- `src/score2gp/pdf_geometry.py`
+- `tests/test_pdf*.py`
+- `tests/test_pdf_group_02_*.py`
+- `tests/fixtures/pdf/pdf_group_02/**`
 - `docs/design/**`
-- `tests/test_npg03b_floating.py`
 
 ## Validation commands
 
