@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PDF-GROUP-02 — Bridge TAB string-line gaps at full-chord digit columns
+**Task**: BARTOTAL-01 — Bars whose tick total differs from the declared time signature must be refused, not written
 
-**Status**: COMPLETED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/pdf-group-02-bridge-string-line-gaps`
+**PR Branch**: `feat/bartotal-01-refuse-wrong-total-bars`
 
 **Pull Request**: TBD
 
@@ -16,14 +16,17 @@
 
 ## Objective
 
-A TAB staff whose six strings are all broken at the same x by fret digits is detected as ONE staff, so its barlines and the joint left stroke are owned by the system, using a scale-relative rule (about 0.8 of the string spacing, aligned across strings or flanked by a digit). Targets A7-Blues-Lick (4 bars, 46 of 46 digits placed) and the grouping of E_Chord_Lick_Chord. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason.
+A bar whose summed tick total differs from the declared time signature is refused with a located code and warning, never written as a success (E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under 4/4). Investigate first why the check does not fire and whether 4/4 is right for that file; never invent a value; do not change exit-code semantics for files with refused bars unless the investigation shows false success (report it, do not change silently).
 
 ## Allowed paths
 
-- `src/score2gp/pdf_geometry.py`
+- `src/score2gp/notation_omr/note_duration.py`
+- `src/score2gp/pdf.py`
+- `src/score2gp/pdf_*.py`
+- `tests/test_note_duration*.py`
 - `tests/test_pdf*.py`
-- `tests/test_pdf_group_02_*.py`
-- `tests/fixtures/pdf/pdf_group_02/**`
+- `tests/test_bartotal_01_*.py`
+- `tests/fixtures/pdf/bartotal_01/**`
 - `docs/design/**`
 
 ## Validation commands
