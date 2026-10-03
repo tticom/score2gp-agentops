@@ -284,6 +284,17 @@ def test_build_task_registry_preserves_required_metadata() -> None:
     assert rec["lifecycle_state"] in LIFECYCLE_STATES
 
 
+def test_resolved_reconciled_task_without_pr_is_terminal() -> None:
+    # A task that ended at a stop condition with no PR is RESOLVED and reconciled: terminal, not authoring.
+    resolved = {"status": "RESOLVED", "reconciled": True, "pull_request": None}
+    assert resolve_task_lifecycle(resolved) == "reconciled"
+    # Even if a stale open PR shows up in live state, the reconciled record stays terminal.
+    live_open = {"pull_request": {"state": "OPEN", "number": 7}}
+    assert resolve_task_lifecycle(resolved, live_open) == "reconciled"
+    # Negative control: the same status without the reconciled flag is not treated as terminal.
+    assert resolve_task_lifecycle({"status": "RESOLVED", "pull_request": None}) == "authoring"
+
+
 def test_resolve_task_lifecycle_covers_all_nine_states() -> None:
     # 1. authoring
     t_auth = {"status": "RUNNING", "pull_request": None}
