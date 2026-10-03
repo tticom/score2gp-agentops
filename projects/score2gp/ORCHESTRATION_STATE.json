@@ -1,36 +1,36 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 110,
+  "authority_revision": 111,
   "task": {
-    "id": "PDF-GROUP-02",
-    "title": "Bridge TAB string-line gaps at full-chord digit columns",
-    "objective": "A TAB staff whose six strings are all broken at the same x by fret digits is detected as ONE staff, so its barlines and the joint left stroke are owned by the system, using a scale-relative rule (about 0.8 of the string spacing, aligned across strings or flanked by a digit). Targets A7-Blues-Lick (4 bars, 46 of 46 digits placed) and the grouping of E_Chord_Lick_Chord. Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused with a located reason.",
-    "status": "COMPLETED",
+    "id": "BARTOTAL-01",
+    "title": "Bars whose tick total differs from the declared time signature must be refused, not written",
+    "objective": "A bar whose summed tick total differs from the declared time signature is refused with a located code and warning, never written as a success (E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under 4/4). Investigate first why the check does not fire and whether 4/4 is right for that file; never invent a value; do not change exit-code semantics for files with refused bars unless the investigation shows false success (report it, do not change silently).",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/pdf-group-02-bridge-string-line-gaps",
-    "prompt": "projects/score2gp/prompts/next/pdf-group-02-bridge-tab-string-line-gaps.md",
+    "branch": "feat/bartotal-01-refuse-wrong-total-bars",
+    "prompt": "projects/score2gp/prompts/next/bartotal-01-refuse-wrong-total-bars.md",
     "allowed_paths": [
-      "src/score2gp/pdf_geometry.py",
+      "src/score2gp/notation_omr/note_duration.py",
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "tests/test_note_duration*.py",
       "tests/test_pdf*.py",
-      "tests/test_pdf_group_02_*.py",
-      "tests/fixtures/pdf/pdf_group_02/**",
+      "tests/test_bartotal_01_*.py",
+      "tests/fixtures/pdf/bartotal_01/**",
       "docs/design/**"
     ],
     "acceptance": [
-      "**Measure first.** On A7-Blues-Lick and E_Chord_Lick_Chord: string spacing, the gap lengths and where they fall, which gaps the current rule bridges and which it does not, and the effect on the system topology (counts and distances only). Confirm or correct the diagnosis.",
-      "**The rule.** A gap in a TAB string line is bridged when it is no longer than a stated multiple of the string spacing (about 0.8) and is aligned across the strings or flanked by a digit; the rule is staff-space-relative with no fixed point value for the new limit. Two separate staves on one line must NOT be merged.",
-      "**A7-Blues-Lick** converts from the CLI (with `--pdf-only-tab --time-signature 4/4`) with 4 bars and 46 of 46 digits placed. Report whether the pitches match what the TAB implies; **no reference `.gp` exists for it, and you must say so** rather than claim a match.",
-      "**E_Chord_Lick_Chord** passes layout-gating; report its later refusals by code and count. A refusal-code change is reported separately from a conversion.",
-      "**Tests that bite.** Public synthetic fixtures: a full-chord gap case that fails at base and passes now; a negative fixture for two staves on one line (must NOT merge); a stroke-ownership test (the TAB-height barline rectangles and joint left stroke are owned by the system). A mutant keeping the absolute 5.0 pt limit fails a test. Tests are CI-safe: create `<repo>/work` before using it and prove them on a clean `git archive` copy without `work/`.",
-      "**Nothing that worked may change.** Report the exact number of files that convert at base (the previous task measured 12 on the 30 mounted PDFs; measure on the full private set now) and compare each: all must produce byte-identical GPIF at head. Every refusal keeps its code except files explicitly reported. Other files with fragmented string lines may change status, so the before/after table must cover every converting and every refused file (counts and labels only).",
-      "No change to the `build_ir.py` gating sets.",
-      "`python -m pytest` (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check` pass; list the known Windows baseline failures by ID if they fail locally (the previous run recorded 14)."
+      "**Investigation reported** as above (the exact gap, the signature question, the list of affected files by label and bar count).",
+      "**Located refusal.** A bar whose total differs from the declared signature gets a located refusal code and warning (bar, system, total, expected), not a written bar. Any tolerance is justified by measurement and stated.",
+      "**Tests that bite.** Synthetic public fixtures that fail at base and pass now (a wrong-total bar is refused; a correct-total bar is unchanged); a mutant (check removed, or tolerance widened) fails a test. Tests are CI-safe: create `<repo>/work` before using it and prove them on a clean `git archive` copy without `work/`.",
+      "**Nothing correct may change.** State the exact number of converting files at base (the author's mounted corpus has 37 private PDFs) and compare each: every converting file stays byte-identical GPIF **except** files containing a wrong-total bar, which are reported by label and bar count as newly refused bars (counts only). The refusal codes of already-refused files are unchanged.",
+      "`python -m pytest` (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check` pass; list the known Windows baseline failures by ID if they fail locally (the last runs recorded 14 to 15)."
     ],
     "validation_commands": [
       "python -m pytest",
@@ -40,21 +40,16 @@
       "git diff --check"
     ],
     "dependencies": [
-      "SCALE-01",
-      "TUPLET-TAB-01"
+      "PDF-GROUP-02"
     ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
       "gate_loosened",
       "dur_02_regression",
       "private_content_would_be_committed",
-      "second_gate_requires_changing_meaning_not_scale"
+      "fix_changes_gate_meaning_not_closing_a_hole"
     ],
-    "author_login": "tticom-codex",
-    "head_sha": "03e49026608a0327b19f0d695ca7f0c94db5c42d",
-    "merge_commit": "28c929e35029987bf408bdec1b310e4ed5373d8b",
-    "reconciled": true,
-    "notes": "Outcome 2026-10-03: corrected diagnosis: is_horizontal drops horizontal pieces under 75 pt, so only the top TAB row was bridged, by the notation line above it. Rule: _is_full_chord_gap bridges a gap of at most 0.8 x the measured string spacing when at least 4 evenly spaced rows are broken at the same x (1.5 pt alignment tolerance, 15 percent spacing uniformity); scale-relative, one extra branch in pass 2 of merge_collinear_horizontal_segments in src/score2gp/pdf_geometry.py. A7-Blues-Lick now converts: 4 bars, 31 events, 46 of 46 digits placed, every bar sums to 3840 ticks, pitch is open string plus fret; no reference .gp exists for it. E_Chord_Lick_Chord now passes layout-gating and exits 0 with 16 bars and 84 notes, with 7 bars written empty and a pdf_only_tab_bar_refused warning on each (3 bar_total_mismatch, 3 notehead_digit_count_mismatch, 1 notation_note_without_tab_digit). 37-file before/after table: 16 identical, 19 refusals with unchanged codes (14 + 3 + 2), 2 newly converting (A7 and E_Chord). Deviations from the prompt: 4 aligned rows instead of 6, and the 'flanked by a digit' clause is unused. Follow-ups: E_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under a declared 4/4 and are not refused by the bar-total check, so E_Chord is a false-success risk (see BARTOTAL-01), to be investigated together with whether 4/4 is right for that file; the private tests are self-consistent, not independent oracles; the 4-rows rule could false-merge a 4-string bass TAB or a ruled grid, not seen in any file. The time signature is a caller input (--time-signature) and Combining_Maj_minor_pent_-_A needs 12/8, which is why reading the printed time signature is a candidate task (see TS-READ-01). tticom/score2gp#482 was merged directly on GitHub by the maintainer (tticom) after an independent hard review at the exact head with both test jobs green. The author run was Codex until its usage limit, then the Claude fallback under tticom-codex. The handback publisher refused only because validation run 3 (the full pytest suite) had 15 known Windows host failures identical at base; nothing was relabelled."
+    "author_login": "tticom-codex"
   },
   "next_task_proposal": null,
   "queued_task_proposals": [],
@@ -4497,21 +4492,6 @@
         "PDF-GROUP-02"
       ],
       "notes": "Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one."
-    },
-    {
-      "id": "BARTOTAL-01",
-      "title": "Bars whose tick total differs from the declared signature must be refused",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 4,
-      "depends_on": [
-        "PDF-GROUP-02"
-      ],
-      "notes": "Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. E_Chord_Lick_Chord now exits 0 with 16 bars but bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under a declared 4/4 and the bar-total check does not refuse them, a false-success risk; 7 other bars are written empty with a pdf_only_tab_bar_refused warning. Make a bar whose tick total differs from the declared signature a located refusal (and decide whether a file with refused or empty bars may exit 0), and investigate together with whether 4/4 is the right signature for that file (see TS-READ-01). Never invent a value, never loosen a gate to raise a count; every file that converts correctly today stays byte-identical."
     }
   ],
   "registered_requirements": [
