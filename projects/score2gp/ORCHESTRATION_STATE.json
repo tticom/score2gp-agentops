@@ -1,65 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 99,
+  "authority_revision": 101,
   "task": {
-    "id": "PARTIAL-01",
-    "title": "Write the boxed systems and refuse only the unboxed one instead of refusing the whole file (pdf_partial_grouping_one_system_unboxed)",
-    "objective": "When exactly the readable systems can be written unambiguously, write them and refuse the unboxed system with a located reason instead of refusing the whole file (9 of 17 private PDFs in the 2026-10-02 investigation are refused for one unboxed system). Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/partial-01-per-system-refusal",
-    "prompt": "projects/score2gp/prompts/next/partial-01-per-system-refusal.md",
-    "allowed_paths": [
-      "src/score2gp/build_ir.py",
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/cli.py",
-      "src/score2gp/report.py",
-      "src/score2gp/notation_omr/**",
-      "docs/design/**",
-      "tests/test_dur_02_oracle.py",
-      "tests/test_note_duration*.py",
-      "tests/test_pdf*.py",
-      "tests/test_partial_01_*.py",
-      "tests/fixtures/pdf/partial_01/**"
-    ],
-    "acceptance": [
-      "On the private corpus the PDFs refused with pdf_only_tab_grouping_unsafe are listed with their refusal code and the number of boxed and unboxed systems; the lead that 9 of 11 have exactly one unboxed system is confirmed or corrected (counts and codes only).",
-      "A stated per-system rule writes a system only when its string lines, bar boxes, candidate assignment and notation-to-TAB pairing are all unambiguous, and refuses an unboxed or ambiguous system with a located reason (page, system index, code); ambiguous bar order or numbering keeps the whole file refused as today.",
-      "Re-measured on the private corpus only: files changed from whole-file refusal to a partial write, bars written per file, and every written bar compared with the reference through the independent GPIF reader where one exists; no bar is paired wrongly.",
-      "Every PDF that already converts produces byte-identical GPIF at base and head; files that stay refused keep their refusal code.",
-      "Public synthetic fixtures (several systems, exactly one unboxed) fail at the base and pass now; two-unboxed, ambiguous-box and all-boxed fixtures prove no change; mutants (no per-system refusal, refuse-all kept, unboxed system written) each fail a test; tests are CI-safe (work/ created, proven on a clean git archive).",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "SCALE-01",
     "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
     "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -104,6 +51,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -2152,6 +2100,64 @@
       "merge_commit": "9039b76c9887c2acca97025e54d539544cefcff7",
       "reconciled": true,
       "reconciled_at": "2026-10-02T12:51:36.123719+00:00"
+    },
+    {
+      "id": "PARTIAL-01",
+      "title": "Write the boxed systems and refuse only the unboxed one instead of refusing the whole file (pdf_partial_grouping_one_system_unboxed)",
+      "objective": "When exactly the readable systems can be written unambiguously, write them and refuse the unboxed system with a located reason instead of refusing the whole file (9 of 17 private PDFs in the 2026-10-02 investigation are refused for one unboxed system). Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 477,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/partial-01-per-system-refusal",
+      "prompt": "projects/score2gp/prompts/next/partial-01-per-system-refusal.md",
+      "allowed_paths": [
+        "src/score2gp/build_ir.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/cli.py",
+        "src/score2gp/report.py",
+        "src/score2gp/notation_omr/**",
+        "docs/design/**",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_note_duration*.py",
+        "tests/test_pdf*.py",
+        "tests/test_partial_01_*.py",
+        "tests/fixtures/pdf/partial_01/**"
+      ],
+      "acceptance": [
+        "On the private corpus the PDFs refused with pdf_only_tab_grouping_unsafe are listed with their refusal code and the number of boxed and unboxed systems; the lead that 9 of 11 have exactly one unboxed system is confirmed or corrected (counts and codes only).",
+        "A stated per-system rule writes a system only when its string lines, bar boxes, candidate assignment and notation-to-TAB pairing are all unambiguous, and refuses an unboxed or ambiguous system with a located reason (page, system index, code); ambiguous bar order or numbering keeps the whole file refused as today.",
+        "Re-measured on the private corpus only: files changed from whole-file refusal to a partial write, bars written per file, and every written bar compared with the reference through the independent GPIF reader where one exists; no bar is paired wrongly.",
+        "Every PDF that already converts produces byte-identical GPIF at base and head; files that stay refused keep their refusal code.",
+        "Public synthetic fixtures (several systems, exactly one unboxed) fail at the base and pass now; two-unboxed, ambiguous-box and all-boxed fixtures prove no change; mutants (no per-system refusal, refuse-all kept, unboxed system written) each fail a test; tests are CI-safe (work/ created, proven on a clean git archive).",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "26808dd7c9341177422c69eb5b45c136924bf96c",
+      "merge_commit": "ddec8a63ebd1f7d64969feb28b7988c63356a5a5",
+      "reconciled": true,
+      "reconciled_at": "2026-10-03T05:31:06.939381+00:00",
+      "notes": "Outcome 2026-10-03: on the private corpus this converts 0 additional real files. Only 5 files have exactly one unboxed system, and the 3 files with one refused system stay whole-file refused because later bar numbering is unprovable. The root cause of unboxed systems is a separate open question. tticom/score2gp#477 was merged directly on GitHub by the maintainer (tticom) after the handback publisher refused honest non-PASS validation statuses; the statuses were not relabelled."
     }
   ],
   "backlog": [
@@ -4236,6 +4242,22 @@
         "OMIT-04"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical."
+    },
+    {
+      "id": "CFW-05",
+      "title": "Can't Find My Way Home: read the dead-note head so bar 6 can be written",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 9,
+      "depends_on": [
+        "CFW-04",
+        "SCALE-01"
+      ],
+      "notes": "Bar 6 of Can't Find My Way Home is refused with a located reason because of the dead-note head, which CFW-04 (tticom/score2gp#476) left unread; no other open task covers it. CFW-03 tracks the tied-chord bars 3 and 9. Low priority, queued behind SCALE-01. Read the head from the source and write the bar only if the pairing is unambiguous; otherwise keep it refused. Do not invent a value."
     }
   ],
   "registered_requirements": [

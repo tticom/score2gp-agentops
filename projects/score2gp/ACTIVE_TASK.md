@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PARTIAL-01 — Write the boxed systems and refuse only the unboxed one instead of refusing the whole file (pdf_partial_grouping_one_system_unboxed)
+**Task**: SCALE-01 — Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/partial-01-per-system-refusal`
+**PR Branch**: `feat/scale-01-scale-relative-constants`
 
 **Pull Request**: TBD
 
@@ -16,22 +16,18 @@
 
 ## Objective
 
-When exactly the readable systems can be written unambiguously, write them and refuse the unboxed system with a located reason instead of refusing the whole file (9 of 17 private PDFs in the 2026-10-02 investigation are refused for one unboxed system). Never invent a value, never loosen a gate to raise a count; anything ambiguous stays refused.
+Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.
 
 ## Allowed paths
 
-- `src/score2gp/build_ir.py`
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_*.py`
-- `src/score2gp/cli.py`
-- `src/score2gp/report.py`
 - `src/score2gp/notation_omr/**`
+- `src/score2gp/pdf_*.py`
 - `docs/design/**`
 - `tests/test_dur_02_oracle.py`
 - `tests/test_note_duration*.py`
 - `tests/test_pdf*.py`
-- `tests/test_partial_01_*.py`
-- `tests/fixtures/pdf/partial_01/**`
+- `tests/test_scale_01_*.py`
+- `tests/fixtures/pdf/scale_01/**`
 
 ## Validation commands
 
