@@ -378,6 +378,8 @@ Prefer a moment where:
 | Any promotion/reconcile PR created by the old flow between the final sync and the merge | Closed; its authority edit is moot. |
 | Old-framework agents mid-session | Their clones pull `main` on the next `go`/`got` (fast-forward sync), find no dispatcher and no `ACTIVE_TASK.md`, and stop (fail closed). Pin clones that must continue (section 5.3). The product `CLAUDE.md` rewrite should land with the cut so product-side agents are not told to read removed files. |
 
+> Update 2026-10-03: `CUTOVER.md` was renamed to `MIGRATION.md` and reworked as proposed here.
+
 ## 9. Superseding `CUTOVER.md`, and slim-side fixes needed before the merge
 
 `CUTOVER.md` was written for a fresh-history private repository. That part is wrong for

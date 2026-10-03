@@ -37,4 +37,4 @@ fallback, private fixtures, CI/hooks/guidance files, or a disputed PR.
 - serves: none (template)
 - allowed paths: `docs/**`
 - done when: the maintainer has seeded the list from the old authority backlog
-- notes: seeding is a one-off, read-only extraction at cutover (see CUTOVER.md)
+- notes: seeding is a one-off, read-only extraction at cutover (see MIGRATION.md)

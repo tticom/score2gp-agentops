@@ -320,7 +320,7 @@ EXEMPT_CLASSES = {
     "e": re.compile(r"^(projects/score2gp/ORCHESTRATION_STATE\.json|projects/score2gp/ACTIVE_TASK\.md|tests/test_single_backlog\.py)$"),
     # (f) the lean-framework proposal and its replacement files: they describe and implement the successor
     # to this authority (a TASKS.md list), so they necessarily name queues and task lists. Inert until cutover.
-    "f": re.compile(r"^(lean/|SLIM-PROPOSAL\.md$|CUTOVER\.md$|MERGE-READINESS\.md$)"),
+    "f": re.compile(r"^(lean/|SLIM-PROPOSAL\.md$|CUTOVER\.md$|MIGRATION\.md$|TRIAL-REPORT\.md$|MERGE-READINESS\.md$)"),
 }
 
 

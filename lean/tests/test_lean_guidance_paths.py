@@ -17,11 +17,11 @@ class GuidancePathsTest(unittest.TestCase):
                 self.assertTrue(path.exists(), f"{doc} names missing path {match}")
 
     def test_cutover_names_existing_lean_files(self):
-        text = (ROOT / "CUTOVER.md").read_text(encoding="utf-8")
+        text = (ROOT / "MIGRATION.md").read_text(encoding="utf-8")
         for match in re.findall(r"`(lean/[A-Za-z0-9_./-]+)`", text):
             if match.startswith("lean/skills"):
                 continue  # lives in the skills repository
-            self.assertTrue((ROOT / match.rstrip("/.")).exists(), f"CUTOVER.md names missing path {match}")
+            self.assertTrue((ROOT / match.rstrip("/.")).exists(), f"MIGRATION.md names missing path {match}")
 
 
 if __name__ == "__main__":

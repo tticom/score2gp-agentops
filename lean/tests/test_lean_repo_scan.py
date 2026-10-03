@@ -75,6 +75,16 @@ class RepoScanTest(unittest.TestCase):
         self.assertNotIn(token, buffer.getvalue())
         self.assertIn("n.md:1: secret", buffer.getvalue())
 
+    def test_placeholder_user_paths_are_not_leaks_but_real_names_are(self):
+        home = "/home" + "/"
+        win = "C:" + chr(92) + "Users" + chr(92)
+        repo = make_repo(self.root, {
+            "ok.md": f"see {home}user/repo and {win}<name>{chr(92)}x and {home}you/x".encode(),
+            "bad.md": f"see {home}alice/repo".encode(),
+            "mixed.md": f"{home}user/a and {home}alice/b".encode(),
+        })
+        self.assertEqual(rules(repo), {("bad.md", "local-path"), ("mixed.md", "local-path")})
+
     def test_scan_allow_file(self):
         repo = make_repo(self.root, {".scan-allow": b"# ok\nfixtures/public/*\n", "fixtures/public/a.png": b"p"})
         self.assertEqual(repo_scan.main(["--repo", str(repo)]), 0)

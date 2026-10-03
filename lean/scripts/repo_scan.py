@@ -47,6 +47,17 @@ LOCAL_PATH = re.compile(
 )
 
 
+PLACEHOLDER_USERS = {"user", "username", "you", "name", "example", "me", "runner", "yourname", "your-name"}
+USER_SEGMENT = re.compile(r"(?:[A-Za-z]:[\\/]+Users[\\/]+|/home/|/Users/)([^\\/\s]+)")
+
+
+def _placeholder_user(match: "re.Match[str]") -> bool:
+    """A path whose user segment is an obvious placeholder (user, you, <name>) is not a leak."""
+    found = USER_SEGMENT.search(match.group(0))
+    user = found.group(1).lower() if found else ""
+    return user in PLACEHOLDER_USERS or user.startswith(("<", "{", "$", "%"))
+
+
 def tracked_files(repo: Path) -> list[str]:
     result = subprocess.run(
         ["git", "-C", str(repo), "ls-files", "-z"], check=False, capture_output=True
@@ -90,7 +101,7 @@ def scan(repo: Path, allow: list[str], max_bytes: int, names: list[str]) -> list
         for number, line in enumerate(text.splitlines(), 1):
             if SECRET.search(line):
                 findings.append((rel, number, "secret"))
-            if LOCAL_PATH.search(line):
+            if any(not _placeholder_user(m) for m in LOCAL_PATH.finditer(line)):
                 findings.append((rel, number, "local-path"))
             if names and any(n in line for n in names):
                 findings.append((rel, number, "private-name"))

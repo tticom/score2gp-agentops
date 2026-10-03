@@ -1,7 +1,9 @@
 # Lean agent guidance (replaces AGENT-RULES.md, AGENTS.md, CLAUDE.md at cutover)
 
-One page. Nothing here is a state machine. The task list is `TASKS.md`. The
-maintainer (tticom) is the only one who merges.
+One page. Nothing here is a state machine. The task list is `TASKS.md`. Product PRs
+merge only by the maintainer (tticom) or, under the standing instruction recorded
+2026-10-03, by an agent acting as `tticom` after an independent review and green CI
+(rule 1). Nobody else merges.
 
 ## Roles
 
@@ -15,8 +17,13 @@ No other roles. No dispatcher, no promotion PRs, no handback comments.
 
 ## Ground rules (each one is here because the failure happened)
 
-1. **Agents never merge.** No `gh pr merge`, no auto-merge, no `--admin`, no
-   approving your own PR. Opening a PR and stopping is the finish line.
+1. **Merging is gated.** An author never merges its own PR, never approves it, and
+   never uses `--admin` or auto-merge. Standing instruction (2026-10-03): an agent may
+   merge a *product* PR as the maintainer's `gh` identity (`tticom`) only after (a) an
+   independent review by a different session or model with no unresolved findings,
+   and (b) green CI at the exact head. Guidance, hook and CI changes (`risky` by
+   definition) are still the maintainer's to merge. Say in the merge comment which
+   review and which CI run were used. Without both, opening the PR is the finish line.
 2. **Never push to `main`.** Not directly, not by force, not with the
    maintainer's credential. Install the pre-push hook
    (`python lean/scripts/install_hooks.py`) in every clone. This is convention
@@ -81,8 +88,9 @@ with no review; the maintainer may still ask for one.
    processed nothing) is not a pass. Put the sanitised table in the PR.
 5. Open a draft PR from the PR template (`.github/PULL_REQUEST_TEMPLATE.md`; `lean/PULL_REQUEST_TEMPLATE.md` before cutover). Mark it ready when CI is
    green. Remove the task from `TASKS.md` in the same PR (done entries are
-   deleted; git history is the record). The PR is now "ready to merge": the
-   maintainer merges, in their own time and in batches.
+   deleted; git history is the record). The PR is now "ready to merge": merge it
+   under rule 1 if its review and CI are in, otherwise the maintainer merges in
+   their own time and in batches.
 6. **Do not wait for the merge.** Take the next `todo` task. If it depends on the
    unmerged one, branch from that task's branch and say so in the PR (stacked), or
    mark it `blocked` in `TASKS.md` and take a different task. If no task can
@@ -121,7 +129,7 @@ and the test suite on every PR (`lean/ci-slim.yml`, promoted to
 
 - `python lean/scripts/install_hooks.py` then `... --check`.
 - Agents use a token or identity that can push feature branches and open PRs but
-  not push `main` or merge (see `CUTOVER.md`, step on tokens). If the only
+  not push `main` or merge (see `MIGRATION.md`, step 10). If the only
   credential available is the maintainer's, say so in the PR and stop at the
   PR; do not use it for merging.
 - Python helpers run with the platform's native `python`.

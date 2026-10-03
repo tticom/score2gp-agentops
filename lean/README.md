@@ -1,7 +1,7 @@
 # lean/: the replacement framework (inert until cutover)
 
 Nothing in this directory is read by the live framework (dispatcher, authority,
-launchers). It is built beside it and promoted at cutover (`../CUTOVER.md`).
+launchers). It is built beside it and promoted at cutover (`../MIGRATION.md`).
 
 | File | Purpose |
 |---|---|
@@ -23,7 +23,7 @@ a clone without the hook installed, a different `core.hooksPath`, or someone who
 sets the override variables (`LEAN_ALLOW_PROTECTED_PUSH`, `LEAN_ALLOW_FORCE`).
 The only server-side control available on the free plan is the agent credential:
 an agent identity with no write access to the repository (it pushes to its own
-fork). See `../CUTOVER.md` step 10.
+fork). See `../MIGRATION.md` step 10.
 
 ## Usage
 
