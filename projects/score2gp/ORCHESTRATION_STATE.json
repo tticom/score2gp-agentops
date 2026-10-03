@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 102,
+  "authority_revision": 103,
   "task": {
     "id": "SCALE-01",
     "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
@@ -3639,18 +3639,18 @@
     },
     {
       "id": "CP-14",
-      "title": "Two task lanes: run a Codex-authored research or architecture task in parallel with a Claude-authored product task",
+      "title": "Parallel task lanes: run independent tasks at the same time (a Codex research or architecture lane beside Claude product tasks, and product tasks whose allowed paths do not overlap)",
       "requirements": [
         "control-plane:review-gate"
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
-      "status": "NEEDS_DETAIL",
-      "priority": 6,
+      "status": "READY",
+      "priority": 1,
       "depends_on": [
         "CP-13"
       ],
-      "notes": "Maintainer 2026-09-27: use Codex's usage allowance for research and architecture. Needs one active task per lane in the authority, per-lane PR binding, lane-aware dispatch and audit, and crossed review."
+      "notes": "Maintainer 2026-09-27: use Codex's usage allowance for research and architecture. Needs one active task per lane in the authority, per-lane PR binding, lane-aware dispatch and audit, and crossed review. Maintainer 2026-10-01: parallel tasks are wanted whenever they can safely run together; the one-active-task limit (TASK_RECORDING_CONVENTION.md, WORKFLOW_SKILLS_PROFILE.md) is an implementation limit to remove, not a policy. Scope: several active tasks, each with its own branch, PR binding and allowed paths; the dispatcher and the audit are task-aware; two tasks may run together only if their allowed paths and worktrees do not overlap (AGENT-RULES rule 7 still holds per worktree); crossed review is kept; RES-REQ-0002 and RES-REQ-0003 are the first research tasks to run in the research lane. Accuracy is not traded for speed: every gate stays per task."
     },
     {
       "id": "DUR-01-FU1",
