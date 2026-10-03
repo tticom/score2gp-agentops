@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 104,
+  "authority_revision": 105,
   "task": {
     "id": "SCALE-01",
     "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
     "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
-    "status": "PROMOTED",
+    "status": "COMPLETED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -50,7 +50,11 @@
       "dur_02_regression",
       "private_content_would_be_committed"
     ],
-    "author_login": "tticom-codex"
+    "author_login": "tticom-codex",
+    "head_sha": "05f2b3747764f35abd81138bb1b48c763e41b112",
+    "merge_commit": "fb9cd4972e4e56c40ef3ccd2472196752da8ea98",
+    "reconciled": true,
+    "notes": "Outcome 2026-10-03: Melodic Soloing Masterclass goes from refused pdf_only_tab_no_notation_bars to 8 located bars; 7 written bars match the reference on note count, string and fret; bar 6 stays refused for tuplet_number_unassociated (four events). 11 already-converting files are byte-identical and the 18 refusals are unchanged. Other absolute-point constants may still fail on other large-scale pages. The stale assertion in tests/test_npg03b_floating.py was updated under the #760 scope amendment. tticom/score2gp#480 was merged directly on GitHub by the maintainer (tticom) after an independent hard review at the exact head with CI green; the handback publisher refused honest non-PASS statuses (15 known host baseline failures and mutant runs that are meant to fail), and nothing was relabelled."
   },
   "next_task_proposal": null,
   "queued_task_proposals": [],
@@ -2159,6 +2163,61 @@
       "reconciled": true,
       "reconciled_at": "2026-10-03T05:31:06.939381+00:00",
       "notes": "Outcome 2026-10-03: on the private corpus this converts 0 additional real files. Only 5 files have exactly one unboxed system, and the 3 files with one refused system stay whole-file refused because later bar numbering is unprovable. The root cause of unboxed systems is a separate open question. tticom/score2gp#477 was merged directly on GitHub by the maintainer (tticom) after the handback publisher refused honest non-PASS validation statuses; the statuses were not relabelled."
+    },
+    {
+      "id": "SCALE-01",
+      "title": "Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)",
+      "objective": "Replace the absolute-point limits in staff and symbol detection (find_staves step cap, extract_page_symbols rectangle thickness, and any others found by measurement) by limits derived from the measured staff space, so large-scale pages find their staves and barlines, and write the bars that then pair unambiguously with their TAB digits. Normal pages must be byte-identical; anything ambiguous stays refused with a located reason.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 480,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/scale-01-scale-relative-constants",
+      "prompt": "projects/score2gp/prompts/next/scale-01-scale-relative-constants.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/pdf_*.py",
+        "docs/design/**",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_note_duration*.py",
+        "tests/test_npg03b_floating.py",
+        "tests/test_pdf*.py",
+        "tests/test_scale_01_*.py",
+        "tests/fixtures/pdf/scale_01/**"
+      ],
+      "acceptance": [
+        "On all 30 mounted PDFs the page size, the measured staff space and every binding absolute-point constant in staff and symbol detection are measured (counts and distances only).",
+        "Each binding threshold is expressed as a multiple of the measured staff space, reproducing today's behaviour exactly on normal pages and justified on Melodic Soloing, with no constant fitted to one file.",
+        "Melodic Soloing Masterclass is compared bar by bar with the reference through the independent GPIF reader: bars found and written are reported, every refused bar has a located reason, and no bar is paired wrongly.",
+        "Every PDF with a normal-range staff space produces byte-identical GPIF at base and head; TAB-only PDFs stay refused as pdf_only_tab_no_notation_bars.",
+        "A public synthetic fixture at the large scale fails at the base and passes now, a normal-scale fixture proves no change, and mutants (absolute threshold restored, threshold scaled wrongly) each fail a test; tests are CI-safe.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "05f2b3747764f35abd81138bb1b48c763e41b112",
+      "merge_commit": "fb9cd4972e4e56c40ef3ccd2472196752da8ea98",
+      "reconciled": true,
+      "reconciled_at": "2026-10-03T11:50:56.527599+00:00",
+      "notes": "Outcome 2026-10-03: Melodic Soloing Masterclass goes from refused pdf_only_tab_no_notation_bars to 8 located bars; 7 written bars match the reference on note count, string and fret; bar 6 stays refused for tuplet_number_unassociated (four events). 11 already-converting files are byte-identical and the 18 refusals are unchanged. Other absolute-point constants may still fail on other large-scale pages. The stale assertion in tests/test_npg03b_floating.py was updated under the #760 scope amendment. tticom/score2gp#480 was merged directly on GitHub by the maintainer (tticom) after an independent hard review at the exact head with CI green; the handback publisher refused honest non-PASS statuses (15 known host baseline failures and mutant runs that are meant to fail), and nothing was relabelled."
     }
   ],
   "backlog": [

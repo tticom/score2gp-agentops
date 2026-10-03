@@ -4,7 +4,7 @@
 
 **Task**: SCALE-01 — Make the staff and barline detection constants relative to the staff space (Melodic Soloing Masterclass reads no notation bars)
 
-**Status**: PROMOTED
+**Status**: COMPLETED
 
 **Repository**: tticom/score2gp
 
