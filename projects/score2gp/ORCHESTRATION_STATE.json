@@ -2435,6 +2435,19 @@
   ],
   "backlog": [
     {
+      "id": "FIXTURE-PATH-01",
+      "title": "Update consumers of the reorganised private fixture corpus",
+      "requirements": [
+        "REQ-0001:U14"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "READY",
+      "priority": 1,
+      "depends_on": [],
+      "notes": "Maintainer-requested compatibility change, 2026-10-08. The fixture branch data/representative-conversion-fixtures moved the former flat fixtures/private files into Books, ascii, hand-written, no-score and with-score. Update product tests, scripts and CI references to the new relative paths without changing assertions or private-content policy. Validate required real-source tests and the full suite. Any other live repository consumer must be updated in its owning repository. The product PR depends on this scheduling PR and the fixture layout branch."
+    },
+    {
       "id": "SHORT-01",
       "title": "Shortfall record for every refused, degraded or dropped feature (kind, location, reason code, evidence, disposition); no silent gap",
       "requirements": [
