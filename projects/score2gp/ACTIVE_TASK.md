@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/ts-read-01-printed-time-signature`
 
-**Pull Request**: TBD
+**Pull Request**: 484
 
 **Owner Role**: implementation
 
