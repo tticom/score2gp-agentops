@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: BARTOTAL-01 — Bars whose tick total differs from the declared time signature must be refused, not written
+**Task**: TS-READ-01 — Read the printed time signature from the PDF instead of requiring --time-signature
 
-**Status**: RESOLVED
+**Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/bartotal-01-refuse-wrong-total-bars`
+**PR Branch**: `feat/ts-read-01-printed-time-signature`
 
 **Pull Request**: TBD
 
@@ -16,18 +16,25 @@
 
 ## Objective
 
-A bar whose summed tick total differs from the declared time signature is refused with a located code and warning, never written as a success (E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under 4/4). Investigate first why the check does not fire and whether 4/4 is right for that file; never invent a value; do not change exit-code semantics for files with refused bars unless the investigation shows false success (report it, do not change silently).
+Read each system's printed time signature (vector-drawn, so shape recognition, as OMIT-01 reads the key signature) and use the caller-declared value only when none is printed or readable; refuse with a located reason when the two disagree. Evidence: the 2026-10-08 survey converted all 39 sources at the declared 4/4, and Combining_Maj_minor_pent_-_A (printed 12/8) refuses all 8 bars with 'bar_total_mismatch, 6 of 4 quarters'. Promoted from the backlog candidate TS-READ-01: Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one. UPDATE 2026-10-03 (BARTOTAL-01 close-out): the time signature is vector-drawn on these pages (no text match), so a reader needs shape recognition rather than text; and no file shown so far needs the check for correctness (E_Chord's bars are metrically correct under 4/4; its printed signature is still unconfirmed).
 
 ## Allowed paths
 
-- `src/score2gp/notation_omr/note_duration.py`
 - `src/score2gp/pdf.py`
 - `src/score2gp/pdf_*.py`
-- `tests/test_note_duration*.py`
-- `tests/test_pdf*.py`
-- `tests/test_bartotal_01_*.py`
-- `tests/fixtures/pdf/bartotal_01/**`
+- `src/score2gp/notation_omr/**`
+- `src/score2gp/recognition/**`
+- `src/score2gp/ir.py`
+- `src/score2gp/tabraw.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/gpif.py`
+- `src/score2gp/cli.py`
+- `schemas/**`
+- `tests/test_dur_02_oracle.py`
 - `docs/design/**`
+- `docs/architecture.md`
+- `tests/test_ts_read_01_*.py`
+- `tests/fixtures/pdf/ts_read_01/**`
 
 ## Validation commands
 
