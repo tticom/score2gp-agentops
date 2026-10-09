@@ -2,7 +2,7 @@
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
-- **Requirement:** REQ-0001 (supersedes the backlog follow-up DUR-01-FU1, folded in below)
+- **Requirement:** REQ-0001 (folds in the former follow-up DUR-01-FU1, now DROPPED in the authority)
 - **Depends on:** DUR-02, CFW-04 (both merged)
 - **Branch:** `feat/unread-01-classify-notation-symbols`
 
@@ -15,7 +15,7 @@ This comes from the 2026-10-08 fixture survey (main `95a6802`) and a read-only d
 - `note_duration_event_unread` is the largest bar-level refusal in the survey: **34 bars** (Derek Trucks BB King 19 of its 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1). For the first refused bars of Derek Trucks and G-Am-C-Lick the recorded detail is `symbol_unclassified` (the event whose symbol the notation reader could not classify; `src/score2gp/notation_omr/note_duration.py`).
 - **Derek Trucks BB King** writes 0 of 20 bars, so no file is produced. Its `note-durations.json` also records **29 `key_clef_unread` records** (`src/score2gp/notation_omr/key_signature.py`) and 52 unclassified records, which suggests a clef or key form the readers do not know, besides the symbols. It has a reference `.gp`, which makes it the measurable target.
 - G-Am-C-Lick (no reference) writes 1 of 9 bars; its refused bars are `symbol_unclassified` as well.
-- Folded in from the backlog item DUR-01-FU1 (review 5328475963 of #466): an unrecognisable glyph overlapping a notehead or stem is counted by reason today instead of recorded as a located unread event; in Lessons 3 to 7 these are only accidentals or articulations, so keep that case visible for unsupported overlapping forms.
+- Folded in from the former follow-up DUR-01-FU1 (review 5328475963 of #466): an unrecognisable glyph overlapping a notehead or stem is counted by reason today instead of recorded as a located unread event; in Lessons 3 to 7 these are only accidentals or articulations, so keep that case visible for unsupported overlapping forms.
 
 ## Goal
 
@@ -27,12 +27,13 @@ Find out which symbols are unclassified, in which classes and how many, then rea
 2. **The key and clef forms** that Derek Trucks BB King triggers: say what they are and whether they are in OMIT-01's remit; read them if the rule is staff-relative and unambiguous, otherwise a located refusal.
 3. **Reading rules** for the largest classes, each staff-space-relative, with no new absolute point limits; classes you do not read are recorded as located unread events (page, system, bar, event), with their class name, not as a count by reason (DUR-01-FU1).
 4. **Derek Trucks BB King**: report bars written and refused before and after. For every bar that is written, compare with the reference through the independent oracle (`tests/test_dur_02_oracle.py`) and report every difference. **G-Am-C-Lick, Am-blues-lick, Just-Practice and The_EXACT_System have no reference: say so**, report which bars changed status and verify that written bars sum to the declared bar total.
-5. **Tests that bite.** Public synthetic fixtures engraved from standard notation for each class you read; a negative fixture where an unreadable overlap stays refused with a located reason; mutants: drop an unclassified symbol silently; accept a class by a fixed point size. Each fails a test.
+5. **Real-source tests that bite.** Private-corpus tests assert, on more than one approved source (Derek Trucks BB King, G-Am-C-Lick and at least one converting lesson), that each class you read is read, and that an unreadable overlap in a real file stays refused with a located reason. Mutants: drop an unclassified symbol silently; accept a class by a fixed point size. Each fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.
 6. **Nothing that worked may change.** Measure on the whole private set at base and at head: every file that converts today keeps a byte-identical GPIF for every bar written at base. The before and after table covers every converting and every refused file; any bar whose status changes is listed.
 7. `python -m pytest` (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check` pass; list the known Windows baseline failures by ID if they fail locally.
 
 ## Rules
 
+- **Domain evidence (AGENT_CONTROL.md):** acceptance rests on genuine approved sources, or reproducible extracts that keep their source provenance and reach the changed seam; general claims need more than one approved corpus input. Synthetic, mocked or generated-notation tests carry zero acceptance weight for recognition, grouping, geometry, timing or fidelity claims; they may supplement non-domain infrastructure only with a stated rationale.
 - **Read from the source, or refuse.** Never invent a value, never copy one from a reference `.gp`, never loosen a gate to raise a count (a count is a result, not a target). A symbol that cannot be classified stays a located refusal.
 - **Scale-relative only:** every new limit is a multiple of the measured staff space.
 - **Stop** if reading a class needs changing a gate's meaning rather than its scale, and report the gate.
