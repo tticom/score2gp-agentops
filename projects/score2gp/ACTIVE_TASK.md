@@ -2,40 +2,31 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TS-READ-01 — Read the printed time signature from the PDF instead of requiring --time-signature
+**Task**: FIXTURE-GUARD-01 — Private-corpus tests that skip silently
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/ts-read-01-printed-time-signature`
+**PR Branch**: `feat/fixture-guard-01-private-corpus-skip-guard`
 
-**Pull Request**: 484
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Read each system's printed time signature (vector-drawn, so shape recognition, as OMIT-01 reads the key signature) and use the caller-declared value only when none is printed or readable; refuse with a located reason when the two disagree. Evidence: the 2026-10-08 survey converted all 39 sources at the declared 4/4, and Combining_Maj_minor_pent_-_A (printed 12/8) refuses all 8 bars with 'bar_total_mismatch, 6 of 4 quarters'. Promoted from the backlog candidate TS-READ-01: Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one. UPDATE 2026-10-03 (BARTOTAL-01 close-out): the time signature is vector-drawn on these pages (no text match), so a reader needs shape recognition rather than text; and no file shown so far needs the check for correctness (E_Chord's bars are metrically correct under 4/4; its printed signature is still unconfirmed).
+A rerun of product main's CI on the categorised fixtures (run 37831924173) went from 1784 passed, 10 skipped to 1783 passed, 11 skipped and stayed green: fixtures PR #5 renamed 'Finger postition tips TAB (1).pdf', so the SCALE-01 control test_tab_only_private_controls_have_no_notation_staves skips silently. Fix the name, and add a guard so that, with the private corpus mounted in CI, a private-corpus skip fails the job and lists the test ids.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_*.py`
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/recognition/**`
-- `src/score2gp/ir.py`
-- `src/score2gp/tabraw.py`
-- `src/score2gp/build_ir.py`
-- `src/score2gp/gpif.py`
-- `src/score2gp/cli.py`
-- `schemas/**`
-- `tests/test_dur_02_oracle.py`
-- `tests/test_dur_01_lesson3.py`
-- `docs/design/**`
-- `docs/architecture.md`
-- `tests/test_ts_read_01_*.py`
-- `tests/fixtures/pdf/ts_read_01/**`
+- `tests/test_scale_01_geometry.py`
+- `tests/conftest.py`
+- `tests/private_corpus_guard.py`
+- `tests/test_private_corpus_guard.py`
+- `scripts/check_private_skips.py`
+- `.github/workflows/pylint.yml`
+- `docs/setup.md`
 
 ## Validation commands
 
