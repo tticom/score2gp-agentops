@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 112,
+  "authority_revision": 114,
   "task": {
     "id": "BARTOTAL-01",
     "title": "Bars whose tick total differs from the declared time signature must be refused, not written",
@@ -53,8 +53,227 @@
     "notes": "Ended 2026-10-03 at the task's own stop condition fix_changes_gate_meaning_not_closing_a_hole: no product change, no branch commit and no PR (the launcher's PR creation was empty and its handback publish failed on an empty PR number; nothing to publish). CORRECTION: the task's premise was wrong. The claim that E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks (in the PDF-GROUP-02 notes, agentops#766, and in the independent review of #482) was a misreading of grace-note rhythms. Those bars each contain exactly 3840 metrical ticks, which is correct for 4/4; the 4080 and 3960 totals come from raw GPIF rhythm sums that include a 32nd-note display rhythm for each grace note (2, 1, 2 and 1 graces), which the pipeline's own accounting treats as zero bar time. The #766 text is left as it was. The existing bar-total check (note_duration.py _bar_checks: exact Fraction(duration_quarters) sums compared with ==, no tolerance; pdf_tab_bar_assembler.py around lines 220-222 refuses a matched bar whenever the status is not match) does fire for real metrical mismatches. Refusing those four bars would change what the gate measures, so the author stopped. Corpus measurement: 37 private PDFs mounted; the 34 under 1 MB were converted sequentially at base with --pdf-only-tab --time-signature 4/4: 18 converted with no written bar having a wrong metrical total; three large files were unresolved, so the exact 37-file converting count is unproven. Seven converting labels have 17 grace-bearing bars whose raw GPIF rhythm sum would exceed 3840 (A_blues_lick_5_positions 3 and others), the same misreading. E_Chord's printed signature is still unconfirmed: all bar checks record caller_declared 4/4, the time signature is vector-drawn with no text match, and no time-signature reader was attempted. A GPIF re-import probe could not complete because the reader raised an unrelated empty-event validation error (a possible separate issue). A fresh E_Chord conversion exits 0 with 16 bars, 9 written and 7 refused (3 bar_total_mismatch, 3 notehead_digit_count_mismatch, 1 notation_note_without_tab_digit); the full baseline pytest run was interrupted before a result. Status RESOLVED is the control plane's terminal task status for a task that ended without a merged PR. No successor is promoted; CFW-05, CP-14 and TS-READ-01 stay READY. Evidence: launchers/codex-author-logs/bartotal-01/ (final.md, report.md).",
     "reconciled": true
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "TS-READ-01",
+    "title": "Read the printed time signature from the PDF instead of requiring --time-signature",
+    "objective": "Read each system's printed time signature (vector-drawn, so shape recognition, as OMIT-01 reads the key signature) and use the caller-declared value only when none is printed or readable; refuse with a located reason when the two disagree. Evidence: the 2026-10-08 survey converted all 39 sources at the declared 4/4, and Combining_Maj_minor_pent_-_A (printed 12/8) refuses all 8 bars with 'bar_total_mismatch, 6 of 4 quarters'. Promoted from the backlog candidate TS-READ-01: Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one. UPDATE 2026-10-03 (BARTOTAL-01 close-out): the time signature is vector-drawn on these pages (no text match), so a reader needs shape recognition rather than text; and no file shown so far needs the check for correctness (E_Chord's bars are metrically correct under 4/4; its printed signature is still unconfirmed).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/ts-read-01-printed-time-signature",
+    "prompt": "projects/score2gp/prompts/next/ts-read-01-read-printed-time-signature.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/recognition/**",
+      "src/score2gp/ir.py",
+      "src/score2gp/tabraw.py",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/gpif.py",
+      "src/score2gp/cli.py",
+      "schemas/**",
+      "tests/test_dur_02_oracle.py",
+      "docs/design/**",
+      "docs/architecture.md",
+      "tests/test_ts_read_01_*.py",
+      "tests/fixtures/pdf/ts_read_01/**"
+    ],
+    "acceptance": [
+      "Measure first: a census over the whole mounted PDF set of each source's printed first-bar time signature (counts per signature, how many are unreadable, the shapes seen). Counts and labels only.",
+      "A staff-space-relative reader distinguishes at least 2/4, 3/4, 4/4, 5/4, 6/8, 9/8, 12/8, common time and cut time; a candidate that is not unambiguous is recorded with a located reason and is not read.",
+      "Printed and readable: use it. Neither printed nor readable: use the declared value, as today, and record that in the bar. Both present and different: refuse the affected bars with a located reason naming both values. --time-signature becomes optional where the printed one is readable.",
+      "Combining_Maj_minor_pent_-_A converts under its printed 12/8 without any flag; bars written and every remaining refusal are reported by code. No reference .gp exists for it, and the report says so.",
+      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests, which convert under <repo>/work and run in CI where the corpus is mounted, assert on more than one approved source that the printed signature is read (Combining_Maj_minor_pent_-_A as printed, and the converting lessons as printed), that a deliberately wrong declared value on the same real PDF is refused with a located reason naming both values, and that each mutant (always use the declared value; read only the top numeral; ignore the denominator; choose silently on disagreement) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+      "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today and whose printed signature equals the declared one keeps a byte-identical GPIF; a file whose printed signature differs from the declared one is reported by name and may change status (refused with a located reason, or converted under the printed value), each such change listed with its before and after result; every other refusal keeps its code except files explicitly reported.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "PDF-GROUP-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed",
+      "printed_signature_would_override_a_declared_one_silently"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "PDF-GROUP-03",
+      "title": "Songbook transcriptions refused at bar-box construction",
+      "objective": "Find why nine with-score sources refuse at layout gating with pdf_bar_box_construction_not_enough_for_build_ir (Back In Black, Black Dog, Brown Sugar, Castles Made of Sand, Crossroads, Ex 2 Hands Up, Heartbreaker, Hey Joe, Pride and Joy), where the barline detector discards most candidate strokes as too short, not crossing the staff, outside the system and similar. Investigate first (read the PDF-GROUP-01 close-out); build bar boxes only by a staff-relative rule that keeps true barlines and rejects stems and other vertical strokes, otherwise stop with the measured finding. Ex 2 Hands Up has a reference .gp and is the measurable target. Evidence: the 2026-10-08 fixture survey and diagnosis.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/pdf-group-03-song-bar-boxes",
+      "prompt": "projects/score2gp/prompts/next/pdf-group-03-song-bar-boxes.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_geometry.py",
+        "src/score2gp/pdf_staff_detection.py",
+        "src/score2gp/pdf_tab_system_partition.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_pdf*.py",
+        "tests/test_pdf_group_03_*.py",
+        "tests/fixtures/pdf/pdf_group_03/**",
+        "docs/design/**"
+      ],
+      "acceptance": [
+        "Measure first: per source (the nine and the converting lessons) the producer, pages, systems, string and staff spacing, the barline strokes found per system as multiples of the string spacing, and which strokes each of the six rejection diagnostics discards, saying which rejections are wrong and which are right. Counts and distances only.",
+        "If a rule exists: staff-relative, no new absolute point limit, keeps true barlines and still rejects stems, ledger lines and other vertical strokes; two separate staves are never joined.",
+        "Each of the nine ends in one stated state: converts with every written bar passing the existing bar checks, or stays refused with a located reason naming the failing geometry. Each file's before and after status, bars written and refused, and codes are reported.",
+        "Ex 2 Hands Up: if it passes grouping, its later refusals are reported by code and every written bar is compared with the reference through the independent oracle; files without a reference are not claimed correct.",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert the changed behaviour on real sources from more than one producer (the nine and at least two converting lessons), with negative controls taken from real sources (a stem, a ledger line and a vertical stroke between two staves in real files must not become barlines), and a mutant keeping the old rejection fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+        "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported.",
+        "No change to the build_ir.py gating sets.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "PDF-GROUP-02",
+        "SCALE-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "gate_requires_changing_meaning_not_scale"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "UNREAD-01",
+      "title": "Unclassified notation symbols refuse whole bars",
+      "objective": "note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/unread-01-classify-notation-symbols",
+      "prompt": "projects/score2gp/prompts/next/unread-01-unclassified-notation-symbols.md",
+      "allowed_paths": [
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/pdf_tab_duration_associator.py",
+        "src/score2gp/pdf_tab_duration_types.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "src/score2gp/pdf_tab_event_factory.py",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_dur_02_*.py",
+        "tests/test_unread_01_*.py",
+        "tests/fixtures/pdf/unread_01/**",
+        "docs/design/**"
+      ],
+      "acceptance": [
+        "Measure first: a census over all 34 refused bars and every key_clef_unread record, per file and per symbol class, with size as a multiple of the staff space, position (on a stem, on a head, between events, above or below the staff), and what the reference shows there for Derek Trucks (counts and shapes only; the reference never feeds the reader).",
+        "The key and clef forms that Derek Trucks BB King triggers are identified and either read by a staff-relative unambiguous rule or refused with a located reason.",
+        "The largest symbol classes are read by staff-space-relative rules with no new absolute limits; every class not read is recorded as a located unread event (page, system, bar, event) with its class name, not a count by reason.",
+        "Derek Trucks BB King: bars written and refused before and after; every written bar compared with the reference through the independent oracle, every difference reported. Files without a reference are not claimed correct; written bars sum to the declared bar total.",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert, on more than one approved source (Derek Trucks BB King, G-Am-C-Lick and at least one converting lesson), that each class read is read, that an unreadable overlap in a real file stays a located refusal, and that each mutant (drop an unclassified symbol silently; accept a class by a fixed point size) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+        "Nothing that worked may change: every file that converts today keeps a byte-identical GPIF for every bar written at base; any bar whose status changes is listed in the before and after table.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02",
+        "CFW-04"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "classifier_would_guess_a_symbol",
+        "gate_requires_changing_meaning_not_scale"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "PERF-01",
+      "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
+      "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/perf-01-melodic-expressions-runtime",
+      "prompt": "projects/score2gp/prompts/next/perf-01-melodic-expressions-runtime.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/cli.py",
+        "tests/test_perf_01_*.py",
+        "tests/fixtures/pdf/perf_01/**",
+        "docs/design/**"
+      ],
+      "acceptance": [
+        "Profile first: per stage wall time and peak working set on Melodic_Expressions.pdf (run to completion once, with a stated overall limit) against Melodic_Expressions_Chap_19_.pdf and Lesson-6.pdf, with the page count and the number of candidate staves, systems, strokes and tokens at each stage; name the function and data structure the cost follows.",
+        "Either a bounded algorithm with its complexity stated before and after, or a located resource gate with a measured stated bound and a refusal code naming the count that exceeded it; a gate must not refuse any file that converts today.",
+        "Melodic_Expressions.pdf converts or refuses with a located code in under 120 s and under 1.5 GB on the workspace Windows host (governance-set bound, revisable only with measured evidence).",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): a private-corpus test on Melodic_Expressions.pdf asserts the expensive-operation count (or the located resource gate and its code) at the changed seam, and a second real source (Lesson-6 and one other) shows the count and the GPIF unchanged; a mutant restoring the old behaviour fails the test on the real file. The growth check on a scalable public synthetic fixture is supplementary non-domain infrastructure only (it makes no recognition or fidelity claim; rationale: it is the only way to show growth in CI without the private corpus) and carries no acceptance weight.",
+        "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported. Time and peak working set are reported before and after for every file; none may get slower beyond a stated measurement noise.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "MEM-01",
+        "SCALE-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "output_changed_for_a_file_that_converts_today"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3927,19 +4146,19 @@
     },
     {
       "id": "DUR-01-FU1",
-      "title": "Unrecognisable glyphs overlapping a notehead or stem become located unread events, not reason counts",
+      "title": "SUPERSEDED by UNREAD-01: Unrecognisable glyphs overlapping a notehead or stem become located unread events, not reason counts",
       "requirements": [
         "REQ-0001",
         "REQ-0005"
       ],
       "kind": "implementation",
       "repository": "tticom/score2gp",
-      "status": "READY",
+      "status": "DROPPED",
       "priority": 3,
       "depends_on": [
         "DUR-01"
       ],
-      "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms."
+      "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms. DROPPED 2026-10-08 (authority revision 113): folded into UNREAD-01, which records unclassified symbols as located unread events with their class (not as counts by reason) and carries the case of an unrecognisable glyph overlapping a notehead or stem."
     },
     {
       "id": "CP-15",
@@ -4531,21 +4750,6 @@
         "SCALE-01"
       ],
       "notes": "Bar 6 of Can't Find My Way Home is refused with a located reason because of the dead-note head, which CFW-04 (tticom/score2gp#476) left unread; no other open task covers it. CFW-03 tracks the tied-chord bars 3 and 9. Low priority, queued behind SCALE-01. Read the head from the source and write the bar only if the pairing is unambiguous; otherwise keep it refused. Do not invent a value."
-    },
-    {
-      "id": "TS-READ-01",
-      "title": "Read the printed time signature from the PDF instead of requiring --time-signature",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 5,
-      "depends_on": [
-        "PDF-GROUP-02"
-      ],
-      "notes": "Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one. UPDATE 2026-10-03 (BARTOTAL-01 close-out): the time signature is vector-drawn on these pages (no text match), so a reader needs shape recognition rather than text; and no file shown so far needs the check for correctness (E_Chord's bars are metrically correct under 4/4; its printed signature is still unconfirmed)."
     }
   ],
   "registered_requirements": [
