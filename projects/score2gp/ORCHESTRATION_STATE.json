@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 116,
+  "authority_revision": 117,
   "task": {
     "id": "TS-READ-01",
     "title": "Read the printed time signature from the PDF instead of requiring --time-signature",
@@ -27,6 +27,7 @@
       "src/score2gp/cli.py",
       "schemas/**",
       "tests/test_dur_02_oracle.py",
+      "tests/test_dur_01_lesson3.py",
       "docs/design/**",
       "docs/architecture.md",
       "tests/test_ts_read_01_*.py",

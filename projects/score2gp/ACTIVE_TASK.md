@@ -31,6 +31,7 @@ Read each system's printed time signature (vector-drawn, so shape recognition, a
 - `src/score2gp/cli.py`
 - `schemas/**`
 - `tests/test_dur_02_oracle.py`
+- `tests/test_dur_01_lesson3.py`
 - `docs/design/**`
 - `docs/architecture.md`
 - `tests/test_ts_read_01_*.py`
