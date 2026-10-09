@@ -1,63 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 114,
+  "authority_revision": 115,
   "task": {
-    "id": "BARTOTAL-01",
-    "title": "Bars whose tick total differs from the declared time signature must be refused, not written",
-    "objective": "A bar whose summed tick total differs from the declared time signature is refused with a located code and warning, never written as a success (E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks under 4/4). Investigate first why the check does not fire and whether 4/4 is right for that file; never invent a value; do not change exit-code semantics for files with refused bars unless the investigation shows false success (report it, do not change silently).",
-    "status": "RESOLVED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/bartotal-01-refuse-wrong-total-bars",
-    "prompt": "projects/score2gp/prompts/next/bartotal-01-refuse-wrong-total-bars.md",
-    "allowed_paths": [
-      "src/score2gp/notation_omr/note_duration.py",
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "tests/test_note_duration*.py",
-      "tests/test_pdf*.py",
-      "tests/test_bartotal_01_*.py",
-      "tests/fixtures/pdf/bartotal_01/**",
-      "docs/design/**"
-    ],
-    "acceptance": [
-      "**Investigation reported** as above (the exact gap, the signature question, the list of affected files by label and bar count).",
-      "**Located refusal.** A bar whose total differs from the declared signature gets a located refusal code and warning (bar, system, total, expected), not a written bar. Any tolerance is justified by measurement and stated.",
-      "**Tests that bite.** Synthetic public fixtures that fail at base and pass now (a wrong-total bar is refused; a correct-total bar is unchanged); a mutant (check removed, or tolerance widened) fails a test. Tests are CI-safe: create `<repo>/work` before using it and prove them on a clean `git archive` copy without `work/`.",
-      "**Nothing correct may change.** State the exact number of converting files at base (the author's mounted corpus has 37 private PDFs) and compare each: every converting file stays byte-identical GPIF **except** files containing a wrong-total bar, which are reported by label and bar count as newly refused bars (counts only). The refusal codes of already-refused files are unchanged.",
-      "`python -m pytest` (exact-head CI), export-schema, validate-ir, `scripts/artifact_audit.py` and `git diff --check` pass; list the known Windows baseline failures by ID if they fail locally (the last runs recorded 14 to 15)."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "PDF-GROUP-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed",
-      "fix_changes_gate_meaning_not_closing_a_hole"
-    ],
-    "author_login": "tticom-codex",
-    "notes": "Ended 2026-10-03 at the task's own stop condition fix_changes_gate_meaning_not_closing_a_hole: no product change, no branch commit and no PR (the launcher's PR creation was empty and its handback publish failed on an empty PR number; nothing to publish). CORRECTION: the task's premise was wrong. The claim that E_Chord_Lick_Chord bars 2, 4, 10 and 12 are written with 4080 or 3960 ticks (in the PDF-GROUP-02 notes, agentops#766, and in the independent review of #482) was a misreading of grace-note rhythms. Those bars each contain exactly 3840 metrical ticks, which is correct for 4/4; the 4080 and 3960 totals come from raw GPIF rhythm sums that include a 32nd-note display rhythm for each grace note (2, 1, 2 and 1 graces), which the pipeline's own accounting treats as zero bar time. The #766 text is left as it was. The existing bar-total check (note_duration.py _bar_checks: exact Fraction(duration_quarters) sums compared with ==, no tolerance; pdf_tab_bar_assembler.py around lines 220-222 refuses a matched bar whenever the status is not match) does fire for real metrical mismatches. Refusing those four bars would change what the gate measures, so the author stopped. Corpus measurement: 37 private PDFs mounted; the 34 under 1 MB were converted sequentially at base with --pdf-only-tab --time-signature 4/4: 18 converted with no written bar having a wrong metrical total; three large files were unresolved, so the exact 37-file converting count is unproven. Seven converting labels have 17 grace-bearing bars whose raw GPIF rhythm sum would exceed 3840 (A_blues_lick_5_positions 3 and others), the same misreading. E_Chord's printed signature is still unconfirmed: all bar checks record caller_declared 4/4, the time signature is vector-drawn with no text match, and no time-signature reader was attempted. A GPIF re-import probe could not complete because the reader raised an unrelated empty-event validation error (a possible separate issue). A fresh E_Chord conversion exits 0 with 16 bars, 9 written and 7 refused (3 bar_total_mismatch, 3 notehead_digit_count_mismatch, 1 notation_note_without_tab_digit); the full baseline pytest run was interrupted before a result. Status RESOLVED is the control plane's terminal task status for a task that ended without a merged PR. No successor is promoted; CFW-05, CP-14 and TS-READ-01 stay READY. Evidence: launchers/codex-author-logs/bartotal-01/ (final.md, report.md).",
-    "reconciled": true
-  },
-  "next_task_proposal": {
     "id": "TS-READ-01",
     "title": "Read the printed time signature from the PDF instead of requiring --time-signature",
     "objective": "Read each system's printed time signature (vector-drawn, so shape recognition, as OMIT-01 reads the key signature) and use the caller-declared value only when none is printed or readable; refuse with a located reason when the two disagree. Evidence: the 2026-10-08 survey converted all 39 sources at the declared 4/4, and Combining_Maj_minor_pent_-_A (printed 12/8) refuses all 8 bars with 'bar_total_mismatch, 6 of 4 quarters'. Promoted from the backlog candidate TS-READ-01: Candidate from the PDF-GROUP-02 investigation (2026-10-03), not promoted. The time signature is a caller input (--time-signature) today. Combining_Maj_minor_pent_-_A is printed in 12/8: with the declared 4/4 it refuses (bar_total_mismatch 5, tuplet_number_unassociated 3), with 12/8 and no code change it converts 5 of 8 bars. Read the printed signature from the source and use the declared one only when none is printed or readable; if the two disagree, refuse with a located reason rather than choose. Never invent a value, never loosen a gate to raise a count; byte-identical GPIF for every file that converts today when its declared signature matches the printed one. UPDATE 2026-10-03 (BARTOTAL-01 close-out): the time signature is vector-drawn on these pages (no text match), so a reader needs shape recognition rather than text; and no file shown so far needs the check for correctness (E_Chord's bars are metrically correct under 4/4; its printed signature is still unconfirmed).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -108,6 +57,56 @@
       "dur_02_regression",
       "private_content_would_be_committed",
       "printed_signature_would_override_a_declared_one_silently"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "next_task_proposal": {
+    "id": "FIXTURE-GUARD-01",
+    "title": "Private-corpus tests that skip silently",
+    "objective": "A rerun of product main's CI on the categorised fixtures (run 37831924173) went from 1784 passed, 10 skipped to 1783 passed, 11 skipped and stayed green: fixtures PR #5 renamed 'Finger postition tips TAB (1).pdf', so the SCALE-01 control test_tab_only_private_controls_have_no_notation_staves skips silently. Fix the name, and add a guard so that, with the private corpus mounted in CI, a private-corpus skip fails the job and lists the test ids.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/fixture-guard-01-private-corpus-skip-guard",
+    "prompt": "projects/score2gp/prompts/next/fixture-guard-01-private-corpus-skip-guard.md",
+    "allowed_paths": [
+      "tests/test_scale_01_geometry.py",
+      "tests/conftest.py",
+      "tests/private_corpus_guard.py",
+      "tests/test_private_corpus_guard.py",
+      "scripts/check_private_skips.py",
+      ".github/workflows/pylint.yml",
+      "docs/setup.md"
+    ],
+    "acceptance": [
+      "Census first: every skip in tests/ that depends on the private corpus, grouped by reason string with counts and test ids; the legitimate unrelated skips are named.",
+      "The renamed control test names 'Finger postition tips TAB.pdf', runs (is not skipped) with the corpus mounted and asserts exactly what it asserted before; every other reference to a name missing from the mounted corpus is reported.",
+      "With an environment variable set by the CI step right after the corpus is mounted, a test skipped for a private-corpus reason fails the run with its id listed; local runs without the corpus are unchanged; the reason match comes from the census.",
+      "Real-source evidence: the renamed control runs on the real mounted file with its original assertion, and the exact-head CI shows 0 private-corpus skips; a mutant ignoring one reason string fails the guard test. Public synthetic skipped tests are non-domain infrastructure only (the guard makes no recognition, grouping, geometry, timing or fidelity claim), stated with that rationale, and carry no acceptance weight for the real-source claim; the guard test is not skippable.",
+      "The exact-head CI run shows 0 private-corpus skips and lists the remaining skips with a reason each; before and after passed and skipped counts are stated.",
+      "No test deleted, weakened or renamed to avoid the guard; no change under src/.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "SCALE-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed",
+      "guard_would_fail_a_legitimate_skip"
     ],
     "author_login": "tticom-codex"
   },
