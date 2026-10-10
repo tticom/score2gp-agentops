@@ -46,13 +46,18 @@ are in `launchers/` (call by ABSOLUTE `/c/...` path; use `cygpath -w` for Window
 2. **Task PROMOTED, no PR:** author it: `launchers/codex_author.sh tticom/score2gp <task.branch> <tag> <prompt-path>`
    (background; Codex gpt-6.1-sol medium; **on a Codex limit it continues on Claude under the same identity**). It
    dispatches, creates the worktree `worktrees/codex/author-<tag>`, commits, pushes, opens the PR and publishes the handback.
-3. **Handback failed** (`validation run N did not complete successfully`): usually the full suite lists the 15 known
-   Windows-only failures as FAIL. Rerun with `--deselect=<id>` for those ids (output to a file, record pytest's own exit
-   code), or use the exact-head CI run as the validation run; patch `handback-evidence.json`/`handback.json` in
-   `launchers/codex-author-logs/<tag>/`; publish as codex with `publish-pr-handback/scripts/publish_handback.py --repo ...
-   --pr N --expected-head <sha> --worktree worktrees/codex/author-<tag> --packet <json> --state AWAITING_GOVERNANCE_REVIEW
-   --allowed-state AWAITING_GOVERNANCE_REVIEW` (acceptance entries must all be PASS and `review_findings` items need
-   `finding`, `disposition`, `evidence`).
+3. **Handback failed** (`validation run N did not complete successfully`): never make it pass by hiding a failure.
+   The handback publisher needs every validation run to exit 0 and every acceptance entry PASS, and that must be true:
+   (a) rerun the full suite at the exact head on a supported runtime (exact-head CI on Linux with the private corpus
+   mounted is the authoritative full run; cite its run id, head, passed/skipped/xfailed counts); (b) the 15 known
+   Windows-only local failures (section 4) are **kept visible**: list each id in `remaining_risks`, record the local run as
+   `deselected=15` (never as a pass of those tests), and show they fail identically at the base commit; (c) set an
+   acceptance entry to PASS only where independent evidence at this head supports it (the CI run or a focused real-source
+   run that includes the checks). Patch `handback-evidence.json`/`handback.json` in `launchers/codex-author-logs/<tag>/`
+   only to add that evidence; publish as codex with `publish-pr-handback/scripts/publish_handback.py --repo ... --pr N
+   --expected-head <sha> --worktree worktrees/codex/author-<tag> --packet <json> --state AWAITING_GOVERNANCE_REVIEW
+   --allowed-state AWAITING_GOVERNANCE_REVIEW` (`review_findings` items need `finding`, `disposition`, `evidence`). A new
+   failure that is not in the known list is a hard stop (AGENT-RULES.md): fix it or report it; do not deselect it.
 4. **Bind the PR:** the dispatcher says "governance must record pull_request N": governance PR setting `task.pull_request`,
    `authority_revision` +1, `ACTIVE_TASK.md` regenerated with `render_active_task` (precedent #772, #775).
 5. **Review (non-author):** product PR authored by codex: `launchers/gov_claude_review.sh "tticom/score2gp|<n>|<note>"`
@@ -66,13 +71,13 @@ are in `launchers/` (call by ABSOLUTE `/c/...` path; use `cygpath -w` for Window
 7. **Merge** per rule 3 when APPROVED at the exact head and CI is green; verify `merge_commit` in the output.
 8. **Reconcile and promote:** `python scripts/score2gp_orca_control.py snapshot --repository tticom/score2gp
    --pull-request N > live.json`, then `reconcile_task(authority, live, task_id=ID)` (records COMPLETED from live data),
-   promote the proposal unchanged (`status: PROMOTED`), advance `next_task_proposal` from the queue, revision +1,
+   promote the proposal unchanged (`status: PROMOTED`), advance `next_task_proposal` from `queued_task_proposals`, revision +1,
    regenerate ACTIVE_TASK.md; open it with `launchers/gov_open_pr.sh` (templates use `@@HEAD@@ @@BASE@@ @@PR@@`; see
    `launchers/gov-review-logs/trecon-*`); review; merge. Start the next author run.
 9. **Governance PR tests:** `worktrees/gov/score2gp-agentops/.venv/Scripts/python.exe -m pytest -q --capture=sys
    -p no:cacheprovider` (560 passed, 1 skipped) and `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py` (PASS).
    Branches must start with `governance/`.
-10. **Idle:** queue more work from the READY backlog as proposals (maintainer approval for what is worth doing).
+10. **Idle:** select work that the authority marks READY and propose it for the maintainer's approval before it is added.
 
 ## 3. Models and usage
 
@@ -118,7 +123,7 @@ Claude resumes by reading section 7 and `launchers/orchestrator.log`.
 
 Updated 2026-10-10: authority revision 120. TS-READ-01 (product #484, `30a4828`) and FIXTURE-GUARD-01 (product #485,
 `dfe05d0`) are COMPLETED. Active task PDF-GROUP-03 (promoted, prompt `projects/score2gp/prompts/next/pdf-group-03-song-bar-boxes.md`,
-branch `feat/pdf-group-03-song-bar-boxes`); next proposal UNREAD-01, queued PERF-01. Next action: author PDF-GROUP-03 with
+branch `feat/pdf-group-03-song-bar-boxes`); next proposal UNREAD-01, with PERF-01 held in `queued_task_proposals`. Next action: author PDF-GROUP-03 with
 `launchers/codex_author.sh tticom/score2gp feat/pdf-group-03-song-bar-boxes pdf-group-03 <prompt path>`, then steps 3-8 of
 section 2. Candidate follow-ups: the key reader counts time-signature digits as accidentals on Combining_Maj_minor_pent_-_A;
 Codex review sandbox failures on git shared memory (use the Claude-engine reviewer). Vector-parser: continue at E1-05 per its
