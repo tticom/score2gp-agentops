@@ -1,62 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 119,
+  "authority_revision": 120,
   "task": {
-    "id": "FIXTURE-GUARD-01",
-    "title": "Private-corpus tests that skip silently",
-    "objective": "A rerun of product main's CI on the categorised fixtures (run 37831924173) went from 1784 passed, 10 skipped to 1783 passed, 11 skipped and stayed green: fixtures PR #5 renamed 'Finger postition tips TAB (1).pdf', so the SCALE-01 control test_tab_only_private_controls_have_no_notation_staves skips silently. Fix the name, and add a guard so that, with the private corpus mounted in CI, a private-corpus skip fails the job and lists the test ids.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 485,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/fixture-guard-01-private-corpus-skip-guard",
-    "prompt": "projects/score2gp/prompts/next/fixture-guard-01-private-corpus-skip-guard.md",
-    "allowed_paths": [
-      "tests/test_scale_01_geometry.py",
-      "tests/conftest.py",
-      "tests/private_corpus_guard.py",
-      "tests/test_private_corpus_guard.py",
-      "scripts/check_private_skips.py",
-      ".github/workflows/pylint.yml",
-      "docs/setup.md"
-    ],
-    "acceptance": [
-      "Census first: every skip in tests/ that depends on the private corpus, grouped by reason string with counts and test ids; the legitimate unrelated skips are named.",
-      "The renamed control test names 'Finger postition tips TAB.pdf', runs (is not skipped) with the corpus mounted and asserts exactly what it asserted before; every other reference to a name missing from the mounted corpus is reported.",
-      "With an environment variable set by the CI step right after the corpus is mounted, a test skipped for a private-corpus reason fails the run with its id listed; local runs without the corpus are unchanged; the reason match comes from the census.",
-      "Real-source evidence: the renamed control runs on the real mounted file with its original assertion, and the exact-head CI shows 0 private-corpus skips; a mutant ignoring one reason string fails the guard test. Public synthetic skipped tests are non-domain infrastructure only (the guard makes no recognition, grouping, geometry, timing or fidelity claim), stated with that rationale, and carry no acceptance weight for the real-source claim; the guard test is not skippable.",
-      "The exact-head CI run shows 0 private-corpus skips and lists the remaining skips with a reason each; before and after passed and skipped counts are stated.",
-      "No test deleted, weakened or renamed to avoid the guard; no change under src/.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "SCALE-01"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed",
-      "guard_would_fail_a_legitimate_skip"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "PDF-GROUP-03",
     "title": "Songbook transcriptions refused at bar-box construction",
     "objective": "Find why nine with-score sources refuse at layout gating with pdf_bar_box_construction_not_enough_for_build_ir (Back In Black, Black Dog, Brown Sugar, Castles Made of Sand, Crossroads, Ex 2 Hands Up, Heartbreaker, Hey Joe, Pride and Joy), where the barline detector discards most candidate strokes as too short, not crossing the staff, outside the system and similar. Investigate first (read the PDF-GROUP-01 close-out); build bar boxes only by a staff-relative rule that keeps true barlines and rejects stems and other vertical strokes, otherwise stop with the measured finding. Ex 2 Hands Up has a reference .gp and is the measurable target. Evidence: the 2026-10-08 fixture survey and diagnosis.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -107,62 +57,62 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "UNREAD-01",
+    "title": "Unclassified notation symbols refuse whole bars",
+    "objective": "note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/unread-01-classify-notation-symbols",
+    "prompt": "projects/score2gp/prompts/next/unread-01-unclassified-notation-symbols.md",
+    "allowed_paths": [
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/pdf_tab_duration_associator.py",
+      "src/score2gp/pdf_tab_duration_types.py",
+      "src/score2gp/pdf_tab_bar_assembler.py",
+      "src/score2gp/pdf_tab_event_factory.py",
+      "tests/test_dur_02_oracle.py",
+      "tests/test_dur_02_*.py",
+      "tests/test_unread_01_*.py",
+      "tests/fixtures/pdf/unread_01/**",
+      "docs/design/**"
+    ],
+    "acceptance": [
+      "Measure first: a census over all 34 refused bars and every key_clef_unread record, per file and per symbol class, with size as a multiple of the staff space, position (on a stem, on a head, between events, above or below the staff), and what the reference shows there for Derek Trucks (counts and shapes only; the reference never feeds the reader).",
+      "The key and clef forms that Derek Trucks BB King triggers are identified and either read by a staff-relative unambiguous rule or refused with a located reason.",
+      "The largest symbol classes are read by staff-space-relative rules with no new absolute limits; every class not read is recorded as a located unread event (page, system, bar, event) with its class name, not a count by reason.",
+      "Derek Trucks BB King: bars written and refused before and after; every written bar compared with the reference through the independent oracle, every difference reported. Files without a reference are not claimed correct; written bars sum to the declared bar total.",
+      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert, on more than one approved source (Derek Trucks BB King, G-Am-C-Lick and at least one converting lesson), that each class read is read, that an unreadable overlap in a real file stays a located refusal, and that each mutant (drop an unclassified symbol silently; accept a class by a fixed point size) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+      "Nothing that worked may change: every file that converts today keeps a byte-identical GPIF for every bar written at base; any bar whose status changes is listed in the before and after table.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02",
+      "CFW-04"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed",
+      "classifier_would_guess_a_symbol",
+      "gate_requires_changing_meaning_not_scale"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "UNREAD-01",
-      "title": "Unclassified notation symbols refuse whole bars",
-      "objective": "note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/unread-01-classify-notation-symbols",
-      "prompt": "projects/score2gp/prompts/next/unread-01-unclassified-notation-symbols.md",
-      "allowed_paths": [
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/pdf_tab_duration_associator.py",
-        "src/score2gp/pdf_tab_duration_types.py",
-        "src/score2gp/pdf_tab_bar_assembler.py",
-        "src/score2gp/pdf_tab_event_factory.py",
-        "tests/test_dur_02_oracle.py",
-        "tests/test_dur_02_*.py",
-        "tests/test_unread_01_*.py",
-        "tests/fixtures/pdf/unread_01/**",
-        "docs/design/**"
-      ],
-      "acceptance": [
-        "Measure first: a census over all 34 refused bars and every key_clef_unread record, per file and per symbol class, with size as a multiple of the staff space, position (on a stem, on a head, between events, above or below the staff), and what the reference shows there for Derek Trucks (counts and shapes only; the reference never feeds the reader).",
-        "The key and clef forms that Derek Trucks BB King triggers are identified and either read by a staff-relative unambiguous rule or refused with a located reason.",
-        "The largest symbol classes are read by staff-space-relative rules with no new absolute limits; every class not read is recorded as a located unread event (page, system, bar, event) with its class name, not a count by reason.",
-        "Derek Trucks BB King: bars written and refused before and after; every written bar compared with the reference through the independent oracle, every difference reported. Files without a reference are not claimed correct; written bars sum to the declared bar total.",
-        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert, on more than one approved source (Derek Trucks BB King, G-Am-C-Lick and at least one converting lesson), that each class read is read, that an unreadable overlap in a real file stays a located refusal, and that each mutant (drop an unclassified symbol silently; accept a class by a fixed point size) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
-        "Nothing that worked may change: every file that converts today keeps a byte-identical GPIF for every bar written at base; any bar whose status changes is listed in the before and after table.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02",
-        "CFW-04"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed",
-        "classifier_would_guess_a_symbol",
-        "gate_requires_changing_meaning_not_scale"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "PERF-01",
       "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
@@ -2654,6 +2604,60 @@
       "merge_commit": "30a482844e2dac65b47fff11e11e08917aef0f52",
       "reconciled": true,
       "reconciled_at": "2026-10-09T19:42:56.101765+00:00"
+    },
+    {
+      "id": "FIXTURE-GUARD-01",
+      "title": "Private-corpus tests that skip silently",
+      "objective": "A rerun of product main's CI on the categorised fixtures (run 37831924173) went from 1784 passed, 10 skipped to 1783 passed, 11 skipped and stayed green: fixtures PR #5 renamed 'Finger postition tips TAB (1).pdf', so the SCALE-01 control test_tab_only_private_controls_have_no_notation_staves skips silently. Fix the name, and add a guard so that, with the private corpus mounted in CI, a private-corpus skip fails the job and lists the test ids.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 485,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/fixture-guard-01-private-corpus-skip-guard",
+      "prompt": "projects/score2gp/prompts/next/fixture-guard-01-private-corpus-skip-guard.md",
+      "allowed_paths": [
+        "tests/test_scale_01_geometry.py",
+        "tests/conftest.py",
+        "tests/private_corpus_guard.py",
+        "tests/test_private_corpus_guard.py",
+        "scripts/check_private_skips.py",
+        ".github/workflows/pylint.yml",
+        "docs/setup.md"
+      ],
+      "acceptance": [
+        "Census first: every skip in tests/ that depends on the private corpus, grouped by reason string with counts and test ids; the legitimate unrelated skips are named.",
+        "The renamed control test names 'Finger postition tips TAB.pdf', runs (is not skipped) with the corpus mounted and asserts exactly what it asserted before; every other reference to a name missing from the mounted corpus is reported.",
+        "With an environment variable set by the CI step right after the corpus is mounted, a test skipped for a private-corpus reason fails the run with its id listed; local runs without the corpus are unchanged; the reason match comes from the census.",
+        "Real-source evidence: the renamed control runs on the real mounted file with its original assertion, and the exact-head CI shows 0 private-corpus skips; a mutant ignoring one reason string fails the guard test. Public synthetic skipped tests are non-domain infrastructure only (the guard makes no recognition, grouping, geometry, timing or fidelity claim), stated with that rationale, and carry no acceptance weight for the real-source claim; the guard test is not skippable.",
+        "The exact-head CI run shows 0 private-corpus skips and lists the remaining skips with a reason each; before and after passed and skipped counts are stated.",
+        "No test deleted, weakened or renamed to avoid the guard; no change under src/.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "SCALE-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "guard_would_fail_a_legitimate_skip"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "a4fc93d7567eccdaa4362290dd16c047f776ce19",
+      "merge_commit": "dfe05d05978d6625a0e3658fe54280aec3189f53",
+      "reconciled": true,
+      "reconciled_at": "2026-10-10T05:55:50.382640+00:00"
     }
   ],
   "backlog": [
