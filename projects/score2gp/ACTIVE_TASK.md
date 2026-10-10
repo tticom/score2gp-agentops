@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PDF-GROUP-03 — Songbook transcriptions refused at bar-box construction
+**Task**: UNREAD-01 — Unclassified notation symbols refuse whole bars
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/pdf-group-03-song-bar-boxes`
+**PR Branch**: `feat/unread-01-classify-notation-symbols`
 
 **Pull Request**: TBD
 
@@ -16,19 +16,19 @@
 
 ## Objective
 
-Find why nine with-score sources refuse at layout gating with pdf_bar_box_construction_not_enough_for_build_ir (Back In Black, Black Dog, Brown Sugar, Castles Made of Sand, Crossroads, Ex 2 Hands Up, Heartbreaker, Hey Joe, Pride and Joy), where the barline detector discards most candidate strokes as too short, not crossing the staff, outside the system and similar. Investigate first (read the PDF-GROUP-01 close-out); build bar boxes only by a staff-relative rule that keeps true barlines and rejects stems and other vertical strokes, otherwise stop with the measured finding. Ex 2 Hands Up has a reference .gp and is the measurable target. Evidence: the 2026-10-08 fixture survey and diagnosis.
+note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_geometry.py`
-- `src/score2gp/pdf_staff_detection.py`
-- `src/score2gp/pdf_tab_system_partition.py`
+- `src/score2gp/notation_omr/**`
+- `src/score2gp/pdf_tab_duration_associator.py`
+- `src/score2gp/pdf_tab_duration_types.py`
 - `src/score2gp/pdf_tab_bar_assembler.py`
+- `src/score2gp/pdf_tab_event_factory.py`
 - `tests/test_dur_02_oracle.py`
-- `tests/test_pdf*.py`
-- `tests/test_pdf_group_03_*.py`
-- `tests/fixtures/pdf/pdf_group_03/**`
+- `tests/test_dur_02_*.py`
+- `tests/test_unread_01_*.py`
+- `tests/fixtures/pdf/unread_01/**`
 - `docs/design/**`
 
 ## Validation commands

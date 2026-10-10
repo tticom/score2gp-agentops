@@ -1,67 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 120,
+  "authority_revision": 121,
   "task": {
-    "id": "PDF-GROUP-03",
-    "title": "Songbook transcriptions refused at bar-box construction",
-    "objective": "Find why nine with-score sources refuse at layout gating with pdf_bar_box_construction_not_enough_for_build_ir (Back In Black, Black Dog, Brown Sugar, Castles Made of Sand, Crossroads, Ex 2 Hands Up, Heartbreaker, Hey Joe, Pride and Joy), where the barline detector discards most candidate strokes as too short, not crossing the staff, outside the system and similar. Investigate first (read the PDF-GROUP-01 close-out); build bar boxes only by a staff-relative rule that keeps true barlines and rejects stems and other vertical strokes, otherwise stop with the measured finding. Ex 2 Hands Up has a reference .gp and is the measurable target. Evidence: the 2026-10-08 fixture survey and diagnosis.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/pdf-group-03-song-bar-boxes",
-    "prompt": "projects/score2gp/prompts/next/pdf-group-03-song-bar-boxes.md",
-    "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_geometry.py",
-      "src/score2gp/pdf_staff_detection.py",
-      "src/score2gp/pdf_tab_system_partition.py",
-      "src/score2gp/pdf_tab_bar_assembler.py",
-      "tests/test_dur_02_oracle.py",
-      "tests/test_pdf*.py",
-      "tests/test_pdf_group_03_*.py",
-      "tests/fixtures/pdf/pdf_group_03/**",
-      "docs/design/**"
-    ],
-    "acceptance": [
-      "Measure first: per source (the nine and the converting lessons) the producer, pages, systems, string and staff spacing, the barline strokes found per system as multiples of the string spacing, and which strokes each of the six rejection diagnostics discards, saying which rejections are wrong and which are right. Counts and distances only.",
-      "If a rule exists: staff-relative, no new absolute point limit, keeps true barlines and still rejects stems, ledger lines and other vertical strokes; two separate staves are never joined.",
-      "Each of the nine ends in one stated state: converts with every written bar passing the existing bar checks, or stays refused with a located reason naming the failing geometry. Each file's before and after status, bars written and refused, and codes are reported.",
-      "Ex 2 Hands Up: if it passes grouping, its later refusals are reported by code and every written bar is compared with the reference through the independent oracle; files without a reference are not claimed correct.",
-      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert the changed behaviour on real sources from more than one producer (the nine and at least two converting lessons), with negative controls taken from real sources (a stem, a ledger line and a vertical stroke between two staves in real files must not become barlines), and a mutant keeping the old rejection fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
-      "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported.",
-      "No change to the build_ir.py gating sets.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "PDF-GROUP-02",
-      "SCALE-01"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed",
-      "gate_requires_changing_meaning_not_scale"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "UNREAD-01",
     "title": "Unclassified notation symbols refuse whole bars",
     "objective": "note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -112,59 +57,58 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "PERF-01",
-      "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
-      "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/perf-01-melodic-expressions-runtime",
-      "prompt": "projects/score2gp/prompts/next/perf-01-melodic-expressions-runtime.md",
-      "allowed_paths": [
-        "src/score2gp/pdf.py",
-        "src/score2gp/pdf_*.py",
-        "src/score2gp/notation_omr/**",
-        "src/score2gp/build_ir.py",
-        "src/score2gp/cli.py",
-        "tests/test_perf_01_*.py",
-        "tests/fixtures/pdf/perf_01/**",
-        "docs/design/**"
-      ],
-      "acceptance": [
-        "Profile first: per stage wall time and peak working set on Melodic_Expressions.pdf (run to completion once, with a stated overall limit) against Melodic_Expressions_Chap_19_.pdf and Lesson-6.pdf, with the page count and the number of candidate staves, systems, strokes and tokens at each stage; name the function and data structure the cost follows.",
-        "Either a bounded algorithm with its complexity stated before and after, or a located resource gate with a measured stated bound and a refusal code naming the count that exceeded it; a gate must not refuse any file that converts today.",
-        "Melodic_Expressions.pdf converts or refuses with a located code in under 120 s and under 1.5 GB on the workspace Windows host (governance-set bound, revisable only with measured evidence).",
-        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): a private-corpus test on Melodic_Expressions.pdf asserts the expensive-operation count (or the located resource gate and its code) at the changed seam, and a second real source (Lesson-6 and one other) shows the count and the GPIF unchanged; a mutant restoring the old behaviour fails the test on the real file. The growth check on a scalable public synthetic fixture is supplementary non-domain infrastructure only (it makes no recognition or fidelity claim; rationale: it is the only way to show growth in CI without the private corpus) and carries no acceptance weight.",
-        "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported. Time and peak working set are reported before and after for every file; none may get slower beyond a stated measurement noise.",
-        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "MEM-01",
-        "SCALE-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "dur_02_regression",
-        "private_content_would_be_committed",
-        "output_changed_for_a_file_that_converts_today"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "PERF-01",
+    "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
+    "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/perf-01-melodic-expressions-runtime",
+    "prompt": "projects/score2gp/prompts/next/perf-01-melodic-expressions-runtime.md",
+    "allowed_paths": [
+      "src/score2gp/pdf.py",
+      "src/score2gp/pdf_*.py",
+      "src/score2gp/notation_omr/**",
+      "src/score2gp/build_ir.py",
+      "src/score2gp/cli.py",
+      "tests/test_perf_01_*.py",
+      "tests/fixtures/pdf/perf_01/**",
+      "docs/design/**"
+    ],
+    "acceptance": [
+      "Profile first: per stage wall time and peak working set on Melodic_Expressions.pdf (run to completion once, with a stated overall limit) against Melodic_Expressions_Chap_19_.pdf and Lesson-6.pdf, with the page count and the number of candidate staves, systems, strokes and tokens at each stage; name the function and data structure the cost follows.",
+      "Either a bounded algorithm with its complexity stated before and after, or a located resource gate with a measured stated bound and a refusal code naming the count that exceeded it; a gate must not refuse any file that converts today.",
+      "Melodic_Expressions.pdf converts or refuses with a located code in under 120 s and under 1.5 GB on the workspace Windows host (governance-set bound, revisable only with measured evidence).",
+      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): a private-corpus test on Melodic_Expressions.pdf asserts the expensive-operation count (or the located resource gate and its code) at the changed seam, and a second real source (Lesson-6 and one other) shows the count and the GPIF unchanged; a mutant restoring the old behaviour fails the test on the real file. The growth check on a scalable public synthetic fixture is supplementary non-domain infrastructure only (it makes no recognition or fidelity claim; rationale: it is the only way to show growth in CI without the private corpus) and carries no acceptance weight.",
+      "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported. Time and peak working set are reported before and after for every file; none may get slower beyond a stated measurement noise.",
+      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "MEM-01",
+      "SCALE-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "dur_02_regression",
+      "private_content_would_be_committed",
+      "output_changed_for_a_file_that_converts_today"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -2658,6 +2602,64 @@
       "merge_commit": "dfe05d05978d6625a0e3658fe54280aec3189f53",
       "reconciled": true,
       "reconciled_at": "2026-10-10T05:55:50.382640+00:00"
+    },
+    {
+      "id": "PDF-GROUP-03",
+      "title": "Songbook transcriptions refused at bar-box construction",
+      "objective": "Find why nine with-score sources refuse at layout gating with pdf_bar_box_construction_not_enough_for_build_ir (Back In Black, Black Dog, Brown Sugar, Castles Made of Sand, Crossroads, Ex 2 Hands Up, Heartbreaker, Hey Joe, Pride and Joy), where the barline detector discards most candidate strokes as too short, not crossing the staff, outside the system and similar. Investigate first (read the PDF-GROUP-01 close-out); build bar boxes only by a staff-relative rule that keeps true barlines and rejects stems and other vertical strokes, otherwise stop with the measured finding. Ex 2 Hands Up has a reference .gp and is the measurable target. Evidence: the 2026-10-08 fixture survey and diagnosis.",
+      "status": "RESOLVED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/pdf-group-03-song-bar-boxes",
+      "prompt": "projects/score2gp/prompts/next/pdf-group-03-song-bar-boxes.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_geometry.py",
+        "src/score2gp/pdf_staff_detection.py",
+        "src/score2gp/pdf_tab_system_partition.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_pdf*.py",
+        "tests/test_pdf_group_03_*.py",
+        "tests/fixtures/pdf/pdf_group_03/**",
+        "docs/design/**"
+      ],
+      "acceptance": [
+        "Measure first: per source (the nine and the converting lessons) the producer, pages, systems, string and staff spacing, the barline strokes found per system as multiples of the string spacing, and which strokes each of the six rejection diagnostics discards, saying which rejections are wrong and which are right. Counts and distances only.",
+        "If a rule exists: staff-relative, no new absolute point limit, keeps true barlines and still rejects stems, ledger lines and other vertical strokes; two separate staves are never joined.",
+        "Each of the nine ends in one stated state: converts with every written bar passing the existing bar checks, or stays refused with a located reason naming the failing geometry. Each file's before and after status, bars written and refused, and codes are reported.",
+        "Ex 2 Hands Up: if it passes grouping, its later refusals are reported by code and every written bar is compared with the reference through the independent oracle; files without a reference are not claimed correct.",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert the changed behaviour on real sources from more than one producer (the nine and at least two converting lessons), with negative controls taken from real sources (a stem, a ledger line and a vertical stroke between two staves in real files must not become barlines), and a mutant keeping the old rejection fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+        "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported.",
+        "No change to the build_ir.py gating sets.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "PDF-GROUP-02",
+        "SCALE-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "gate_requires_changing_meaning_not_scale"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Ended 2026-10-10 at the task's own stop condition gate_requires_changing_meaning_not_scale: no recognition, gate or test change; a docs-only measurement PR (tticom/score2gp#486, one file docs/design/pdf-group-03-song-bar-boxes.md) was opened by the launcher and closed unmerged because its handback cannot honestly pass (acceptance 1 and 8 FAIL, 5 NOT_RUN); the branch feat/pdf-group-03-song-bar-boxes keeps the design note. Findings (counts and distances only, product main dfe05d0, 39 PDFs base and candidate): the nine refuse the same way; the barline rejections that look wrong are inherited note stems and repeat-stroke exclusions: seven false final stem boundaries in Ex 2 Hands Up, true repeat strokes excluded, 11 visual source bars versus 17 detector boxes; Black Dog p1 s3 and s5 have 3 and 2 full-height raw strokes vetoed by multi-topology staff ownership and Heartbreaker p1 s2 has 5; the final thin/thick pair overhangs by 0.5667 staff spaces. The partner-inheritance stop of PDF-GROUP-01 recurs: fixing only the overhang would not establish correct bars. All 39 PDFs run at base and candidate: 18 conversions, 18 of 18 GPIFs byte-identical, all 21 refusals keep their codes. Full local suite 1842 passed, 14 known Windows failures, 1 skipped, 1 xfailed. DECISION NEEDED FROM THE MAINTAINER before any successor: a design decision on the meaning of the staff-ownership/partner-inheritance gate and on how note stems are told apart from barlines (the same question PDF-GROUP-01 parked); the Rust vector-parser's scale-relative grouping is the other route. No successor promoted for this family.",
+      "reconciled": true,
+      "reconciled_at": "2026-10-10T11:29:38.178546+00:00"
     }
   ],
   "backlog": [
