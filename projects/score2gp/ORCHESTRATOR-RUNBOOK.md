@@ -121,10 +121,30 @@ Claude resumes by reading section 7 and `launchers/orchestrator.log`.
 
 ## 7. State and next steps (update each session)
 
-Updated 2026-10-10: authority revision 120. TS-READ-01 (product #484, `30a4828`) and FIXTURE-GUARD-01 (product #485,
-`dfe05d0`) are COMPLETED. Active task PDF-GROUP-03 (promoted, prompt `projects/score2gp/prompts/next/pdf-group-03-song-bar-boxes.md`,
-branch `feat/pdf-group-03-song-bar-boxes`); next proposal UNREAD-01, with PERF-01 held in `queued_task_proposals`. Next action: author PDF-GROUP-03 with
-`launchers/codex_author.sh tticom/score2gp feat/pdf-group-03-song-bar-boxes pdf-group-03 <prompt path>`, then steps 3-8 of
-section 2. Candidate follow-ups: the key reader counts time-signature digits as accidentals on Combining_Maj_minor_pent_-_A;
-Codex review sandbox failures on git shared memory (use the Claude-engine reviewer). Vector-parser: continue at E1-05 per its
-`docs/TASKS.md`; maintainer directives are recorded in its `docs/MAINTAINER-DIRECTIVES.md`.
+Updated 2026-10-11: authority revision 123 (UNREAD-01 bound to #487). COMPLETED: TS-READ-01 (product #484, `30a4828`), FIXTURE-GUARD-01 (product
+#485, `dfe05d0`). PDF-GROUP-03 is RESOLVED at its stop condition (no code; the gate meaning is the maintainer's decision).
+Active task **UNREAD-01** (PROMOTED, branch `feat/unread-01-classify-notation-symbols`, product draft PR #487 at
+`1625e60`, prompt `projects/score2gp/prompts/next/unread-01-unclassified-notation-symbols.md`). Maintainer decision
+2026-10-10 (merged in #778): dead-note X heads are a located `dead_note_x_head` refusal in UNREAD-01 and become TAB X
+events in the next task. Next proposal **UNREAD-02** (`feat/unread-02-dead-note-x-events`, paths include `build_ir.py`,
+`tabraw.py`, and `pdf.py` only where proven); `queued_task_proposals` holds PERF-01.
+
+UNREAD-01 author status: run 1 stopped at the scope gate; run 2 saved a partial commit (20 G-Am-C-Lick X heads located, 16
+bands refused, GPIF byte-identical; the font clef/key reading, census, oracle track selection, mutants and exact-head full
+suite were not done); run 3 continues from uncommitted partial edits. If no new commit is on the branch, relaunch
+`launchers/codex_author.sh tticom/score2gp feat/unread-01-classify-notation-symbols unread-01 <continuation prompt>` (a
+continuation prompt is the task prompt plus a note of what is still missing, kept under `launchers/prompts/`). The PR must stay a
+DRAFT while the author continues (the launcher's dispatcher override needs a draft). Keep unfinished acceptance entries
+NOT_RUN; the full suite needs `--basetemp` under the workspace `.tmp` (the default temp folder gives PermissionErrors).
+Then: handback, `gh pr ready 487`, `launchers/gov_claude_review.sh`, merge as `tticomgov-code`, reconcile, promote
+UNREAD-02, then PERF-01.
+
+Maintainer decisions standing: AgentOps PR #752 and skills PR #7 (slim-governance drafts) stay open and unmerged until
+the vector-parser experiment is proven; do not merge or close them. Candidate follow-ups: the key reader counts
+time-signature digits as accidentals on Combining_Maj_minor_pent_-_A; the Codex review sandbox fails on git shared memory
+(use the Claude-engine reviewer, or add the automatic fallback to `review_with_fallback.sh`); open maintainer decision on the
+PDF-GROUP-03 gate (staff-ownership / partner-inheritance, stem versus barline).
+
+Vector-parser (separate, `docs/MAINTAINER-DIRECTIVES.md` there): E1-05 (exact mode) is being authored by Codex in
+`worktrees/tticom/vp-e1-05` (branch `task/e1-05-exact`); land with `pwsh scripts/land.ps1 -Author codex` after the author
+finishes (Claude reviews), then E1-06. Background shells are reaped at low memory: re-arm waiters when a session starts.
