@@ -30,6 +30,7 @@ note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 su
 - `tests/test_unread_01_*.py`
 - `tests/fixtures/pdf/unread_01/**`
 - `docs/design/**`
+- `tests/test_omit_02_private.py`
 
 ## Validation commands
 
