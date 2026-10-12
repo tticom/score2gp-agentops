@@ -2,35 +2,36 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: UNREAD-01 — Unclassified notation symbols refuse whole bars
+**Task**: UNREAD-02 — Dead-note X heads become TAB X events, with a candidate and routing contract
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/unread-01-classify-notation-symbols`
+**PR Branch**: `feat/unread-02-dead-note-x-events`
 
-**Pull Request**: 487
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-note_duration_event_unread is the largest bar-level refusal in the 2026-10-08 survey (34 bars: Derek Trucks BB King 19 of 20 bars, G-Am-C-Lick 8 of 9, The_EXACT_System 5, Am-blues-lick 1, Just-Practice 1), with the detail symbol_unclassified and, for Derek Trucks, 29 key_clef_unread records. Census the unclassified symbols and key/clef forms, read the standard-notation classes by a staff-space-relative rule, and give every other symbol a located unread event naming its class (never a silent drop). Folds in DUR-01-FU1. Derek Trucks BB King has a reference .gp and is the measurable target.
+UNREAD-01 (stopped at its scope gate, then limited to located refusals by the maintainer on 2026-10-10) leaves standard dead-note X heads as located dead_note_x_head refusals. G-Am-C-Lick has four cross-shaped heads (1.16 x 1.0 staff spaces) whose stems carry secondary beams that no recognised head owns, so the bars holding them stay refused. Writing them faithfully needs a TAB X candidate kind and routing: build_ir.py:1772 keeps only numeric-fret candidates (plus the legacy rest token), line 1801 passes only those to the assembler, and tabraw.py:107 parses only digits. The IR (NoteEvent.is_dead) and GPIF (dead-note technique) already carry a dead note. Add the candidate and routing contract so an X on a string is read from the TAB, associated with its duration like a digit and written as a dead note, without changing what any numeric-fret file produces. Maintainer: 'widen the scope to fit in 1 as a or part of the next task' (2026-10-10).
 
 ## Allowed paths
 
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/pdf_tab_duration_associator.py`
-- `src/score2gp/pdf_tab_duration_types.py`
+- `src/score2gp/build_ir.py`
+- `src/score2gp/tabraw.py`
+- `src/score2gp/pdf.py`
 - `src/score2gp/pdf_tab_bar_assembler.py`
 - `src/score2gp/pdf_tab_event_factory.py`
+- `src/score2gp/pdf_tab_duration_associator.py`
+- `src/score2gp/pdf_tab_duration_types.py`
+- `src/score2gp/notation_omr/**`
 - `tests/test_dur_02_oracle.py`
-- `tests/test_dur_02_*.py`
-- `tests/test_unread_01_*.py`
-- `tests/fixtures/pdf/unread_01/**`
+- `tests/test_unread_02_*.py`
+- `tests/fixtures/pdf/unread_02/**`
 - `docs/design/**`
-- `tests/test_omit_02_private.py`
 
 ## Validation commands
 
