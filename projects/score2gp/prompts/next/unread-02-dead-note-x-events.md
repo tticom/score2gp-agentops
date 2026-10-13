@@ -41,3 +41,14 @@ Read each dead-note X on the TAB as a candidate of its own kind (never a fret nu
 - **Private tests convert under `<repo>/work`** in a `tempfile.TemporaryDirectory`, never pytest's `tmp_path`.
 - **Protect what already works:** DUR-02/03, OMIT-01 to OMIT-05, TS-READ-01, UNREAD-01, LAYOUT-01, MEM-01, CFW-04, PARTIAL-01, SCALE-01, TUPLET-TAB-01, PDF-GROUP-02.
 - Out of scope: other dead-note-like techniques (ghost notes, muted strums), `bar_total_mismatch` and the other bar-level causes unless the X reading removes one; report such side effects.
+
+## Scope amendment 2026-10-13 (authority revision 126), approved by the maintainer
+
+Author run 1 stopped at the scope gate and reported it first, as rule 8 requires: `Note` (`ir.py:513`) requires an integer `fret` (0-36) and `pitch`, and `gpif.py` emits a DeadNote alongside a numeric Fret/Midi, so a dead note read from an X that prints no fret cannot be stored without inventing one. The maintainer approved widening the scope on 2026-10-13 ("approved") after being shown this design, so `allowed_paths` gains `src/score2gp/ir.py`, `src/score2gp/gpif.py` and `schemas/scoreir.v0.1.schema.json`, on these conditions, which carry acceptance weight:
+
+- `fret` and `pitch` may be absent only on a note with `is_dead = true`; a validator rejects a non-dead note without them. The schema change is additive: every existing IR document still validates, and `export-schema` output changes only by that relaxation.
+- The reader never supplies a fret: a dead note leaves `fret` and `pitch` unset in the IR. Writing it as fret 0 in the IR stays the mutant that must fail.
+- Only `gpif.py` chooses a storage value, at emission time, because the format requires one. Writer convention (maintainer's musical choice: a dead note is fretted nearest the next note): the fret of the next note on the same string in the same voice; else the previous note on that string; else the open string (0). The value is not a reading of the source, is named as a writer convention in the report, and the report states how Guitar Pro displays and plays the result, with the evidence available.
+- Every consumer of `Note.fret` and `Note.pitch` (pitch checks, tuning, key and spelling, tie, merge, fingering, JSON and summary exports) is audited and listed; none may treat an absent value as 0.
+- A numeric-fret file stays byte-identical at every bar written at base (acceptance 7 remains a hard stop).
+- Census first: finish the X census over every approved source (Author run 1 covered G-Am-C-Lick, Derek Trucks BB King and Lessons 3-7). If G-Am-C-Lick is the only source with dead notes, say so, and acceptance 6 is then met on that source plus the refusal tests on the others; report it rather than claim a second source.

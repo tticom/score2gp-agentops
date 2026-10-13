@@ -31,6 +31,9 @@ UNREAD-01 (stopped at its scope gate, then limited to located refusals by the ma
 - `tests/test_dur_02_oracle.py`
 - `tests/test_unread_02_*.py`
 - `tests/fixtures/pdf/unread_02/**`
+- `src/score2gp/ir.py`
+- `src/score2gp/gpif.py`
+- `schemas/scoreir.v0.1.schema.json`
 - `docs/design/**`
 
 ## Validation commands
