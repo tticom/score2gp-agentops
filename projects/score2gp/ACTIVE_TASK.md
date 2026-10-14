@@ -42,6 +42,7 @@ UNREAD-01 (stopped at its scope gate, then limited to located refusals by the ma
 - `docs/design/**`
 - `tests/test_cfw_04_private.py`
 - `tests/test_cfw_04_grace.py`
+- `src/score2gp/compare.py`
 
 ## Validation commands
 
