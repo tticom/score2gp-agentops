@@ -88,3 +88,11 @@ Author run 5 (partial implementation committed on score2gp#488) stopped at the r
 - The two aggregate assertions are updated to the remeasured numeric and strike totals with the evidence (the run-5 measurement is 62 numeric + 16 strike); the scaled-source mutants keep failing on the real files.
 - Each newly owned numeric event is listed with its bar and the cross-headed stem it touched; a band that cannot be owned by a head, stem and duration under the staff-space-relative rules stays a located refusal.
 - No other assertion changes beyond the revision 128 and 129 conditions; nothing is deleted or skipped.
+
+## Scope amendment 2026-10-14 (authority revision 133): the CFW-04 assertions this task supersedes
+
+Author run 6 (score2gp#489, head 54edb95) stopped at the scope gate: `tests/test_cfw_04_private.py:41-45` asserts that source bar 6 of G-Am-C-Lick is refused as `bar_total_mismatch`; reading its percussive strike removes that timing mismatch and the bar is then refused as `note_duration_event_unread` with detail `unsupported_overlapping_form`. `tests/test_cfw_04_grace.py:97-104` freezes the refusal of a supplementary dotted-cross bar. Both are added to `allowed_paths`. The maintainer approved this on 2026-10-14 ("approved"). `pull_request` is bound to 489, the open PR on the active branch. Conditions:
+
+- Only an assertion that names a refusal the strike now supersedes may change, and it must name the bar's remaining located refusal (class and detail); the numeric and reference checks in those tests stay as they are.
+- Each changed assertion is listed in the report with the evidence that replaces it. No test is deleted or skipped; a bar that is written must match its reference.
+- If any other test outside `allowed_paths` asserts a superseded refusal, stop and report its path.

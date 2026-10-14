@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/unread-02-percussive-strikes`
 
-**Pull Request**: TBD
+**Pull Request**: 489
 
 **Owner Role**: implementation
 
@@ -40,6 +40,8 @@ UNREAD-01 (stopped at its scope gate, then limited to located refusals by the ma
 - `tests/test_unread_01_mutants.py`
 - `tests/test_unread_01_font_glyphs.py`
 - `docs/design/**`
+- `tests/test_cfw_04_private.py`
+- `tests/test_cfw_04_grace.py`
 
 ## Validation commands
 
