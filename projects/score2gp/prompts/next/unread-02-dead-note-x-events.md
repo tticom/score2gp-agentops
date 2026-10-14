@@ -79,3 +79,12 @@ Author run 4 stopped at the revision 128 condition that every other assertion in
 - The numeric-head part stays frozen: the count of read beamed events that are not percussive strikes remains 54, and the scaled-source mutants keep failing on the real files.
 - The percussive-strike beamed events are asserted separately with the measured count, remeasured after complete ownership, and the report lists the old and new totals with the evidence.
 - No other assertion in those files changes beyond the revision 128 conditions; nothing is deleted or skipped.
+
+## Condition correction 2026-10-14 (authority revision 130): numeric beamed events on bars refused at base
+
+Author run 5 (partial implementation committed on score2gp#488) stopped at the revision 129 condition that the numeric-head beamed-event count stays at 54. Complete painted-contact ownership measures 62 numeric and 16 percussive-strike beamed events for G-Am-C-Lick, not 54 and 24: eight numeric events use beam bands UNREAD-01 quarantined only because they touch cross-headed stems. With 54 forced, bars 0, 1, 2, 4, 5, 6 total 9/2 instead of 4 quarters and stay refused; with full ownership all six total 4 quarters. The maintainer approved correcting this on 2026-10-14 ("approved"). `allowed_paths` is unchanged. This replaces the "numeric count stays 54" condition of revision 129:
+
+- The numeric beamed-event count may rise above 54 only on bars that were refused at base. Every bar written at base stays byte-identical in GPIF (acceptance 7 is still a hard stop), and the list of bars whose status changes is part of the report.
+- The two aggregate assertions are updated to the remeasured numeric and strike totals with the evidence (the run-5 measurement is 62 numeric + 16 strike); the scaled-source mutants keep failing on the real files.
+- Each newly owned numeric event is listed with its bar and the cross-headed stem it touched; a band that cannot be owned by a head, stem and duration under the staff-space-relative rules stays a located refusal.
+- No other assertion changes beyond the revision 128 and 129 conditions; nothing is deleted or skipped.
