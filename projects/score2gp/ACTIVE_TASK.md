@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/unread-02-dead-note-x-events`
 
-**Pull Request**: TBD
+**Pull Request**: 488
 
 **Owner Role**: implementation
 
