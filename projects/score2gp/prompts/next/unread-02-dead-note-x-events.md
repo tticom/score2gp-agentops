@@ -71,4 +71,3 @@ Author run 3 stopped at the scope gate: three UNREAD-01 real-source tests assert
 - Only assertions that a percussive strike stays refused or unread may change, and each changed assertion is listed in the report with the source evidence that replaces it (a read event with its string and duration, or a located refusal naming the class where the strike has no owner).
 - The attached-notehead gate, the numeric-fret expectations and every other assertion in those files stay as they are; no test is deleted or skipped; the mutants keep failing on the real files.
 - If any other test outside `allowed_paths` asserts the superseded refusal, stop and report its path.
-
