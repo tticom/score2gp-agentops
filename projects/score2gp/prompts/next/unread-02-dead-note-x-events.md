@@ -96,3 +96,12 @@ Author run 6 (score2gp#489, head 54edb95) stopped at the scope gate: `tests/test
 - Only an assertion that names a refusal the strike now supersedes may change, and it must name the bar's remaining located refusal (class and detail); the numeric and reference checks in those tests stay as they are.
 - Each changed assertion is listed in the report with the evidence that replaces it. No test is deleted or skipped; a bar that is written must match its reference.
 - If any other test outside `allowed_paths` asserts a superseded refusal, stop and report its path.
+
+## Scope amendment 2026-10-14 (authority revision 134): the comparison summary
+
+Author run 7 (score2gp#489, head 6eb540a) stopped at `src/score2gp/compare.py:16-26,169-172,866-898`: `NoteData` and its JSON summary discard `is_dead`, and `compare_bar_scores` treats an absent pitch or fret as unspecified, so on the real G-Am-C-Lick conversion all six written strikes lose their class and replacing them with ordinary fret-0 notes still returns `matches = true` with zero mismatches. `src/score2gp/compare.py` is added to `allowed_paths`. The maintainer approved this on 2026-10-14 ("Approved."). Conditions:
+
+- Numeric comparisons and exports stay byte-identical for every numeric note.
+- A percussive strike's summary keeps its class (`is_dead`) and its absent fret and pitch; a comparison between a strike and an ordinary note, in either direction, is a mismatch.
+- Real-source tests reject both mutants: all strikes replaced by ordinary fret-0 notes, and by dead fret-0 notes carrying a fret.
+- If any other consumer outside `allowed_paths` needs the same change, stop and name its path.

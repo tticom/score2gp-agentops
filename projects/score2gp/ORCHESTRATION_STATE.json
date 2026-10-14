@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 133,
+  "authority_revision": 134,
   "task": {
     "id": "UNREAD-02",
     "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
@@ -37,7 +37,8 @@
       "tests/test_unread_01_font_glyphs.py",
       "docs/design/**",
       "tests/test_cfw_04_private.py",
-      "tests/test_cfw_04_grace.py"
+      "tests/test_cfw_04_grace.py",
+      "src/score2gp/compare.py"
     ],
     "acceptance": [
       "Measure first: every X head in the approved sources, per file, on the TAB (string, bar, position) and in the notation (head shape, stem, beam), with the located dead_note_x_head records UNREAD-01 produced and what a reference .gp shows for the same bar where a reference exists (counts and shapes only; the reference never feeds the reader). Say which X-like glyphs are not dead notes and how the rule tells them apart.",
