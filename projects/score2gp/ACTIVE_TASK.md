@@ -36,6 +36,9 @@ UNREAD-01 (stopped at its scope gate, then limited to located refusals by the ma
 - `schemas/scoreir.v0.1.schema.json`
 - `src/score2gp/black_key_spelling.py`
 - `src/score2gp/gp_package.py`
+- `tests/test_unread_01_dead_heads.py`
+- `tests/test_unread_01_mutants.py`
+- `tests/test_unread_01_font_glyphs.py`
 - `docs/design/**`
 
 ## Validation commands

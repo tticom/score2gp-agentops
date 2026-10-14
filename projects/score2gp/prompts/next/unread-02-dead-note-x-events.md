@@ -63,3 +63,11 @@ Maintainer instruction the same day: 'We urgently need a way to handle percussiv
 - Spelling and every other pitch-based step skips a percussive strike explicitly, with a test on a real source that carries one (G-Am-C-Lick, E_Chord_Lick_Chord, Can't Find My Way Home at base).
 - The consumer audit is completed and listed in full; if it finds another consumer outside `allowed_paths`, stop and report it (do not widen silently).
 - Numeric-fret output stays byte-identical at every bar written at base (acceptance 7).
+
+## Scope amendment 2026-10-14 (authority revision 128): the UNREAD-01 assertions this task supersedes
+
+Author run 3 stopped at the scope gate: three UNREAD-01 real-source tests assert that G-Am-C-Lick's twenty crosses stay located unread events and their bars stay refused, which is exactly what UNREAD-01 limited the work to and UNREAD-02 supersedes: `tests/test_unread_01_dead_heads.py:18-33,54-59`, `tests/test_unread_01_mutants.py:53-70,104,118`, `tests/test_unread_01_font_glyphs.py:31-41`. They are added to `allowed_paths`, on these conditions:
+
+- Only assertions that a percussive strike stays refused or unread may change, and each changed assertion is listed in the report with the source evidence that replaces it (a read event with its string and duration, or a located refusal naming the class where the strike has no owner).
+- The attached-notehead gate, the numeric-fret expectations and every other assertion in those files stay as they are; no test is deleted or skipped; the mutants keep failing on the real files.
+- If any other test outside `allowed_paths` asserts the superseded refusal, stop and report its path.
