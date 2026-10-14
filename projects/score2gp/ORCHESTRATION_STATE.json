@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 131,
+  "authority_revision": 132,
   "task": {
     "id": "UNREAD-02",
     "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
@@ -13,7 +13,7 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/unread-02-dead-note-x-events",
+    "branch": "feat/unread-02-percussive-strikes",
     "prompt": "projects/score2gp/prompts/next/unread-02-dead-note-x-events.md",
     "allowed_paths": [
       "src/score2gp/build_ir.py",

@@ -8,7 +8,7 @@
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/unread-02-dead-note-x-events`
+**PR Branch**: `feat/unread-02-percussive-strikes`
 
 **Pull Request**: TBD
 
