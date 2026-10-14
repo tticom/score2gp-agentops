@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 129,
+  "authority_revision": 130,
   "task": {
     "id": "UNREAD-02",
     "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
