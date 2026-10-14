@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 126,
+  "authority_revision": 127,
   "task": {
     "id": "UNREAD-02",
     "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
@@ -30,6 +30,8 @@
       "src/score2gp/ir.py",
       "src/score2gp/gpif.py",
       "schemas/scoreir.v0.1.schema.json",
+      "src/score2gp/black_key_spelling.py",
+      "src/score2gp/gp_package.py",
       "docs/design/**"
     ],
     "acceptance": [

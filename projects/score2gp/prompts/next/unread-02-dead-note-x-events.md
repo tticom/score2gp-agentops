@@ -52,3 +52,14 @@ Author run 1 stopped at the scope gate and reported it first, as rule 8 requires
 - Every consumer of `Note.fret` and `Note.pitch` (pitch checks, tuning, key and spelling, tie, merge, fingering, JSON and summary exports) is audited and listed; none may treat an absent value as 0.
 - A numeric-fret file stays byte-identical at every bar written at base (acceptance 7 remains a hard stop).
 - Census first: finish the X census over every approved source (Author run 1 covered G-Am-C-Lick, Derek Trucks BB King and Lessons 3-7). If G-Am-C-Lick is the only source with dead notes, say so, and acceptance 6 is then met on that source plus the refusal tests on the others; report it rather than claim a second source.
+
+## Scope amendment 2026-10-14 (authority revision 127), maintainer instruction
+
+Terminology (maintainer, 2026-10-14: 'rename "fretless note" as "percussive strike"'): a dead-note X is called a **percussive strike** in this task's reports, tests and documents. The IR flag stays `is_dead` and the GPIF element stays DeadNote (renaming either would be an unrelated schema break); a percussive strike is a note with `is_dead = true` and no fret or pitch. Wherever the amendment above says "fretless dead note", read "percussive strike".
+
+Maintainer instruction the same day: 'We urgently need a way to handle percussive strikes', answering the proposal to extend the scope to the consumers that author run 2 found. Run 2 stopped at the scope gate and named two: `src/score2gp/black_key_spelling.py:52` (`note.pitch % 12` on every note; `TypeError` on a note without pitch) and `src/score2gp/gp_package.py:1651-1652, 1789-1796` (the ScoreIR summary reader maps absent fret/pitch to 0 and rebuilds notes without `is_dead`). `allowed_paths` gains both files, on these conditions:
+
+- Absent stays absent: neither consumer may substitute 0 or the writer's storage convention for a percussive strike's missing fret or pitch; a percussive strike round-trips through the summary with `is_dead = true` and no fret or pitch.
+- Spelling and every other pitch-based step skips a percussive strike explicitly, with a test on a real source that carries one (G-Am-C-Lick, E_Chord_Lick_Chord, Can't Find My Way Home at base).
+- The consumer audit is completed and listed in full; if it finds another consumer outside `allowed_paths`, stop and report it (do not widen silently).
+- Numeric-fret output stays byte-identical at every bar written at base (acceptance 7).
