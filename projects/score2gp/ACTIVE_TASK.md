@@ -34,6 +34,8 @@ UNREAD-01 (stopped at its scope gate, then limited to located refusals by the ma
 - `src/score2gp/ir.py`
 - `src/score2gp/gpif.py`
 - `schemas/scoreir.v0.1.schema.json`
+- `src/score2gp/black_key_spelling.py`
+- `src/score2gp/gp_package.py`
 - `docs/design/**`
 
 ## Validation commands
