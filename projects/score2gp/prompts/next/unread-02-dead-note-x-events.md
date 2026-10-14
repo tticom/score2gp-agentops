@@ -71,3 +71,11 @@ Author run 3 stopped at the scope gate: three UNREAD-01 real-source tests assert
 - Only assertions that a percussive strike stays refused or unread may change, and each changed assertion is listed in the report with the source evidence that replaces it (a read event with its string and duration, or a located refusal naming the class where the strike has no owner).
 - The attached-notehead gate, the numeric-fret expectations and every other assertion in those files stay as they are; no test is deleted or skipped; the mutants keep failing on the real files.
 - If any other test outside `allowed_paths` asserts the superseded refusal, stop and report its path.
+
+## Condition correction 2026-10-14 (authority revision 129): aggregate beam-count assertions
+
+Author run 4 stopped at the revision 128 condition that every other assertion in those files stays as it is. Two assertions freeze the total number of read beamed events for G-Am-C-Lick at 54, counting every head kind: `tests/test_unread_01_font_glyphs.py:100-108` (`test_real_source_beams_reach_read_events[G-Am-C-Lick-54]`) and `tests/test_unread_01_mutants.py:30-38` (`_assert_beams`, used by `test_fixed_point_beam_size_mutant_fails_on_scaled_approved_sources[G-Am-C-Lick-54]`). Reading the percussive strikes and their beams necessarily changes that aggregate (the author's no-write probe measured base 54, probe 78). The maintainer approved this correction on 2026-10-14 ("approved"). `allowed_paths` is unchanged. Condition, replacing "every other assertion stays" for these two assertions only:
+
+- The numeric-head part stays frozen: the count of read beamed events that are not percussive strikes remains 54, and the scaled-source mutants keep failing on the real files.
+- The percussive-strike beamed events are asserted separately with the measured count, remeasured after complete ownership, and the report lists the old and new totals with the evidence.
+- No other assertion in those files changes beyond the revision 128 conditions; nothing is deleted or skipped.
