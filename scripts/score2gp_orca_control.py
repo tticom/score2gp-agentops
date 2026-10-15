@@ -246,6 +246,9 @@ def validate_authority(authority: dict[str, Any]) -> None:
         raise ControlError(f"authority task fields missing: {', '.join(missing)}")
     if not isinstance(task["allowed_paths"], list) or not task["allowed_paths"]:
         raise ControlError("task allowed_paths must be a non-empty list")
+    protected = task.get("protected_paths", [])
+    if not isinstance(protected, list) or not all(isinstance(item, str) and item for item in protected):
+        raise ControlError("task protected_paths must be a list of non-empty strings")
     incidents = authority.get("incidents")
     if not isinstance(incidents, list):
         raise ControlError("authority incidents must be a list")
@@ -921,6 +924,8 @@ def build_assignment(
         "acceptance": task.get("acceptance", []),
         "required_evidence": task.get("required_evidence", []),
     }
+    if task.get("protected_paths"):
+        work["protected_paths"] = [] if role == "reviewer" else list(task["protected_paths"])
     if author:
         work["author_login"] = author
     if _is_explicit_review(live):

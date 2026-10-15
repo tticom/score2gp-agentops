@@ -161,6 +161,21 @@ def test_current_head_changes_requested_returns_only_to_implementation() -> None
     assert resolved["dispatch_role"] == "implementation"
 
 
+def test_protected_paths_reach_the_author_assignment_and_are_validated() -> None:
+    reviews = [{"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}]
+    config = authority()
+    config["task"]["protected_paths"] = [".github/**", "fixtures/private/**"]
+    validate_authority(config)
+    facts = live(reviews)
+    assignment = build_assignment(
+        config, facts, resolve_state(config, facts), RuntimeIdentity("tticom", "worker"), "b" * 40
+    )
+    assert assignment["work"]["protected_paths"] == [".github/**", "fixtures/private/**"]
+    config["task"]["protected_paths"] = [".github/**", ""]
+    with pytest.raises(ControlError, match="protected_paths"):
+        validate_authority(config)
+
+
 def test_worker_receives_bounded_assignment_and_cannot_merge_or_sequence() -> None:
     reviews = [{"author": "reviewer", "state": "CHANGES_REQUESTED", "head_sha": "a" * 40}]
     config = authority()
