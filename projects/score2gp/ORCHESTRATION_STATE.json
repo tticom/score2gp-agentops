@@ -1,83 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 134,
+  "authority_revision": 135,
   "task": {
-    "id": "UNREAD-02",
-    "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
-    "objective": "UNREAD-01 (stopped at its scope gate, then limited to located refusals by the maintainer on 2026-10-10) leaves standard dead-note X heads as located dead_note_x_head refusals. G-Am-C-Lick has four cross-shaped heads (1.16 x 1.0 staff spaces) whose stems carry secondary beams that no recognised head owns, so the bars holding them stay refused. Writing them faithfully needs a TAB X candidate kind and routing: build_ir.py:1772 keeps only numeric-fret candidates (plus the legacy rest token), line 1801 passes only those to the assembler, and tabraw.py:107 parses only digits. The IR (NoteEvent.is_dead) and GPIF (dead-note technique) already carry a dead note. Add the candidate and routing contract so an X on a string is read from the TAB, associated with its duration like a digit and written as a dead note, without changing what any numeric-fret file produces. Maintainer: 'widen the scope to fit in 1 as a or part of the next task' (2026-10-10).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 489,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/unread-02-percussive-strikes",
-    "prompt": "projects/score2gp/prompts/next/unread-02-dead-note-x-events.md",
-    "allowed_paths": [
-      "src/score2gp/build_ir.py",
-      "src/score2gp/tabraw.py",
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_tab_bar_assembler.py",
-      "src/score2gp/pdf_tab_event_factory.py",
-      "src/score2gp/pdf_tab_duration_associator.py",
-      "src/score2gp/pdf_tab_duration_types.py",
-      "src/score2gp/notation_omr/**",
-      "tests/test_dur_02_oracle.py",
-      "tests/test_unread_02_*.py",
-      "tests/fixtures/pdf/unread_02/**",
-      "src/score2gp/ir.py",
-      "src/score2gp/gpif.py",
-      "schemas/scoreir.v0.1.schema.json",
-      "src/score2gp/black_key_spelling.py",
-      "src/score2gp/gp_package.py",
-      "tests/test_unread_01_dead_heads.py",
-      "tests/test_unread_01_mutants.py",
-      "tests/test_unread_01_font_glyphs.py",
-      "docs/design/**",
-      "tests/test_cfw_04_private.py",
-      "tests/test_cfw_04_grace.py",
-      "src/score2gp/compare.py"
-    ],
-    "acceptance": [
-      "Measure first: every X head in the approved sources, per file, on the TAB (string, bar, position) and in the notation (head shape, stem, beam), with the located dead_note_x_head records UNREAD-01 produced and what a reference .gp shows for the same bar where a reference exists (counts and shapes only; the reference never feeds the reader). Say which X-like glyphs are not dead notes and how the rule tells them apart.",
-      "A TAB X is a candidate of its own kind with its own parsed value, never a fret number; every consumer of numeric fret candidates is audited and listed, and a numeric-fret file is byte-identical at every bar it writes at base.",
-      "The X on a string is associated with its notation head, stem, beam and duration by the same staff-space-relative rules as a digit; a stem with no associated head, or an X with no owning note, stays a located refusal naming the class.",
-      "pdf.py is edited only where the census proves the X is lost at extraction, and the change is named in the report with the evidence.",
-      "G-Am-C-Lick: bars written and refused before and after, every dead note written with its string, bar and duration listed, written bars sum to the declared bar total; files without a reference are not claimed correct; for any other approved source with a reference that contains dead notes every written bar is compared through the independent oracle.",
-      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert on more than one approved source that each dead note is read with its string and duration, that an X with no owner stays a located refusal, and that each mutant (drop the X silently; write the X as fret 0) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
-      "Nothing that worked may change: the before and after table covers every converting and every refused file; any bar whose status changes is listed.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass; no schema change unless the census proves the IR cannot carry the note, and then it is reported first."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "UNREAD-01",
-      "DUR-02",
-      "CFW-04"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed",
-      "x_written_as_a_fret_number",
-      "numeric_fret_output_changed",
-      "gate_requires_changing_meaning_not_scale"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "PERF-01",
     "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
     "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -124,6 +53,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -2737,6 +2667,81 @@
       "merge_commit": "eafe5bd8e092d0ee2577933814e10acfb03bcabe",
       "reconciled": true,
       "reconciled_at": "2026-10-12T21:00:27.517684+00:00"
+    },
+    {
+      "id": "UNREAD-02",
+      "title": "Dead-note X heads become TAB X events, with a candidate and routing contract",
+      "objective": "UNREAD-01 (stopped at its scope gate, then limited to located refusals by the maintainer on 2026-10-10) leaves standard dead-note X heads as located dead_note_x_head refusals. G-Am-C-Lick has four cross-shaped heads (1.16 x 1.0 staff spaces) whose stems carry secondary beams that no recognised head owns, so the bars holding them stay refused. Writing them faithfully needs a TAB X candidate kind and routing: build_ir.py:1772 keeps only numeric-fret candidates (plus the legacy rest token), line 1801 passes only those to the assembler, and tabraw.py:107 parses only digits. The IR (NoteEvent.is_dead) and GPIF (dead-note technique) already carry a dead note. Add the candidate and routing contract so an X on a string is read from the TAB, associated with its duration like a digit and written as a dead note, without changing what any numeric-fret file produces. Maintainer: 'widen the scope to fit in 1 as a or part of the next task' (2026-10-10).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 489,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/unread-02-percussive-strikes",
+      "prompt": "projects/score2gp/prompts/next/unread-02-dead-note-x-events.md",
+      "allowed_paths": [
+        "src/score2gp/build_ir.py",
+        "src/score2gp/tabraw.py",
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_tab_bar_assembler.py",
+        "src/score2gp/pdf_tab_event_factory.py",
+        "src/score2gp/pdf_tab_duration_associator.py",
+        "src/score2gp/pdf_tab_duration_types.py",
+        "src/score2gp/notation_omr/**",
+        "tests/test_dur_02_oracle.py",
+        "tests/test_unread_02_*.py",
+        "tests/fixtures/pdf/unread_02/**",
+        "src/score2gp/ir.py",
+        "src/score2gp/gpif.py",
+        "schemas/scoreir.v0.1.schema.json",
+        "src/score2gp/black_key_spelling.py",
+        "src/score2gp/gp_package.py",
+        "tests/test_unread_01_dead_heads.py",
+        "tests/test_unread_01_mutants.py",
+        "tests/test_unread_01_font_glyphs.py",
+        "docs/design/**",
+        "tests/test_cfw_04_private.py",
+        "tests/test_cfw_04_grace.py",
+        "src/score2gp/compare.py"
+      ],
+      "acceptance": [
+        "Measure first: every X head in the approved sources, per file, on the TAB (string, bar, position) and in the notation (head shape, stem, beam), with the located dead_note_x_head records UNREAD-01 produced and what a reference .gp shows for the same bar where a reference exists (counts and shapes only; the reference never feeds the reader). Say which X-like glyphs are not dead notes and how the rule tells them apart.",
+        "A TAB X is a candidate of its own kind with its own parsed value, never a fret number; every consumer of numeric fret candidates is audited and listed, and a numeric-fret file is byte-identical at every bar it writes at base.",
+        "The X on a string is associated with its notation head, stem, beam and duration by the same staff-space-relative rules as a digit; a stem with no associated head, or an X with no owning note, stays a located refusal naming the class.",
+        "pdf.py is edited only where the census proves the X is lost at extraction, and the change is named in the report with the evidence.",
+        "G-Am-C-Lick: bars written and refused before and after, every dead note written with its string, bar and duration listed, written bars sum to the declared bar total; files without a reference are not claimed correct; for any other approved source with a reference that contains dead notes every written bar is compared through the independent oracle.",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): private-corpus tests assert on more than one approved source that each dead note is read with its string and duration, that an X with no owner stays a located refusal, and that each mutant (drop the X silently; write the X as fret 0) fails those tests on the real files. Public synthetic fixtures are supplementary non-domain infrastructure only, with a stated rationale, and carry no acceptance weight.",
+        "Nothing that worked may change: the before and after table covers every converting and every refused file; any bar whose status changes is listed.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass; no schema change unless the census proves the IR cannot carry the note, and then it is reported first."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "UNREAD-01",
+        "DUR-02",
+        "CFW-04"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "x_written_as_a_fret_number",
+        "numeric_fret_output_changed",
+        "gate_requires_changing_meaning_not_scale"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "88ed31a9c9c628f0177ea7ea147cd944bf65dae4",
+      "merge_commit": "7ff8c66cebf9fd147de5b64a59a4a4f867729b64",
+      "reconciled": true,
+      "reconciled_at": "2026-10-15T13:03:55.221052+00:00"
     }
   ],
   "backlog": [
