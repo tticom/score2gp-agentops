@@ -14,8 +14,11 @@ orchestrates updates "State and next steps" at the end of each work session.
    `python scripts/score2gp_orca_control.py merge --repository <owner/repo> --pull-request <n> --github-login <login>`
    run via `launchers/as_identity.sh <codex|gov> ...`. `tticom-automation` never merges. The author never merges its own PR
    (Codex-authored product PRs are merged as `tticomgov-code`; governance PRs by gov are merged as `tticom-codex`).
-4. **Scope:** an author edits only `allowed_paths`. A scope amendment is a governance PR and **needs the maintainer's
-   explicit approval in that conversation**; never invent that approval.
+4. **Scope:** `allowed_paths` is the expected area. An author never edits a `protected_paths` entry (CI, private fixtures
+   and reference files, agent instructions, the control plane); that is a hard stop that names the path. A path outside
+   the expected area that the task genuinely requires (a consumer, a superseded assertion) is edited and listed in the
+   handback with its reason, and the reviewer checks each one. Decision:
+   `decisions/2026-10-15-protected-paths-replace-allowed-paths.md`.
 5. **Evidence:** AGENT_CONTROL.md domain-evidence rule: acceptance rests on real approved sources (private corpus) or
    provenance-linked extracts; synthetic/mocked/generated tests carry zero acceptance weight for recognition, grouping,
    geometry, timing or fidelity claims (they may supplement non-domain infrastructure with a stated rationale).
