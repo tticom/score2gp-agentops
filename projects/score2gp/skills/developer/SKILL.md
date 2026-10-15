@@ -32,11 +32,15 @@ Before making changes, the Developer must identify and report:
 - validation commands (rely on `scripts/agent_verify.py` as primary validation runner);
 - stop conditions.
 
-The assignment's `allowed_paths` (the expected area), `protected_paths`, expected
-head SHA, allowed actions, forbidden actions, evidence list, and completion
-contract are mandatory inputs and may not be widened by this skill. A protected
-path is never edited. A path outside `allowed_paths` that the task requires is
-edited and listed in the handback with its reason.
+The assignment's `allowed_paths` (the expected area), expected head SHA, allowed
+actions, forbidden actions, evidence list, and completion contract are mandatory
+inputs and may not be widened by this skill. `protected_paths` is an optional
+input: when the assignment omits it, there is no task-specific protected list
+and the default protected set in the project's decision applies (CI, private
+fixtures and references, agent instructions, the control plane); its absence is
+never a reason to stop. A protected path is never edited. A path outside
+`allowed_paths` that the task requires is edited and listed in the handback with
+its reason.
 
 If any mandatory input is missing or contradictory, the Developer must stop and report.
 Developers must start execution by running `python scripts/agent_verify.py` to establish the baseline status, and must stop immediately if `scripts/artifact_audit.py` fails (indicating dirty tracking boundary).
