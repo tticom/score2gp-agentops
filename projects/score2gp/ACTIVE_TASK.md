@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/out-01-contain-fabricated-targets`
 
-**Pull Request**: TBD
+**Pull Request**: 493
 
 **Owner Role**: implementation
 
