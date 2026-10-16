@@ -1,57 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 141,
+  "authority_revision": 142,
   "task": {
-    "id": "PDFG-01",
-    "title": "Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it",
-    "objective": "Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 492,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/pdfg-01-refused-new-fixtures",
-    "prompt": "projects/score2gp/prompts/next/pdfg-01-refused-new-fixtures.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: for each of the two files, the page, system and TAB group counts, which grouping check fires, on how many systems/bars, and the count of bars that would convert if the refusal were narrowed to the unsafe groups (counts and labels only).",
-      "The cause of each distinct failure is named with the function and the evidence it uses; a fix reads the grouping from the PDF evidence (staff geometry, barlines, brackets) with no per-file constant.",
-      "After the change each file either writes the bars whose grouping is unambiguous, equal to the independent comparator where a readable reference `.gp` exists (Mixing Lead & Rhythm has a reference whose GPIF payload may be opaque to the stdlib reader: if so, state exactly why and use only PDF-observable facts for that file, claiming no fidelity), or stays refused with a located code per unsafe group.",
-      "Real-source tests on both files assert the changed seam and fail under mutants (restore the blanket refusal; accept an unsafe group; merge two groups); a third approved source with grouping that already works is shown byte-identical.",
-      "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "UNREAD-02",
-      "PDF-GROUP-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OUT-01",
     "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets",
     "objective": "`version_adapter.py` can emit a file presented as GP6 or GP8 that is not one (invented tags, a ZIP called GP6, an unknown target silently becoming GP7). A commercial product must not ship mislabelled files. Make `--target` accept only the evidence-backed target (the current GPIF-ZIP output) and refuse the others with a located error.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -89,51 +44,51 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "DUR-02-FU5",
+    "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (HOPO origin/destination, slide)",
+    "objective": "In the written bars of Can't Find My Way Home the independent comparator reported 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference `.gp` (2026-09-28 at OMIT-01 round 3, since then DUR-03, UNREAD-01/02 and others have landed). Re-measure, diagnose each remaining difference against the source and reference, fix the cause or locate it, and add a regression per distinct cause.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-02-fu5-cfw-technique-differences",
+    "prompt": "projects/score2gp/prompts/next/dur-02-fu5-cfw-technique-differences.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first at current main: every technique difference the comparator reports for the written bars (bar index, kind), with counts before and after.",
+      "Each distinct cause is named and either fixed by reading the evidence on the page (the DUR-02 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous) or turned into a located refusal of that bar; no value is copied from the reference.",
+      "A real-source test per distinct cause on Can't Find My Way Home fails under a mutant that restores the old behaviour; a second approved source shows its technique output unchanged.",
+      "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02",
+      "UNREAD-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "DUR-02-FU5",
-      "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (HOPO origin/destination, slide)",
-      "objective": "In the written bars of Can't Find My Way Home the independent comparator reported 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference `.gp` (2026-09-28 at OMIT-01 round 3, since then DUR-03, UNREAD-01/02 and others have landed). Re-measure, diagnose each remaining difference against the source and reference, fix the cause or locate it, and add a regression per distinct cause.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/dur-02-fu5-cfw-technique-differences",
-      "prompt": "projects/score2gp/prompts/next/dur-02-fu5-cfw-technique-differences.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first at current main: every technique difference the comparator reports for the written bars (bar index, kind), with counts before and after.",
-        "Each distinct cause is named and either fixed by reading the evidence on the page (the DUR-02 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous) or turned into a located refusal of that bar; no value is copied from the reference.",
-        "A real-source test per distinct cause on Can't Find My Way Home fails under a mutant that restores the old behaviour; a second approved source shows its technique output unchanged.",
-        "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02",
-        "UNREAD-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "SLIDE-01",
       "title": "Slides: write the slide type the source shows, and report slide marks that were not extracted",
@@ -3187,6 +3142,55 @@
       "merge_commit": "9f539a03a6994984941e174fc2c19545364a6b60",
       "reconciled": true,
       "reconciled_at": "2026-10-16T09:13:56.062736+00:00"
+    },
+    {
+      "id": "PDFG-01",
+      "title": "Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it",
+      "objective": "Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 492,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/pdfg-01-refused-new-fixtures",
+      "prompt": "projects/score2gp/prompts/next/pdfg-01-refused-new-fixtures.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: for each of the two files, the page, system and TAB group counts, which grouping check fires, on how many systems/bars, and the count of bars that would convert if the refusal were narrowed to the unsafe groups (counts and labels only).",
+        "The cause of each distinct failure is named with the function and the evidence it uses; a fix reads the grouping from the PDF evidence (staff geometry, barlines, brackets) with no per-file constant.",
+        "After the change each file either writes the bars whose grouping is unambiguous, equal to the independent comparator where a readable reference `.gp` exists (Mixing Lead & Rhythm has a reference whose GPIF payload may be opaque to the stdlib reader: if so, state exactly why and use only PDF-observable facts for that file, claiming no fidelity), or stays refused with a located code per unsafe group.",
+        "Real-source tests on both files assert the changed seam and fail under mutants (restore the blanket refusal; accept an unsafe group; merge two groups); a third approved source with grouping that already works is shown byte-identical.",
+        "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "UNREAD-02",
+        "PDF-GROUP-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "2807d2b6758aa8c771a3f2af4186ef8e91bdbfe4",
+      "merge_commit": "22faa2cf5281e40611ceb4dbf53b59bab1cf0a7a",
+      "reconciled": true,
+      "reconciled_at": "2026-10-16T12:53:55.049708+00:00"
     }
   ],
   "backlog": [

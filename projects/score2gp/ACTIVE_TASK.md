@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PDFG-01 — Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it
+**Task**: OUT-01 — Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/pdfg-01-refused-new-fixtures`
+**PR Branch**: `feat/out-01-contain-fabricated-targets`
 
-**Pull Request**: 492
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.
+`version_adapter.py` can emit a file presented as GP6 or GP8 that is not one (invented tags, a ZIP called GP6, an unknown target silently becoming GP7). A commercial product must not ship mislabelled files. Make `--target` accept only the evidence-backed target (the current GPIF-ZIP output) and refuse the others with a located error.
 
 ## Allowed paths
 
