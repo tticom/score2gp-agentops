@@ -1,58 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 139,
+  "authority_revision": 140,
   "task": {
-    "id": "CFW-05",
-    "title": "Can't Find My Way Home: write bar 6 now that dead-note heads are read",
-    "objective": "Bar 6 of Can't Find My Way Home was refused because the dead-note head was unread. UNREAD-02 (product #489) now reads the cross head and writes percussive strikes. Measure what bar 6 does today; write it correctly if the pairing is unambiguous, otherwise keep it refused with a located reason.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 491,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cfw-05-dead-note-bar-6",
-    "prompt": "projects/score2gp/prompts/next/cfw-05-dead-note-bar-6.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: the written/refused status and reason of every bar of Can't Find My Way Home at base, and what the reference `.gp` carries for bar 6 (the reference marks that note Muted/Enable; the writer emits DeadNote for a percussive strike: say which is right for the stored form and why, without copying a value from the reference into code).",
-      "Bar 6 is either written with the percussive strike in the position the PDF shows, with every other note and technique of the bar equal to the independent comparator's reading of the reference, or it stays refused with a located reason code naming bar 6. No invented value.",
-      "A real-source test on Can't Find My Way Home asserts bar 6's outcome and that a mutant (drop the strike; write it as an ordinary fret 0 note; move it one string) fails on the real file.",
-      "Nothing that worked may change: the 9 bars written today keep a byte-identical GPIF; measured on the whole private set, base versus head.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "CFW-04",
-      "SCALE-01",
-      "UNREAD-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "PDFG-01",
     "title": "Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it",
     "objective": "Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -93,49 +47,49 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OUT-01",
+    "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets",
+    "objective": "`version_adapter.py` can emit a file presented as GP6 or GP8 that is not one (invented tags, a ZIP called GP6, an unknown target silently becoming GP7). A commercial product must not ship mislabelled files. Make `--target` accept only the evidence-backed target (the current GPIF-ZIP output) and refuse the others with a located error.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/out-01-contain-fabricated-targets",
+    "prompt": "projects/score2gp/prompts/next/out-01-contain-fabricated-targets.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Detail in the authority repository: `projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md` section 5 (findings) and section 11 (OUT-01). Read it first; reproduce each finding on the base before fixing it.",
+      "`--target` values other than the evidence-backed GPIF-ZIP target exit non-zero with a located message naming the unsupported target; an unknown target never falls back to another; no file is written.",
+      "Invented tags and unsourced version stamps are removed from the writer; the tests that asserted the fiction (`tests/test_target_version_adapters.py`) are replaced by negative tests: selecting GP6 or GP8 refuses, an unknown value refuses, and an audit over the written GPIF finds no tag that is absent from the real reference files in the private corpus.",
+      "The default conversion output is byte-identical to base on the whole private set (the default target must not change).",
+      "Mutants fail the new tests: restore the silent fallback; restore an invented tag; accept GP8; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OUT-01",
-      "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets",
-      "objective": "`version_adapter.py` can emit a file presented as GP6 or GP8 that is not one (invented tags, a ZIP called GP6, an unknown target silently becoming GP7). A commercial product must not ship mislabelled files. Make `--target` accept only the evidence-backed target (the current GPIF-ZIP output) and refuse the others with a located error.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/out-01-contain-fabricated-targets",
-      "prompt": "projects/score2gp/prompts/next/out-01-contain-fabricated-targets.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Detail in the authority repository: `projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md` section 5 (findings) and section 11 (OUT-01). Read it first; reproduce each finding on the base before fixing it.",
-        "`--target` values other than the evidence-backed GPIF-ZIP target exit non-zero with a located message naming the unsupported target; an unknown target never falls back to another; no file is written.",
-        "Invented tags and unsourced version stamps are removed from the writer; the tests that asserted the fiction (`tests/test_target_version_adapters.py`) are replaced by negative tests: selecting GP6 or GP8 refuses, an unknown value refuses, and an audit over the written GPIF finds no tag that is absent from the real reference files in the private corpus.",
-        "The default conversion output is byte-identical to base on the whole private set (the default target must not change).",
-        "Mutants fail the new tests: restore the silent fallback; restore an invented tag; accept GP8; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "DUR-02-FU5",
       "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (HOPO origin/destination, slide)",
@@ -3183,6 +3137,56 @@
       "merge_commit": "88b54ee04be669276799f0f9518d41f6b10d7911",
       "reconciled": true,
       "reconciled_at": "2026-10-16T06:38:03.739701+00:00"
+    },
+    {
+      "id": "CFW-05",
+      "title": "Can't Find My Way Home: write bar 6 now that dead-note heads are read",
+      "objective": "Bar 6 of Can't Find My Way Home was refused because the dead-note head was unread. UNREAD-02 (product #489) now reads the cross head and writes percussive strikes. Measure what bar 6 does today; write it correctly if the pairing is unambiguous, otherwise keep it refused with a located reason.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 491,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cfw-05-dead-note-bar-6",
+      "prompt": "projects/score2gp/prompts/next/cfw-05-dead-note-bar-6.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: the written/refused status and reason of every bar of Can't Find My Way Home at base, and what the reference `.gp` carries for bar 6 (the reference marks that note Muted/Enable; the writer emits DeadNote for a percussive strike: say which is right for the stored form and why, without copying a value from the reference into code).",
+        "Bar 6 is either written with the percussive strike in the position the PDF shows, with every other note and technique of the bar equal to the independent comparator's reading of the reference, or it stays refused with a located reason code naming bar 6. No invented value.",
+        "A real-source test on Can't Find My Way Home asserts bar 6's outcome and that a mutant (drop the strike; write it as an ordinary fret 0 note; move it one string) fails on the real file.",
+        "Nothing that worked may change: the 9 bars written today keep a byte-identical GPIF; measured on the whole private set, base versus head.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "CFW-04",
+        "SCALE-01",
+        "UNREAD-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "47afcfad6a1aa053cedb710df237d07bb12a3131",
+      "merge_commit": "9f539a03a6994984941e174fc2c19545364a6b60",
+      "reconciled": true,
+      "reconciled_at": "2026-10-16T09:13:56.062736+00:00"
     }
   ],
   "backlog": [
