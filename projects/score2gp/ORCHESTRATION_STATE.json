@@ -1,37 +1,32 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 136,
+  "authority_revision": 138,
   "task": {
-    "id": "PERF-01",
-    "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
-    "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
+    "id": "CFW-05",
+    "title": "Can't Find My Way Home: write bar 6 now that dead-note heads are read",
+    "objective": "Bar 6 of Can't Find My Way Home was refused because the dead-note head was unread. UNREAD-02 (product #489) now reads the cross head and writes percussive strikes. Measure what bar 6 does today; write it correctly if the pairing is unambiguous, otherwise keep it refused with a located reason.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 490,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/perf-01-melodic-expressions-runtime",
-    "prompt": "projects/score2gp/prompts/next/perf-01-melodic-expressions-runtime.md",
+    "branch": "feat/cfw-05-dead-note-bar-6",
+    "prompt": "projects/score2gp/prompts/next/cfw-05-dead-note-bar-6.md",
     "allowed_paths": [
-      "src/score2gp/pdf.py",
-      "src/score2gp/pdf_*.py",
-      "src/score2gp/notation_omr/**",
-      "src/score2gp/build_ir.py",
-      "src/score2gp/cli.py",
-      "tests/test_perf_01_*.py",
-      "tests/fixtures/pdf/perf_01/**",
-      "docs/design/**"
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
     ],
     "acceptance": [
-      "Profile first: per stage wall time and peak working set on Melodic_Expressions.pdf (run to completion once, with a stated overall limit) against Melodic_Expressions_Chap_19_.pdf and Lesson-6.pdf, with the page count and the number of candidate staves, systems, strokes and tokens at each stage; name the function and data structure the cost follows.",
-      "Either a bounded algorithm with its complexity stated before and after, or a located resource gate with a measured stated bound and a refusal code naming the count that exceeded it; a gate must not refuse any file that converts today.",
-      "Melodic_Expressions.pdf converts or refuses with a located code in under 120 s and under 1.5 GB on the workspace Windows host (governance-set bound, revisable only with measured evidence).",
-      "Real-source acceptance (AGENT_CONTROL domain-evidence rule): a private-corpus test on Melodic_Expressions.pdf asserts the expensive-operation count (or the located resource gate and its code) at the changed seam, and a second real source (Lesson-6 and one other) shows the count and the GPIF unchanged; a mutant restoring the old behaviour fails the test on the real file. The growth check on a scalable public synthetic fixture is supplementary non-domain infrastructure only (it makes no recognition or fidelity claim; rationale: it is the only way to show growth in CI without the private corpus) and carries no acceptance weight.",
-      "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported. Time and peak working set are reported before and after for every file; none may get slower beyond a stated measurement noise.",
-      "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      "Measure first: the written/refused status and reason of every bar of Can't Find My Way Home at base, and what the reference `.gp` carries for bar 6 (the reference marks that note Muted/Enable; the writer emits DeadNote for a percussive strike: say which is right for the stored form and why, without copying a value from the reference into code).",
+      "Bar 6 is either written with the percussive strike in the position the PDF shows, with every other note and technique of the bar equal to the independent comparator's reading of the reference, or it stays refused with a located reason code naming bar 6. No invented value.",
+      "A real-source test on Can't Find My Way Home asserts bar 6's outcome and that a mutant (drop the strike; write it as an ordinary fret 0 note; move it one string) fails on the real file.",
+      "Nothing that worked may change: the 9 bars written today keep a byte-identical GPIF; measured on the whole private set, base versus head.",
+      "Validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
@@ -41,20 +36,411 @@
       "git diff --check"
     ],
     "dependencies": [
-      "MEM-01",
-      "SCALE-01"
+      "CFW-04",
+      "SCALE-01",
+      "UNREAD-02"
     ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
       "gate_loosened",
-      "dur_02_regression",
-      "private_content_would_be_committed",
-      "output_changed_for_a_file_that_converts_today"
+      "written_bar_regression",
+      "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "PDFG-01",
+    "title": "Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it",
+    "objective": "Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/pdfg-01-refused-new-fixtures",
+    "prompt": "projects/score2gp/prompts/next/pdfg-01-refused-new-fixtures.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: for each of the two files, the page, system and TAB group counts, which grouping check fires, on how many systems/bars, and the count of bars that would convert if the refusal were narrowed to the unsafe groups (counts and labels only).",
+      "The cause of each distinct failure is named with the function and the evidence it uses; a fix reads the grouping from the PDF evidence (staff geometry, barlines, brackets) with no per-file constant.",
+      "After the change each file either writes the bars whose grouping is unambiguous, equal to the independent comparator where a readable reference `.gp` exists (Mixing Lead & Rhythm has a reference whose GPIF payload may be opaque to the stdlib reader: if so, state exactly why and use only PDF-observable facts for that file, claiming no fidelity), or stays refused with a located code per unsafe group.",
+      "Real-source tests on both files assert the changed seam and fail under mutants (restore the blanket refusal; accept an unsafe group; merge two groups); a third approved source with grouping that already works is shown byte-identical.",
+      "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "UNREAD-02",
+      "PDF-GROUP-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "OUT-01",
+      "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets",
+      "objective": "`version_adapter.py` can emit a file presented as GP6 or GP8 that is not one (invented tags, a ZIP called GP6, an unknown target silently becoming GP7). A commercial product must not ship mislabelled files. Make `--target` accept only the evidence-backed target (the current GPIF-ZIP output) and refuse the others with a located error.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/out-01-contain-fabricated-targets",
+      "prompt": "projects/score2gp/prompts/next/out-01-contain-fabricated-targets.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Detail in the authority repository: `projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md` section 5 (findings) and section 11 (OUT-01). Read it first; reproduce each finding on the base before fixing it.",
+        "`--target` values other than the evidence-backed GPIF-ZIP target exit non-zero with a located message naming the unsupported target; an unknown target never falls back to another; no file is written.",
+        "Invented tags and unsourced version stamps are removed from the writer; the tests that asserted the fiction (`tests/test_target_version_adapters.py`) are replaced by negative tests: selecting GP6 or GP8 refuses, an unknown value refuses, and an audit over the written GPIF finds no tag that is absent from the real reference files in the private corpus.",
+        "The default conversion output is byte-identical to base on the whole private set (the default target must not change).",
+        "Mutants fail the new tests: restore the silent fallback; restore an invented tag; accept GP8; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "DUR-02-FU5",
+      "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (HOPO origin/destination, slide)",
+      "objective": "In the written bars of Can't Find My Way Home the independent comparator reported 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference `.gp` (2026-09-28 at OMIT-01 round 3, since then DUR-03, UNREAD-01/02 and others have landed). Re-measure, diagnose each remaining difference against the source and reference, fix the cause or locate it, and add a regression per distinct cause.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-02-fu5-cfw-technique-differences",
+      "prompt": "projects/score2gp/prompts/next/dur-02-fu5-cfw-technique-differences.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first at current main: every technique difference the comparator reports for the written bars (bar index, kind), with counts before and after.",
+        "Each distinct cause is named and either fixed by reading the evidence on the page (the DUR-02 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous) or turned into a located refusal of that bar; no value is copied from the reference.",
+        "A real-source test per distinct cause on Can't Find My Way Home fails under a mutant that restores the old behaviour; a second approved source shows its technique output unchanged.",
+        "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02",
+        "UNREAD-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "SLIDE-01",
+      "title": "Slides: write the slide type the source shows, and report slide marks that were not extracted",
+      "objective": "Every slide is written as one fixed type regardless of the source mark (shift, legato, in, out), and a curved slide mark with no extracted candidate (Lesson 5 bars 16 and 17) produces no slide and no warning. Read the type from the source where it is readable, otherwise record why not, and make every unextracted slide mark a located diagnostic: no silent omission.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/slide-01-slide-types-and-unextracted-marks",
+      "prompt": "projects/score2gp/prompts/next/slide-01-slide-types-and-unextracted-marks.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: for each approved source with slides, the slide count written, the slide types the reference `.gp` files carry (counts by type) versus what the writer emits, and the slide marks visible on the page that produce no candidate (Lesson 5 bars 16 and 17 are the known cases).",
+        "The writer emits the type the PDF evidence supports for each slide; where the evidence cannot decide, it emits the documented default and records a located warning with a code, never a silent guess.",
+        "An unextracted slide mark yields a located diagnostic (code, bar, system) in the conversion report; the diagnostic code exists in `src`, tests and docs (the earlier handback named a code that existed nowhere).",
+        "Real-source tests on Lessons 3 to 7 assert slide types and the diagnostics at the changed seam and fail under mutants (always Flags 2; drop the diagnostic; swap in and out); other techniques byte-identical.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02",
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "OMIT-02-FU1",
+      "title": "Write double bars in the reference GPIF shape only",
+      "objective": "The writer emits `<Barline>Double</Barline>` beside `<DoubleBar/>` on every recognised double bar while the five reference GPs contain no `<Barline>` element and encode the same bars with `<DoubleBar/>` only. Emit only the reference shape (DoubleBar, Repeat, start flag), and make the independent comparator fail on non-reference MasterBar children.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-02-fu1-double-bar-reference-shape",
+      "prompt": "projects/score2gp/prompts/next/omit-02-fu1-double-bar-reference-shape.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: for each reference `.gp` and each written output, the counts of MasterBar children by element name; show the writer's extra `<Barline>` elements.",
+        "The writer emits exactly the reference shape for double, repeat and start bars; no `<Barline>` element remains unless a reference shows it.",
+        "The comparator (`compare_gp` and its callers) fails when a written MasterBar carries a child element the reference does not, and a mutant that restores `<Barline>` fails a real-source test on Lessons 3 to 7.",
+        "Everything else in the GPIF is byte-identical to base on the whole private set. Record in the handback that the maintainer's Guitar Pro open test is still required for the new shape (a human check; do not claim it done).",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "LETRING-01",
+      "title": "Read let ring from the page and write it (Lesson 5 bar 30)",
+      "objective": "Lesson 5 bar 30 carries a let ring in the reference that the PDF-only route does not write. Read the mark from the page (text or symbol evidence) and write it on the notes it covers; where it cannot be read unambiguously, record a located reason.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/letring-01-let-ring",
+      "prompt": "projects/score2gp/prompts/next/letring-01-let-ring.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: every approved source whose reference `.gp` carries let ring (counts by source and bar), what the PDF shows for each (text, dashed line, symbol), and which the extractor sees today.",
+        "A reader recognises the mark from the page evidence and attaches it to exactly the notes it spans; marks that cannot be bound unambiguously yield a located diagnostic and no technique.",
+        "Real-source tests on the sources that carry let ring assert the bars and notes with the technique and fail under mutants (attach to the whole bar; attach to the first note only; ignore the mark); other techniques byte-identical.",
+        "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "CFW-03",
+      "title": "Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals",
+      "objective": "The run reports 84 `pdf_only_tab_attachment_bar_unplaced` (54 technique-text and 30 chord-symbol candidates with no system), plus 2 bars refused for `notehead_digit_count_mismatch` (bars 3 and 9: the legitimate tied-chord case, two heads with one printed digit). Classify each unplaced attachment by cause, fix those whose system is determinable from the page, and keep the tied-chord bars refused unless a per-head tie reader can be built from evidence.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cfw-03-unplaced-attachments",
+      "prompt": "projects/score2gp/prompts/next/cfw-03-unplaced-attachments.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first at current main: the unplaced counts by kind and cause (for example the system is missing, the mark lies between systems, the bar index is off by one), and the written/refused status of every bar.",
+        "Each cause that is determinable from page geometry is fixed and the attachments land on the correct bar and beat; attachments that cannot be placed stay reported with the same located code and a reason.",
+        "A bar is never written with an attachment on a wrong bar: real-source tests on Can't Find My Way Home assert placement for a sample of each fixed cause and fail under mutants (place on the previous bar; place on the first bar of the system; drop).",
+        "Bars 3 and 9 stay refused with their code unless the tie reader is built with real-source evidence; if built, the output equals the comparator's reading of the reference for those bars.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "HOPO-01",
+      "title": "Hammer-on/pull-off pairing requires the marker to lie between the two notes",
+      "objective": "The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/hopo-01-betweenness",
+      "prompt": "projects/score2gp/prompts/next/hopo-01-betweenness.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Reproduce on a real approved source first: find the bars (counts and indices) where today's pairing attaches a marker to a pair it does not lie between, and show the reference `.gp` technique for them.",
+        "Pairing requires x1 < marker < x2 for within-bar pairs; a marker keyed to the destination bar pairs backward across the barline; an ambiguous marker yields a located refusal of that technique, not a guess.",
+        "Real-source tests assert the corrected bars and fail under mutants (drop the betweenness test; pair the nearest regardless of side; no backward pairing); every bar whose HOPO pairing is already right keeps a byte-identical GPIF.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "MEM-02",
+      "title": "Conversion report: replace the 49 MB barline-candidate dump with a bounded summary",
+      "objective": "`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/mem-02-bounded-conversion-report",
+      "prompt": "projects/score2gp/prompts/next/mem-02-bounded-conversion-report.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: report size and the share taken by the dump for every approved source; the largest report today.",
+        "The default report summarises rejected candidates by reason with counts and a bounded number of located examples; the full dump is written only with an explicit debug flag; no other report content is lost (a before/after diff of every other section).",
+        "A size-bound test on real approved sources fails when the dump returns to the default report (mutant: dump always on; summary dropped; examples unbounded); the report stays under a stated bound for every approved source.",
+        "The converted GP output is byte-identical to base on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -2742,6 +3128,61 @@
       "merge_commit": "7ff8c66cebf9fd147de5b64a59a4a4f867729b64",
       "reconciled": true,
       "reconciled_at": "2026-10-15T13:03:55.221052+00:00"
+    },
+    {
+      "id": "PERF-01",
+      "title": "Melodic_Expressions.pdf runs for minutes and gigabytes",
+      "objective": "In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 490,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/perf-01-melodic-expressions-runtime",
+      "prompt": "projects/score2gp/prompts/next/perf-01-melodic-expressions-runtime.md",
+      "allowed_paths": [
+        "src/score2gp/pdf.py",
+        "src/score2gp/pdf_*.py",
+        "src/score2gp/notation_omr/**",
+        "src/score2gp/build_ir.py",
+        "src/score2gp/cli.py",
+        "tests/test_perf_01_*.py",
+        "tests/fixtures/pdf/perf_01/**",
+        "docs/design/**"
+      ],
+      "acceptance": [
+        "Profile first: per stage wall time and peak working set on Melodic_Expressions.pdf (run to completion once, with a stated overall limit) against Melodic_Expressions_Chap_19_.pdf and Lesson-6.pdf, with the page count and the number of candidate staves, systems, strokes and tokens at each stage; name the function and data structure the cost follows.",
+        "Either a bounded algorithm with its complexity stated before and after, or a located resource gate with a measured stated bound and a refusal code naming the count that exceeded it; a gate must not refuse any file that converts today.",
+        "Melodic_Expressions.pdf converts or refuses with a located code in under 120 s and under 1.5 GB on the workspace Windows host (governance-set bound, revisable only with measured evidence).",
+        "Real-source acceptance (AGENT_CONTROL domain-evidence rule): a private-corpus test on Melodic_Expressions.pdf asserts the expensive-operation count (or the located resource gate and its code) at the changed seam, and a second real source (Lesson-6 and one other) shows the count and the GPIF unchanged; a mutant restoring the old behaviour fails the test on the real file. The growth check on a scalable public synthetic fixture is supplementary non-domain infrastructure only (it makes no recognition or fidelity claim; rationale: it is the only way to show growth in CI without the private corpus) and carries no acceptance weight.",
+        "Nothing that worked may change: measured on the whole private set at base and at head, every file that converts today keeps a byte-identical GPIF, and every refusal keeps its code except files explicitly reported. Time and peak working set are reported before and after for every file; none may get slower beyond a stated measurement noise.",
+        "python -m pytest (exact-head CI), export-schema, validate-ir, scripts/artifact_audit.py and git diff --check pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "MEM-01",
+        "SCALE-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "dur_02_regression",
+        "private_content_would_be_committed",
+        "output_changed_for_a_file_that_converts_today"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "4bf8bcb208e39bd01870e65c3eb2e63b91346acc",
+      "merge_commit": "88b54ee04be669276799f0f9518d41f6b10d7911",
+      "reconciled": true,
+      "reconciled_at": "2026-10-16T06:38:03.739701+00:00"
     }
   ],
   "backlog": [
@@ -2805,19 +3246,6 @@
         "SHORT-01"
       ],
       "notes": ""
-    },
-    {
-      "id": "OUT-01",
-      "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets; remove invented tags and their tests",
-      "requirements": [
-        "REQ-0002"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 2,
-      "depends_on": [],
-      "notes": "Detail: requirements/REQ-0002-pluggable-gp-output-targets.md §11 (OUT-01); version_adapter.py findings in REQ-0002 §5."
     },
     {
       "id": "CP-06",
@@ -4279,21 +4707,6 @@
       "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
     },
     {
-      "id": "DUR-02-FU1",
-      "title": "Within-bar HOPO pairing requires the marker to lie between the two notes, with a backward cross-bar counterpart for markers keyed to the destination bar",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N1 at src/score2gp/build_ir.py:4194 (pre-existing rule, not triggered by Lessons 3-7): the intra-bar loop ranks pairs by midpoint distance without requiring x1 < marker.x < x2, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first note pair. Require betweenness, add the backward counterpart, and refuse with a located reason when ambiguous."
-    },
-    {
       "id": "DUR-02-FU2",
       "title": "test_npg03b_floating asserts the refusal this source causes (no notation staff), not the generic missing-durations guard",
       "requirements": [
@@ -4307,52 +4720,6 @@
         "DUR-02"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars."
-    },
-    {
-      "id": "DUR-02-FU3",
-      "title": "A slide mark with no extracted candidate produces a located diagnostic, not a silent omission",
-      "requirements": [
-        "REQ-0001",
-        "REQ-0005"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Lesson 5 bar 17 (zero-based 16), event 0: the PDF shows a curved slide mark but TabRaw has no slide or technique-text candidate, so no slide is written and no warning is emitted. The DUR-02 handback called this a located refusal with code pdf_slide_without_unambiguous_candidate, which exists nowhere in src, tests or docs. Detect or at least report unextracted technique marks, per REQ-0005's no-silent-omission rule."
-    },
-    {
-      "id": "DUR-02-FU4",
-      "title": "Write the slide type the source shows instead of one fixed slide type for every slide",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 4,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Every slide is written as Flags 2 regardless of the source mark (shift, legato, slide in or out). Read the type from the source or record why it cannot be read."
-    },
-    {
-      "id": "DUR-02-FU5",
-      "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (4 HOPO origin, 4 HOPO destination, 1 slide)",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Found by Codex's OMIT-01 round-3 acceptance run (tticom/score2gp#468 at 1882f64, 2026-09-28): converting Can't Find My Way Home, 9 of 21 bars are written; in them the independent comparator reports 4 HOPO origin, 4 HOPO destination and 1 slide difference against the reference .gp. The event data is unchanged against the prior DUR-02 output, so the differences predate OMIT-01. Diagnose each against the source and reference (the DUR-02 F1 rules: bounded cross-bar pairs, slide origin, located refusal when ambiguous), fix the cause, and add a regression per distinct cause."
     },
     {
       "id": "OMIT-01-FU1",
@@ -4383,21 +4750,6 @@
         "OMIT-01"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures."
-    },
-    {
-      "id": "OMIT-02-FU1",
-      "title": "Write double bars in the reference GPIF shape only: DoubleBar (and Repeat), no extra <Barline> MasterBar element",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 2,
-      "depends_on": [
-        "OMIT-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Thread at src/score2gp/gpif.py:1535 (N1): the writer emits <Barline>Double</Barline> beside <DoubleBar/> on every recognised double (probe P2: 11, 17, 6, 23 and 21 elements for Lessons 3-7), while the five reference GPs contain 0 <Barline> elements and encode the same bars with <DoubleBar/> only. The convention predates OMIT-02 and compare_gp does not read it. Emit only the reference shape (DoubleBar, Repeat, start flag), extend the comparator to fail on non-reference MasterBar children, and confirm with the maintainer's Guitar Pro open test."
     },
     {
       "id": "OMIT-02-FU2",
@@ -4443,19 +4795,6 @@
       "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N4: build_gpif writes a legacy hierarchical GPIF whenever 'pytest' is in sys.modules or any argv, including output paths, instead of the production relational GP8 GPIF. It made the new OMIT-02 private test fail only in CI at ad46f0f (output under /tmp/pytest-of-runner). Pre-existing; about 391 legacy tests rely on it. Replace it with an explicit writer option, migrate the legacy tests, and assert production layout in every CLI acceptance test."
     },
     {
-      "id": "MEM-02",
-      "title": "Conversion report: replace the 49 MB pretty-printed barline-candidate dump with a bounded summary",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 2,
-      "depends_on": [],
-      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. conversion-report.html for Lesson 3 is 50 MB, almost all one <pre> block pretty-printing every rejected barline candidate's geometry. Summarise by reason with counts and located examples; write the full dump only on an explicit debug flag."
-    },
-    {
       "id": "MEM-03",
       "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
       "requirements": [
@@ -4499,21 +4838,6 @@
         "DUR-02"
       ],
       "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused. DROPPED 2026-10-03 (authority revision 102): superseded by CFW-04 (tticom/score2gp#476, merged), which read the small heads (grace notes, stemless heads) and wave glyphs and took Can't Find My Way Home from 9 to 18 of 21 bars written with 0 wrong pairings. The 3 bars still refused carry located reasons: bars 3 and 9 are the tied-chord case (tracked by CFW-03) and bar 6 is the dead-note head (tracked by CFW-05)."
-    },
-    {
-      "id": "CFW-03",
-      "title": "Can't Find My Way Home: resolve or locate the 2 bars refused for notehead_digit_count_mismatch, and the unplaced attachments",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Same run as CFW-01: 2 refusals are notehead_digit_count_mismatch; the run also reports 84 pdf_only_tab_attachment_bar_unplaced, 54 tabraw-technique-text-not-aligned and 30 tabraw-chord-symbol-not-aligned warnings (chord symbols overlap NPG-05C). Classify each by cause, fix or split into further items, and report the counts before and after. UPDATE 2026-10-01: the two notehead_digit_count_mismatch bars (3 and 9) are the legitimate tied-chord case (two heads, one printed digit) and stay refused unless a per-head tie reader exists; the 84 unplaced attachments are the 54 technique-text and 30 chord-symbol candidates with no system (see the 2026-10-01 diagnosis)."
     },
     {
       "id": "CP-18",
@@ -4737,21 +5061,6 @@
       "notes": "Non-blocking follow-up 2 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03). DUR-03 adds 37 TAB systems and extends 12 across the 30 mounted PDFs. The ones in Melodic Expressions, Just-Practice and the scale exercise have no reference .gp and were judged by geometry and rendering only. When references or independent evidence exist, compare the written bars with them, and record any difference as a located finding."
     },
     {
-      "id": "DUR-03-FU3",
-      "title": "Write the techniques the PDF-only route does not yet read: let ring (Lesson 5 bar 30) and the Lesson 5 slide (bar 16)",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 3,
-      "depends_on": [
-        "DUR-03"
-      ],
-      "notes": "Disclosed by the author of tticom/score2gp#474 (DUR-03) and confirmed by tticomgov-code's review 5376313575: in Lesson 5 two bars lack a technique the reference carries, a let ring in newly written bar 30 and a slide in bar 16, which was already written at the base. The PDF-only route does not read these marks (see also DUR-02-FU3 and DUR-02-FU4 for the slide). Read them from the source or record a located reason."
-    },
-    {
       "id": "DUR-03-FU4",
       "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological mutant assertions in the edited duration test",
       "requirements": [
@@ -4826,22 +5135,6 @@
         "OMIT-04"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical."
-    },
-    {
-      "id": "CFW-05",
-      "title": "Can't Find My Way Home: read the dead-note head so bar 6 can be written",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 9,
-      "depends_on": [
-        "CFW-04",
-        "SCALE-01"
-      ],
-      "notes": "Bar 6 of Can't Find My Way Home is refused with a located reason because of the dead-note head, which CFW-04 (tticom/score2gp#476) left unread; no other open task covers it. CFW-03 tracks the tied-chord bars 3 and 9. Low priority, queued behind SCALE-01. Read the head from the source and write the bar only if the pairing is unambiguous; otherwise keep it refused. Do not invent a value."
     }
   ],
   "registered_requirements": [
