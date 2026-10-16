@@ -2,32 +2,28 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PERF-01 — Melodic_Expressions.pdf runs for minutes and gigabytes
+**Task**: CFW-05 — Can't Find My Way Home: write bar 6 now that dead-note heads are read
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/perf-01-melodic-expressions-runtime`
+**PR Branch**: `feat/cfw-05-dead-note-bar-6`
 
-**Pull Request**: 490
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-In the 2026-10-08 survey Melodic_Expressions.pdf was stopped at the 300 s limit with its process tree at about 2.5 GB and still running, while every other source finished (slowest converting file Lesson-6: 29.5 s, 533 MB; tab books 114 s and 227 s under 400 MB). Profile the real file stage by stage, find what the cost follows, and either fix it with a bounded algorithm that leaves every output unchanged or add an explicit located resource gate: a conversion must finish or refuse with a code, never end by being killed. Resource use is cost (maintainer direction).
+Bar 6 of Can't Find My Way Home was refused because the dead-note head was unread. UNREAD-02 (product #489) now reads the cross head and writes percussive strikes. Measure what bar 6 does today; write it correctly if the pairing is unambiguous, otherwise keep it refused with a located reason.
 
 ## Allowed paths
 
-- `src/score2gp/pdf.py`
-- `src/score2gp/pdf_*.py`
-- `src/score2gp/notation_omr/**`
-- `src/score2gp/build_ir.py`
-- `src/score2gp/cli.py`
-- `tests/test_perf_01_*.py`
-- `tests/fixtures/pdf/perf_01/**`
-- `docs/design/**`
+- `src/score2gp/**`
+- `tests/**`
+- `docs/**`
+- `schemas/**`
 
 ## Validation commands
 
