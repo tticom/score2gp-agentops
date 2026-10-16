@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dur-02-fu5-cfw-technique-differences`
 
-**Pull Request**: TBD
+**Pull Request**: 494
 
 **Owner Role**: implementation
 
