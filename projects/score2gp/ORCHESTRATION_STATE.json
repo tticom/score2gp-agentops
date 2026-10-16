@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 145,
+  "authority_revision": 146,
   "task": {
     "id": "DUR-02-FU5",
     "title": "Can't Find My Way Home: fix or locate the technique differences in written bars (HOPO origin/destination, slide)",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 494,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
