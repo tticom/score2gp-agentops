@@ -201,7 +201,7 @@
       ],
       "acceptance": [
         "Measure first: for each approved source with slides, the slide count written, the slide types the reference `.gp` files carry (counts by type) versus what the writer emits, and the slide marks visible on the page that produce no candidate (Lesson 5 bars 16 and 17 are the known cases).",
-        "The writer emits the type the PDF evidence supports for each slide; where the evidence cannot decide, it emits the documented default and records a located warning with a code, never a silent guess.",
+        "The writer emits the type the PDF evidence supports for each slide; where the evidence cannot decide the type, the slide technique is NOT written (uncertain input is never guessed, REQ-0001; REQ-0005 section 2): the mark is refused with a located reason code, bar and run status, and a real-source ambiguous case shows a final GPIF with no guessed slide. A mutant that injects a default type while keeping the warning must fail that test.",
         "An unextracted slide mark yields a located diagnostic (code, bar, system) in the conversion report; the diagnostic code exists in `src`, tests and docs (the earlier handback named a code that existed nowhere).",
         "Real-source tests on Lessons 3 to 7 assert slide types and the diagnostics at the changed seam and fail under mutants (always Flags 2; drop the diagnostic; swap in and out); other techniques byte-identical.",
         "Validation commands pass; handback complete."
