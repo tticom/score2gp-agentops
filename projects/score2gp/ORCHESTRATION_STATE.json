@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 143,
+  "authority_revision": 144,
   "task": {
     "id": "OUT-01",
     "title": "Contain fabricated GP6/GP8 output: --target accepts only evidence-backed targets",
@@ -24,7 +24,7 @@
     "acceptance": [
       "Detail in the authority repository: `projects/score2gp/requirements/REQ-0002-pluggable-gp-output-targets.md` section 5 (findings) and section 11 (OUT-01). Read it first; reproduce each finding on the base before fixing it.",
       "`--target` values other than the evidence-backed GPIF-ZIP target exit non-zero with a located message naming the unsupported target; an unknown target never falls back to another; no file is written.",
-      "Invented tags and unsourced version stamps are removed from the writer; the tests that asserted the fiction (`tests/test_target_version_adapters.py`) are replaced by negative tests: selecting GP6 or GP8 refuses, an unknown value refuses, and an audit over the written GPIF finds no tag that is absent from the real reference files in the private corpus.",
+      "Invented tags and unsourced version stamps that the VERSION ADAPTER injects (version_adapter.py: tags absent from the real references, VERSION stamps with no source, the ZIP presented as GP6) are removed; the tests that asserted the fiction (`tests/test_target_version_adapters.py`) are replaced by negative tests: selecting GP6 or GP8 refuses, an unknown value refuses, and an audit over the output of each adapter path finds no tag the ADAPTER added that is absent from the real reference files in the private corpus. Scope clarification (governance, 2026-10-16, resolving the author's blocked report): elements that the BASE writer emits in the default output, such as `<Barline>` beside `<DoubleBar/>` (tracked as OMIT-02-FU1), are not adapter tags and are out of scope here; the audit compares adapter output against the default output, so acceptance 4 (default output byte-identical to base) holds. Do not change the base writer.",
       "The default conversion output is byte-identical to base on the whole private set (the default target must not change).",
       "Mutants fail the new tests: restore the silent fallback; restore an invented tag; accept GP8; validation commands pass; handback complete."
     ],
