@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CFW-05 — Can't Find My Way Home: write bar 6 now that dead-note heads are read
+**Task**: PDFG-01 — Mixing Lead & Rhythm pt1 and PARANOID refused with pdf_only_tab_grouping_unsafe: find the cause, fix it or locate it
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cfw-05-dead-note-bar-6`
+**PR Branch**: `feat/pdfg-01-refused-new-fixtures`
 
-**Pull Request**: 491
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Bar 6 of Can't Find My Way Home was refused because the dead-note head was unread. UNREAD-02 (product #489) now reads the cross head and writes percussive strikes. Measure what bar 6 does today; write it correctly if the pairing is unambiguous, otherwise keep it refused with a located reason.
+Two of the three newest private fixtures are refused wholesale with `pdf_only_tab_grouping_unsafe`, so a user converting either gets nothing. Find which grouping condition fires and why, fix the cause where the PDF evidence is unambiguous, and otherwise narrow the refusal to the bars that are actually unsafe.
 
 ## Allowed paths
 
