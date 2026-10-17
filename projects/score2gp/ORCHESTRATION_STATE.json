@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 156,
+  "authority_revision": 157,
   "task": {
-    "id": "HOPO-01",
-    "title": "Hammer-on/pull-off pairing requires the marker to lie between the two notes",
-    "objective": "The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 499,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/hopo-01-betweenness",
-    "prompt": "projects/score2gp/prompts/next/hopo-01-betweenness.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Reproduce on a real approved source first: find the bars (counts and indices) where today's pairing attaches a marker to a pair it does not lie between, and show the reference `.gp` technique for them.",
-      "Pairing requires x1 < marker < x2 for within-bar pairs; a marker keyed to the destination bar pairs backward across the barline; an ambiguous marker yields a located refusal of that technique, not a guess.",
-      "Real-source tests assert the corrected bars and fail under mutants (drop the betweenness test; pair the nearest regardless of side; no backward pairing); every bar whose HOPO pairing is already right keeps a byte-identical GPIF.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "MEM-02",
     "title": "Conversion report: replace the 49 MB barline-candidate dump with a bounded summary",
     "objective": "`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -86,6 +43,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3214,6 +3172,53 @@
       "merge_commit": "d7096e0776db28aa2ff8a4bbe2257ff88ce5c510",
       "reconciled": true,
       "reconciled_at": "2026-10-17T19:33:58.313461+00:00"
+    },
+    {
+      "id": "HOPO-01",
+      "title": "Hammer-on/pull-off pairing requires the marker to lie between the two notes",
+      "objective": "The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 499,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/hopo-01-betweenness",
+      "prompt": "projects/score2gp/prompts/next/hopo-01-betweenness.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Reproduce on a real approved source first: find the bars (counts and indices) where today's pairing attaches a marker to a pair it does not lie between, and show the reference `.gp` technique for them.",
+        "Pairing requires x1 < marker < x2 for within-bar pairs; a marker keyed to the destination bar pairs backward across the barline; an ambiguous marker yields a located refusal of that technique, not a guess.",
+        "Real-source tests assert the corrected bars and fail under mutants (drop the betweenness test; pair the nearest regardless of side; no backward pairing); every bar whose HOPO pairing is already right keeps a byte-identical GPIF.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "b78f5026123a3e1f394f62c358e9c9f0b3073a34",
+      "merge_commit": "1f6863d602da360219e36f245d3f380e96e72289",
+      "reconciled": true,
+      "reconciled_at": "2026-10-17T23:13:59.331370+00:00"
     }
   ],
   "backlog": [
