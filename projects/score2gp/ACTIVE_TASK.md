@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-02-FU1 — Write double bars in the reference GPIF shape only
+**Task**: LETRING-01 — Read let ring from the page and write it (Lesson 5 bar 30)
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-02-fu1-double-bar-reference-shape`
+**PR Branch**: `feat/letring-01-let-ring`
 
-**Pull Request**: 496
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The writer emits `<Barline>Double</Barline>` beside `<DoubleBar/>` on every recognised double bar while the five reference GPs contain no `<Barline>` element and encode the same bars with `<DoubleBar/>` only. Emit only the reference shape (DoubleBar, Repeat, start flag), and make the independent comparator fail on non-reference MasterBar children.
+Lesson 5 bar 30 carries a let ring in the reference that the PDF-only route does not write. Read the mark from the page (text or symbol evidence) and write it on the notes it covers; where it cannot be read unambiguously, record a located reason.
 
 ## Allowed paths
 
