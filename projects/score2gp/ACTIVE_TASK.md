@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: LETRING-01 — Read let ring from the page and write it (Lesson 5 bar 30)
+**Task**: CFW-03 — Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/letring-01-let-ring`
+**PR Branch**: `feat/cfw-03-unplaced-attachments`
 
-**Pull Request**: 497
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Lesson 5 bar 30 carries a let ring in the reference that the PDF-only route does not write. Read the mark from the page (text or symbol evidence) and write it on the notes it covers; where it cannot be read unambiguously, record a located reason.
+The run reports 84 `pdf_only_tab_attachment_bar_unplaced` (54 technique-text and 30 chord-symbol candidates with no system), plus 2 bars refused for `notehead_digit_count_mismatch` (bars 3 and 9: the legitimate tied-chord case, two heads with one printed digit). Classify each unplaced attachment by cause, fix those whose system is determinable from the page, and keep the tied-chord bars refused unless a per-head tie reader can be built from evidence.
 
 ## Allowed paths
 
