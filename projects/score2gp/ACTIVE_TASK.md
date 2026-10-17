@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: SLIDE-01 — Slides: write the slide type the source shows, and report slide marks that were not extracted
+**Task**: OMIT-02-FU1 — Write double bars in the reference GPIF shape only
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/slide-01-slide-types-and-unextracted-marks`
+**PR Branch**: `feat/omit-02-fu1-double-bar-reference-shape`
 
-**Pull Request**: 495
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Every slide is written as one fixed type regardless of the source mark (shift, legato, in, out), and a curved slide mark with no extracted candidate (Lesson 5 bars 16 and 17) produces no slide and no warning. Read the type from the source where it is readable, otherwise record why not, and make every unextracted slide mark a located diagnostic: no silent omission.
+The writer emits `<Barline>Double</Barline>` beside `<DoubleBar/>` on every recognised double bar while the five reference GPs contain no `<Barline>` element and encode the same bars with `<DoubleBar/>` only. Emit only the reference shape (DoubleBar, Repeat, start flag), and make the independent comparator fail on non-reference MasterBar children.
 
 ## Allowed paths
 
