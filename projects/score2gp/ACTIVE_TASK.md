@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: HOPO-01 — Hammer-on/pull-off pairing requires the marker to lie between the two notes
+**Task**: MEM-02 — Conversion report: replace the 49 MB barline-candidate dump with a bounded summary
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/hopo-01-betweenness`
+**PR Branch**: `feat/mem-02-bounded-conversion-report`
 
-**Pull Request**: 499
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.
+`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.
 
 ## Allowed paths
 
