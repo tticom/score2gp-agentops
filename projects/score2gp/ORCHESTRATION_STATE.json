@@ -1,56 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 154,
+  "authority_revision": 155,
   "task": {
-    "id": "CFW-03",
-    "title": "Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals",
-    "objective": "The run reports 84 `pdf_only_tab_attachment_bar_unplaced` (54 technique-text and 30 chord-symbol candidates with no system), plus 2 bars refused for `notehead_digit_count_mismatch` (bars 3 and 9: the legitimate tied-chord case, two heads with one printed digit). Classify each unplaced attachment by cause, fix those whose system is determinable from the page, and keep the tied-chord bars refused unless a per-head tie reader can be built from evidence.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 498,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cfw-03-unplaced-attachments",
-    "prompt": "projects/score2gp/prompts/next/cfw-03-unplaced-attachments.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first at current main: the unplaced counts by kind and cause (for example the system is missing, the mark lies between systems, the bar index is off by one), and the written/refused status of every bar.",
-      "Each cause that is determinable from page geometry is fixed and the attachments land on the correct bar and beat; attachments that cannot be placed stay reported with the same located code and a reason.",
-      "A bar is never written with an attachment on a wrong bar: real-source tests on Can't Find My Way Home assert placement for a sample of each fixed cause and fail under mutants (place on the previous bar; place on the first bar of the system; drop).",
-      "Bars 3 and 9 stay refused with their code unless the tie reader is built with real-source evidence; if built, the output equals the comparator's reading of the reference for those bars.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "HOPO-01",
     "title": "Hammer-on/pull-off pairing requires the marker to lie between the two notes",
     "objective": "The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -89,49 +45,48 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "MEM-02",
-      "title": "Conversion report: replace the 49 MB barline-candidate dump with a bounded summary",
-      "objective": "`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/mem-02-bounded-conversion-report",
-      "prompt": "projects/score2gp/prompts/next/mem-02-bounded-conversion-report.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first: report size and the share taken by the dump for every approved source; the largest report today.",
-        "The default report summarises rejected candidates by reason with counts and a bounded number of located examples; the full dump is written only with an explicit debug flag; no other report content is lost (a before/after diff of every other section).",
-        "A size-bound test on real approved sources fails when the dump returns to the default report (mutant: dump always on; summary dropped; examples unbounded); the report stays under a stated bound for every approved source.",
-        "The converted GP output is byte-identical to base on the whole private set; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "MEM-02",
+    "title": "Conversion report: replace the 49 MB barline-candidate dump with a bounded summary",
+    "objective": "`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/mem-02-bounded-conversion-report",
+    "prompt": "projects/score2gp/prompts/next/mem-02-bounded-conversion-report.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: report size and the share taken by the dump for every approved source; the largest report today.",
+      "The default report summarises rejected candidates by reason with counts and a bounded number of located examples; the full dump is written only with an explicit debug flag; no other report content is lost (a before/after diff of every other section).",
+      "A size-bound test on real approved sources fails when the dump returns to the default report (mutant: dump always on; summary dropped; examples unbounded); the report stays under a stated bound for every approved source.",
+      "The converted GP output is byte-identical to base on the whole private set; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3211,6 +3166,54 @@
       "merge_commit": "c9eb2eede1db561e62e98a442158a0af2af3423d",
       "reconciled": true,
       "reconciled_at": "2026-10-17T15:33:58.576041+00:00"
+    },
+    {
+      "id": "CFW-03",
+      "title": "Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals",
+      "objective": "The run reports 84 `pdf_only_tab_attachment_bar_unplaced` (54 technique-text and 30 chord-symbol candidates with no system), plus 2 bars refused for `notehead_digit_count_mismatch` (bars 3 and 9: the legitimate tied-chord case, two heads with one printed digit). Classify each unplaced attachment by cause, fix those whose system is determinable from the page, and keep the tied-chord bars refused unless a per-head tie reader can be built from evidence.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 498,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cfw-03-unplaced-attachments",
+      "prompt": "projects/score2gp/prompts/next/cfw-03-unplaced-attachments.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first at current main: the unplaced counts by kind and cause (for example the system is missing, the mark lies between systems, the bar index is off by one), and the written/refused status of every bar.",
+        "Each cause that is determinable from page geometry is fixed and the attachments land on the correct bar and beat; attachments that cannot be placed stay reported with the same located code and a reason.",
+        "A bar is never written with an attachment on a wrong bar: real-source tests on Can't Find My Way Home assert placement for a sample of each fixed cause and fail under mutants (place on the previous bar; place on the first bar of the system; drop).",
+        "Bars 3 and 9 stay refused with their code unless the tie reader is built with real-source evidence; if built, the output equals the comparator's reading of the reference for those bars.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "d08eb2992e5e1cd5a86e48d6cc68da05db51d5f6",
+      "merge_commit": "d7096e0776db28aa2ff8a4bbe2257ff88ce5c510",
+      "reconciled": true,
+      "reconciled_at": "2026-10-17T19:33:58.313461+00:00"
     }
   ],
   "backlog": [

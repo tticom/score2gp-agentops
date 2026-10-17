@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CFW-03 — Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals
+**Task**: HOPO-01 — Hammer-on/pull-off pairing requires the marker to lie between the two notes
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cfw-03-unplaced-attachments`
+**PR Branch**: `feat/hopo-01-betweenness`
 
-**Pull Request**: 498
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The run reports 84 `pdf_only_tab_attachment_bar_unplaced` (54 technique-text and 30 chord-symbol candidates with no system), plus 2 bars refused for `notehead_digit_count_mismatch` (bars 3 and 9: the legitimate tied-chord case, two heads with one printed digit). Classify each unplaced attachment by cause, fix those whose system is determinable from the page, and keep the tied-chord bars refused unless a per-head tie reader can be built from evidence.
+The within-bar HOPO pairing ranks note pairs by midpoint distance without requiring the marker to lie between them, so a genuine cross-bar HOPO whose marker is keyed to the destination bar attaches silently to that bar's first pair (review thread N1 on product #467, `src/score2gp/build_ir.py` around the intra-bar loop). Require betweenness, add the backward cross-bar counterpart, and refuse with a located reason when ambiguous.
 
 ## Allowed paths
 
