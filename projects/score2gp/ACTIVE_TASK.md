@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/slide-01-slide-types-and-unextracted-marks`
 
-**Pull Request**: TBD
+**Pull Request**: 495
 
 **Owner Role**: implementation
 
