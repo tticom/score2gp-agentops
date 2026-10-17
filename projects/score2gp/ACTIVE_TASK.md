@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-02-fu1-double-bar-reference-shape`
 
-**Pull Request**: TBD
+**Pull Request**: 496
 
 **Owner Role**: implementation
 
