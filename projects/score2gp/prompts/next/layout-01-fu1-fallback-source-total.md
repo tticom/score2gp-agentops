@@ -1,0 +1,31 @@
+# LAYOUT-01-FU1: pdf_systems_layout_fallback: report the source system total, not the bars consumed so far
+
+- **Repository:** `tticom/score2gp`
+- **Author:** `tticom-codex` (CP-13 author lane)
+- **Requirement:** REQ-0001, REQ-0005
+- **Depends on:** LAYOUT-01
+- **Branch:** `feat/layout-01-fu1-fallback-source-total`
+
+Private fixtures: the corpus is grouped by category on fixtures `main`; the author launcher flattens it into `fixtures/private/`. Verify the files named below exist there before starting; if any is missing, stop and say exactly what is missing. Every number below is a lead: re-measure it.
+
+## Goal
+
+The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.
+
+## Acceptance
+
+1. Measure first: the message for each approved source that reaches the fallback and the true source total.
+2. The message states the source total and the bars consumed, each correct; no other behaviour changes.
+3. A test asserts the message text for a real approved source and fails under a mutant that restores the old count.
+4. Nothing else changes on the whole private set; validation commands pass; handback complete.
+
+## Rules (all tasks, maintainer direction 2026-10-16)
+
+- **Commercial goal.** The product must convert real engraved guitar tab PDFs to Guitar Pro files correctly. Prefer the change that makes more real bars come out right over polish; never trade correctness for coverage. A bar that cannot be written correctly stays refused with a located reason.
+- **Tests must be able to fail.** Write only tests that fail when the code is unfit for its purpose: for every new test name the wrong implementation it rejects (a mutant: drop the feature, hard-code the value, invert the condition, restore the old behaviour) and show that mutant failing. A test that only shows the happy path passing is not evidence and must not be added. Acceptance rests on genuine approved sources (the private corpus and its reference `.gp` files, counts and labels only, never content); synthetic or generated fixtures carry zero acceptance weight for recognition, grouping, geometry, timing or fidelity and may only supplement non-domain infrastructure with a stated rationale.
+- **Never** invent a value, copy it from a reference file into code, loosen a gate, delete or skip a test, or weaken an assertion. A test that encodes behaviour this task deliberately changes is updated with the reason stated in the handback; every numeric and reference check it had is kept.
+- **Nothing that worked may change:** measure the whole private set at base and at head. Every file and bar written today keeps a byte-identical GPIF unless the task says otherwise and the handback lists the file, bar and reason.
+- **Scope.** `allowed_paths` is the expected area, not a wall. Edit what the task needs and list each path outside the area, with the reason, in the handback. Never edit CI, private fixtures or reference files, agent instruction files or the control plane (`scripts/score2gp_*`, `ORCHESTRATION_STATE.json`, prompts, skills): stop and name the path if one is needed.
+- **Private content** is never committed. Report counts, codes, sizes and times only. Private tests convert under `<repo>/work` in a `tempfile.TemporaryDirectory`.
+- **Validation:** `python -m pytest` (list the known Windows baseline failures by ID if they fail locally), export-schema, validate-ir, `scripts/artifact_audit.py`, `git diff --check`. Complete the handback with every acceptance item PASS and the evidence for each.
+- **Protect what already works:** DUR-02/03, OMIT-01 to OMIT-05, LAYOUT-01, MEM-01, CFW-04, PARTIAL-01, SCALE-01, TUPLET-TAB-01, PDF-GROUP-02, UNREAD-01/02, PERF-01.
