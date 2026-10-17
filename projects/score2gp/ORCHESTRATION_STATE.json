@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 153,
+  "authority_revision": 154,
   "task": {
     "id": "CFW-03",
     "title": "Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 498,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
