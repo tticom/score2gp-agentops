@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/letring-01-let-ring`
 
-**Pull Request**: TBD
+**Pull Request**: 497
 
 **Owner Role**: implementation
 
