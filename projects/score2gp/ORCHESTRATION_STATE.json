@@ -1,57 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 148,
+  "authority_revision": 149,
   "task": {
-    "id": "SLIDE-01",
-    "title": "Slides: write the slide type the source shows, and report slide marks that were not extracted",
-    "objective": "Every slide is written as one fixed type regardless of the source mark (shift, legato, in, out), and a curved slide mark with no extracted candidate (Lesson 5 bars 16 and 17) produces no slide and no warning. Read the type from the source where it is readable, otherwise record why not, and make every unextracted slide mark a located diagnostic: no silent omission.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 495,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/slide-01-slide-types-and-unextracted-marks",
-    "prompt": "projects/score2gp/prompts/next/slide-01-slide-types-and-unextracted-marks.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: for each approved source with slides, the slide count written, the slide types the reference `.gp` files carry (counts by type) versus what the writer emits, and the slide marks visible on the page that produce no candidate (Lesson 5 bars 16 and 17 are the known cases).",
-      "The writer emits the type the PDF evidence supports for each slide; where the evidence cannot decide the type, the slide technique is NOT written (uncertain input is never guessed, REQ-0001; REQ-0005 section 2): the mark is refused with a located reason code, bar and run status, and a real-source ambiguous case shows a final GPIF with no guessed slide. A mutant that injects a default type while keeping the warning must fail that test.",
-      "An unextracted slide mark yields a located diagnostic (code, bar, system) in the conversion report; the diagnostic code exists in `src`, tests and docs (the earlier handback named a code that existed nowhere).",
-      "Real-source tests on Lessons 3 to 7 assert slide types and the diagnostics at the changed seam and fail under mutants (always Flags 2; drop the diagnostic; swap in and out); other techniques byte-identical.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-02",
-      "DUR-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-02-FU1",
     "title": "Write double bars in the reference GPIF shape only",
     "objective": "The writer emits `<Barline>Double</Barline>` beside `<DoubleBar/>` on every recognised double bar while the five reference GPs contain no `<Barline>` element and encode the same bars with `<DoubleBar/>` only. Emit only the reference shape (DoubleBar, Repeat, start flag), and make the independent comparator fail on non-reference MasterBar children.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -91,50 +46,50 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "LETRING-01",
+    "title": "Read let ring from the page and write it (Lesson 5 bar 30)",
+    "objective": "Lesson 5 bar 30 carries a let ring in the reference that the PDF-only route does not write. Read the mark from the page (text or symbol evidence) and write it on the notes it covers; where it cannot be read unambiguously, record a located reason.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/letring-01-let-ring",
+    "prompt": "projects/score2gp/prompts/next/letring-01-let-ring.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: every approved source whose reference `.gp` carries let ring (counts by source and bar), what the PDF shows for each (text, dashed line, symbol), and which the extractor sees today.",
+      "A reader recognises the mark from the page evidence and attaches it to exactly the notes it spans; marks that cannot be bound unambiguously yield a located diagnostic and no technique.",
+      "Real-source tests on the sources that carry let ring assert the bars and notes with the technique and fail under mutants (attach to the whole bar; attach to the first note only; ignore the mark); other techniques byte-identical.",
+      "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-03"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "LETRING-01",
-      "title": "Read let ring from the page and write it (Lesson 5 bar 30)",
-      "objective": "Lesson 5 bar 30 carries a let ring in the reference that the PDF-only route does not write. Read the mark from the page (text or symbol evidence) and write it on the notes it covers; where it cannot be read unambiguously, record a located reason.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/letring-01-let-ring",
-      "prompt": "projects/score2gp/prompts/next/letring-01-let-ring.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first: every approved source whose reference `.gp` carries let ring (counts by source and bar), what the PDF shows for each (text, dashed line, symbol), and which the extractor sees today.",
-        "A reader recognises the mark from the page evidence and attaches it to exactly the notes it spans; marks that cannot be bound unambiguously yield a located diagnostic and no technique.",
-        "Real-source tests on the sources that carry let ring assert the bars and notes with the technique and fail under mutants (attach to the whole bar; attach to the first note only; ignore the mark); other techniques byte-identical.",
-        "Nothing that worked may change on the whole private set; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-03"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "CFW-03",
       "title": "Can't Find My Way Home: classify and fix the 84 unplaced attachments; keep the legitimate tied-chord refusals",
@@ -3199,6 +3154,55 @@
       "merge_commit": "e7810b1d14e8440f38a59a7ea8645cac98383f85",
       "reconciled": true,
       "reconciled_at": "2026-10-17T00:03:58.034553+00:00"
+    },
+    {
+      "id": "SLIDE-01",
+      "title": "Slides: write the slide type the source shows, and report slide marks that were not extracted",
+      "objective": "Every slide is written as one fixed type regardless of the source mark (shift, legato, in, out), and a curved slide mark with no extracted candidate (Lesson 5 bars 16 and 17) produces no slide and no warning. Read the type from the source where it is readable, otherwise record why not, and make every unextracted slide mark a located diagnostic: no silent omission.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 495,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/slide-01-slide-types-and-unextracted-marks",
+      "prompt": "projects/score2gp/prompts/next/slide-01-slide-types-and-unextracted-marks.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: for each approved source with slides, the slide count written, the slide types the reference `.gp` files carry (counts by type) versus what the writer emits, and the slide marks visible on the page that produce no candidate (Lesson 5 bars 16 and 17 are the known cases).",
+        "The writer emits the type the PDF evidence supports for each slide; where the evidence cannot decide the type, the slide technique is NOT written (uncertain input is never guessed, REQ-0001; REQ-0005 section 2): the mark is refused with a located reason code, bar and run status, and a real-source ambiguous case shows a final GPIF with no guessed slide. A mutant that injects a default type while keeping the warning must fail that test.",
+        "An unextracted slide mark yields a located diagnostic (code, bar, system) in the conversion report; the diagnostic code exists in `src`, tests and docs (the earlier handback named a code that existed nowhere).",
+        "Real-source tests on Lessons 3 to 7 assert slide types and the diagnostics at the changed seam and fail under mutants (always Flags 2; drop the diagnostic; swap in and out); other techniques byte-identical.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02",
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "0a246062fb93809373745a22884bd775c14506a4",
+      "merge_commit": "0996da0817eab8d747dc42f6e1c0f2b22428b35a",
+      "reconciled": true,
+      "reconciled_at": "2026-10-17T05:33:58.260863+00:00"
     }
   ],
   "backlog": [
