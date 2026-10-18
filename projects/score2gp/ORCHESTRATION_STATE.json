@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 160,
+  "authority_revision": 161,
   "task": {
     "id": "OMIT-02-FU4",
     "title": "Remove the pytest-dependent GPIF layout switch in gpif.build_gpif",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 501,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
