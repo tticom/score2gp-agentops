@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-02 — Conversion report: replace the 49 MB barline-candidate dump with a bounded summary
+**Task**: OMIT-02-FU4 — Remove the pytest-dependent GPIF layout switch in gpif.build_gpif
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/mem-02-bounded-conversion-report`
+**PR Branch**: `feat/omit-02-fu4-remove-pytest-layout-switch`
 
-**Pull Request**: 500
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-`conversion-report.html` for Lesson 3 is about 50 MB, almost all one `<pre>` block pretty-printing every rejected barline candidate's geometry. A user cannot open that. Summarise by reason with counts and located examples; write the full dump only behind an explicit debug flag.
+`build_gpif` writes a legacy hierarchical GPIF whenever `pytest` is in `sys.modules` or in any argv, including output paths, instead of the production relational GP8 GPIF. Tests therefore exercise a different writer from the product, and one OMIT-02 private test passed locally and failed only in CI. Replace the switch with an explicit writer option, migrate the legacy tests to opt in explicitly, and assert the production layout in every CLI acceptance test.
 
 ## Allowed paths
 
