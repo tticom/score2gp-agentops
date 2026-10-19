@@ -1,57 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 165,
+  "authority_revision": 166,
   "task": {
-    "id": "OMIT-04-FU3",
-    "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
-    "objective": "Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 503,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-04-fu3-cfw-arpeggios",
-    "prompt": "projects/score2gp/prompts/next/omit-04-fu3-cfw-arpeggios.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first at current main: the written/refused status of bars 2, 6, 7, 18 and 19 and the arpeggio outcome for each.",
-      "Each arpeggio in a written bar attaches with the direction the page shows (never copied from the reference); each in a refused bar keeps its located refusal; if all five already behave correctly, say so with the evidence and add the real-source test that pins it.",
-      "A real-source test on Can't Find My Way Home fails under mutants (attach on the wrong beat; flip the direction; drop the mark) and the reference comparison agrees for the attached ones.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-04",
-      "CFW-04",
-      "CFW-05"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "LAYOUT-01-FU1",
     "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
     "objective": "The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -90,50 +45,50 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "MEM-03",
+    "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
+    "objective": "One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/mem-03-bound-workdir-footprint",
+    "prompt": "projects/score2gp/prompts/next/mem-03-bound-workdir-footprint.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: bytes written per file for every approved source, the duplicates, and peak working set; state the largest outputs.",
+      "The duplicate inspect output is gone and heavy diagnostics are opt-in behind an explicit flag; the GP output and the default report are unchanged (byte-identical GPIF on the whole private set).",
+      "Budget tests on real approved sources (bytes written per bar and peak working set, with stated bounds and measurement noise) fail under mutants (duplicate output restored; diagnostics on by default).",
+      "Validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "MEM-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "MEM-03",
-      "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
-      "objective": "One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/mem-03-bound-workdir-footprint",
-      "prompt": "projects/score2gp/prompts/next/mem-03-bound-workdir-footprint.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first: bytes written per file for every approved source, the duplicates, and peak working set; state the largest outputs.",
-        "The duplicate inspect output is gone and heavy diagnostics are opt-in behind an explicit flag; the GP output and the default report are unchanged (byte-identical GPIF on the whole private set).",
-        "Budget tests on real approved sources (bytes written per bar and peak working set, with stated bounds and measurement noise) fail under mutants (duplicate output restored; diagnostics on by default).",
-        "Validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "MEM-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-05-FU1",
       "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
@@ -3492,6 +3447,55 @@
       "merge_commit": "77bd150d6bfc7d5fa7b1715e4b5ba71c70e91cc9",
       "reconciled": true,
       "reconciled_at": "2026-10-19T09:56:37.245863+00:00"
+    },
+    {
+      "id": "OMIT-04-FU3",
+      "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
+      "objective": "Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 503,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-fu3-cfw-arpeggios",
+      "prompt": "projects/score2gp/prompts/next/omit-04-fu3-cfw-arpeggios.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first at current main: the written/refused status of bars 2, 6, 7, 18 and 19 and the arpeggio outcome for each.",
+        "Each arpeggio in a written bar attaches with the direction the page shows (never copied from the reference); each in a refused bar keeps its located refusal; if all five already behave correctly, say so with the evidence and add the real-source test that pins it.",
+        "A real-source test on Can't Find My Way Home fails under mutants (attach on the wrong beat; flip the direction; drop the mark) and the reference comparison agrees for the attached ones.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04",
+        "CFW-04",
+        "CFW-05"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "d3b448e623b2736b87b9c6878b874c6e7bda08bf",
+      "merge_commit": "96aecc9f99c3db04e18db759625133bc25974a11",
+      "reconciled": true,
+      "reconciled_at": "2026-10-19T17:46:37.129889+00:00"
     }
   ],
   "backlog": [

@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU3 — Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence
+**Task**: LAYOUT-01-FU1 — pdf_systems_layout_fallback: report the source system total, not the bars consumed so far
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu3-cfw-arpeggios`
+**PR Branch**: `feat/layout-01-fu1-fallback-source-total`
 
-**Pull Request**: 503
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.
+The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.
 
 ## Allowed paths
 
