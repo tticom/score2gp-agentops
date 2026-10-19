@@ -1,56 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 161,
+  "authority_revision": 162,
   "task": {
-    "id": "OMIT-02-FU4",
-    "title": "Remove the pytest-dependent GPIF layout switch in gpif.build_gpif",
-    "objective": "`build_gpif` writes a legacy hierarchical GPIF whenever `pytest` is in `sys.modules` or in any argv, including output paths, instead of the production relational GP8 GPIF. Tests therefore exercise a different writer from the product, and one OMIT-02 private test passed locally and failed only in CI. Replace the switch with an explicit writer option, migrate the legacy tests to opt in explicitly, and assert the production layout in every CLI acceptance test.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 501,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-02-fu4-remove-pytest-layout-switch",
-    "prompt": "projects/score2gp/prompts/next/omit-02-fu4-remove-pytest-layout-switch.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: where the switch is read (`sys.modules`, argv, output path), which tests depend on the legacy layout (count by file), and which CLI acceptance tests would silently run the legacy layout today.",
-      "The switch is gone: no `pytest`, argv or path sniffing remains in production code (a grep-based test over `src` fails if it returns); the layout is chosen by an explicit option whose default is the production layout.",
-      "Legacy-layout tests opt in explicitly; every CLI acceptance test asserts the production layout and fails under a mutant that restores the sniffing or flips the default.",
-      "Byte-identical production output on the whole private set at base versus head when converting outside pytest; the full suite result is unchanged except for tests deliberately migrated, listed in the handback.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-05-FU2",
     "title": "Remove the 'Compiled Score' placeholder title in scoreir_compiler.py",
     "objective": "`src/score2gp/scoreir_compiler.py` invents `title='Compiled Score'` on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source, or leave it empty with a located diagnostic. A commercial product must not stamp an invented title on a user's file.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -89,52 +45,52 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-04-FU3",
+    "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
+    "objective": "Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-04-fu3-cfw-arpeggios",
+    "prompt": "projects/score2gp/prompts/next/omit-04-fu3-cfw-arpeggios.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first at current main: the written/refused status of bars 2, 6, 7, 18 and 19 and the arpeggio outcome for each.",
+      "Each arpeggio in a written bar attaches with the direction the page shows (never copied from the reference); each in a refused bar keeps its located refusal; if all five already behave correctly, say so with the evidence and add the real-source test that pins it.",
+      "A real-source test on Can't Find My Way Home fails under mutants (attach on the wrong beat; flip the direction; drop the mark) and the reference comparison agrees for the attached ones.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-04",
+      "CFW-04",
+      "CFW-05"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-04-FU3",
-      "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
-      "objective": "Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-04-fu3-cfw-arpeggios",
-      "prompt": "projects/score2gp/prompts/next/omit-04-fu3-cfw-arpeggios.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first at current main: the written/refused status of bars 2, 6, 7, 18 and 19 and the arpeggio outcome for each.",
-        "Each arpeggio in a written bar attaches with the direction the page shows (never copied from the reference); each in a refused bar keeps its located refusal; if all five already behave correctly, say so with the evidence and add the real-source test that pins it.",
-        "A real-source test on Can't Find My Way Home fails under mutants (attach on the wrong beat; flip the direction; drop the mark) and the reference comparison agrees for the attached ones.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-04",
-        "CFW-04",
-        "CFW-05"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "LAYOUT-01-FU1",
       "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
@@ -3484,6 +3440,54 @@
       "merge_commit": "fdfe485f7c31b7687fd9389531125fc01f2fd6bd",
       "reconciled": true,
       "reconciled_at": "2026-10-18T02:53:59.172953+00:00"
+    },
+    {
+      "id": "OMIT-02-FU4",
+      "title": "Remove the pytest-dependent GPIF layout switch in gpif.build_gpif",
+      "objective": "`build_gpif` writes a legacy hierarchical GPIF whenever `pytest` is in `sys.modules` or in any argv, including output paths, instead of the production relational GP8 GPIF. Tests therefore exercise a different writer from the product, and one OMIT-02 private test passed locally and failed only in CI. Replace the switch with an explicit writer option, migrate the legacy tests to opt in explicitly, and assert the production layout in every CLI acceptance test.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 501,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-02-fu4-remove-pytest-layout-switch",
+      "prompt": "projects/score2gp/prompts/next/omit-02-fu4-remove-pytest-layout-switch.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: where the switch is read (`sys.modules`, argv, output path), which tests depend on the legacy layout (count by file), and which CLI acceptance tests would silently run the legacy layout today.",
+        "The switch is gone: no `pytest`, argv or path sniffing remains in production code (a grep-based test over `src` fails if it returns); the layout is chosen by an explicit option whose default is the production layout.",
+        "Legacy-layout tests opt in explicitly; every CLI acceptance test asserts the production layout and fails under a mutant that restores the sniffing or flips the default.",
+        "Byte-identical production output on the whole private set at base versus head when converting outside pytest; the full suite result is unchanged except for tests deliberately migrated, listed in the handback.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "ef21e62e25bf382fc2cfc3cba1787a2fe9da2ba8",
+      "merge_commit": "2eaf67965d966e406853a24ca7d43b0c1b5067ea",
+      "reconciled": true,
+      "reconciled_at": "2026-10-19T05:36:35.969186+00:00"
     }
   ],
   "backlog": [
