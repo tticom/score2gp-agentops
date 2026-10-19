@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-02-FU4 — Remove the pytest-dependent GPIF layout switch in gpif.build_gpif
+**Task**: OMIT-05-FU2 — Remove the 'Compiled Score' placeholder title in scoreir_compiler.py
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-02-fu4-remove-pytest-layout-switch`
+**PR Branch**: `feat/omit-05-fu2-remove-compiled-score-title`
 
-**Pull Request**: 501
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-`build_gpif` writes a legacy hierarchical GPIF whenever `pytest` is in `sys.modules` or in any argv, including output paths, instead of the production relational GP8 GPIF. Tests therefore exercise a different writer from the product, and one OMIT-02 private test passed locally and failed only in CI. Replace the switch with an explicit writer option, migrate the legacy tests to opt in explicitly, and assert the production layout in every CLI acceptance test.
+`src/score2gp/scoreir_compiler.py` invents `title='Compiled Score'` on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source, or leave it empty with a located diagnostic. A commercial product must not stamp an invented title on a user's file.
 
 ## Allowed paths
 
