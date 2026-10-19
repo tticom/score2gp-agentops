@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 167,
+  "authority_revision": 168,
   "task": {
-    "id": "LAYOUT-01-FU1",
-    "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
-    "objective": "The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 504,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/layout-01-fu1-fallback-source-total",
-    "prompt": "projects/score2gp/prompts/next/layout-01-fu1-fallback-source-total.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: the message for each approved source that reaches the fallback and the true source total.",
-      "The message states the source total and the bars consumed, each correct; no other behaviour changes.",
-      "A test asserts the message text for a real approved source and fails under a mutant that restores the old count.",
-      "Nothing else changes on the whole private set; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "LAYOUT-01"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "MEM-03",
     "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
     "objective": "One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -88,51 +45,50 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "OMIT-05-FU1",
-      "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
-      "objective": "The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-05-fu1-header-footer-font-sizes",
-      "prompt": "projects/score2gp/prompts/next/omit-05-fu1-header-footer-font-sizes.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first: the font sizes the five reference files carry for each header and footer field, and what the writer emits.",
-        "The writer emits the documented default sizes from project-owned constants whose provenance is documented in code and docs; no reference file is read during conversion.",
-        "The independent oracle compares the sizes and a real-source test fails under mutants (drop the sizes; wrong field mapping; read from a reference).",
-        "Record in the handback that the maintainer's Guitar Pro open test is still required to confirm the visible result (a human check; do not claim it done). Nothing else changes; validation commands pass."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-05"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "OMIT-05-FU1",
+    "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
+    "objective": "The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-05-fu1-header-footer-font-sizes",
+    "prompt": "projects/score2gp/prompts/next/omit-05-fu1-header-footer-font-sizes.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: the font sizes the five reference files carry for each header and footer field, and what the writer emits.",
+      "The writer emits the documented default sizes from project-owned constants whose provenance is documented in code and docs; no reference file is read during conversion.",
+      "The independent oracle compares the sizes and a real-source test fails under mutants (drop the sizes; wrong field mapping; read from a reference).",
+      "Record in the handback that the maintainer's Guitar Pro open test is still required to confirm the visible result (a human check; do not claim it done). Nothing else changes; validation commands pass."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-05"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3496,6 +3452,53 @@
       "merge_commit": "96aecc9f99c3db04e18db759625133bc25974a11",
       "reconciled": true,
       "reconciled_at": "2026-10-19T17:46:37.129889+00:00"
+    },
+    {
+      "id": "LAYOUT-01-FU1",
+      "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
+      "objective": "The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 504,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/layout-01-fu1-fallback-source-total",
+      "prompt": "projects/score2gp/prompts/next/layout-01-fu1-fallback-source-total.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: the message for each approved source that reaches the fallback and the true source total.",
+        "The message states the source total and the bars consumed, each correct; no other behaviour changes.",
+        "A test asserts the message text for a real approved source and fails under a mutant that restores the old count.",
+        "Nothing else changes on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "LAYOUT-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "e38726fbdfd29b23ab1572f23e70753c4cc215dd",
+      "merge_commit": "8e76c0c16ca9415008ea3fbe1ad4c622bce33a42",
+      "reconciled": true,
+      "reconciled_at": "2026-10-19T22:36:37.448834+00:00"
     }
   ],
   "backlog": [
