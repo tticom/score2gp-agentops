@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 164,
+  "authority_revision": 165,
   "task": {
     "id": "OMIT-04-FU3",
     "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 503,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
