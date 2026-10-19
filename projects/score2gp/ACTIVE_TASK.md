@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-05-FU2 — Remove the 'Compiled Score' placeholder title in scoreir_compiler.py
+**Task**: OMIT-04-FU3 — Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-05-fu2-remove-compiled-score-title`
+**PR Branch**: `feat/omit-04-fu3-cfw-arpeggios`
 
-**Pull Request**: 502
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-`src/score2gp/scoreir_compiler.py` invents `title='Compiled Score'` on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source, or leave it empty with a located diagnostic. A commercial product must not stamp an invented title on a user's file.
+Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.
 
 ## Allowed paths
 

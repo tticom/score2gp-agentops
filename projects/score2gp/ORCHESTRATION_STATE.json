@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 163,
+  "authority_revision": 164,
   "task": {
-    "id": "OMIT-05-FU2",
-    "title": "Remove the 'Compiled Score' placeholder title in scoreir_compiler.py",
-    "objective": "`src/score2gp/scoreir_compiler.py` invents `title='Compiled Score'` on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source, or leave it empty with a located diagnostic. A commercial product must not stamp an invented title on a user's file.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 502,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-05-fu2-remove-compiled-score-title",
-    "prompt": "projects/score2gp/prompts/next/omit-05-fu2-remove-compiled-score-title.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: every route that can reach the placeholder, and what title each approved source produces today.",
-      "No invented title remains: the title comes from the source evidence or is empty with a located diagnostic (code, route).",
-      "Tests on that route fail under a mutant that restores the placeholder, and a real approved source with a readable title keeps it byte-identical.",
-      "Nothing else changes on the whole private set; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-05"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-04-FU3",
     "title": "Can't Find My Way Home: attach the five arpeggios refused for lack of written events, or close with evidence",
     "objective": "Five arpeggio marks in Can't Find My Way Home (bars 2, 6, 7, 18 and 19) were refused with `pdf_arpeggio_beat_unavailable` because those bars had no written events. CFW-04, CFW-05 and later work may have changed that. Re-measure; where a bar is now written, attach the arpeggio with the direction the page shows; where it is not, keep the located refusal.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -90,50 +47,50 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "LAYOUT-01-FU1",
+    "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
+    "objective": "The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/layout-01-fu1-fallback-source-total",
+    "prompt": "projects/score2gp/prompts/next/layout-01-fu1-fallback-source-total.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: the message for each approved source that reaches the fallback and the true source total.",
+      "The message states the source total and the bars consumed, each correct; no other behaviour changes.",
+      "A test asserts the message text for a real approved source and fails under a mutant that restores the old count.",
+      "Nothing else changes on the whole private set; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "LAYOUT-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "LAYOUT-01-FU1",
-      "title": "pdf_systems_layout_fallback: report the source system total, not the bars consumed so far",
-      "objective": "The row-layout fallback message reports 'source bars N' as the bars up to the offending system, not the source total, which makes the diagnostic misleading to a user. Report both counts correctly and pin the message with a test.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/layout-01-fu1-fallback-source-total",
-      "prompt": "projects/score2gp/prompts/next/layout-01-fu1-fallback-source-total.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**",
-        "schemas/**"
-      ],
-      "acceptance": [
-        "Measure first: the message for each approved source that reaches the fallback and the true source total.",
-        "The message states the source total and the bars consumed, each correct; no other behaviour changes.",
-        "A test asserts the message text for a real approved source and fails under a mutant that restores the old count.",
-        "Nothing else changes on the whole private set; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "LAYOUT-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "MEM-03",
       "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
@@ -3488,6 +3445,53 @@
       "merge_commit": "2eaf67965d966e406853a24ca7d43b0c1b5067ea",
       "reconciled": true,
       "reconciled_at": "2026-10-19T05:36:35.969186+00:00"
+    },
+    {
+      "id": "OMIT-05-FU2",
+      "title": "Remove the 'Compiled Score' placeholder title in scoreir_compiler.py",
+      "objective": "`src/score2gp/scoreir_compiler.py` invents `title='Compiled Score'` on a route outside OMIT-05's paths. Apply the source-or-refuse rule: read the title from the source, or leave it empty with a located diagnostic. A commercial product must not stamp an invented title on a user's file.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 502,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-05-fu2-remove-compiled-score-title",
+      "prompt": "projects/score2gp/prompts/next/omit-05-fu2-remove-compiled-score-title.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: every route that can reach the placeholder, and what title each approved source produces today.",
+        "No invented title remains: the title comes from the source evidence or is empty with a located diagnostic (code, route).",
+        "Tests on that route fail under a mutant that restores the placeholder, and a real approved source with a readable title keeps it byte-identical.",
+        "Nothing else changes on the whole private set; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-05"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "22778bffdf1348a2b6e61b2aeff93906099c53a8",
+      "merge_commit": "77bd150d6bfc7d5fa7b1715e4b5ba71c70e91cc9",
+      "reconciled": true,
+      "reconciled_at": "2026-10-19T09:56:37.245863+00:00"
     }
   ],
   "backlog": [
