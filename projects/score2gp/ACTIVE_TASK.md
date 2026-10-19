@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/layout-01-fu1-fallback-source-total`
 
-**Pull Request**: TBD
+**Pull Request**: 504
 
 **Owner Role**: implementation
 
