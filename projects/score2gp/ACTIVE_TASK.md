@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-05-fu2-remove-compiled-score-title`
 
-**Pull Request**: TBD
+**Pull Request**: 502
 
 **Owner Role**: implementation
 
