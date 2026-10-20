@@ -2,33 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-05-FU1 — Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy
+**Task**: RES-REQ-0003 — Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/omit-05-fu1-header-footer-font-sizes`
+**PR Branch**: `feat/res-req-0003-dependency-licence-compatibility`
 
-**Pull Request**: 506
+**Pull Request**: TBD
 
-**Owner Role**: implementation
+**Owner Role**: architect
 
 ## Objective
 
-The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.
+Establish the facts the maintainer needs to accept REQ-0003: a licence inventory of every runtime and build dependency, a measured comparison of pymupdf against permissive PDF libraries on Lesson 3, a proposed mechanical CI audit, and a status proposal. Records only: no product code or dependency change, no legal conclusions.
 
 ## Allowed paths
 
-- `src/score2gp/**`
-- `tests/**`
-- `docs/**`
-- `schemas/**`
+- `projects/score2gp/requirements/REQ-0003-dependency-licence-compatibility.md`
+- `projects/score2gp/reports/**`
+- `projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python -m score2gp.cli export-schema --out schemas`
-- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
-- `python scripts/artifact_audit.py`
+- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
 - `git diff --check`
