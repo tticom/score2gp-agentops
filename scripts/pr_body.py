@@ -3,11 +3,12 @@ import argparse
 import os
 import re
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 
 def run_cmd(args):
     try:
-        res = subprocess.run(args, capture_output=True, text=True, check=True)
+        res = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
         return res.stdout.strip()
     except Exception:
         return ""
@@ -103,7 +104,7 @@ def main():
     lines.append("## Private-Safety & Repository Hygiene Audit")
     # Read artifact audit status
     python_bin = sys.executable
-    audit_res = subprocess.run([python_bin, "scripts/artifact_audit.py"], capture_output=True, text=True)
+    audit_res = subprocess.run([python_bin, "scripts/artifact_audit.py"], capture_output=True, text=True, encoding="utf-8", errors="strict")
     if audit_res.returncode == 0:
         lines.append("🟢 **PASS**: Repository hygiene checks succeeded. No private fixtures or generated artifacts are tracked.")
     else:

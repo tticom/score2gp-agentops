@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 from typing import Any, Callable, Sequence
 
 
@@ -19,7 +20,7 @@ Runner = Callable[..., subprocess.CompletedProcess[str]]
 def _run_json(
     command: Sequence[str], runner: Runner = subprocess.run
 ) -> Any:
-    result = runner(command, capture_output=True, text=True)
+    result = runner(command, capture_output=True, text=True, encoding="utf-8", errors="strict")
     if result.returncode:
         raise HandbackPublishError(
             result.stderr.strip() or f"command failed: {' '.join(command)}"
@@ -58,7 +59,7 @@ def query_pr_comments(repo: str, pr_number: int) -> list[dict]:
     result = subprocess.run(
         ["gh", "api", f"repos/{repo}/issues/{pr_number}/comments?per_page=100"],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="strict",
     )
     if result.returncode:
         raise HandbackPublishError(result.stderr.strip() or "PR handback-comment query failed")

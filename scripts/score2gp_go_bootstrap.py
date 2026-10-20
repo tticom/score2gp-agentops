@@ -9,6 +9,7 @@ import argparse
 import json
 import os
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 import tempfile
 from pathlib import Path
@@ -30,12 +31,12 @@ def fail_closed(reason: str) -> None:
 
 def sync_main(cwd: Path, name: str) -> None:
     try:
-        res = subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True, text=True, check=True)
+        res = subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
         if res.stdout.strip():
             fail_closed(f"{name} repository is dirty. Commit or stash changes before dispatching.")
-        subprocess.run(["git", "fetch", "origin", "main"], cwd=cwd, capture_output=True, text=True, check=True)
-        subprocess.run(["git", "switch", "main"], cwd=cwd, capture_output=True, text=True, check=True)
-        subprocess.run(["git", "merge", "--ff-only", "origin/main"], cwd=cwd, capture_output=True, text=True, check=True)
+        subprocess.run(["git", "fetch", "origin", "main"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
+        subprocess.run(["git", "switch", "main"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
+        subprocess.run(["git", "merge", "--ff-only", "origin/main"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
     except Exception as e:
         detail = getattr(e, "stderr", None) or str(e)
         fail_closed(f"Failed to sync {name}: {detail.strip()}")
@@ -45,7 +46,7 @@ def capture_task_live(agentops: Path, authority_path: Path) -> dict:
     """Live state for the active task: its recorded PR, or GOV-03 discovery when none is recorded."""
     res = subprocess.run(
         [sys.executable, "scripts/score2gp_orca_control.py", "task-live", "--authority", str(authority_path)],
-        cwd=agentops, capture_output=True, text=True,
+        cwd=agentops, capture_output=True, text=True, encoding="utf-8", errors="strict",
     )
     if res.returncode != 0:
         fail_closed(f"Live-state capture failed: {res.stderr.strip()}")
@@ -61,7 +62,7 @@ def capture_task_live(agentops: Path, authority_path: Path) -> dict:
 def resolve_live(agentops: Path, authority_path: Path, live_file: str) -> dict:
     res = subprocess.run(
         [sys.executable, "scripts/score2gp_orca_control.py", "resolve", "--authority", str(authority_path), "--live", live_file],
-        cwd=agentops, capture_output=True, text=True,
+        cwd=agentops, capture_output=True, text=True, encoding="utf-8", errors="strict",
     )
     if res.returncode != 0:
         fail_closed(f"Resolve failed: {res.stderr.strip()}")
@@ -100,7 +101,7 @@ def main() -> None:
         live_file = f.name
 
     try:
-        gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True)
+        gh_user = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True, encoding="utf-8", errors="strict")
         if gh_user.returncode != 0:
             fail_closed(f"GitHub identity check failed: {gh_user.stderr.strip()}")
         login = gh_user.stdout.strip()

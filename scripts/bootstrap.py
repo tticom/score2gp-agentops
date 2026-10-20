@@ -2,12 +2,13 @@
 import sys
 import os
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import json
 import glob
 
 def run_git(args):
     try:
-        result = subprocess.run(['git'] + args, capture_output=True, text=True, check=True)
+        result = subprocess.run(['git'] + args, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         print(f"Git error running {' '.join(args)}: {e.stderr.strip()}", file=sys.stderr)

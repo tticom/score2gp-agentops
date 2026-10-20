@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 from typing import Any, Iterable
 
 # Any identity granted the reviewer role may publish a governing review. The
@@ -47,7 +48,7 @@ def query_reviews(repo: str, pr_number: int) -> list[dict[str, Any]]:
     result = subprocess.run(
         ["gh", "api", f"repos/{repo}/pulls/{pr_number}/reviews?per_page=100"],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="strict",
     )
     if result.returncode:
         raise ReviewStateError(result.stderr.strip() or "review query failed")

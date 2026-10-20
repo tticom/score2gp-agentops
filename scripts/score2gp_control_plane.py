@@ -8,6 +8,7 @@ import json
 import os
 import re
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 from pathlib import Path
 
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -95,7 +96,7 @@ def git(repo: Path, *args: str, check: bool = True) -> str:
     result = subprocess.run(
         ["git", "-C", str(repo), *args],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="strict",
     )
     if check and result.returncode:
         raise GateError(result.stderr.strip() or "git command failed")
@@ -106,7 +107,7 @@ def git_succeeds(repo: Path, *args: str) -> bool:
     return subprocess.run(
         ["git", "-C", str(repo), *args],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="strict",
     ).returncode == 0
 
 
