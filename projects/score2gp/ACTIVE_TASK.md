@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-03 — Bound the work-directory footprint of a conversion and add a resource budget test
+**Task**: OMIT-05-FU1 — Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/mem-03-bound-workdir-footprint`
+**PR Branch**: `feat/omit-05-fu1-header-footer-font-sizes`
 
-**Pull Request**: 505
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.
+The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.
 
 ## Allowed paths
 

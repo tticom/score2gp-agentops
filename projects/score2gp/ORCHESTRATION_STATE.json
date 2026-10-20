@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 169,
+  "authority_revision": 170,
   "task": {
-    "id": "MEM-03",
-    "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
-    "objective": "One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 505,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/mem-03-bound-workdir-footprint",
-    "prompt": "projects/score2gp/prompts/next/mem-03-bound-workdir-footprint.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: bytes written per file for every approved source, the duplicates, and peak working set; state the largest outputs.",
-      "The duplicate inspect output is gone and heavy diagnostics are opt-in behind an explicit flag; the GP output and the default report are unchanged (byte-identical GPIF on the whole private set).",
-      "Budget tests on real approved sources (bytes written per bar and peak working set, with stated bounds and measurement noise) fail under mutants (duplicate output restored; diagnostics on by default).",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "MEM-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-05-FU1",
     "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
     "objective": "The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -88,6 +45,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3499,6 +3457,53 @@
       "merge_commit": "8e76c0c16ca9415008ea3fbe1ad4c622bce33a42",
       "reconciled": true,
       "reconciled_at": "2026-10-19T22:36:37.448834+00:00"
+    },
+    {
+      "id": "MEM-03",
+      "title": "Bound the work-directory footprint of a conversion and add a resource budget test",
+      "objective": "One Lesson 3 conversion wrote 160 MB in 23 files (score.ir.json 51 MB, conversion-report.html 50 MB, tab/tab_raw.json 22 MB, inspect_pdf.json 16 MB written twice). MEM-02 fixes the report. Remove the duplicate inspect output, make heavy diagnostics opt-in, and add budgets for peak memory and bytes written per bar so regressions fail.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 505,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/mem-03-bound-workdir-footprint",
+      "prompt": "projects/score2gp/prompts/next/mem-03-bound-workdir-footprint.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: bytes written per file for every approved source, the duplicates, and peak working set; state the largest outputs.",
+        "The duplicate inspect output is gone and heavy diagnostics are opt-in behind an explicit flag; the GP output and the default report are unchanged (byte-identical GPIF on the whole private set).",
+        "Budget tests on real approved sources (bytes written per bar and peak working set, with stated bounds and measurement noise) fail under mutants (duplicate output restored; diagnostics on by default).",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "MEM-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "467a6476c42281c5ace775027ae7b1fe43de7482",
+      "merge_commit": "ed07d5735bc67bfe31e859857e93ec1ec84e84e0",
+      "reconciled": true,
+      "reconciled_at": "2026-10-20T05:56:37.753907+00:00"
     }
   ],
   "backlog": [
