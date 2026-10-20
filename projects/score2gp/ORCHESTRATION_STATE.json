@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 170,
+  "authority_revision": 171,
   "task": {
     "id": "OMIT-05-FU1",
     "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
@@ -3516,7 +3516,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_RESEARCH",
-      "priority": 12,
+      "priority": 114,
       "depends_on": [
         "RES-REQ-0005"
       ],
@@ -3531,7 +3531,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_RESEARCH",
-      "priority": 13,
+      "priority": 309,
       "depends_on": [
         "SHORT-01"
       ],
@@ -3547,7 +3547,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_RESEARCH",
-      "priority": 14,
+      "priority": 310,
       "depends_on": [
         "SHORT-01"
       ],
@@ -3562,7 +3562,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_RESEARCH",
-      "priority": 15,
+      "priority": 422,
       "depends_on": [
         "SHORT-01"
       ],
@@ -3577,7 +3577,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 502,
       "depends_on": [],
       "notes": "Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs."
     },
@@ -3591,7 +3591,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 4,
+      "priority": 111,
       "depends_on": [],
       "notes": "Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25)."
     },
@@ -3604,7 +3604,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 5,
+      "priority": 519,
       "depends_on": [],
       "notes": "Reviewers refuse or work around it (2026-09-25). Either the assignment carries the pinned paths or the rules change."
     },
@@ -3617,7 +3617,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 6,
+      "priority": 523,
       "depends_on": [
         "CP-07"
       ],
@@ -3632,7 +3632,7 @@
       "kind": "research",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 7,
+      "priority": 104,
       "depends_on": [],
       "notes": "Prompt: prompts/next/res-req-0002-pluggable-gp-output-targets.md"
     },
@@ -3645,7 +3645,7 @@
       "kind": "research",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 8,
+      "priority": 102,
       "depends_on": [],
       "notes": "Prompt: prompts/next/res-req-0003-dependency-licence-compatibility.md"
     },
@@ -3658,7 +3658,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 9,
+      "priority": 525,
       "depends_on": [],
       "notes": "FS-01 (score2gp#409) implemented the record but only the private smoke scripts use it; FS-02 required SHA/runtime in convert-report."
     },
@@ -3671,7 +3671,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 10,
+      "priority": 108,
       "depends_on": [],
       "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01."
     },
@@ -3685,7 +3685,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 11,
+      "priority": 109,
       "depends_on": [],
       "notes": "Contradicts the L3 'no note clamping' gate; target limits belong in capability checks (ADR-008)."
     },
@@ -3699,7 +3699,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 12,
+      "priority": 110,
       "depends_on": [],
       "notes": "Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral."
     },
@@ -3712,7 +3712,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 13,
+      "priority": 526,
       "depends_on": [
         "FND-03"
       ],
@@ -3727,7 +3727,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 14,
+      "priority": 425,
       "depends_on": [
         "FND-04"
       ],
@@ -3742,7 +3742,7 @@
       "kind": "implementation",
       "repository": "tticom/agentops-claude-skills",
       "status": "NEEDS_DETAIL",
-      "priority": 15,
+      "priority": 423,
       "depends_on": [],
       "notes": "Maintainer question 2026-09-25."
     },
@@ -3755,7 +3755,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 16,
+      "priority": 424,
       "depends_on": [],
       "notes": "Maintainer decision."
     },
@@ -3768,7 +3768,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 19,
+      "priority": 426,
       "depends_on": [],
       "notes": "The product README still says 'eventually GP7'; the release contract assumes a MusicXML sidecar."
     },
@@ -3781,7 +3781,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 20,
+      "priority": 101,
       "depends_on": [],
       "notes": "Architect recommendation: wrap first (TOP-01) to avoid a double migration."
     },
@@ -3794,7 +3794,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 21,
+      "priority": 527,
       "depends_on": [],
       "notes": "Maintainer 2026-09-25: 'Position is the TAB's super power'."
     },
@@ -3807,7 +3807,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 22,
+      "priority": 528,
       "depends_on": [],
       "notes": "Architect role cannot edit product; governance owns ADRs (governance README)."
     },
@@ -3821,7 +3821,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 23,
+      "priority": 201,
       "depends_on": [
         "DEC-01"
       ],
@@ -3837,7 +3837,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 24,
+      "priority": 202,
       "depends_on": [
         "REC-06"
       ],
@@ -3853,7 +3853,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 25,
+      "priority": 203,
       "depends_on": [
         "REC-06"
       ],
@@ -3868,7 +3868,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 26,
+      "priority": 204,
       "depends_on": [
         "REC-07"
       ],
@@ -3883,7 +3883,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 27,
+      "priority": 205,
       "depends_on": [
         "REC-06"
       ],
@@ -3898,7 +3898,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 28,
+      "priority": 113,
       "depends_on": [],
       "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-04A). Absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate."
     },
@@ -3911,7 +3911,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 29,
+      "priority": 207,
       "depends_on": [
         "NPG-04A"
       ],
@@ -3926,7 +3926,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 30,
+      "priority": 206,
       "depends_on": [
         "TOP-02"
       ],
@@ -3941,7 +3941,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 31,
+      "priority": 208,
       "depends_on": [
         "NPG-04B"
       ],
@@ -3956,7 +3956,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 32,
+      "priority": 209,
       "depends_on": [
         "REC-08",
         "REC-09",
@@ -3974,7 +3974,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 33,
+      "priority": 210,
       "depends_on": [
         "REC-11",
         "NPG-05A"
@@ -3990,7 +3990,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 34,
+      "priority": 211,
       "depends_on": [
         "REC-12",
         "NPG-04B"
@@ -4006,7 +4006,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 35,
+      "priority": 212,
       "depends_on": [
         "REC-13"
       ],
@@ -4021,7 +4021,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 36,
+      "priority": 301,
       "depends_on": [
         "NPG-06A",
         "NPG-05A"
@@ -4037,7 +4037,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 37,
+      "priority": 302,
       "depends_on": [
         "NPG-06B"
       ],
@@ -4052,7 +4052,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 38,
+      "priority": 303,
       "depends_on": [
         "NPG-06C"
       ],
@@ -4067,7 +4067,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 39,
+      "priority": 304,
       "depends_on": [
         "NATIVE-01",
         "NPG-06C"
@@ -4083,7 +4083,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 40,
+      "priority": 305,
       "depends_on": [
         "L3-02"
       ],
@@ -4098,7 +4098,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 41,
+      "priority": 306,
       "depends_on": [
         "L3-03",
         "REC-08"
@@ -4114,7 +4114,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 42,
+      "priority": 307,
       "depends_on": [
         "NATIVE-01"
       ],
@@ -4129,7 +4129,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 43,
+      "priority": 308,
       "depends_on": [
         "L3-04",
         "NPG-06D",
@@ -4147,7 +4147,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 44,
+      "priority": 407,
       "depends_on": [
         "REC-09",
         "NPG-05A",
@@ -4165,7 +4165,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 45,
+      "priority": 408,
       "depends_on": [
         "REC-10",
         "NPG-05B"
@@ -4181,7 +4181,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 46,
+      "priority": 409,
       "depends_on": [
         "REC-06",
         "NPG-01C"
@@ -4198,7 +4198,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 47,
+      "priority": 410,
       "depends_on": [
         "NPG-00D"
       ],
@@ -4213,7 +4213,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 48,
+      "priority": 411,
       "depends_on": [
         "NPG-01A"
       ],
@@ -4228,7 +4228,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 49,
+      "priority": 412,
       "depends_on": [
         "NPG-01B"
       ],
@@ -4244,7 +4244,7 @@
       "kind": "research",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 50,
+      "priority": 105,
       "depends_on": [],
       "notes": "Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-00C)."
     },
@@ -4258,7 +4258,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 51,
+      "priority": 106,
       "depends_on": [
         "NPG-00C",
         "RES-REQ-0002"
@@ -4274,7 +4274,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 52,
+      "priority": 112,
       "depends_on": [],
       "notes": "L6 was designated held-out but L3-01 re-pinned L5/L6/L7; designate a fresh held-out set."
     },
@@ -4287,7 +4287,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 53,
+      "priority": 405,
       "depends_on": [
         "REC-07",
         "FND-03"
@@ -4304,7 +4304,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 54,
+      "priority": 406,
       "depends_on": [
         "NPG-05C",
         "FND-03"
@@ -4320,7 +4320,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 55,
+      "priority": 401,
       "depends_on": [
         "L3-NATIVE",
         "FND-04"
@@ -4337,7 +4337,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 56,
+      "priority": 427,
       "depends_on": [
         "REC-06"
       ],
@@ -4352,7 +4352,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 57,
+      "priority": 402,
       "depends_on": [
         "MSG-01",
         "GOV-08"
@@ -4368,7 +4368,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 58,
+      "priority": 403,
       "depends_on": [
         "MSG-01"
       ],
@@ -4385,7 +4385,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 59,
+      "priority": 404,
       "depends_on": [
         "NATIVE-01"
       ],
@@ -4401,7 +4401,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 60,
+      "priority": 415,
       "depends_on": [
         "REC-13",
         "L3-NATIVE"
@@ -4417,7 +4417,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 60,
+      "priority": 413,
       "depends_on": [
         "NPG-00D"
       ],
@@ -4432,7 +4432,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 61,
+      "priority": 414,
       "depends_on": [
         "NPG-07A",
         "MSG-02"
@@ -4448,7 +4448,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 62,
+      "priority": 417,
       "depends_on": [
         "NPG-07B"
       ],
@@ -4464,7 +4464,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 63,
+      "priority": 418,
       "depends_on": [
         "NPG-08A"
       ],
@@ -4479,7 +4479,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 64,
+      "priority": 419,
       "depends_on": [
         "NPG-08B"
       ],
@@ -4494,7 +4494,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 65,
+      "priority": 420,
       "depends_on": [
         "NPG-09A"
       ],
@@ -4509,7 +4509,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 66,
+      "priority": 421,
       "depends_on": [
         "NPG-09B"
       ],
@@ -4524,7 +4524,7 @@
       "kind": "research",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 70,
+      "priority": 107,
       "depends_on": [
         "RES-REQ-0002"
       ],
@@ -4539,7 +4539,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 71,
+      "priority": 311,
       "depends_on": [
         "NPG-06A",
         "FND-02",
@@ -4556,7 +4556,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 72,
+      "priority": 312,
       "depends_on": [
         "OUT-02",
         "OUT-00"
@@ -4572,7 +4572,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 73,
+      "priority": 313,
       "depends_on": [
         "OUT-03",
         "OUT-00"
@@ -4588,7 +4588,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 74,
+      "priority": 314,
       "depends_on": [
         "OUT-04"
       ],
@@ -4603,7 +4603,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "IDEA",
-      "priority": 75,
+      "priority": 905,
       "depends_on": [
         "OUT-03"
       ],
@@ -4618,7 +4618,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "IDEA",
-      "priority": 76,
+      "priority": 906,
       "depends_on": [
         "OUT-03"
       ],
@@ -4633,7 +4633,7 @@
       "kind": "decision",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_RESEARCH",
-      "priority": 77,
+      "priority": 103,
       "depends_on": [
         "RES-REQ-0003"
       ],
@@ -4648,7 +4648,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 80,
+      "priority": 530,
       "depends_on": [],
       "notes": "Decided in the 2026-09-25 project review."
     },
@@ -4661,7 +4661,7 @@
       "kind": "governance",
       "repository": "tticom/agentops-claude-skills",
       "status": "NEEDS_DETAIL",
-      "priority": 81,
+      "priority": 531,
       "depends_on": [],
       "notes": "Maintainer direction 2026-09-25; repository deletion needs explicit confirmation at that step."
     },
@@ -4674,7 +4674,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 82,
+      "priority": 532,
       "depends_on": [],
       "notes": "Maintainer direction 2026-09-25."
     },
@@ -4687,7 +4687,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 83,
+      "priority": 533,
       "depends_on": [
         "CP-03"
       ],
@@ -4702,7 +4702,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 84,
+      "priority": 534,
       "depends_on": [],
       "notes": "Done by PLAN-01 if the CI-scope amendment merges first; otherwise the follow-up."
     },
@@ -4715,7 +4715,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 85,
+      "priority": 535,
       "depends_on": [
         "CP-07"
       ],
@@ -4730,7 +4730,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-core",
       "status": "IDEA",
-      "priority": 100,
+      "priority": 907,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4743,7 +4743,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-vector-parser",
       "status": "IDEA",
-      "priority": 101,
+      "priority": 908,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4756,7 +4756,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "IDEA",
-      "priority": 102,
+      "priority": 909,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4769,7 +4769,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-exporter",
       "status": "IDEA",
-      "priority": 103,
+      "priority": 910,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4782,7 +4782,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-exporter",
       "status": "IDEA",
-      "priority": 104,
+      "priority": 911,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4795,7 +4795,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-audio",
       "status": "IDEA",
-      "priority": 105,
+      "priority": 912,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4808,7 +4808,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-audio",
       "status": "IDEA",
-      "priority": 106,
+      "priority": 913,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4821,7 +4821,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-audio",
       "status": "IDEA",
-      "priority": 107,
+      "priority": 914,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4834,7 +4834,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-audio",
       "status": "IDEA",
-      "priority": 108,
+      "priority": 915,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4847,7 +4847,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-exporter",
       "status": "IDEA",
-      "priority": 109,
+      "priority": 916,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4860,7 +4860,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-exporter",
       "status": "IDEA",
-      "priority": 110,
+      "priority": 917,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4873,7 +4873,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-exporter",
       "status": "IDEA",
-      "priority": 111,
+      "priority": 918,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4886,7 +4886,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-cloud",
       "status": "IDEA",
-      "priority": 112,
+      "priority": 919,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4899,7 +4899,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-cloud",
       "status": "IDEA",
-      "priority": 113,
+      "priority": 920,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4912,7 +4912,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-cloud",
       "status": "IDEA",
-      "priority": 114,
+      "priority": 921,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4925,7 +4925,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-cloud",
       "status": "IDEA",
-      "priority": 115,
+      "priority": 922,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
     },
@@ -4938,7 +4938,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 1,
+      "priority": 120,
       "depends_on": [],
       "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1. Raised to priority 1 on 2026-09-27: without PYTHONUTF8 the governance audit's gh reads hit UnicodeDecodeError on review-summary text, returned no comments, and reported a false violation (tticom/score2gp-agentops#712 merged without a merge-executor receipt, although the receipt is present and matches). The same bug crashed the merge executor on #708. Launchers force PYTHONUTF8=1 as a stopgap."
     },
@@ -4951,7 +4951,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "NEEDS_DETAIL",
-      "priority": 6,
+      "priority": 524,
       "depends_on": [
         "CP-08"
       ],
@@ -4966,7 +4966,7 @@
       "kind": "governance",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 23,
+      "priority": 529,
       "depends_on": [],
       "notes": "Found 2026-09-26 after PLAN-01 merged (the 'Promotion Rule' section, line 42). tests/test_single_backlog.py did not flag it because the line uses no planning-container word; the fix should also close that oracle gap or record why it is out of scope."
     },
@@ -4979,7 +4979,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 1,
+      "priority": 121,
       "depends_on": [
         "CP-13"
       ],
@@ -4995,7 +4995,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "DROPPED",
-      "priority": 3,
+      "priority": 904,
       "depends_on": [
         "DUR-01"
       ],
@@ -5010,7 +5010,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 5,
+      "priority": 122,
       "depends_on": [],
       "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
     },
@@ -5023,7 +5023,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 4,
+      "priority": 123,
       "depends_on": [],
       "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
     },
@@ -5036,7 +5036,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 4,
+      "priority": 514,
       "depends_on": [
         "DUR-02"
       ],
@@ -5051,7 +5051,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 508,
       "depends_on": [
         "OMIT-01"
       ],
@@ -5066,7 +5066,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 509,
       "depends_on": [
         "OMIT-01"
       ],
@@ -5081,7 +5081,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 510,
       "depends_on": [
         "OMIT-02"
       ],
@@ -5096,7 +5096,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 511,
       "depends_on": [
         "OMIT-02"
       ],
@@ -5111,7 +5111,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "DROPPED",
-      "priority": 2,
+      "priority": 901,
       "depends_on": [
         "DUR-02"
       ],
@@ -5126,7 +5126,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "DROPPED",
-      "priority": 2,
+      "priority": 902,
       "depends_on": [
         "DUR-02"
       ],
@@ -5141,7 +5141,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 2,
+      "priority": 501,
       "depends_on": [],
       "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does."
     },
@@ -5154,7 +5154,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp-agentops",
       "status": "READY",
-      "priority": 3,
+      "priority": 503,
       "depends_on": [],
       "notes": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback."
     },
@@ -5167,7 +5167,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 506,
       "depends_on": [
         "LAYOUT-01"
       ],
@@ -5182,7 +5182,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 507,
       "depends_on": [
         "LAYOUT-01"
       ],
@@ -5197,7 +5197,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 4,
+      "priority": 515,
       "depends_on": [
         "MEM-01"
       ],
@@ -5212,7 +5212,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 4,
+      "priority": 516,
       "depends_on": [
         "MEM-01"
       ],
@@ -5227,7 +5227,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 4,
+      "priority": 517,
       "depends_on": [
         "OMIT-03"
       ],
@@ -5242,7 +5242,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "DROPPED",
-      "priority": 2,
+      "priority": 903,
       "depends_on": [
         "OMIT-03"
       ],
@@ -5257,7 +5257,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 512,
       "depends_on": [
         "OMIT-03"
       ],
@@ -5272,7 +5272,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 5,
+      "priority": 521,
       "depends_on": [
         "OMIT-03"
       ],
@@ -5287,7 +5287,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 504,
       "depends_on": [
         "DUR-03"
       ],
@@ -5302,7 +5302,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 505,
       "depends_on": [
         "DUR-03"
       ],
@@ -5317,7 +5317,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 5,
+      "priority": 520,
       "depends_on": [
         "DUR-03"
       ],
@@ -5332,7 +5332,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 3,
+      "priority": 513,
       "depends_on": [
         "OMIT-04"
       ],
@@ -5347,7 +5347,7 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 4,
+      "priority": 518,
       "depends_on": [
         "OMIT-04"
       ],
@@ -5362,11 +5362,181 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "READY",
-      "priority": 5,
+      "priority": 522,
       "depends_on": [
         "OMIT-04"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical."
+    },
+    {
+      "id": "IN-01",
+      "title": "No-score PDFs: TAB-only sources with no notation staff (placeholder: needs research)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 115,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Evidence: 0 of 6 no-score fixtures convert (2026-10-19 survey); refusals pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe. Rhythm without notation can only be a labelled guess (see the rhythm-from-notation rule). Research: what can be read, what must be refused, what the user is told."
+    },
+    {
+      "id": "IN-02",
+      "title": "ASCII (text) TAB sources (placeholder: needs research)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 116,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Evidence: 0 of 1 ASCII fixture converts. Research: input formats, alignment ambiguity, how rhythm is represented or absent, refusal posture."
+    },
+    {
+      "id": "IN-03",
+      "title": "Hand-written TAB (scanned or photographed) (placeholder: needs research)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 117,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Evidence: 0 of 1 hand-written fixture converts. Research: OCR or vision options, licence and cost, accuracy bar, whether it is in scope for the first release."
+    },
+    {
+      "id": "IN-04",
+      "title": "Books of TAB: multi-piece documents (placeholder: needs research)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 118,
+      "depends_on": [
+        "NPG-00D"
+      ],
+      "notes": "Evidence: two tab books in the private fixtures (Books) are excluded from the default survey. Research: piece segmentation, per-piece output, resource budget (see MEM-03)."
+    },
+    {
+      "id": "RUST-00",
+      "title": "Profile the Python pipeline and list bottlenecks per stage (placeholder: needs detail)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 119,
+      "depends_on": [],
+      "notes": "Rust is the replacement for measured Python bottlenecks, not a side project. Evidence first: seconds and MB per stage on the corpus."
+    },
+    {
+      "id": "RUST-01",
+      "title": "Plug-and-play native component interface with Python fallback (promotes TSK-102)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 213,
+      "depends_on": [
+        "RUST-00"
+      ],
+      "notes": "Keep the interface swappable; no cutover without proof."
+    },
+    {
+      "id": "RUST-02",
+      "title": "Finish E1: page text index (E1-08) and the E1 checkpoint (E1-10)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 214,
+      "depends_on": [
+        "RUST-01"
+      ],
+      "notes": "Tracked in the vector-parser docs/TASKS.md with its own light process."
+    },
+    {
+      "id": "RUST-03",
+      "title": "Native PDF reader for real PDFs so PyMuPDF can be dropped (P1-02)",
+      "requirements": [
+        "REQ-0001",
+        "REQ-0003"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 215,
+      "depends_on": [
+        "RUST-02",
+        "DEC-04"
+      ],
+      "notes": "Main third-party removal on the acquisition path."
+    },
+    {
+      "id": "RUST-04",
+      "title": "Primitive recogniser kernels (noteheads, stems, beams) behind TOP-02",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 216,
+      "depends_on": [
+        "RUST-01",
+        "TOP-02"
+      ],
+      "notes": "Python version first; Rust replaces it only where RUST-00 shows a bottleneck."
+    },
+    {
+      "id": "RUST-05",
+      "title": "Staff, system and measure topology kernels behind REC-06 and REC-07",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 217,
+      "depends_on": [
+        "RUST-01",
+        "REC-06"
+      ],
+      "notes": "Same gate as RUST-04."
+    },
+    {
+      "id": "RUST-06",
+      "title": "Per-component cutover decision: speed and bit-equal accuracy proven on the corpus",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "decision",
+      "repository": "tticom/score2gp-vector-parser",
+      "status": "NEEDS_DETAIL",
+      "priority": 416,
+      "depends_on": [
+        "RUST-03",
+        "RUST-04",
+        "RUST-05",
+        "REC-14"
+      ],
+      "notes": "No cutover without proof (maintainer directive)."
     }
   ],
   "registered_requirements": [
