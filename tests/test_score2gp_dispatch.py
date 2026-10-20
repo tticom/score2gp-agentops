@@ -128,7 +128,8 @@ def test_authenticated_login_is_read_from_github(monkeypatch) -> None:
     monkeypatch.setattr("scripts.score2gp_dispatch.subprocess.run", lookup)
     assert _authenticated_login() == "tticom-automation"
     assert calls == [(["gh", "api", "user", "--jq", ".login"],
-                      {"capture_output": True, "text": True})]
+                      {"capture_output": True, "text": True,
+                       "encoding": "utf-8", "errors": "strict"})]
 
 
 def test_empty_login_is_closed(monkeypatch) -> None:

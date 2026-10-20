@@ -885,7 +885,9 @@ def test_merge_receipt_audit_reads_receipts_from_multi_page_comment_output(monke
                           "mergeCommit": {"oid": "m" * 40}}])
     seen = []
 
-    def fake_run(command, capture_output, text):
+    def fake_run(command, capture_output, text, encoding, errors):
+        assert capture_output is True and text is True
+        assert encoding == "utf-8" and errors == "strict"
         seen.append(command)
         if command[1:3] == ["pr", "list"]:
             stdout = merged if command[4] == "tticom/score2gp" else "[]"
