@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-05-fu1-header-footer-font-sizes`
 
-**Pull Request**: TBD
+**Pull Request**: 506
 
 **Owner Role**: implementation
 
