@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 171,
+  "authority_revision": 172,
   "task": {
     "id": "OMIT-05-FU1",
     "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 506,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
