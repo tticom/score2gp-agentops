@@ -2,30 +2,33 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CP-10 — Decode gh output as UTF-8 in the control plane
+**Task**: OMIT-04-FU1 — Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cp-10-decode-gh-output-as-utf-8`
+**PR Branch**: `feat/omit-04-fu1-read-real-gp-noteless-beats`
 
-**Pull Request**: 837
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.
+Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason. Source: authority item OMIT-04-FU1. Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference.
 
 ## Allowed paths
 
-- `scripts/*.py`
-- `tests/test_cp_10_*.py`
-- `tests/test_score2gp_orca_control.py`
+- `src/score2gp/**`
+- `tests/**`
+- `docs/**`
+- `scripts/oracle.py`
 
 ## Validation commands
 
 - `python -m pytest`
-- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
+- `python -m score2gp.cli export-schema --out schemas`
+- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
+- `python scripts/artifact_audit.py`
 - `git diff --check`
