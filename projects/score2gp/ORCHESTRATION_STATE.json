@@ -55,13 +55,7 @@
     "branch": "feat/cp-10-decode-gh-output-as-utf-8",
     "prompt": "projects/score2gp/prompts/next/cp-10-decode-gh-output-as-utf-8.md",
     "allowed_paths": [
-      "scripts/score2gp_orca_control.py",
-      "scripts/score2gp_got_bootstrap.py",
-      "scripts/score2gp_governance_audit.py",
-      "scripts/score2gp_orchestrator.py",
-      "scripts/score2gp_pr_review_state.py",
-      "scripts/score2gp_publish_handback.py",
-      "scripts/score2gp_dispatch.py",
+      "scripts/*.py",
       "tests/test_cp_10_*.py",
       "tests/test_score2gp_orca_control.py"
     ],
