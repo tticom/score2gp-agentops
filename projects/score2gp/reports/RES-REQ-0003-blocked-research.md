@@ -1,4 +1,4 @@
-﻿# RES-REQ-0003: blocked research handoff
+# RES-REQ-0003: blocked research handoff
 
 Outcome: BLOCKED; research acceptance is not met. REQ-0003 remains PROPOSED.
 
@@ -59,3 +59,23 @@ completed research. No independent review was performed.
 
 Local handoff verification: all four launcher files exist; evidence JSON parsed with five NOT_RUN acceptance entries. git diff --check completed with exit 0 (the new report is untracked, so this does not validate its content). No research tests ran.
 
+## PR #834 review remediation
+
+At reviewed head `3874f0f436d012e52f7e3cb1bc5c02cd79002968`,
+`git diff --check main...HEAD` reproduced the reported extra blank line at EOF
+with exit 2. This revision removes that blank line and records the remediation.
+The earlier local check covered only tracked changes and missed the new report.
+
+The environment observations above describe the earlier run. On this revision,
+the mandated interpreter exists, PyMuPDF reports 1.28.2, and import discovery
+finds both PDF candidates. Command-local `safe.directory` permits read-only Git
+verification without changing global configuration: the product revision is
+`a2d232dd4577a9dc72e2f69d8cf3f4a6f6f6d239` and the skills revision is
+`c51d4469bff70ee90b2a99c0690d7c41554ba9de`. These checks supersede the earlier
+missing-interpreter and unverified-revision blockers; they are not licence or
+fidelity evidence. Pytest is absent from the mandated environment.
+
+Research acceptance remains unmet. This review revision addresses the cited
+formatting defect; no inventory or Lesson 3 comparison was run, no requirement
+status changed, and no independent review was performed. The launcher must
+commit, verify the complete base-to-new-head diff and resolve fresh Orca state.
