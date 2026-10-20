@@ -10,7 +10,7 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-Stop tests writing into the private corpus. Source: backlog CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.
+Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.
 
 ## Acceptance
 
