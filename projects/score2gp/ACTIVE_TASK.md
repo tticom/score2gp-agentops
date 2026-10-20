@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/res-req-0003-dependency-licence-compatibility`
 
-**Pull Request**: TBD
+**Pull Request**: 834
 
 **Owner Role**: implementation
 
