@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 176,
+  "authority_revision": 177,
   "task": {
-    "id": "RES-REQ-0003",
-    "title": "Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options",
-    "objective": "Establish the facts the maintainer needs to accept REQ-0003: a licence inventory of every runtime and build dependency, a measured comparison of pymupdf against permissive PDF libraries on Lesson 3, a proposed mechanical CI audit, and a status proposal. Records only: no product code or dependency change, no legal conclusions.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 834,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/res-req-0003-dependency-licence-compatibility",
-    "prompt": "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md",
-    "allowed_paths": [
-      "projects/score2gp/requirements/REQ-0003-dependency-licence-compatibility.md",
-      "projects/score2gp/reports/**",
-      "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md"
-    ],
-    "acceptance": [
-      "Licence inventory of every direct and transitive runtime and build dependency, each licence read from package metadata or the source repository and classified.",
-      "PDF-library options compared on measured fidelity (vector paths with paint order, colour, opacity, text positions, raster rendering) on at least Lesson 3, not on feature lists; Artifex commercial terms recorded as a question, with no guessed prices.",
-      "A proposed mechanical audit that REQ-0003 acceptance criterion 1 would run in CI.",
-      "A status proposal for REQ-0003 and the DEC-04 decision options; REQ-0003 findings and acceptance sections complete and sourced.",
-      "No private musical content committed (hashes, counts and distances only); every claim cites a file, document or executed probe a reviewer can reproduce."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-10",
     "title": "Decode gh output as UTF-8 in the control plane",
     "objective": "run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -79,6 +40,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3584,6 +3546,49 @@
       "merge_commit": "a2d232dd4577a9dc72e2f69d8cf3f4a6f6f6d239",
       "reconciled": true,
       "reconciled_at": "2026-10-20T13:04:25.086704+00:00"
+    },
+    {
+      "id": "RES-REQ-0003",
+      "title": "Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options",
+      "objective": "Establish the facts the maintainer needs to accept REQ-0003: a licence inventory of every runtime and build dependency, a measured comparison of pymupdf against permissive PDF libraries on Lesson 3, a proposed mechanical CI audit, and a status proposal. Records only: no product code or dependency change, no legal conclusions.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 834,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/res-req-0003-dependency-licence-compatibility",
+      "prompt": "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md",
+      "allowed_paths": [
+        "projects/score2gp/requirements/REQ-0003-dependency-licence-compatibility.md",
+        "projects/score2gp/reports/**",
+        "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md"
+      ],
+      "acceptance": [
+        "Licence inventory of every direct and transitive runtime and build dependency, each licence read from package metadata or the source repository and classified.",
+        "PDF-library options compared on measured fidelity (vector paths with paint order, colour, opacity, text positions, raster rendering) on at least Lesson 3, not on feature lists; Artifex commercial terms recorded as a question, with no guessed prices.",
+        "A proposed mechanical audit that REQ-0003 acceptance criterion 1 would run in CI.",
+        "A status proposal for REQ-0003 and the DEC-04 decision options; REQ-0003 findings and acceptance sections complete and sourced.",
+        "No private musical content committed (hashes, counts and distances only); every claim cites a file, document or executed probe a reviewer can reproduce."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "be63a78a1e97b3ad85b71f5e7a1a96fcc81e913f",
+      "merge_commit": "473857fa7d4315f9c602527fe56b17072fd78ca2",
+      "reconciled": true,
+      "reconciled_at": "2026-10-20T19:36:40.535401+00:00"
     }
   ],
   "backlog": [
