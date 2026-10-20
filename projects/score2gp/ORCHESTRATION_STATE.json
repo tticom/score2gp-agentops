@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 174,
+  "authority_revision": 175,
   "task": {
     "id": "RES-REQ-0003",
     "title": "Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options",
@@ -10,7 +10,7 @@
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
-    "owner_role": "architect",
+    "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
     "branch": "feat/res-req-0003-dependency-licence-compatibility",
