@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
@@ -83,7 +84,7 @@ def normalize_verdict(verdict: str) -> tuple[str, str, str]:
 def _run_json(
     command: Sequence[str], runner: Runner = subprocess.run
 ) -> Any:
-    result = runner(command, capture_output=True, text=True)
+    result = runner(command, capture_output=True, text=True, encoding="utf-8", errors="strict")
     if result.returncode:
         raise ReviewPublishError(
             result.stderr.strip() or f"command failed: {' '.join(command)}"

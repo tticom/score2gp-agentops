@@ -12,6 +12,7 @@ import argparse
 import json
 import re
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -46,7 +47,7 @@ def github_login(runner: Runner | None = None) -> str:
     runner = runner or subprocess.run
     try:
         result = runner(
-            ["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True
+            ["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True, encoding="utf-8", errors="strict"
         )
     except OSError as error:
         raise IdentityError("GitHub identity check could not run") from error
@@ -72,7 +73,7 @@ def _git_ident(checkout: Path, variable: str, runner: Runner) -> tuple[str, str]
         result = runner(
             ["git", "-C", str(checkout), "var", variable],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8", errors="strict",
         )
     except OSError as error:
         raise IdentityError("Git identity check could not run") from error

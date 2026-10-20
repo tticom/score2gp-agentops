@@ -12,6 +12,7 @@ import getpass
 import json
 import re
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 from copy import deepcopy
 from datetime import datetime, timezone
 from dataclasses import dataclass
@@ -61,7 +62,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def run_json(command: list[str]) -> Any:
-    completed = subprocess.run(command, capture_output=True, text=True)
+    completed = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="strict")
     if completed.returncode:
         raise ControlError(completed.stderr.strip() or f"command failed: {' '.join(command)}")
     try:
@@ -1188,7 +1189,7 @@ def execute_merge(
     outside it, and relies on the receipt audit to detect that afterwards.
     """
     capture = capture or capture_live_state
-    run = run or (lambda command: subprocess.run(command, capture_output=True, text=True))
+    run = run or (lambda command: subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="strict"))
     live = capture(repository, pull_request)
     live["governance"] = derive_governance_go(authority, live)
     live["merge_controller_login"] = login
@@ -1267,12 +1268,12 @@ def audit_merge_receipts(merged_prs: list[dict[str, Any]], controllers: list[str
 
 def git_head(root: Path) -> str:
     dirty = subprocess.run(
-        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True
+        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True, encoding="utf-8", errors="strict"
     )
     if dirty.returncode or dirty.stdout.strip():
         raise ControlError("AgentOps authority worktree must be clean before dispatch")
     completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True
+        ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, encoding="utf-8", errors="strict"
     )
     if completed.returncode:
         raise ControlError(completed.stderr.strip() or "cannot resolve AgentOps HEAD")

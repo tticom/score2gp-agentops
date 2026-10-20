@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import shutil
 
 def get_active_run_dir(repo_root):
@@ -13,7 +14,7 @@ def get_active_run_dir(repo_root):
     try:
         branch = subprocess.check_output(
             ["git", "-C", product_repo, "rev-parse", "--abbrev-ref", "HEAD"],
-            text=True
+            text=True, encoding="utf-8", errors="strict"
         ).strip()
     except Exception:
         branch = "main"

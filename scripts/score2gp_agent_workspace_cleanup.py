@@ -6,6 +6,7 @@ or uncommitted work.
 """
 import json
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 import os
 import getpass
@@ -15,7 +16,7 @@ import datetime
 ALLOWED_IDENTITIES = {"tticom", "tticom-gov", "tticom-automation", "tticom-codex", "niall", "tticom-orca"}
 
 def run_cmd(cmd, cwd=None, check=True):
-    res = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    res = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="strict")
     if check and res.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{res.stderr}")
     return res

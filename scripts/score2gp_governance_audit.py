@@ -3,6 +3,7 @@ import json
 import os
 import re
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 
 try:
@@ -72,7 +73,7 @@ def collect_delegated_merges(authority, repositories=MERGE_AUDIT_REPOSITORIES, g
         from score2gp_orca_control import parse_merge_receipts
 
     def default_gh_json(args):
-        res = subprocess.run(["gh", *args], capture_output=True, text=True)
+        res = subprocess.run(["gh", *args], capture_output=True, text=True, encoding="utf-8", errors="strict")
         if res.returncode != 0:
             raise RuntimeError(res.stderr.strip() or "gh failed")
         return parse_gh_json_stream(res.stdout)
@@ -129,7 +130,7 @@ def audit_delegated_merges(authority, gh_json=None):
 
 def run_cmd(args):
     try:
-        res = subprocess.run(args, capture_output=True, text=True, check=True)
+        res = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="strict", check=True)
         return res.stdout.strip()
     except Exception:
         return ""
@@ -306,7 +307,7 @@ def main():
                 res = subprocess.run(
                     ["gh", "pr", "list", "--repo", repository, "--head", branch_name, "--state", "all",
                      "--limit", str(BRANCH_PR_LIST_LIMIT), "--json", "number,state"],
-                    capture_output=True, text=True
+                    capture_output=True, text=True, encoding="utf-8", errors="strict"
                 )
                 if res.returncode != 0:
                     violations.append(f"Unable to verify active task branch against GitHub: {branch_name} ({res.stderr.strip()})")

@@ -12,6 +12,7 @@ import getpass
 import json
 import os
 import subprocess
+# CLI output is UTF-8; strict errors reject corrupt bytes instead of hiding evidence.
 import sys
 from pathlib import Path
 from typing import Any
@@ -41,7 +42,7 @@ def synchronize_agentops_main(
             ["git", *args],
             cwd=agentops,
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8", errors="strict",
         )
         if result.returncode:
             detail = result.stderr.strip() or result.stdout.strip()
