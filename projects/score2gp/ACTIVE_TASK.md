@@ -2,27 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: RES-REQ-0003 — Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options
+**Task**: CP-10 — Decode gh output as UTF-8 in the control plane
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/res-req-0003-dependency-licence-compatibility`
+**PR Branch**: `feat/cp-10-decode-gh-output-as-utf-8`
 
-**Pull Request**: 834
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Establish the facts the maintainer needs to accept REQ-0003: a licence inventory of every runtime and build dependency, a measured comparison of pymupdf against permissive PDF libraries on Lesson 3, a proposed mechanical CI audit, and a status proposal. Records only: no product code or dependency change, no legal conclusions.
+run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.
 
 ## Allowed paths
 
-- `projects/score2gp/requirements/REQ-0003-dependency-licence-compatibility.md`
-- `projects/score2gp/reports/**`
-- `projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md`
+- `scripts/*.py`
+- `tests/test_cp_10_*.py`
+- `tests/test_score2gp_orca_control.py`
 
 ## Validation commands
 
