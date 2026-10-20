@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/cp-10-decode-gh-output-as-utf-8`
 
-**Pull Request**: TBD
+**Pull Request**: 837
 
 **Owner Role**: implementation
 
