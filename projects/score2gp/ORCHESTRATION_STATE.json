@@ -1,47 +1,217 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 178,
+  "authority_revision": 180,
   "task": {
-    "id": "CP-10",
-    "title": "Decode gh output as UTF-8 in the control plane",
-    "objective": "run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.",
+    "id": "OMIT-04-FU1",
+    "title": "Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason",
+    "objective": "Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason. Source: backlog OMIT-04-FU1. Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 837,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/cp-10-decode-gh-output-as-utf-8",
-    "prompt": "projects/score2gp/prompts/next/cp-10-decode-gh-output-as-utf-8.md",
+    "branch": "feat/omit-04-fu1-read-real-gp-noteless-beats",
+    "prompt": "projects/score2gp/prompts/next/omit-04-fu1-read-real-gp-noteless-beats.md",
     "allowed_paths": [
-      "scripts/*.py",
-      "tests/test_cp_10_*.py",
-      "tests/test_score2gp_orca_control.py"
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "scripts/oracle.py"
     ],
     "acceptance": [
-      "Every text-mode gh/git subprocess call in scripts/ passes an explicit UTF-8 encoding, enforced by a test that fails if one is reintroduced.",
-      "A test feeds non-cp1252 UTF-8 bytes through run_json and capture_live_state, passes at head and fails on the base; named mutants are rejected.",
-      "The audit and the merge executor behave identically with PYTHONUTF8 unset and set.",
-      "No gate is weakened or reordered; the launcher stopgap is listed, not removed."
+      "Measure first: reproduce the refusal of the real Lesson-3.gp reference by extract_score_ir_from_gp at current main; count the noteless non-rest beats and say what they hold.",
+      "Such beats are read faithfully (no invented note or rest) or refused with a located reason (bar, track, beat); the whole real file then either reads or is refused for a named, located cause.",
+      "A read test on the real Lesson-3.gp reference fails under mutants (drop the beat silently; turn it into a rest; keep the old whole-file refusal), and validate_roundtrip, compare_gp and scripts/oracle.py are exercised on the real file end to end, or the blocker is named.",
+      "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
       "git diff --check"
     ],
-    "dependencies": [],
+    "dependencies": [
+      "OMIT-04"
+    ],
     "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "OMIT-02-FU3",
+    "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
+    "objective": "Repeat-dot glyph detection must not depend on the Bravura font name. Source: backlog OMIT-02-FU3. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-02-fu3-repeat-dots-not-font-name",
+    "prompt": "projects/score2gp/prompts/next/omit-02-fu3-repeat-dots-not-font-name.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**",
+      "schemas/**"
+    ],
+    "acceptance": [
+      "Measure first: where the music-font name is matched and which real corpus sources use which music fonts (counts only).",
+      "A repeat dot is identified by SMuFL codepoint and geometry; a music font that is present but unrecognised, including one with no PUA ToUnicode mapping, gives a located refusal, never a silently omitted repeat.",
+      "Controls with a second SMuFL font and with an unmapped renamed subset font pass; on the real corpus every repeat read today is read identically; a mutant that restores the font-name match, or ignores geometry, fails.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "OMIT-01-FU1",
+      "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
+      "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: backlog OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-01-fu1-mid-system-key-change-ambiguity",
+      "prompt": "projects/score2gp/prompts/next/omit-01-fu1-mid-system-key-change-ambiguity.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
+        "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
+        "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "CP-06",
+      "title": "Stop tests writing into the private corpus",
+      "objective": "Stop tests writing into the private corpus. Source: backlog CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-06-tests-must-not-write-private-corpus",
+      "prompt": "projects/score2gp/prompts/next/cp-06-tests-must-not-write-private-corpus.md",
+      "allowed_paths": [
+        "tests/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: which tests write under the private-fixtures tree (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json) and show it by listing the files before and after a run.",
+        "Every such test writes under tmp_path or the repo work directory instead; after a full pytest run the private fixtures tree is byte-identical to before (shown by a hash listing of the corpus).",
+        "A guard test fails if a test writes into the private corpus tree (mutant: restore the write); no test deleted, skipped or weakened.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "DUR-02-FU2",
+      "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
+      "objective": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: backlog DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
+      "prompt": "projects/score2gp/prompts/next/dur-02-fu2-npg03b-floating-asserts-real-refusal.md",
+      "allowed_paths": [
+        "tests/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: what test_npg03b_floating calls and which guard it hits today (note_durations is None).",
+        "The test passes the DUR-01 records and asserts the category the route produces for a source with no notation staff; its original numeric checks are kept.",
+        "The test fails under mutants (route stops refusing; refuses with the generic guard instead; wrong category).",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3589,6 +3759,48 @@
       "merge_commit": "473857fa7d4315f9c602527fe56b17072fd78ca2",
       "reconciled": true,
       "reconciled_at": "2026-10-20T19:36:40.535401+00:00"
+    },
+    {
+      "id": "CP-10",
+      "title": "Decode gh output as UTF-8 in the control plane",
+      "objective": "run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 837,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-10-decode-gh-output-as-utf-8",
+      "prompt": "projects/score2gp/prompts/next/cp-10-decode-gh-output-as-utf-8.md",
+      "allowed_paths": [
+        "scripts/*.py",
+        "tests/test_cp_10_*.py",
+        "tests/test_score2gp_orca_control.py"
+      ],
+      "acceptance": [
+        "Every text-mode gh/git subprocess call in scripts/ passes an explicit UTF-8 encoding, enforced by a test that fails if one is reintroduced.",
+        "A test feeds non-cp1252 UTF-8 bytes through run_json and capture_live_state, passes at head and fails on the base; named mutants are rejected.",
+        "The audit and the merge executor behave identically with PYTHONUTF8 unset and set.",
+        "No gate is weakened or reordered; the launcher stopgap is listed, not removed."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "7407944e993a76eb9a86c8d1acadbd541fa4d037",
+      "merge_commit": "d6e991c3cdf550dcb132f5a288b56f86a5ca4fce",
+      "reconciled": true,
+      "reconciled_at": "2026-10-20T21:54:34.987354+00:00"
     }
   ],
   "backlog": [
@@ -3652,19 +3864,6 @@
         "SHORT-01"
       ],
       "notes": ""
-    },
-    {
-      "id": "CP-06",
-      "title": "Stop tests writing into the private corpus (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json); use tmp_path",
-      "requirements": [
-        "REQ-0001:U14"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 502,
-      "depends_on": [],
-      "notes": "Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs."
     },
     {
       "id": "FND-06",
@@ -5087,36 +5286,6 @@
       "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
     },
     {
-      "id": "DUR-02-FU2",
-      "title": "test_npg03b_floating asserts the refusal this source causes (no notation staff), not the generic missing-durations guard",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 514,
-      "depends_on": [
-        "DUR-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars."
-    },
-    {
-      "id": "OMIT-01-FU1",
-      "title": "A one-accidental mid-system key change followed within 1.5 sp by a first note at that accidental's pitch is read, or refused, never carried as the old key",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 508,
-      "depends_on": [
-        "OMIT-01"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change)."
-    },
-    {
       "id": "OMIT-01-FU2",
       "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
       "requirements": [
@@ -5145,21 +5314,6 @@
         "OMIT-02"
       ],
       "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Thread at docs/design/omit-02-double-barlines.md:78 (N2): Gloria.pdf (Guitar Pro 7, macOS Quartz export) draws repeat dots as filled vector drawings with no music font; the reader reads its bars 2, 5 and 8 as repeat-end from two drawing dots each (bar 2 checked visually). The doc calls the vector form unestablished; say it is a real engraving form and cite the count. Documentation only."
-    },
-    {
-      "id": "OMIT-02-FU3",
-      "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 511,
-      "depends_on": [
-        "OMIT-02"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal)."
     },
     {
       "id": "CFW-01",
@@ -5381,21 +5535,6 @@
         "DUR-03"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical."
-    },
-    {
-      "id": "OMIT-04-FU1",
-      "title": "Read a whole real Guitar Pro file with noteless non-rest beats (extract_score_ir_from_gp refuses real Lesson-3.gp)",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 513,
-      "depends_on": [
-        "OMIT-04"
-      ],
-      "notes": "Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference."
     },
     {
       "id": "OMIT-04-FU2",
