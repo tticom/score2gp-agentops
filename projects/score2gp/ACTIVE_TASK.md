@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/mem-03-bound-workdir-footprint`
 
-**Pull Request**: TBD
+**Pull Request**: 505
 
 **Owner Role**: implementation
 
