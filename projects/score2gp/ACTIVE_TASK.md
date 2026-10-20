@@ -12,7 +12,7 @@
 
 **Pull Request**: TBD
 
-**Owner Role**: architect
+**Owner Role**: implementation
 
 ## Objective
 
