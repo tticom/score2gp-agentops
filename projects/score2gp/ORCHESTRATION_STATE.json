@@ -1,51 +1,84 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 172,
+  "authority_revision": 174,
   "task": {
-    "id": "OMIT-05-FU1",
-    "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
-    "objective": "The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.",
+    "id": "RES-REQ-0003",
+    "title": "Research to take REQ-0003 to ACCEPTED: dependency licence audit and PDF-library options",
+    "objective": "Establish the facts the maintainer needs to accept REQ-0003: a licence inventory of every runtime and build dependency, a measured comparison of pymupdf against permissive PDF libraries on Lesson 3, a proposed mechanical CI audit, and a status proposal. Records only: no product code or dependency change, no legal conclusions.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": 506,
-    "owner_role": "implementation",
+    "pull_request": null,
+    "owner_role": "architect",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/omit-05-fu1-header-footer-font-sizes",
-    "prompt": "projects/score2gp/prompts/next/omit-05-fu1-header-footer-font-sizes.md",
+    "branch": "feat/res-req-0003-dependency-licence-compatibility",
+    "prompt": "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md",
     "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
+      "projects/score2gp/requirements/REQ-0003-dependency-licence-compatibility.md",
+      "projects/score2gp/reports/**",
+      "projects/score2gp/prompts/next/res-req-0003-dependency-licence-compatibility.md"
     ],
     "acceptance": [
-      "Measure first: the font sizes the five reference files carry for each header and footer field, and what the writer emits.",
-      "The writer emits the documented default sizes from project-owned constants whose provenance is documented in code and docs; no reference file is read during conversion.",
-      "The independent oracle compares the sizes and a real-source test fails under mutants (drop the sizes; wrong field mapping; read from a reference).",
-      "Record in the handback that the maintainer's Guitar Pro open test is still required to confirm the visible result (a human check; do not claim it done). Nothing else changes; validation commands pass."
+      "Licence inventory of every direct and transitive runtime and build dependency, each licence read from package metadata or the source repository and classified.",
+      "PDF-library options compared on measured fidelity (vector paths with paint order, colour, opacity, text positions, raster rendering) on at least Lesson 3, not on feature lists; Artifex commercial terms recorded as a question, with no guessed prices.",
+      "A proposed mechanical audit that REQ-0003 acceptance criterion 1 would run in CI.",
+      "A status proposal for REQ-0003 and the DEC-04 decision options; REQ-0003 findings and acceptance sections complete and sourced.",
+      "No private musical content committed (hashes, counts and distances only); every claim cites a file, document or executed probe a reviewer can reproduce."
     ],
     "validation_commands": [
       "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
       "git diff --check"
     ],
-    "dependencies": [
-      "OMIT-05"
-    ],
+    "dependencies": [],
     "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "CP-10",
+    "title": "Decode gh output as UTF-8 in the control plane",
+    "objective": "run_json, capture_live_state and the gh calls in score2gp_got_bootstrap.py read gh output with the locale codec and crash on UTF-8 review text on Windows (a false audit violation and a crashed merge executor were seen). Pass an explicit UTF-8 encoding to every gh subprocess, with a test that can fail.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-10-decode-gh-output-as-utf-8",
+    "prompt": "projects/score2gp/prompts/next/cp-10-decode-gh-output-as-utf-8.md",
+    "allowed_paths": [
+      "scripts/*.py",
+      "tests/test_cp_10_*.py",
+      "tests/test_score2gp_orca_control.py"
+    ],
+    "acceptance": [
+      "Every text-mode gh/git subprocess call in scripts/ passes an explicit UTF-8 encoding, enforced by a test that fails if one is reintroduced.",
+      "A test feeds non-cp1252 UTF-8 bytes through run_json and capture_live_state, passes at head and fails on the base; named mutants are rejected.",
+      "The audit and the merge executor behave identically with PYTHONUTF8 unset and set.",
+      "No gate is weakened or reordered; the launcher stopgap is listed, not removed."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3504,6 +3537,53 @@
       "merge_commit": "ed07d5735bc67bfe31e859857e93ec1ec84e84e0",
       "reconciled": true,
       "reconciled_at": "2026-10-20T05:56:37.753907+00:00"
+    },
+    {
+      "id": "OMIT-05-FU1",
+      "title": "Header and footer templates: reproduce Guitar Pro's default rich-text font sizes as project-owned policy",
+      "objective": "The minimal header/footer template markup drops Guitar Pro's default rich-text font sizes (for example the 35 pt title), a visible difference in Guitar Pro. Reproduce the default sizes as documented project-owned policy constants with provenance (never read from a reference file during conversion), and extend the oracle to compare them.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 506,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-05-fu1-header-footer-font-sizes",
+      "prompt": "projects/score2gp/prompts/next/omit-05-fu1-header-footer-font-sizes.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "schemas/**"
+      ],
+      "acceptance": [
+        "Measure first: the font sizes the five reference files carry for each header and footer field, and what the writer emits.",
+        "The writer emits the documented default sizes from project-owned constants whose provenance is documented in code and docs; no reference file is read during conversion.",
+        "The independent oracle compares the sizes and a real-source test fails under mutants (drop the sizes; wrong field mapping; read from a reference).",
+        "Record in the handback that the maintainer's Guitar Pro open test is still required to confirm the visible result (a human check; do not claim it done). Nothing else changes; validation commands pass."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-05"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "5dc738c6f25ba5ae255a67f2441893b395f7c921",
+      "merge_commit": "a2d232dd4577a9dc72e2f69d8cf3f4a6f6f6d239",
+      "reconciled": true,
+      "reconciled_at": "2026-10-20T13:04:25.086704+00:00"
     }
   ],
   "backlog": [
@@ -3635,19 +3715,6 @@
       "priority": 104,
       "depends_on": [],
       "notes": "Prompt: prompts/next/res-req-0002-pluggable-gp-output-targets.md"
-    },
-    {
-      "id": "RES-REQ-0003",
-      "title": "Research to take REQ-0003 to ACCEPTED: mechanical dependency licence audit and PDF-library options (pymupdf AGPL vs permissive, fidelity comparison)",
-      "requirements": [
-        "REQ-0003"
-      ],
-      "kind": "research",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 102,
-      "depends_on": [],
-      "notes": "Prompt: prompts/next/res-req-0003-dependency-licence-compatibility.md"
     },
     {
       "id": "PROV-01",
@@ -4928,19 +4995,6 @@
       "priority": 922,
       "depends_on": [],
       "notes": "plans/2026-08-04-multimodal-audio-score-platform-roadmap.md"
-    },
-    {
-      "id": "CP-10",
-      "title": "Decode gh output as UTF-8 in the control plane: run_json/capture_live_state in scripts/score2gp_orca_control.py use the locale codec and crash with cp1252 UnicodeDecodeError on Windows",
-      "requirements": [
-        "control-plane:review-gate"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 120,
-      "depends_on": [],
-      "notes": "Observed on reviewer runs and again 2026-09-26: `score2gp_orca_control.py snapshot --pull-request 700` failed with UnicodeDecodeError (byte 0x9d) because subprocess.run(text=True) has no encoding. Pass encoding='utf-8' to every gh subprocess in the control plane (run_json; the gh calls in score2gp_got_bootstrap.py), with a test that feeds non-cp1252 UTF-8 bytes and a negative control. Workaround until fixed: PYTHONUTF8=1. Raised to priority 1 on 2026-09-27: without PYTHONUTF8 the governance audit's gh reads hit UnicodeDecodeError on review-summary text, returned no comments, and reported a false violation (tticom/score2gp-agentops#712 merged without a merge-executor receipt, although the receipt is present and matches). The same bug crashed the merge executor on #708. Launchers force PYTHONUTF8=1 as a stopgap."
     },
     {
       "id": "CP-11",
