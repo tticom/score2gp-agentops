@@ -1,57 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 182,
+  "authority_revision": 183,
   "task": {
-    "id": "OMIT-04-FU1",
-    "title": "Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)",
-    "objective": "Retargeted on the maintainer's direction (2026-10-21): 'change the fixture used for this development item. Focus the development on G-Am-C-Lick.pdf although currently there is no equivalent gp file.' The original premise (Lesson-3.gp is refused for noteless non-rest beats) was disproved by the author's preflight on 2026-10-20: at main a2d232d the file reads (66 bars, 465 events) and its two noteless beats are already decoded as rests, as an existing regression test requires. G-Am-C-Lick.pdf converts PARTIAL (4 bars written, 5 shortfalls: note_duration_event_unread x3, notehead_digit_count_mismatch x2). Find each root cause and write the bar correctly or refuse it with a located reason. No reference .gp exists and none may be invented: the PDF's printed notation and TAB are the oracle.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 507,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-04-fu1-g-am-c-lick-pdf",
-    "prompt": "projects/score2gp/prompts/next/omit-04-fu1-g-am-c-lick-pdf.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "scripts/oracle.py"
-    ],
-    "acceptance": [
-      "Measure first: convert G-Am-C-Lick.pdf at current main and list every shortfall with bar, cause code and what the PDF shows there (counts, codes and distances only); re-measure the Lesson-3.gp reading result as unchanged.",
-      "A per-bar ledger of the written bars compares rhythm and string/fret taken independently from the PDF's printed notation and TAB with what the converter writes; a disagreement is a defect to fix or refuse.",
-      "Each root cause is fixed in the recogniser or writer, or the bar stays refused with a located reason; no rhythm, fret or string is guessed, copied from another file or hard-coded for this file.",
-      "Real-file tests fail under named mutants (drop the fix; guess rhythm from spacing or counts; write the bar without the check; restore the old behaviour), each shown failing.",
-      "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; the percussive-strike output is unchanged.",
-      "Validation commands pass; handback complete and says which bars are now correct, which are refused and why, and that the maintainer should check by ear and eye since no reference exists."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-04"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-02-FU3",
     "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
     "objective": "Repeat-dot glyph detection must not depend on the Bravura font name. Source: authority item OMIT-02-FU3. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -90,49 +45,49 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-01-FU1",
+    "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
+    "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-01-fu1-mid-system-key-change-ambiguity",
+    "prompt": "projects/score2gp/prompts/next/omit-01-fu1-mid-system-key-change-ambiguity.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**"
+    ],
+    "acceptance": [
+      "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
+      "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
+      "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-01-FU1",
-      "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
-      "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-01-fu1-mid-system-key-change-ambiguity",
-      "prompt": "projects/score2gp/prompts/next/omit-01-fu1-mid-system-key-change-ambiguity.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**"
-      ],
-      "acceptance": [
-        "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
-        "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
-        "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "CP-06",
       "title": "Stop tests writing into the private corpus",
@@ -3803,6 +3758,55 @@
       "merge_commit": "d6e991c3cdf550dcb132f5a288b56f86a5ca4fce",
       "reconciled": true,
       "reconciled_at": "2026-10-20T21:54:34.987354+00:00"
+    },
+    {
+      "id": "OMIT-04-FU1",
+      "title": "Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)",
+      "objective": "Retargeted on the maintainer's direction (2026-10-21): 'change the fixture used for this development item. Focus the development on G-Am-C-Lick.pdf although currently there is no equivalent gp file.' The original premise (Lesson-3.gp is refused for noteless non-rest beats) was disproved by the author's preflight on 2026-10-20: at main a2d232d the file reads (66 bars, 465 events) and its two noteless beats are already decoded as rests, as an existing regression test requires. G-Am-C-Lick.pdf converts PARTIAL (4 bars written, 5 shortfalls: note_duration_event_unread x3, notehead_digit_count_mismatch x2). Find each root cause and write the bar correctly or refuse it with a located reason. No reference .gp exists and none may be invented: the PDF's printed notation and TAB are the oracle.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 507,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-fu1-g-am-c-lick-pdf",
+      "prompt": "projects/score2gp/prompts/next/omit-04-fu1-g-am-c-lick-pdf.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**",
+        "scripts/oracle.py"
+      ],
+      "acceptance": [
+        "Measure first: convert G-Am-C-Lick.pdf at current main and list every shortfall with bar, cause code and what the PDF shows there (counts, codes and distances only); re-measure the Lesson-3.gp reading result as unchanged.",
+        "A per-bar ledger of the written bars compares rhythm and string/fret taken independently from the PDF's printed notation and TAB with what the converter writes; a disagreement is a defect to fix or refuse.",
+        "Each root cause is fixed in the recogniser or writer, or the bar stays refused with a located reason; no rhythm, fret or string is guessed, copied from another file or hard-coded for this file.",
+        "Real-file tests fail under named mutants (drop the fix; guess rhythm from spacing or counts; write the bar without the check; restore the old behaviour), each shown failing.",
+        "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; the percussive-strike output is unchanged.",
+        "Validation commands pass; handback complete and says which bars are now correct, which are refused and why, and that the maintainer should check by ear and eye since no reference exists."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "ffb24ff908946417ec89ddab248dc977ae430984",
+      "merge_commit": "e6bfe97ca55963c4b6093da24f4a33550c8a0b0f",
+      "reconciled": true,
+      "reconciled_at": "2026-10-21T15:16:39.314836+00:00"
     }
   ],
   "backlog": [

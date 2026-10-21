@@ -2,28 +2,28 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU1 — Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)
+**Task**: OMIT-02-FU3 — Repeat-dot glyph detection must not depend on the Bravura font name
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu1-g-am-c-lick-pdf`
+**PR Branch**: `feat/omit-02-fu3-repeat-dots-not-font-name`
 
-**Pull Request**: 507
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Retargeted on the maintainer's direction (2026-10-21): 'change the fixture used for this development item. Focus the development on G-Am-C-Lick.pdf although currently there is no equivalent gp file.' The original premise (Lesson-3.gp is refused for noteless non-rest beats) was disproved by the author's preflight on 2026-10-20: at main a2d232d the file reads (66 bars, 465 events) and its two noteless beats are already decoded as rests, as an existing regression test requires. G-Am-C-Lick.pdf converts PARTIAL (4 bars written, 5 shortfalls: note_duration_event_unread x3, notehead_digit_count_mismatch x2). Find each root cause and write the bar correctly or refuse it with a located reason. No reference .gp exists and none may be invented: the PDF's printed notation and TAB are the oracle.
+Repeat-dot glyph detection must not depend on the Bravura font name. Source: authority item OMIT-02-FU3. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal).
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
 - `docs/**`
-- `scripts/oracle.py`
+- `schemas/**`
 
 ## Validation commands
 
