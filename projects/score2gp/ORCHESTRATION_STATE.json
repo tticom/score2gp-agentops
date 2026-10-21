@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 183,
+  "authority_revision": 184,
   "task": {
-    "id": "OMIT-02-FU3",
-    "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
-    "objective": "Repeat-dot glyph detection must not depend on the Bravura font name. Source: authority item OMIT-02-FU3. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-02-fu3-repeat-dots-not-font-name",
-    "prompt": "projects/score2gp/prompts/next/omit-02-fu3-repeat-dots-not-font-name.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**",
-      "schemas/**"
-    ],
-    "acceptance": [
-      "Measure first: where the music-font name is matched and which real corpus sources use which music fonts (counts only).",
-      "A repeat dot is identified by SMuFL codepoint and geometry; a music font that is present but unrecognised, including one with no PUA ToUnicode mapping, gives a located refusal, never a silently omitted repeat.",
-      "Controls with a second SMuFL font and with an unmapped renamed subset font pass; on the real corpus every repeat read today is read identically; a mutant that restores the font-name match, or ignores geometry, fails.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-02"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-01-FU1",
     "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
     "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -87,46 +44,46 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "CP-06",
+    "title": "Stop tests writing into the private corpus",
+    "objective": "Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-06-tests-must-not-write-private-corpus",
+    "prompt": "projects/score2gp/prompts/next/cp-06-tests-must-not-write-private-corpus.md",
+    "allowed_paths": [
+      "tests/**",
+      "src/score2gp/**"
+    ],
+    "acceptance": [
+      "Measure first: which tests write under the private-fixtures tree (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json) and show it by listing the files before and after a run.",
+      "Every such test writes under tmp_path or the repo work directory instead; after a full pytest run the private fixtures tree is byte-identical to before (shown by a hash listing of the corpus).",
+      "A guard test fails if a test writes into the private corpus tree (mutant: restore the write); no test deleted, skipped or weakened.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "CP-06",
-      "title": "Stop tests writing into the private corpus",
-      "objective": "Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/cp-06-tests-must-not-write-private-corpus",
-      "prompt": "projects/score2gp/prompts/next/cp-06-tests-must-not-write-private-corpus.md",
-      "allowed_paths": [
-        "tests/**",
-        "src/score2gp/**"
-      ],
-      "acceptance": [
-        "Measure first: which tests write under the private-fixtures tree (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json) and show it by listing the files before and after a run.",
-        "Every such test writes under tmp_path or the repo work directory instead; after a full pytest run the private fixtures tree is byte-identical to before (shown by a hash listing of the corpus).",
-        "A guard test fails if a test writes into the private corpus tree (mutant: restore the write); no test deleted, skipped or weakened.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "DUR-02-FU2",
       "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
@@ -5741,6 +5698,19 @@
         "REC-14"
       ],
       "notes": "No cutover without proof (maintainer directive)."
+    },
+    {
+      "id": "OMIT-02-FU3",
+      "title": "Repeat-dot glyph detection must not depend on the Bravura font name",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 400,
+      "depends_on": [],
+      "notes": "Deferred 2026-10-21 on the maintainer's emailed reply 'c' (defer/skip) to the supervisor's halt notice. The author run (codex-author-logs/omit-02-fu3/report.md) found no approved repeat-bearing source in a second SMuFL font or an unfamiliar renamed subset font: all 42 private PDFs have repeat dots only in GPBravuraRegular, the one public Leland PDF has none. Resume when such a source is supplied, or acceptance 2/3 is amended with the maintainer's explicit approval. Prompt kept at projects/score2gp/prompts/next/omit-02-fu3-repeat-dots-not-font-name.md."
     }
   ],
   "registered_requirements": [
