@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-02-FU3 — Repeat-dot glyph detection must not depend on the Bravura font name
+**Task**: OMIT-01-FU1 — A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-02-fu3-repeat-dots-not-font-name`
+**PR Branch**: `feat/omit-01-fu1-mid-system-key-change-ambiguity`
 
 **Pull Request**: TBD
 
@@ -16,14 +16,13 @@
 
 ## Objective
 
-Repeat-dot glyph detection must not depend on the Bravura font name. Source: authority item OMIT-02-FU3. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Summary item N3: repeat-dot glyph detection matches the music font by name; other SMuFL fonts (for example Petaluma, Leland, or subset-renamed embeddings) are an unverified synthetic risk whose failure would show as an omitted repeat. Identify the glyph by SMuFL codepoint and geometry, or refuse with a located reason when a music font is present but unrecognised; add a public control with a second SMuFL font. Added from tticom-codex's non-blocking note on tticom/score2gp-agentops#729 (thread at ORCHESTRATION_STATE.json:3490): N3 covers an unfamiliar music-font name with no PUA ToUnicode mapping, so a SMuFL-codepoint route alone may not detect it; the acceptance check must include that case (glyph geometry or a located refusal).
+A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
 - `docs/**`
-- `schemas/**`
 
 ## Validation commands
 
