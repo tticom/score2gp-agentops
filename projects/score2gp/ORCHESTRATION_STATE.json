@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 180,
+  "authority_revision": 181,
   "task": {
     "id": "OMIT-04-FU1",
-    "title": "Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason",
-    "objective": "Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason. Source: authority item OMIT-04-FU1. Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference.",
+    "title": "Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)",
+    "objective": "Retargeted on the maintainer's direction (2026-10-21): 'change the fixture used for this development item. Focus the development on G-Am-C-Lick.pdf although currently there is no equivalent gp file.' The original premise (Lesson-3.gp is refused for noteless non-rest beats) was disproved by the author's preflight on 2026-10-20: at main a2d232d the file reads (66 bars, 465 events) and its two noteless beats are already decoded as rests, as an existing regression test requires. G-Am-C-Lick.pdf converts PARTIAL (4 bars written, 5 shortfalls: note_duration_event_unread x3, notehead_digit_count_mismatch x2). Find each root cause and write the bar correctly or refuse it with a located reason. No reference .gp exists and none may be invented: the PDF's printed notation and TAB are the oracle.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -13,8 +13,8 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/omit-04-fu1-read-real-gp-noteless-beats",
-    "prompt": "projects/score2gp/prompts/next/omit-04-fu1-read-real-gp-noteless-beats.md",
+    "branch": "feat/omit-04-fu1-g-am-c-lick-pdf",
+    "prompt": "projects/score2gp/prompts/next/omit-04-fu1-g-am-c-lick-pdf.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**",
@@ -22,10 +22,12 @@
       "scripts/oracle.py"
     ],
     "acceptance": [
-      "Measure first: reproduce the refusal of the real Lesson-3.gp reference by extract_score_ir_from_gp at current main; count the noteless non-rest beats and say what they hold.",
-      "Such beats are read faithfully (no invented note or rest) or refused with a located reason (bar, track, beat); the whole real file then either reads or is refused for a named, located cause.",
-      "A read test on the real Lesson-3.gp reference fails under mutants (drop the beat silently; turn it into a rest; keep the old whole-file refusal), and validate_roundtrip, compare_gp and scripts/oracle.py are exercised on the real file end to end, or the blocker is named.",
-      "Nothing that worked may change; validation commands pass; handback complete."
+      "Measure first: convert G-Am-C-Lick.pdf at current main and list every shortfall with bar, cause code and what the PDF shows there (counts, codes and distances only); re-measure the Lesson-3.gp reading result as unchanged.",
+      "A per-bar ledger of the written bars compares rhythm and string/fret taken independently from the PDF's printed notation and TAB with what the converter writes; a disagreement is a defect to fix or refuse.",
+      "Each root cause is fixed in the recogniser or writer, or the bar stays refused with a located reason; no rhythm, fret or string is guessed, copied from another file or hard-coded for this file.",
+      "Real-file tests fail under named mutants (drop the fix; guess rhythm from spacing or counts; write the bar without the check; restore the old behaviour), each shown failing.",
+      "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; the percussive-strike output is unchanged.",
+      "Validation commands pass; handback complete and says which bars are now correct, which are refused and why, and that the maintainer should check by ear and eye since no reference exists."
     ],
     "validation_commands": [
       "python -m pytest",

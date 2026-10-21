@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU1 — Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason
+**Task**: OMIT-04-FU1 — Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu1-read-real-gp-noteless-beats`
+**PR Branch**: `feat/omit-04-fu1-g-am-c-lick-pdf`
 
 **Pull Request**: TBD
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-Read a whole real Guitar Pro file that has noteless non-rest beats, or refuse them with a located reason. Source: authority item OMIT-04-FU1. Found by the author of tticom/score2gp#475 (OMIT-04) and confirmed as pre-existing by tticomgov-code's approving review 5378371016: extract_score_ir_from_gp refuses the whole real Lesson-3.gp with a noteless-beat error, also at the base with the arpeggios stripped. validate_roundtrip, compare_gp and scripts/oracle.py therefore cannot round-trip a real Guitar Pro file end to end, only the public fixtures. Read beats that carry no note and are not rests (for example a beat that holds only a symbol), or refuse them with a located reason, and add a read test on a real reference.
+Retargeted on the maintainer's direction (2026-10-21): 'change the fixture used for this development item. Focus the development on G-Am-C-Lick.pdf although currently there is no equivalent gp file.' The original premise (Lesson-3.gp is refused for noteless non-rest beats) was disproved by the author's preflight on 2026-10-20: at main a2d232d the file reads (66 bars, 465 events) and its two noteless beats are already decoded as rests, as an existing regression test requires. G-Am-C-Lick.pdf converts PARTIAL (4 bars written, 5 shortfalls: note_duration_event_unread x3, notehead_digit_count_mismatch x2). Find each root cause and write the bar correctly or refuse it with a located reason. No reference .gp exists and none may be invented: the PDF's printed notation and TAB are the oracle.
 
 ## Allowed paths
 
