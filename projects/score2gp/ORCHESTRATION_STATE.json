@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 181,
+  "authority_revision": 182,
   "task": {
     "id": "OMIT-04-FU1",
     "title": "Convert G-Am-C-Lick.pdf correctly, or refuse each unreadable bar with a located reason (retargeted from Lesson-3.gp reading)",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 507,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
