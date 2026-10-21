@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-04-fu1-g-am-c-lick-pdf`
 
-**Pull Request**: TBD
+**Pull Request**: 507
 
 **Owner Role**: implementation
 
