@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 188,
+  "authority_revision": 189,
   "task": {
-    "id": "CP-06",
-    "title": "Stop tests writing into the private corpus",
-    "objective": "Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 509,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cp-06-tests-must-not-write-private-corpus",
-    "prompt": "projects/score2gp/prompts/next/cp-06-tests-must-not-write-private-corpus.md",
-    "allowed_paths": [
-      "tests/**",
-      "src/score2gp/**"
-    ],
-    "acceptance": [
-      "Measure first: which tests write under the private-fixtures tree (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json) and show it by listing the files before and after a run.",
-      "Every such test writes under tmp_path or the repo work directory instead; after a full pytest run the private fixtures tree is byte-identical to before (shown by a hash listing of the corpus).",
-      "A guard test fails if a test writes into the private corpus tree (mutant: restore the write); no test deleted, skipped or weakened.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "DUR-02-FU2",
     "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
     "objective": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: authority item DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,6 +43,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -3768,6 +3730,49 @@
       "merge_commit": "d91d20d4c4dc53f138538e6bbaddfadb5007addd",
       "reconciled": true,
       "reconciled_at": "2026-10-22T07:46:39.227089+00:00"
+    },
+    {
+      "id": "CP-06",
+      "title": "Stop tests writing into the private corpus",
+      "objective": "Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 509,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-06-tests-must-not-write-private-corpus",
+      "prompt": "projects/score2gp/prompts/next/cp-06-tests-must-not-write-private-corpus.md",
+      "allowed_paths": [
+        "tests/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: which tests write under the private-fixtures tree (test_scoreir_gpif_compiler_refactor._ensure_fixture writes Lesson-6_*_artifact.json) and show it by listing the files before and after a run.",
+        "Every such test writes under tmp_path or the repo work directory instead; after a full pytest run the private fixtures tree is byte-identical to before (shown by a hash listing of the corpus).",
+        "A guard test fails if a test writes into the private corpus tree (mutant: restore the write); no test deleted, skipped or weakened.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "ae7bbbe9ce1b45280be06f1ab9fa9374fcc78681",
+      "merge_commit": "f624909823d906fb556e5fd6dc5abe069e097473",
+      "reconciled": true,
+      "reconciled_at": "2026-10-22T12:36:39.599632+00:00"
     }
   ],
   "backlog": [
