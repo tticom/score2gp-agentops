@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-01-fu1-mid-system-key-change-ambiguity`
 
-**Pull Request**: TBD
+**Pull Request**: 508
 
 **Owner Role**: implementation
 
