@@ -1,55 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 186,
+  "authority_revision": 187,
   "task": {
-    "id": "OMIT-01-FU1",
-    "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
-    "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 508,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-01-fu1-mid-system-key-change-ambiguity",
-    "prompt": "projects/score2gp/prompts/next/omit-01-fu1-mid-system-key-change-ambiguity.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**"
-    ],
-    "acceptance": [
-      "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
-      "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
-      "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
-      "Maintainer exception (emailed 2026-10-22, 'b approved'): no genuine corpus source reaches the detached slot-0 key-change ambiguity branch (the 42-PDF census found none), so a CONSTRUCTED P3 regression test may carry acceptance for that one branch only. It must be labelled constructed in its name and docstring, must fail when the new key reader is replaced by the base reader, and must show each named mutant failing (restore the base silent carry; always key change; always note accidental). The Lesson 7 negative control stays on real source and no other recognition, geometry or fidelity claim may rest on constructed input.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-01"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-06",
     "title": "Stop tests writing into the private corpus",
     "objective": "Stop tests writing into the private corpus. Source: authority item CP-06. Observed repeatedly 2026-09-25; the stray files reappear in score2gp-private-fixtures after test runs.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -84,49 +41,48 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "DUR-02-FU2",
-      "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
-      "objective": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: authority item DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
-      "prompt": "projects/score2gp/prompts/next/dur-02-fu2-npg03b-floating-asserts-real-refusal.md",
-      "allowed_paths": [
-        "tests/**",
-        "src/score2gp/**"
-      ],
-      "acceptance": [
-        "Measure first: what test_npg03b_floating calls and which guard it hits today (note_durations is None).",
-        "The test passes the DUR-01 records and asserts the category the route produces for a source with no notation staff; its original numeric checks are kept.",
-        "The test fails under mutants (route stops refusing; refuses with the generic guard instead; wrong category).",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "DUR-02"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "DUR-02-FU2",
+    "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
+    "objective": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: authority item DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
+    "prompt": "projects/score2gp/prompts/next/dur-02-fu2-npg03b-floating-asserts-real-refusal.md",
+    "allowed_paths": [
+      "tests/**",
+      "src/score2gp/**"
+    ],
+    "acceptance": [
+      "Measure first: what test_npg03b_floating calls and which guard it hits today (note_durations is None).",
+      "The test passes the DUR-01 records and asserts the category the route produces for a source with no notation staff; its original numeric checks are kept.",
+      "The test fails under mutants (route stops refusing; refuses with the generic guard instead; wrong category).",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-02"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3765,6 +3721,53 @@
       "merge_commit": "e6bfe97ca55963c4b6093da24f4a33550c8a0b0f",
       "reconciled": true,
       "reconciled_at": "2026-10-21T15:16:39.314836+00:00"
+    },
+    {
+      "id": "OMIT-01-FU1",
+      "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
+      "objective": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key. Source: authority item OMIT-01-FU1. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:217 (PLAUSIBLE): with no prefix, an attached candidate is always treated as a note accidental, so a single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the previous key with status read and no diagnostic (probe P3: gaps 0.5-1.4 sp read +1; 1.6 sp or another pitch read -1). Real-source evidence from the review (thread 4121094267, review 5337254165): note accidentals usually sit 0.19-0.31 sp from their head, but four genuine chord-displaced accidentals in Lesson 7 sit 1.34-1.46 sp away, inside the 1.5 sp window, and no real input reaches the P3 case. Decide by source geometry or refuse with a located reason, and include a displaced-note negative control (a genuine chord-displaced note accidental at 1.3-1.5 sp must stay a note accidental, not be refused or read as a key change).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 508,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-01-fu1-mid-system-key-change-ambiguity",
+      "prompt": "projects/score2gp/prompts/next/omit-01-fu1-mid-system-key-change-ambiguity.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
+        "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
+        "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
+        "Maintainer exception (emailed 2026-10-22, 'b approved'): no genuine corpus source reaches the detached slot-0 key-change ambiguity branch (the 42-PDF census found none), so a CONSTRUCTED P3 regression test may carry acceptance for that one branch only. It must be labelled constructed in its name and docstring, must fail when the new key reader is replaced by the base reader, and must show each named mutant failing (restore the base silent carry; always key change; always note accidental). The Lesson 7 negative control stays on real source and no other recognition, geometry or fidelity claim may rest on constructed input.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "4dce25540a67e28707a1c2c73d15f736f2123e2e",
+      "merge_commit": "d91d20d4c4dc53f138538e6bbaddfadb5007addd",
+      "reconciled": true,
+      "reconciled_at": "2026-10-22T07:46:39.227089+00:00"
     }
   ],
   "backlog": [
