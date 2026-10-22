@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 185,
+  "authority_revision": 186,
   "task": {
     "id": "OMIT-01-FU1",
     "title": "A one-accidental mid-system key change followed closely by a note at that pitch is read or refused, never carried as the old key",
@@ -24,6 +24,7 @@
       "Measure first: reproduce probe P3 (single flat in slot 0 followed within 1.5 sp by a note at its pitch keeps the old key with status read) and count real-corpus cases (the review found none).",
       "Decide by source geometry, or refuse with a located reason; the case no longer reads the old key silently.",
       "A negative control on real Lesson 7 passes: the four genuine chord-displaced note accidentals at 1.34-1.46 sp stay note accidentals (not refused, not a key change); mutants (always key change; always note accidental; window widened to swallow them) fail.",
+      "Maintainer exception (emailed 2026-10-22, 'b approved'): no genuine corpus source reaches the detached slot-0 key-change ambiguity branch (the 42-PDF census found none), so a CONSTRUCTED P3 regression test may carry acceptance for that one branch only. It must be labelled constructed in its name and docstring, must fail when the new key reader is replaced by the base reader, and must show each named mutant failing (restore the base silent carry; always key change; always note accidental). The Lesson 7 negative control stays on real source and no other recognition, geometry or fidelity claim may rest on constructed input.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
