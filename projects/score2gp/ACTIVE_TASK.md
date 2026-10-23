@@ -2,7 +2,7 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-02-FU2 — test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard
+**Task**: DUR-02-FU2 — A TAB-only source with no notation keeps its bars and writes no notes (retargeted from asserting a refusal)
 
 **Status**: PROMOTED
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: authority item DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.
+Retargeted on the maintainer's direction (2026-10-23): the author's preflight (2026-10-22) showed the named private PDF has notation (3 systems, 8 bars, 82 events), so the premise 'a source with no notation staff' was false for it. The maintainer added a genuine no-notes source to the fixtures (no-score/No Notes.pdf with reference no-notes.gp, 9 bars and no beats) and said: 'I think the output should retain the bars but write no notes'. Make a source whose staves are printed but empty keep its bars and write no notes, with no note or rhythm invented, instead of refusing. test_npg03b_floating keeps its original numeric checks and asserts what the route now does.
 
 ## Allowed paths
 

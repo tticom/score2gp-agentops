@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 189,
+  "authority_revision": 190,
   "task": {
     "id": "DUR-02-FU2",
-    "title": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard",
-    "objective": "test_npg03b_floating asserts the refusal the source causes, not the generic missing-durations guard. Source: authority item DUR-02-FU2. Non-blocking follow-up from tticomgov-code's approving review 5331280846 of tticom/score2gp#467 (DUR-02) at 4564a87. Thread N3 at tests/test_npg03b_floating.py:25: the test calls build_ir_from_tabraw_only without note_durations, so it hits the note_durations-is-None guard that fires for any PDF. Pass the DUR-01 records and assert the category the route produces for a source with no notation bars.",
+    "title": "A TAB-only source with no notation keeps its bars and writes no notes (retargeted from asserting a refusal)",
+    "objective": "Retargeted on the maintainer's direction (2026-10-23): the author's preflight (2026-10-22) showed the named private PDF has notation (3 systems, 8 bars, 82 events), so the premise 'a source with no notation staff' was false for it. The maintainer added a genuine no-notes source to the fixtures (no-score/No Notes.pdf with reference no-notes.gp, 9 bars and no beats) and said: 'I think the output should retain the bars but write no notes'. Make a source whose staves are printed but empty keep its bars and write no notes, with no note or rhythm invented, instead of refusing. test_npg03b_floating keeps its original numeric checks and asserts what the route now does.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -14,16 +14,17 @@
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
     "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
-    "prompt": "projects/score2gp/prompts/next/dur-02-fu2-npg03b-floating-asserts-real-refusal.md",
+    "prompt": "projects/score2gp/prompts/next/dur-02-fu2-no-notation-keeps-bars-no-notes.md",
     "allowed_paths": [
       "tests/**",
       "src/score2gp/**"
     ],
     "acceptance": [
-      "Measure first: what test_npg03b_floating calls and which guard it hits today (note_durations is None).",
-      "The test passes the DUR-01 records and asserts the category the route produces for a source with no notation staff; its original numeric checks are kept.",
-      "The test fails under mutants (route stops refusing; refuses with the generic guard instead; wrong category).",
-      "Nothing that worked may change; validation commands pass; handback complete."
+      "Measure first: convert no-score/No Notes.pdf and every other no-score PDF at current main and list the outcome and cause code of each (counts and codes only); record what test_npg03b_floating calls and which guard it hits today; record the bar and beat counts of the reference no-notes.gp (counts only).",
+      "A source whose bars are printed but hold no TAB digits and no notation keeps one written bar per printed bar and writes no beats or notes, so its GPIF matches the bar count of no-notes.gp with no invented note, rhythm or rest. The oracle is the PDF's printed bars and the reference's counts, taken independently of the code under test.",
+      "A source that holds TAB digits but no rhythm stays refused with its located reason: the rhythm cannot be taken from notation, counts or spacing, and no note is invented for it. Every no-score file other than No Notes.pdf keeps its current outcome unless the handback lists the file and reason.",
+      "test_npg03b_floating keeps every original numeric check and asserts the new behaviour on its source; the reason is stated in the handback. New tests on the real files fail under named mutants (route refuses again; writes a guessed note; drops a bar; refuses with the generic guard), each shown failing.",
+      "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
