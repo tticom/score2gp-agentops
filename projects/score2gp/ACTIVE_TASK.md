@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-02-FU2 — A TAB-only source with no notation keeps its bars and writes no notes (retargeted from asserting a refusal)
+**Task**: OMIT-04-FU5 — G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dur-02-fu2-npg03b-floating-asserts-real-refusal`
+**PR Branch**: `feat/omit-04-fu5-g-am-c-lick-refused-bars`
 
-**Pull Request**: 510
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Retargeted on the maintainer's direction (2026-10-23): the author's preflight (2026-10-22) showed the named private PDF has notation (3 systems, 8 bars, 82 events), so the premise 'a source with no notation staff' was false for it. The maintainer added a genuine no-notes source to the fixtures (no-score/No Notes.pdf with reference no-notes.gp, 9 bars and no beats) and said: 'I think the output should retain the bars but write no notes'. Make a source whose staves are printed but empty keep its bars and write no notes, with no note or rhythm invented, instead of refusing. test_npg03b_floating keeps its original numeric checks and asserts what the route now does.
+OMIT-04-FU1 left G-Am-C-Lick.pdf at 4 of 9 bars written. The maintainer reports most of the score is missing and not all percussive strikes were found. Find each root cause for the five refused bars (bars 2 and 6: 2 notation heads against 1 TAB candidate; bar 8: unread rest or multi-head X form beside a note) and write the bar from the PDF's printed notation and TAB, or refuse it with a located reason; no reference .gp exists and none may be invented.
 
 ## Allowed paths
 

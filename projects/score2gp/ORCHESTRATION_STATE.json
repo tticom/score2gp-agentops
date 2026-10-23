@@ -1,30 +1,32 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 191,
+  "authority_revision": 193,
   "task": {
-    "id": "DUR-02-FU2",
-    "title": "A TAB-only source with no notation keeps its bars and writes no notes (retargeted from asserting a refusal)",
-    "objective": "Retargeted on the maintainer's direction (2026-10-23): the author's preflight (2026-10-22) showed the named private PDF has notation (3 systems, 8 bars, 82 events), so the premise 'a source with no notation staff' was false for it. The maintainer added a genuine no-notes source to the fixtures (no-score/No Notes.pdf with reference no-notes.gp, 9 bars and no beats) and said: 'I think the output should retain the bars but write no notes'. Make a source whose staves are printed but empty keep its bars and write no notes, with no note or rhythm invented, instead of refusing. test_npg03b_floating keeps its original numeric checks and asserts what the route now does.",
+    "id": "OMIT-04-FU5",
+    "title": "G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike",
+    "objective": "OMIT-04-FU1 left G-Am-C-Lick.pdf at 4 of 9 bars written. The maintainer reports most of the score is missing and not all percussive strikes were found. Find each root cause for the five refused bars (bars 2 and 6: 2 notation heads against 1 TAB candidate; bar 8: unread rest or multi-head X form beside a note) and write the bar from the PDF's printed notation and TAB, or refuse it with a located reason; no reference .gp exists and none may be invented.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 510,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
-    "prompt": "projects/score2gp/prompts/next/dur-02-fu2-no-notation-keeps-bars-no-notes.md",
+    "branch": "feat/omit-04-fu5-g-am-c-lick-refused-bars",
+    "prompt": "projects/score2gp/prompts/next/omit-04-fu5-g-am-c-lick-refused-bars.md",
     "allowed_paths": [
       "tests/**",
       "src/score2gp/**"
     ],
     "acceptance": [
-      "Measure first: convert no-score/No Notes.pdf and every other no-score PDF at current main and list the outcome and cause code of each (counts and codes only); record what test_npg03b_floating calls and which guard it hits today; record the bar and beat counts of the reference no-notes.gp (counts only).",
-      "A source whose bars are printed but hold no TAB digits and no notation keeps one written bar per printed bar and writes no beats or notes, so its GPIF matches the bar count of no-notes.gp with no invented note, rhythm or rest. The oracle is the PDF's printed bars and the reference's counts, taken independently of the code under test.",
-      "A source that holds TAB digits but no rhythm stays refused with its located reason: the rhythm cannot be taken from notation, counts or spacing, and no note is invented for it. Every no-score file other than No Notes.pdf keeps its current outcome unless the handback lists the file and reason.",
-      "test_npg03b_floating keeps every original numeric check and asserts the new behaviour on its source; the reason is stated in the handback. New tests on the real files fail under named mutants (route refuses again; writes a guessed note; drops a bar; refuses with the generic guard), each shown failing.",
-      "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; validation commands pass; handback complete."
+      "Measure first: convert G-Am-C-Lick.pdf at current main and list, for each of the five refused bars (1, 2, 4, 6, 8), its cause code, system and what the PDF prints there (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar against the strikes written. Re-measure; the earlier counts are leads.",
+      "Root cause per refused bar: bars with 2 notation heads against 1 printed TAB candidate (bars 2 and 6) and the bar with an unread rest or multi-head X form beside a note (bar 8) are fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for this file.",
+      "An independent per-bar ledger covers EVERY written bar, including each newly recovered bar: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused; byte identity of already-written bars does not stand in for this. No reference .gp may be invented.",
+      "Every printed percussive strike in a bar that is written is written as a dead note, using the stored convention of the percussive-strike decision; a ledger compares strikes printed and strikes written per bar, taken from the PDF independently of the code under test. A strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
+      "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value (note value or fret) in a recovered bar; drop a strike; restore the old behaviour. Each is shown failing.",
+      "Nothing that worked may change: bars 3, 5, 7 and 9 of G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
+      "Validation commands pass; handback complete. It says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists."
     ],
     "validation_commands": [
       "python -m pytest",
@@ -34,7 +36,7 @@
       "git diff --check"
     ],
     "dependencies": [
-      "DUR-02"
+      "OMIT-04-FU1"
     ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
@@ -3774,6 +3776,52 @@
       "merge_commit": "f624909823d906fb556e5fd6dc5abe069e097473",
       "reconciled": true,
       "reconciled_at": "2026-10-22T12:36:39.599632+00:00"
+    },
+    {
+      "id": "DUR-02-FU2",
+      "title": "A TAB-only source with no notation keeps its bars and writes no notes (retargeted from asserting a refusal)",
+      "objective": "Retargeted on the maintainer's direction (2026-10-23): the author's preflight (2026-10-22) showed the named private PDF has notation (3 systems, 8 bars, 82 events), so the premise 'a source with no notation staff' was false for it. The maintainer added a genuine no-notes source to the fixtures (no-score/No Notes.pdf with reference no-notes.gp, 9 bars and no beats) and said: 'I think the output should retain the bars but write no notes'. Make a source whose staves are printed but empty keep its bars and write no notes, with no note or rhythm invented, instead of refusing. test_npg03b_floating keeps its original numeric checks and asserts what the route now does.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 510,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-02-fu2-npg03b-floating-asserts-real-refusal",
+      "prompt": "projects/score2gp/prompts/next/dur-02-fu2-no-notation-keeps-bars-no-notes.md",
+      "allowed_paths": [
+        "tests/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: convert no-score/No Notes.pdf and every other no-score PDF at current main and list the outcome and cause code of each (counts and codes only); record what test_npg03b_floating calls and which guard it hits today; record the bar and beat counts of the reference no-notes.gp (counts only).",
+        "A source whose bars are printed but hold no TAB digits and no notation keeps one written bar per printed bar and writes no beats or notes, so its GPIF matches the bar count of no-notes.gp with no invented note, rhythm or rest. The oracle is the PDF's printed bars and the reference's counts, taken independently of the code under test.",
+        "A source that holds TAB digits but no rhythm stays refused with its located reason: the rhythm cannot be taken from notation, counts or spacing, and no note is invented for it. Every no-score file other than No Notes.pdf keeps its current outcome unless the handback lists the file and reason.",
+        "test_npg03b_floating keeps every original numeric check and asserts the new behaviour on its source; the reason is stated in the handback. New tests on the real files fail under named mutants (route refuses again; writes a guessed note; drops a bar; refuses with the generic guard), each shown failing.",
+        "Nothing that worked may change: whole private set measured at base and head, every file and bar written today keeps a byte-identical GPIF unless listed with reason; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-02"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "23c7db9bef1e271f9fa5bcb36d5d430ef742d0fc",
+      "merge_commit": "74615fa7b9e355cea098d6a82ee66996af20ca52",
+      "reconciled": true,
+      "reconciled_at": "2026-10-23T22:27:55.482482+00:00"
     }
   ],
   "backlog": [
@@ -5721,6 +5769,79 @@
       "priority": 400,
       "depends_on": [],
       "notes": "Deferred 2026-10-21 on the maintainer's emailed reply 'c' (defer/skip) to the supervisor's halt notice. The author run (codex-author-logs/omit-02-fu3/report.md) found no approved repeat-bearing source in a second SMuFL font or an unfamiliar renamed subset font: all 42 private PDFs have repeat dots only in GPBravuraRegular, the one public Leland PDF has none. Resume when such a source is supplied, or acceptance 2/3 is amended with the maintainer's explicit approval. Prompt kept at projects/score2gp/prompts/next/omit-02-fu3-repeat-dots-not-font-name.md."
+    },
+    {
+      "id": "PERC-01",
+      "title": "Percussive strikes in Castles Made of Sand.pdf and Crossroads.pdf (placeholder: needs detail)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 218,
+      "depends_on": [
+        "OMIT-04-FU5"
+      ],
+      "notes": "Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix."
+    },
+    {
+      "id": "OUT-MXL-01",
+      "title": "MusicXML output with TAB (fret and string) for Sibelius, MuseScore, Dorico, Finale, Guitar Pro 8 and Soundslice (placeholder: needs detail)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 219,
+      "depends_on": [
+        "NPG-06A"
+      ],
+      "notes": "Competitor and format research 2026-10-23: MusicXML supports guitar TAB and is the one writer that reaches most other tools; it is reported fragile for TAB (a Dorico import put notes three octaves low; Soundslice says GP, PowerTab and TuxGuitar MusicXML loses guitar-specific data). Needs detail: MusicXML version, tuning and capo mapping, a round-trip test through at least MuseScore and Guitar Pro 8 against the GPIF writer, and a labelled loss list. The oracle must be independent of the writer."
+    },
+    {
+      "id": "OUT-LY-01",
+      "title": "LilyPond output with TabStaff (placeholder: needs detail)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 220,
+      "depends_on": [
+        "NPG-06A"
+      ],
+      "notes": "Research 2026-10-23: LilyPond has TabStaff and tabFullNotation; a text writer is cheap and testable. musicxml2ly TAB support is unconfirmed, so write .ly directly. Needs detail: rhythm and tuplet mapping, tuning, and a compile check with LilyPond."
+    },
+    {
+      "id": "OUT-ASC-01",
+      "title": "ASCII tab output (placeholder: needs detail)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 221,
+      "depends_on": [
+        "NPG-06A"
+      ],
+      "notes": "Research 2026-10-23: Guitar Pro 8 and others import ASCII tab; a plain-text writer is trivial. ASCII carries no reliable rhythm, so rhythm must be shown or labelled lost. Needs detail: layout width, rhythm line, refusal posture."
+    },
+    {
+      "id": "BENCH-COMP-01",
+      "title": "Benchmark Soundslice and SmartScore on private corpus PDFs against Score2GP (placeholder: needs research)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "research",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_RESEARCH",
+      "priority": 222,
+      "depends_on": [],
+      "notes": "Research 2026-10-23: Soundslice scans PDF and tab-only PDFs and exports Guitar Pro and MusicXML (paid plan); SmartScore Guitar reads TAB (vendor). No tool was run. Needs research: a hands-on comparison on 3 to 5 corpus PDFs with per-bar agreement counts only; private content is never committed or emailed; vendor terms for uploading private PDFs must be checked first."
     }
   ],
   "registered_requirements": [
