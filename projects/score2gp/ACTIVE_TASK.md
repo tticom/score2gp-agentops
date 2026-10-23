@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dur-02-fu2-npg03b-floating-asserts-real-refusal`
 
-**Pull Request**: TBD
+**Pull Request**: 510
 
 **Owner Role**: implementation
 
