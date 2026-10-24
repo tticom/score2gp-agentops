@@ -2,26 +2,26 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU5 — G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike
+**Task**: PERC-01 — Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu5-g-am-c-lick-refused-bars`
+**PR Branch**: `feat/perc-01-castles-crossroads-percussive-strikes`
 
-**Pull Request**: 511
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-OMIT-04-FU1 left G-Am-C-Lick.pdf at 4 of 9 bars written. The maintainer reports most of the score is missing and not all percussive strikes were found. Find each root cause for the five refused bars (bars 2 and 6: 2 notation heads against 1 TAB candidate; bar 8: unread rest or multi-head X form beside a note) and write the bar from the PDF's printed notation and TAB, or refuse it with a located reason; no reference .gp exists and none may be invented.
+Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike. Source: authority item PERC-01. Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix.
 
 ## Allowed paths
 
-- `tests/**`
 - `src/score2gp/**`
+- `tests/**`
 
 ## Validation commands
 
