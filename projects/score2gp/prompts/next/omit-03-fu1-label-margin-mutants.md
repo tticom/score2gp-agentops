@@ -1,4 +1,4 @@
-# OMIT-03-FU1: OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures
+# OMIT-03-FU1: OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
@@ -10,12 +10,12 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == "read" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.
+OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == "read" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.
 
 ## Acceptance
 
 1. Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.
-2. Synthetic public fixtures at the margin and with overlapping systems are added; each named mutant now fails a public test.
+2. Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.
 3. No production behaviour changes; label output on the real corpus is identical before and after.
 4. Nothing that worked may change; validation commands pass; handback complete.
 

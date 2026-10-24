@@ -15,7 +15,7 @@ Commit a public fixture for the refusal when an attached accidental also fits th
 ## Acceptance
 
 1. Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).
-2. Both probes are pinned as committed public fixtures with tests asserting the located refusal; mutant B fails them.
+2. Both probes are pinned as committed public tests asserting the located refusal, as non-domain regression harness with a stated rationale and no acceptance weight; mutant B fails them. Acceptance rests on approved real sources: the handback shows with counts that real key-change controls (Lesson 7) are unchanged and says whether any approved real source reaches the ambiguous-slot case.
 3. No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.
 4. Nothing that worked may change; validation commands pass; handback complete.
 

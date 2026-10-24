@@ -15,8 +15,8 @@ TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture an
 ## Acceptance
 
 1. Measure first: find the old_line_rows >= 5 clause in src/score2gp/pdf.py and count the real TAB systems that depend on it (the review found eight).
-2. A committed synthetic fixture engraved like those systems exercises the clause; removing or weakening the clause fails a public test.
-3. Named mutants (drop the clause; change 5 to 4 or 6) each fail a public test; real Lesson 5 bar counts are unchanged.
+2. The clause is exercised on approved real sources: a test over the approved private corpus (counts and labels only) fails when the clause is removed or weakened, and names the real TAB systems that depend on it by count. A committed synthetic fixture may supplement this only as non-domain test infrastructure with a stated rationale; it carries no acceptance weight.
+3. Named mutants (drop the clause; change 5 to 4 or 6) are each shown failing a test that runs on approved real sources; a mutant no approved real source can reach is reported as not killed, with counts, never claimed killed on a synthetic fixture alone. Real Lesson 5 bar counts are unchanged.
 4. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)

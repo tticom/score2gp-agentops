@@ -67,8 +67,8 @@
     ],
     "acceptance": [
       "Measure first: find the old_line_rows >= 5 clause in src/score2gp/pdf.py and count the real TAB systems that depend on it (the review found eight).",
-      "A committed synthetic fixture engraved like those systems exercises the clause; removing or weakening the clause fails a public test.",
-      "Named mutants (drop the clause; change 5 to 4 or 6) each fail a public test; real Lesson 5 bar counts are unchanged.",
+      "The clause is exercised on approved real sources: a test over the approved private corpus (counts and labels only) fails when the clause is removed or weakened, and names the real TAB systems that depend on it by count. A committed synthetic fixture may supplement this only as non-domain test infrastructure with a stated rationale; it carries no acceptance weight.",
+      "Named mutants (drop the clause; change 5 to 4 or 6) are each shown failing a test that runs on approved real sources; a mutant no approved real source can reach is reported as not killed, with counts, never claimed killed on a synthetic fixture alone. Real Lesson 5 bar counts are unchanged.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -110,7 +110,7 @@
       ],
       "acceptance": [
         "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
-        "Both probes are pinned as committed public fixtures with tests asserting the located refusal; mutant B fails them.",
+        "Both probes are pinned as committed public tests asserting the located refusal, as non-domain regression harness with a stated rationale and no acceptance weight; mutant B fails them. Acceptance rests on approved real sources: the handback shows with counts that real key-change controls (Lesson 7) are unchanged and says whether any approved real source reaches the ambiguous-slot case.",
         "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
         "Nothing that worked may change; validation commands pass; handback complete."
       ],
@@ -134,8 +134,8 @@
     },
     {
       "id": "OMIT-03-FU1",
-      "title": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures",
-      "objective": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.",
+      "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
+      "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.",
       "status": "PROPOSED",
       "repository": "tticom/score2gp",
       "base_branch": "main",
@@ -152,7 +152,7 @@
       ],
       "acceptance": [
         "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
-        "Synthetic public fixtures at the margin and with overlapping systems are added; each named mutant now fails a public test.",
+        "Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.",
         "No production behaviour changes; label output on the real corpus is identical before and after.",
         "Nothing that worked may change; validation commands pass; handback complete."
       ],
