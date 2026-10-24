@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-04-fu5-g-am-c-lick-refused-bars`
 
-**Pull Request**: TBD
+**Pull Request**: 511
 
 **Owner Role**: implementation
 

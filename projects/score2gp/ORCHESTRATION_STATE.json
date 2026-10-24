@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 193,
+  "authority_revision": 194,
   "task": {
     "id": "OMIT-04-FU5",
     "title": "G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 511,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
