@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/perc-01-castles-crossroads-percussive-strikes`
 
-**Pull Request**: TBD
+**Pull Request**: 512
 
 **Owner Role**: implementation
 

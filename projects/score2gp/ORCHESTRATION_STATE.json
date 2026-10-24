@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 196,
+  "authority_revision": 197,
   "task": {
     "id": "PERC-01",
     "title": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 512,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
