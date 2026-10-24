@@ -1,32 +1,33 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 194,
+  "authority_revision": 196,
   "task": {
-    "id": "OMIT-04-FU5",
-    "title": "G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike",
-    "objective": "OMIT-04-FU1 left G-Am-C-Lick.pdf at 4 of 9 bars written. The maintainer reports most of the score is missing and not all percussive strikes were found. Find each root cause for the five refused bars (bars 2 and 6: 2 notation heads against 1 TAB candidate; bar 8: unread rest or multi-head X form beside a note) and write the bar from the PDF's printed notation and TAB, or refuse it with a located reason; no reference .gp exists and none may be invented.",
+    "id": "PERC-01",
+    "title": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike",
+    "objective": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike. Source: authority item PERC-01. Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 511,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/omit-04-fu5-g-am-c-lick-refused-bars",
-    "prompt": "projects/score2gp/prompts/next/omit-04-fu5-g-am-c-lick-refused-bars.md",
+    "branch": "feat/perc-01-castles-crossroads-percussive-strikes",
+    "prompt": "projects/score2gp/prompts/next/perc-01-castles-crossroads-percussive-strikes.md",
     "allowed_paths": [
-      "tests/**",
-      "src/score2gp/**"
+      "src/score2gp/**",
+      "tests/**"
     ],
     "acceptance": [
-      "Measure first: convert G-Am-C-Lick.pdf at current main and list, for each of the five refused bars (1, 2, 4, 6, 8), its cause code, system and what the PDF prints there (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar against the strikes written. Re-measure; the earlier counts are leads.",
-      "Root cause per refused bar: bars with 2 notation heads against 1 printed TAB candidate (bars 2 and 6) and the bar with an unread rest or multi-head X form beside a note (bar 8) are fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for this file.",
-      "An independent per-bar ledger covers EVERY written bar, including each newly recovered bar: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused; byte identity of already-written bars does not stand in for this. No reference .gp may be invented.",
-      "Every printed percussive strike in a bar that is written is written as a dead note, using the stored convention of the percussive-strike decision; a ledger compares strikes printed and strikes written per bar, taken from the PDF independently of the code under test. A strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
-      "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value (note value or fret) in a recovered bar; drop a strike; restore the old behaviour. Each is shown failing.",
-      "Nothing that worked may change: bars 3, 5, 7 and 9 of G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
-      "Validation commands pass; handback complete. It says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists."
+      "Measure first: convert both PDFs at current main; for each refused bar list the cause code (pdf_only_tab_grouping_unsafe is the lead), system and what the PDF prints (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar. Say whether one shared fix serves both files or not.",
+      "Root cause per refused bar is fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for a file; rhythm comes from note type plus grouping, never from counts or spacing. No reference .gp exists and none may be invented.",
+      "An independent per-bar ledger covers EVERY written bar of both files: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused.",
+      "Every printed percussive strike in a written bar is written as a dead note using the stored convention of the percussive-strike decision (UNREAD-02); a strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
+      "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value; drop a strike; restore the old behaviour. Each is shown failing.",
+      "Nothing that worked may change: G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
+      "The handback says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists.",
+      "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
@@ -36,7 +37,7 @@
       "git diff --check"
     ],
     "dependencies": [
-      "OMIT-04-FU1"
+      "OMIT-04-FU5"
     ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
@@ -46,8 +47,176 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "DUR-03-FU1",
+    "title": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant",
+    "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Add a committed synthetic fixture engraved like those systems and a mutant that must fail.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-03-fu1-old-line-rows-guard",
+    "prompt": "projects/score2gp/prompts/next/dur-03-fu1-old-line-rows-guard.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "fixtures/public/**"
+    ],
+    "acceptance": [
+      "Measure first: find the old_line_rows >= 5 clause in src/score2gp/pdf.py and count the real TAB systems that depend on it (the review found eight).",
+      "A committed synthetic fixture engraved like those systems exercises the clause; removing or weakening the clause fails a public test.",
+      "Named mutants (drop the clause; change 5 to 4 or 6) each fail a public test; real Lesson 5 bar counts are unchanged.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "DUR-03"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "OMIT-01-FU2",
+      "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
+      "objective": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-01-fu2-ambiguous-accidental-fixture",
+      "prompt": "projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md",
+      "allowed_paths": [
+        "tests/**",
+        "fixtures/public/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
+        "Both probes are pinned as committed public fixtures with tests asserting the located refusal; mutant B fails them.",
+        "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "OMIT-03-FU1",
+      "title": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures",
+      "objective": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-03-fu1-label-margin-mutants",
+      "prompt": "projects/score2gp/prompts/next/omit-03-fu1-label-margin-mutants.md",
+      "allowed_paths": [
+        "tests/**",
+        "fixtures/public/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
+        "Synthetic public fixtures at the margin and with overlapping systems are added; each named mutant now fails a public test.",
+        "No production behaviour changes; label output on the real corpus is identical before and after.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "OMIT-04-FU2",
+      "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
+      "objective": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-fu2-arpeggio-direction-mapping",
+      "prompt": "projects/score2gp/prompts/next/omit-04-fu2-arpeggio-direction-mapping.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**"
+      ],
+      "acceptance": [
+        "Measure first: read _marks in src/score2gp/pdf_arpeggios.py and list which real references contain an arpeggio and in which direction (counts only).",
+        "The mapping of an upward arrow to the GPIF value is documented where it is made. If a real reference with an up arpeggio exists, Up is verified against it; otherwise the handback says plainly that Up remains verified only on a synthetic fixture.",
+        "A mutant that swaps the mapping fails a public test; no behaviour change.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -3822,6 +3991,54 @@
       "merge_commit": "74615fa7b9e355cea098d6a82ee66996af20ca52",
       "reconciled": true,
       "reconciled_at": "2026-10-23T22:27:55.482482+00:00"
+    },
+    {
+      "id": "OMIT-04-FU5",
+      "title": "G-Am-C-Lick.pdf: write the refused bars as printed, or refuse them with a located reason; find every printed percussive strike",
+      "objective": "OMIT-04-FU1 left G-Am-C-Lick.pdf at 4 of 9 bars written. The maintainer reports most of the score is missing and not all percussive strikes were found. Find each root cause for the five refused bars (bars 2 and 6: 2 notation heads against 1 TAB candidate; bar 8: unread rest or multi-head X form beside a note) and write the bar from the PDF's printed notation and TAB, or refuse it with a located reason; no reference .gp exists and none may be invented.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 511,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-fu5-g-am-c-lick-refused-bars",
+      "prompt": "projects/score2gp/prompts/next/omit-04-fu5-g-am-c-lick-refused-bars.md",
+      "allowed_paths": [
+        "tests/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: convert G-Am-C-Lick.pdf at current main and list, for each of the five refused bars (1, 2, 4, 6, 8), its cause code, system and what the PDF prints there (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar against the strikes written. Re-measure; the earlier counts are leads.",
+        "Root cause per refused bar: bars with 2 notation heads against 1 printed TAB candidate (bars 2 and 6) and the bar with an unread rest or multi-head X form beside a note (bar 8) are fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for this file.",
+        "An independent per-bar ledger covers EVERY written bar, including each newly recovered bar: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused; byte identity of already-written bars does not stand in for this. No reference .gp may be invented.",
+        "Every printed percussive strike in a bar that is written is written as a dead note, using the stored convention of the percussive-strike decision; a ledger compares strikes printed and strikes written per bar, taken from the PDF independently of the code under test. A strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
+        "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value (note value or fret) in a recovered bar; drop a strike; restore the old behaviour. Each is shown failing.",
+        "Nothing that worked may change: bars 3, 5, 7 and 9 of G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
+        "Validation commands pass; handback complete. It says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04-FU1"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "a63ef854f1495df040ae183e0ff8bc68f62b8a89",
+      "merge_commit": "dca00c47dd8fd76c904521cddff1b984043ade14",
+      "reconciled": true,
+      "reconciled_at": "2026-10-24T04:53:15.393067+00:00"
     }
   ],
   "backlog": [
@@ -5307,21 +5524,6 @@
       "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
     },
     {
-      "id": "OMIT-01-FU2",
-      "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 509,
-      "depends_on": [
-        "OMIT-01"
-      ],
-      "notes": "Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures."
-    },
-    {
       "id": "OMIT-02-FU2",
       "title": "Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus",
       "requirements": [
@@ -5453,21 +5655,6 @@
       "notes": "Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version=\"0.1.0\" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item."
     },
     {
-      "id": "OMIT-03-FU1",
-      "title": "OMIT-03 label rules: kill the surviving margin mutants with synthetic fixtures",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 517,
-      "depends_on": [
-        "OMIT-03"
-      ],
-      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails."
-    },
-    {
       "id": "OMIT-03-FU2",
       "title": "SUPERSEDED by DUR-03: Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
       "requirements": [
@@ -5513,21 +5700,6 @@
       "notes": "Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical."
     },
     {
-      "id": "DUR-03-FU1",
-      "title": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 504,
-      "depends_on": [
-        "DUR-03"
-      ],
-      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Add a committed synthetic fixture engraved like those systems and a mutant that must fail."
-    },
-    {
       "id": "DUR-03-FU2",
       "title": "Validate the new and extended TAB systems on PDFs that have no reference score",
       "requirements": [
@@ -5556,21 +5728,6 @@
         "DUR-03"
       ],
       "notes": "Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical."
-    },
-    {
-      "id": "OMIT-04-FU2",
-      "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 518,
-      "depends_on": [
-        "OMIT-04"
-      ],
-      "notes": "Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio."
     },
     {
       "id": "OMIT-04-FU4",
@@ -5769,21 +5926,6 @@
       "priority": 400,
       "depends_on": [],
       "notes": "Deferred 2026-10-21 on the maintainer's emailed reply 'c' (defer/skip) to the supervisor's halt notice. The author run (codex-author-logs/omit-02-fu3/report.md) found no approved repeat-bearing source in a second SMuFL font or an unfamiliar renamed subset font: all 42 private PDFs have repeat dots only in GPBravuraRegular, the one public Leland PDF has none. Resume when such a source is supplied, or acceptance 2/3 is amended with the maintainer's explicit approval. Prompt kept at projects/score2gp/prompts/next/omit-02-fu3-repeat-dots-not-font-name.md."
-    },
-    {
-      "id": "PERC-01",
-      "title": "Percussive strikes in Castles Made of Sand.pdf and Crossroads.pdf (placeholder: needs detail)",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "NEEDS_DETAIL",
-      "priority": 218,
-      "depends_on": [
-        "OMIT-04-FU5"
-      ],
-      "notes": "Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix."
     },
     {
       "id": "OUT-MXL-01",
