@@ -1,4 +1,4 @@
-# DUR-03-FU1: TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant
+# DUR-03-FU1: TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
@@ -10,7 +10,7 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Add a committed synthetic fixture engraved like those systems and a mutant that must fail.
+TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.
 
 ## Acceptance
 

@@ -49,8 +49,8 @@
   },
   "next_task_proposal": {
     "id": "DUR-03-FU1",
-    "title": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant",
-    "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause with a public fixture and a mutant. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Add a committed synthetic fixture engraved like those systems and a mutant that must fail.",
+    "title": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources",
+    "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -92,8 +92,8 @@
   "queued_task_proposals": [
     {
       "id": "OMIT-01-FU2",
-      "title": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot",
-      "objective": "Commit a public fixture for the refusal when an attached accidental also fits the next signature slot. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; pin them as public fixtures.",
+      "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
+      "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
       "status": "PROPOSED",
       "repository": "tticom/score2gp",
       "base_branch": "main",
@@ -110,7 +110,7 @@
       ],
       "acceptance": [
         "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
-        "Both probes are pinned as committed public tests asserting the located refusal, as non-domain regression harness with a stated rationale and no acceptance weight; mutant B fails them. Acceptance rests on approved real sources: the handback shows with counts that real key-change controls (Lesson 7) are unchanged and says whether any approved real source reaches the ambiguous-slot case.",
+        "Reproduce P2/P2c only as reviewer diagnostics; they are invented layouts and are not committed as tests of key-signature recognition. Acceptance rests on approved real sources: the handback states with counts whether any approved real source reaches the ambiguous-slot case. If one does, a test over it fails under mutant B (ambiguous = False). If none does, mutant B is recorded as not killed and the branch as unverified on real sources, never claimed guarded by a synthetic layout. The handback shows with counts that real key-change controls (Lesson 7) are unchanged.",
         "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
         "Nothing that worked may change; validation commands pass; handback complete."
       ],
@@ -135,7 +135,7 @@
     {
       "id": "OMIT-03-FU1",
       "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
-      "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.",
+      "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
       "status": "PROPOSED",
       "repository": "tticom/score2gp",
       "base_branch": "main",

@@ -10,7 +10,7 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == "read" event filter survive both the public and the private tests. Add synthetic public fixtures at the margin and with overlapping systems, and show each mutant now fails.
+OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == "read" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.
 
 ## Acceptance
 
