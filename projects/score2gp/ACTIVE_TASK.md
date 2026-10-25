@@ -2,27 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-03-FU1 — OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached
+**Task**: OMIT-04-FU2 — Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-03-fu1-label-margin-mutants`
+**PR Branch**: `feat/omit-04-fu2-arpeggio-direction-mapping`
 
-**Pull Request**: 514
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == "read" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.
+Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.
 
 ## Allowed paths
 
-- `tests/**`
-- `fixtures/public/**`
 - `src/score2gp/**`
+- `tests/**`
+- `docs/**`
 
 ## Validation commands
 
