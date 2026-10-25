@@ -1,54 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 202,
+  "authority_revision": 203,
   "task": {
-    "id": "OMIT-03-FU1",
-    "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
-    "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 514,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-03-fu1-label-margin-mutants",
-    "prompt": "projects/score2gp/prompts/next/omit-03-fu1-label-margin-mutants.md",
-    "allowed_paths": [
-      "tests/**",
-      "fixtures/public/**",
-      "src/score2gp/**"
-    ],
-    "acceptance": [
-      "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
-      "Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.",
-      "No production behaviour changes; label output on the real corpus is identical before and after.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-04-FU2",
     "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
     "objective": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -86,6 +44,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -4049,6 +4008,52 @@
       "notes": "Parked 2026-10-25 on the maintainer's direction ('park and deprioritise the task for now until fixtures can be found'). The author run (Codex, 2026-10-25) measured the guard on approved real sources and found zero target hits: 43 PDFs, 396 pages, 857 key-reader system evaluations, 2807 bar comparisons, 0 attached-slot or prefix ambiguity hits; Lesson 7 controls unchanged (50 bars read, 0 refused). Result: the refusal branch stays unverified on real sources. No product change, branch commit or PR exists; the invented P2/P2c probes carry no acceptance weight. Resume as OMIT-01-FU3 when a source that reaches the ambiguous slot is found or supplied.",
       "reconciled": true,
       "reconciled_at": "2026-10-25T18:17:38.936608+00:00"
+    },
+    {
+      "id": "OMIT-03-FU1",
+      "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
+      "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 514,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-03-fu1-label-margin-mutants",
+      "prompt": "projects/score2gp/prompts/next/omit-03-fu1-label-margin-mutants.md",
+      "allowed_paths": [
+        "tests/**",
+        "fixtures/public/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
+        "Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.",
+        "No production behaviour changes; label output on the real corpus is identical before and after.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "fdd074620e6c8bad2ba107b276b2eb01541c954c",
+      "merge_commit": "db649d841bd94df0ae22a2a01ab42c9ef29263fc",
+      "reconciled": true,
+      "reconciled_at": "2026-10-25T22:16:59.478095+00:00"
     }
   ],
   "backlog": [
