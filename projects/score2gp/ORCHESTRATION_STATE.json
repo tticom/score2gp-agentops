@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 201,
+  "authority_revision": 202,
   "task": {
     "id": "OMIT-03-FU1",
     "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 514,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
