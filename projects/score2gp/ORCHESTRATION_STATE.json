@@ -1,54 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 199,
+  "authority_revision": 200,
   "task": {
-    "id": "DUR-03-FU1",
-    "title": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources",
-    "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 513,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/dur-03-fu1-old-line-rows-guard",
-    "prompt": "projects/score2gp/prompts/next/dur-03-fu1-old-line-rows-guard.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "fixtures/public/**"
-    ],
-    "acceptance": [
-      "Measure first: find the old_line_rows >= 5 clause in src/score2gp/pdf.py and count the real TAB systems that depend on it (the review found eight).",
-      "The clause is exercised on approved real sources: a test over the approved private corpus (counts and labels only) fails when the clause is removed or weakened, and names the real TAB systems that depend on it by count. A committed synthetic fixture may supplement this only as non-domain test infrastructure with a stated rationale; it carries no acceptance weight.",
-      "Named mutants (drop the clause; change 5 to 4 or 6) are each shown failing a test that runs on approved real sources; a mutant no approved real source can reach is reported as not killed, with counts, never claimed killed on a synthetic fixture alone. Real Lesson 5 bar counts are unchanged.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "DUR-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-01-FU2",
     "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
     "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -86,49 +44,49 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-03-FU1",
+    "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
+    "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-03-fu1-label-margin-mutants",
+    "prompt": "projects/score2gp/prompts/next/omit-03-fu1-label-margin-mutants.md",
+    "allowed_paths": [
+      "tests/**",
+      "fixtures/public/**",
+      "src/score2gp/**"
+    ],
+    "acceptance": [
+      "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
+      "Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.",
+      "No production behaviour changes; label output on the real corpus is identical before and after.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-03"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-03-FU1",
-      "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
-      "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-03-fu1-label-margin-mutants",
-      "prompt": "projects/score2gp/prompts/next/omit-03-fu1-label-margin-mutants.md",
-      "allowed_paths": [
-        "tests/**",
-        "fixtures/public/**",
-        "src/score2gp/**"
-      ],
-      "acceptance": [
-        "Measure first: reproduce the surviving mutants (bar or system uniqueness check != 1 to < 1; two-point tie margin to 0.5 pt; status == 'read' event filter removed) against the public and private tests.",
-        "Each named mutant is shown failing a test that runs on approved real sources. Where no approved real source reaches the margin or the overlap, the handback says so with counts and records that mutant as a residual that is not killed; synthetic margin or overlap fixtures may be added only as non-domain test infrastructure with a stated rationale and carry no acceptance weight.",
-        "No production behaviour changes; label output on the real corpus is identical before and after.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-03"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-04-FU2",
       "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
@@ -4043,6 +4001,52 @@
       "merge_commit": "5d8eb9866113124d49ace32d0dcfad2250e43f9f",
       "reconciled": true,
       "reconciled_at": "2026-10-25T07:06:58.846353+00:00"
+    },
+    {
+      "id": "DUR-03-FU1",
+      "title": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources",
+      "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 513,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-03-fu1-old-line-rows-guard",
+      "prompt": "projects/score2gp/prompts/next/dur-03-fu1-old-line-rows-guard.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "fixtures/public/**"
+      ],
+      "acceptance": [
+        "Measure first: find the old_line_rows >= 5 clause in src/score2gp/pdf.py and count the real TAB systems that depend on it (the review found eight).",
+        "The clause is exercised on approved real sources: a test over the approved private corpus (counts and labels only) fails when the clause is removed or weakened, and names the real TAB systems that depend on it by count. A committed synthetic fixture may supplement this only as non-domain test infrastructure with a stated rationale; it carries no acceptance weight.",
+        "Named mutants (drop the clause; change 5 to 4 or 6) are each shown failing a test that runs on approved real sources; a mutant no approved real source can reach is reported as not killed, with counts, never claimed killed on a synthetic fixture alone. Real Lesson 5 bar counts are unchanged.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "30115ee8669b77e9c072361713de73e90b914dd5",
+      "merge_commit": "0c2a704f85bb4e7fca9c4c0d16baeebabf12c7ae",
+      "reconciled": true,
+      "reconciled_at": "2026-10-25T11:06:59.266010+00:00"
     }
   ],
   "backlog": [

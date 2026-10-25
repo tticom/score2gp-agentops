@@ -2,27 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-03-FU1 — TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources
+**Task**: OMIT-01-FU2 — Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dur-03-fu1-old-line-rows-guard`
+**PR Branch**: `feat/omit-01-fu2-ambiguous-accidental-fixture`
 
-**Pull Request**: 513
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.
+Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.
 
 ## Allowed paths
 
-- `src/score2gp/**`
 - `tests/**`
 - `fixtures/public/**`
+- `src/score2gp/**`
 
 ## Validation commands
 
