@@ -1,57 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 197,
+  "authority_revision": 198,
   "task": {
-    "id": "PERC-01",
-    "title": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike",
-    "objective": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike. Source: authority item PERC-01. Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 512,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/perc-01-castles-crossroads-percussive-strikes",
-    "prompt": "projects/score2gp/prompts/next/perc-01-castles-crossroads-percussive-strikes.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: convert both PDFs at current main; for each refused bar list the cause code (pdf_only_tab_grouping_unsafe is the lead), system and what the PDF prints (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar. Say whether one shared fix serves both files or not.",
-      "Root cause per refused bar is fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for a file; rhythm comes from note type plus grouping, never from counts or spacing. No reference .gp exists and none may be invented.",
-      "An independent per-bar ledger covers EVERY written bar of both files: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused.",
-      "Every printed percussive strike in a written bar is written as a dead note using the stored convention of the percussive-strike decision (UNREAD-02); a strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
-      "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value; drop a strike; restore the old behaviour. Each is shown failing.",
-      "Nothing that worked may change: G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
-      "The handback says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-04-FU5"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "DUR-03-FU1",
     "title": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources",
     "objective": "TAB staff recovery: guard the old_line_rows >= 5 clause on approved real sources. Source: authority item DUR-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03) at 5e52dee. Eight real TAB systems depend on the old_line_rows >= 5 clause in the recovery rule in src/score2gp/pdf.py. No public fixture or mutant exercises it: removing the clause passes all seven public DUR-03 tests, and only the private Lesson 5 bar count guards it. Guard the clause with a test over the approved private corpus (counts and labels only) and show the named mutants failing it; a mutant no approved real source reaches is reported as not killed, with counts. A committed synthetic fixture may supplement only as non-domain test infrastructure and carries no acceptance weight.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -89,49 +44,49 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "OMIT-01-FU2",
+    "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
+    "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-01-fu2-ambiguous-accidental-fixture",
+    "prompt": "projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md",
+    "allowed_paths": [
+      "tests/**",
+      "fixtures/public/**",
+      "src/score2gp/**"
+    ],
+    "acceptance": [
+      "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
+      "Reproduce P2/P2c only as reviewer diagnostics; they are invented layouts and are not committed as tests of key-signature recognition. Acceptance rests on approved real sources: the handback states with counts whether any approved real source reaches the ambiguous-slot case. If one does, a test over it fails under mutant B (ambiguous = False). If none does, mutant B is recorded as not killed and the branch as unverified on real sources, never claimed guarded by a synthetic layout. The handback shows with counts that real key-change controls (Lesson 7) are unchanged.",
+      "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "OMIT-01-FU2",
-      "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
-      "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-01-fu2-ambiguous-accidental-fixture",
-      "prompt": "projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md",
-      "allowed_paths": [
-        "tests/**",
-        "fixtures/public/**",
-        "src/score2gp/**"
-      ],
-      "acceptance": [
-        "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
-        "Reproduce P2/P2c only as reviewer diagnostics; they are invented layouts and are not committed as tests of key-signature recognition. Acceptance rests on approved real sources: the handback states with counts whether any approved real source reaches the ambiguous-slot case. If one does, a test over it fails under mutant B (ambiguous = False). If none does, mutant B is recorded as not killed and the branch as unverified on real sources, never claimed guarded by a synthetic layout. The handback shows with counts that real key-change controls (Lesson 7) are unchanged.",
-        "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-03-FU1",
       "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
@@ -4039,6 +3994,55 @@
       "merge_commit": "dca00c47dd8fd76c904521cddff1b984043ade14",
       "reconciled": true,
       "reconciled_at": "2026-10-24T04:53:15.393067+00:00"
+    },
+    {
+      "id": "PERC-01",
+      "title": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike",
+      "objective": "Castles Made of Sand.pdf and Crossroads.pdf: write the bars as printed, or refuse them with a located reason; write every printed percussive strike. Source: authority item PERC-01. Maintainer 2026-10-22: both PDFs contain percussive strikes (dead-note X heads) and neither has a reference .gp. Survey 2026-10-20: both REFUSED with pdf_only_tab_grouping_unsafe, so the strike cannot be judged until the bars are written; depends on the grouping work and on the G-Am-C-Lick.pdf tasks. Oracle: the PDF's own notation and TAB plus the maintainer's check by ear and eye; no reference may be invented. Follow the storage convention in the percussive-strike decision (UNREAD-02). Needs detail: which grouping cause blocks each file and whether it is one shared fix.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 512,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/perc-01-castles-crossroads-percussive-strikes",
+      "prompt": "projects/score2gp/prompts/next/perc-01-castles-crossroads-percussive-strikes.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: convert both PDFs at current main; for each refused bar list the cause code (pdf_only_tab_grouping_unsafe is the lead), system and what the PDF prints (head counts, TAB candidates, distances only), and count every printed percussive strike (dead-note X head) per bar. Say whether one shared fix serves both files or not.",
+        "Root cause per refused bar is fixed in the recogniser or writer so the bar is written exactly as printed, or the bar stays refused with a located reason. No rhythm, string or fret is guessed, copied from another file or hard-coded for a file; rhythm comes from note type plus grouping, never from counts or spacing. No reference .gp exists and none may be invented.",
+        "An independent per-bar ledger covers EVERY written bar of both files: event kind, note value, dots, tuplets, ties, ordered string/fret groups and strikes are taken from the PDF's printed notation and TAB independently of the code under test and compared with the final GPIF. Any disagreement fails acceptance or leaves the bar refused.",
+        "Every printed percussive strike in a written bar is written as a dead note using the stored convention of the percussive-strike decision (UNREAD-02); a strike in a refused bar is reported as part of that bar's refusal, never dropped silently.",
+        "Real-file tests fail under named mutants: drop the fix; guess the rhythm from spacing or counts; write the bar without the head-to-string check; write a wrong non-strike value; drop a strike; restore the old behaviour. Each is shown failing.",
+        "Nothing that worked may change: G-Am-C-Lick.pdf and every file and bar written today keep a byte-identical GPIF unless the handback lists the file, bar and reason; the whole private set is measured at base and head.",
+        "The handback says plainly which bars are now correct, which remain refused and why, and that the maintainer should check the result by ear and eye since no reference .gp exists.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04-FU5"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "52aab1dcab2a973ff2f19b762f769ac7905f5ec5",
+      "merge_commit": "5d8eb9866113124d49ace32d0dcfad2250e43f9f",
+      "reconciled": true,
+      "reconciled_at": "2026-10-25T07:06:58.846353+00:00"
     }
   ],
   "backlog": [
