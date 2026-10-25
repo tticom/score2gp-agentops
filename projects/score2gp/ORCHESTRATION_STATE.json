@@ -1,54 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 200,
+  "authority_revision": 201,
   "task": {
-    "id": "OMIT-01-FU2",
-    "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
-    "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-01-fu2-ambiguous-accidental-fixture",
-    "prompt": "projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md",
-    "allowed_paths": [
-      "tests/**",
-      "fixtures/public/**",
-      "src/score2gp/**"
-    ],
-    "acceptance": [
-      "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
-      "Reproduce P2/P2c only as reviewer diagnostics; they are invented layouts and are not committed as tests of key-signature recognition. Acceptance rests on approved real sources: the handback states with counts whether any approved real source reaches the ambiguous-slot case. If one does, a test over it fails under mutant B (ambiguous = False). If none does, mutant B is recorded as not killed and the branch as unverified on real sources, never claimed guarded by a synthetic layout. The handback shows with counts that real key-change controls (Lesson 7) are unchanged.",
-      "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-01"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "OMIT-03-FU1",
     "title": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached",
     "objective": "OMIT-03 label rules: kill the surviving margin mutants on approved real sources, or record which cannot be reached. Source: authority item OMIT-03-FU1. Non-blocking follow-up 1 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Mutants that relax the bar or system uniqueness check (!= 1 to < 1), the two-point tie margin (to 0.5 pt) and the status == \"read\" event filter survive both the public and the private tests. Show each mutant failing a test that runs on approved real sources; where no approved real source reaches the margin or overlap, record the mutant as not killed, with counts. Synthetic margin or overlap fixtures may supplement only as non-domain test infrastructure and carry no acceptance weight.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -86,50 +44,49 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "OMIT-04-FU2",
-      "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
-      "objective": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/omit-04-fu2-arpeggio-direction-mapping",
-      "prompt": "projects/score2gp/prompts/next/omit-04-fu2-arpeggio-direction-mapping.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**"
-      ],
-      "acceptance": [
-        "Measure first: read _marks in src/score2gp/pdf_arpeggios.py and list which real references contain an arpeggio and in which direction (counts only).",
-        "The mapping of an upward arrow to the GPIF value is documented where it is made. If a real reference with an up arpeggio exists, Up is verified against it; otherwise the handback says plainly that Up remains verified only on a synthetic fixture.",
-        "A mutant that swaps the mapping fails a public test; no behaviour change.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "OMIT-04"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "OMIT-04-FU2",
+    "title": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists",
+    "objective": "Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/omit-04-fu2-arpeggio-direction-mapping",
+    "prompt": "projects/score2gp/prompts/next/omit-04-fu2-arpeggio-direction-mapping.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**"
+    ],
+    "acceptance": [
+      "Measure first: read _marks in src/score2gp/pdf_arpeggios.py and list which real references contain an arpeggio and in which direction (counts only).",
+      "The mapping of an upward arrow to the GPIF value is documented where it is made. If a real reference with an up arpeggio exists, Up is verified against it; otherwise the handback says plainly that Up remains verified only on a synthetic fixture.",
+      "A mutant that swaps the mapping fails a public test; no behaviour change.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "OMIT-04"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -4047,6 +4004,51 @@
       "merge_commit": "0c2a704f85bb4e7fca9c4c0d16baeebabf12c7ae",
       "reconciled": true,
       "reconciled_at": "2026-10-25T11:06:59.266010+00:00"
+    },
+    {
+      "id": "OMIT-01-FU2",
+      "title": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified",
+      "objective": "Guard the refusal when an attached accidental also fits the next signature slot on approved real sources, or record it as unverified. Source: authority item OMIT-01-FU2. Non-blocking follow-up from tticomgov-code's approving round-4 review of tticom/score2gp#468 (OMIT-01) at 6a40e82. Thread at src/score2gp/notation_omr/key_signature.py:221: this refusal branch has no committed test; mutant B (ambiguous = False) passes every test in tests/test_omit_01_key_signature.py, because mid_system_ambiguous.pdf reaches the out-of-order branch instead. Reviewer probes P2 (2 flats + attached A-slot flat) and P2c (2 sharps + attached G-slot sharp) are refused at this head and read -2/+2 under mutant B; they are invented layouts, so they are leads and diagnostics only. Find out whether any approved real source reaches the ambiguous-slot case; if one does, guard the branch on it, otherwise record mutant B as not killed and the branch as unverified on real sources, with counts.",
+      "status": "RESOLVED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-01-fu2-ambiguous-accidental-fixture",
+      "prompt": "projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md",
+      "allowed_paths": [
+        "tests/**",
+        "fixtures/public/**",
+        "src/score2gp/**"
+      ],
+      "acceptance": [
+        "Measure first: reproduce reviewer probes P2 (2 flats plus an attached A-slot flat) and P2c (2 sharps plus an attached G-slot sharp); both are refused at base and read -2 / +2 under mutant B (ambiguous = False).",
+        "Reproduce P2/P2c only as reviewer diagnostics; they are invented layouts and are not committed as tests of key-signature recognition. Acceptance rests on approved real sources: the handback states with counts whether any approved real source reaches the ambiguous-slot case. If one does, a test over it fails under mutant B (ambiguous = False). If none does, mutant B is recorded as not killed and the branch as unverified on real sources, never claimed guarded by a synthetic layout. The handback shows with counts that real key-change controls (Lesson 7) are unchanged.",
+        "No production behaviour changes; the mid-system key change tests and real Lesson 7 controls are unchanged.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-01"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Parked 2026-10-25 on the maintainer's direction ('park and deprioritise the task for now until fixtures can be found'). The author run (Codex, 2026-10-25) measured the guard on approved real sources and found zero target hits: 43 PDFs, 396 pages, 857 key-reader system evaluations, 2807 bar comparisons, 0 attached-slot or prefix ambiguity hits; Lesson 7 controls unchanged (50 bars read, 0 refused). Result: the refusal branch stays unverified on real sources. No product change, branch commit or PR exists; the invented P2/P2c probes carry no acceptance weight. Resume as OMIT-01-FU3 when a source that reaches the ambiguous slot is found or supplied.",
+      "reconciled": true,
+      "reconciled_at": "2026-10-25T18:17:38.936608+00:00"
     }
   ],
   "backlog": [
@@ -5992,6 +5994,21 @@
       "priority": 222,
       "depends_on": [],
       "notes": "Research 2026-10-23: Soundslice scans PDF and tab-only PDFs and exports Guitar Pro and MusicXML (paid plan); SmartScore Guitar reads TAB (vendor). No tool was run. Needs research: a hands-on comparison on 3 to 5 corpus PDFs with per-bar agreement counts only; private content is never committed or emailed; vendor terms for uploading private PDFs must be checked first."
+    },
+    {
+      "id": "OMIT-01-FU3",
+      "title": "Resume OMIT-01-FU2: show the ambiguous accidental/key-signature refusal on a real source (parked: needs a fixture)",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 923,
+      "depends_on": [
+        "OMIT-01"
+      ],
+      "notes": "Parked from OMIT-01-FU2 (2026-10-25). Needs a real, approved source whose key signature has an attached accidental that also fits the next signature slot; none of the 43 approved PDFs reaches it. When one exists, re-promote using projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md (kept) and its acceptance."
     }
   ],
   "registered_requirements": [
