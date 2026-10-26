@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/mem-01-fu2-gp-package-schema-version`
 
-**Pull Request**: TBD
+**Pull Request**: 518
 
 **Owner Role**: implementation
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 210,
+  "authority_revision": 211,
   "task": {
     "id": "MEM-01-FU2",
     "title": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 518,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
