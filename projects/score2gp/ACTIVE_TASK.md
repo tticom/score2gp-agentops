@@ -2,27 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU2 — Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists
+**Task**: OMIT-03-FU3 — Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu2-arpeggio-direction-mapping`
+**PR Branch**: `feat/omit-03-fu3-label-band-source-role`
 
-**Pull Request**: 515
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Arpeggio direction: comment the upward-arrow-to-Down mapping and verify Up on a real reference when one exists. Source: authority item OMIT-04-FU2. Non-blocking follow-ups from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04) at 3c5536d: _marks in src/score2gp/pdf_arpeggios.py labels an upward arrow 'down' (the GPIF value) with no code comment explaining it, and only the Down value occurs in the real references, so Up is verified only on a synthetic fixture. Document the mapping where it is made and verify Up against a real reference when one has an up arpeggio.
+Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code. Source: authority item OMIT-03-FU3. Non-blocking follow-up 3 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. The label band is a fixed five staff spaces above the top staff line. One real Lesson 4 reference label sits 6.4 spaces above and is refused, and 51 corpus lines between five and seven spaces still need a measured source-role rule before the band can widen without admitting a wrong read. In Lesson 4 pdf_text_outside_annotation_band also holds the rotated tab clef glyph, so the missing label is identifiable only by its located bbox: give that glyph its own reason code.
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
-- `docs/**`
+- `fixtures/public/**`
 
 ## Validation commands
 
