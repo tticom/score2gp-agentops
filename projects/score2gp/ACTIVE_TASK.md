@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-03-fu3-label-band-source-role`
 
-**Pull Request**: TBD
+**Pull Request**: 516
 
 **Owner Role**: implementation
 
