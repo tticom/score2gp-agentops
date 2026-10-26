@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-02-fu2-design-doc-vector-repeat-dots`
 
-**Pull Request**: TBD
+**Pull Request**: 519
 
 **Owner Role**: implementation
 
