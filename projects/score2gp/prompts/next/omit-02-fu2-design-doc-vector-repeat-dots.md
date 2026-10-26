@@ -15,7 +15,7 @@ Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus. 
 ## Acceptance
 
 1. Measure first: count the real approved sources whose repeat dots are filled vector drawings with no music font (Gloria.pdf bars 2, 5 and 8 are the lead); counts only.
-2. docs/design/omit-02-double-barlines.md states that the vector form is a real engraving form and cites the measured count; documentation only, no source change.
+2. docs/design/omit-02-double-barlines.md states that the vector form is a real engraving form and cites the measured count; documentation only: git diff --stat in the handback shows no file outside docs/ changed, and the cited count is reproduced by a command named in the handback.
 3. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)

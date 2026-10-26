@@ -15,7 +15,7 @@ Remove the tautological assertion at tests/test_layout_01_public.py:55. Source: 
 ## Acceptance
 
 1. Measure first: confirm the assertion that source_system_bars is None holds trivially after the test assigned counts.
-2. Replace it with an assertion that can fail (shown failing under a named mutant) or delete it; the real assertions on the helper return and warning.provenance stay.
+2. Replace it with an assertion that can fail, shown failing under a named mutant; if instead it is deleted, the handback shows a named mutant of the helper return or warning.provenance still failing a remaining assertion. The real assertions on the helper return and warning.provenance stay.
 3. No production change.
 4. Nothing that worked may change; validation commands pass; handback complete.
 

@@ -14,8 +14,8 @@ DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups an
 
 ## Acceptance
 
-1. Measure first: locate the redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and the tautological test assertion named in the backlog note.
-2. Remove the redundant check and replace or delete the tautological assertion; no behaviour change: the whole private set gives a byte-identical GPIF before and after.
+1. Measure first: locate the redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and every tautological mutant assertion in test_private_acceptance_lesson6_duration_and_negative_control named in the authority note.
+2. Remove the redundant check. Each mutant assertion in that test is made able to fail and is shown failing under a named mutant; none is merely deleted unless the handback proves it is a pure duplicate of another assertion that does fail. No behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.
 3. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)
