@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 206,
+  "authority_revision": 207,
   "task": {
     "id": "OMIT-03-FU3",
     "title": "Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 516,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
