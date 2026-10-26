@@ -2,26 +2,25 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-01-FU2 — gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION
+**Task**: OMIT-02-FU2 — Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/mem-01-fu2-gp-package-schema-version`
+**PR Branch**: `feat/omit-02-fu2-design-doc-vector-repeat-dots`
 
-**Pull Request**: 518
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION. Source: authority item MEM-01-FU2. Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version="0.1.0" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item.
+Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus. Source: authority item OMIT-02-FU2. Non-blocking follow-up from tticomgov-code's approving round-2 review 5346382223 of tticom/score2gp#469 (OMIT-02) at d7eef3f. Thread at docs/design/omit-02-double-barlines.md:78 (N2): Gloria.pdf (Guitar Pro 7, macOS Quartz export) draws repeat dots as filled vector drawings with no music font; the reader reads its bars 2, 5 and 8 as repeat-end from two drawing dots each (bar 2 checked visually). The doc calls the vector form unestablished; say it is a real engraving form and cite the count. Documentation only.
 
 ## Allowed paths
 
-- `src/score2gp/**`
-- `tests/**`
+- `docs/**`
 
 ## Validation commands
 
