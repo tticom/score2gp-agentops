@@ -2,24 +2,25 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: LAYOUT-01-FU3 — Remove the tautological assertion at tests/test_layout_01_public.py:55
+**Task**: MEM-01-FU2 — gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/layout-01-fu3-tautological-assertion`
+**PR Branch**: `feat/mem-01-fu2-gp-package-schema-version`
 
-**Pull Request**: 517
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Remove the tautological assertion at tests/test_layout_01_public.py:55. Source: authority item LAYOUT-01-FU3. Non-blocking follow-up 3 from review 5355475879 of tticom/score2gp#471 at b612713. tests/test_layout_01_public.py:55 asserts source_system_bars is None immediately after the test assigned counts, which is already None. The real assertions on the helper return and warning.provenance carry the check, so replace the line with an assertion that can fail, or delete it.
+gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION. Source: authority item MEM-01-FU2. Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version="0.1.0" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item.
 
 ## Allowed paths
 
+- `src/score2gp/**`
 - `tests/**`
 
 ## Validation commands
