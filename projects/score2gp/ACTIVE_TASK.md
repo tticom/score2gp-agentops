@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-04-fu2-arpeggio-direction-mapping`
 
-**Pull Request**: TBD
+**Pull Request**: 515
 
 **Owner Role**: implementation
 
