@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/layout-01-fu3-tautological-assertion`
 
-**Pull Request**: TBD
+**Pull Request**: 517
 
 **Owner Role**: implementation
 
