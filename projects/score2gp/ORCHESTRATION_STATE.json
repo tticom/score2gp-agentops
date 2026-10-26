@@ -1,54 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 207,
+  "authority_revision": 208,
   "task": {
-    "id": "OMIT-03-FU3",
-    "title": "Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code",
-    "objective": "Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code. Source: authority item OMIT-03-FU3. Non-blocking follow-up 3 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. The label band is a fixed five staff spaces above the top staff line. One real Lesson 4 reference label sits 6.4 spaces above and is refused, and 51 corpus lines between five and seven spaces still need a measured source-role rule before the band can widen without admitting a wrong read. In Lesson 4 pdf_text_outside_annotation_band also holds the rotated tab clef glyph, so the missing label is identifiable only by its located bbox: give that glyph its own reason code.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 516,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-03-fu3-label-band-source-role",
-    "prompt": "projects/score2gp/prompts/next/omit-03-fu3-label-band-source-role.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "fixtures/public/**"
-    ],
-    "acceptance": [
-      "Measure first: list, per approved real source, the text lines between five and seven staff spaces above the top staff line (counts, distances, source role only), and the Lesson 4 label at 6.4 spaces.",
-      "The rotated tab clef glyph in Lesson 4 is refused under its own reason code, not pdf_text_outside_annotation_band. The band is widened only if a measured source-role rule admits no wrong read; otherwise the band is unchanged and the handback says so with the counts.",
-      "No label is guessed or copied from a reference; named mutants (drop the new reason code; widen the band without the rule) fail a public or real-file test.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "LAYOUT-01-FU3",
     "title": "Remove the tautological assertion at tests/test_layout_01_public.py:55",
     "objective": "Remove the tautological assertion at tests/test_layout_01_public.py:55. Source: authority item LAYOUT-01-FU3. Non-blocking follow-up 3 from review 5355475879 of tticom/score2gp#471 at b612713. tests/test_layout_01_public.py:55 asserts source_system_bars is None immediately after the test assigned counts, which is already None. The real assertions on the helper return and warning.provenance carry the check, so replace the line with an assertion that can fail, or delete it.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -84,48 +42,48 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "MEM-01-FU2",
+    "title": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION",
+    "objective": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION. Source: authority item MEM-01-FU2. Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version=\"0.1.0\" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/mem-01-fu2-gp-package-schema-version",
+    "prompt": "projects/score2gp/prompts/next/mem-01-fu2-gp-package-schema-version.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first: list the three sites in src/score2gp/gp_package.py that hard-code schema_version 0.1.0 and the current ir.SCHEMA_VERSION.",
+      "The three sites use the constant; a public test fails if any site is changed back to a literal.",
+      "Nothing else changes; GP import output otherwise byte-identical.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "MEM-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "MEM-01-FU2",
-      "title": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION",
-      "objective": "gp_package.py: stamp GP-imported ScoreIR and ScoreBooklet with SCHEMA_VERSION. Source: authority item MEM-01-FU2. Non-blocking follow-up 2 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. src/score2gp/gp_package.py builds GP-imported ScoreIR/ScoreBooklet at three sites with schema_version=\"0.1.0\" while ir.SCHEMA_VERSION is now 0.1.1. Valid, because those objects carry no TabRaw provenance, but inconsistent. Use the constant and add a test; the small memory saving (about 2-4% peak working set) is covered by MEM-02 and MEM-03, not by this item.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/mem-01-fu2-gp-package-schema-version",
-      "prompt": "projects/score2gp/prompts/next/mem-01-fu2-gp-package-schema-version.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first: list the three sites in src/score2gp/gp_package.py that hard-code schema_version 0.1.0 and the current ir.SCHEMA_VERSION.",
-        "The three sites use the constant; a public test fails if any site is changed back to a literal.",
-        "Nothing else changes; GP import output otherwise byte-identical.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "MEM-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "OMIT-02-FU2",
       "title": "Correct the OMIT-02 design doc: vector repeat dots do occur in the real corpus",
@@ -4301,6 +4259,52 @@
       "merge_commit": "dab4d67cd642dc0a34d08bcb148a8b9630482a39",
       "reconciled": true,
       "reconciled_at": "2026-10-26T01:53:21.508977+00:00"
+    },
+    {
+      "id": "OMIT-03-FU3",
+      "title": "Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code",
+      "objective": "Labels: measure the 51 corpus lines between five and seven staff spaces above the staff and give the rotated tab-clef glyph its own reason code. Source: authority item OMIT-03-FU3. Non-blocking follow-up 3 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. The label band is a fixed five staff spaces above the top staff line. One real Lesson 4 reference label sits 6.4 spaces above and is refused, and 51 corpus lines between five and seven spaces still need a measured source-role rule before the band can widen without admitting a wrong read. In Lesson 4 pdf_text_outside_annotation_band also holds the rotated tab clef glyph, so the missing label is identifiable only by its located bbox: give that glyph its own reason code.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 516,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-03-fu3-label-band-source-role",
+      "prompt": "projects/score2gp/prompts/next/omit-03-fu3-label-band-source-role.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "fixtures/public/**"
+      ],
+      "acceptance": [
+        "Measure first: list, per approved real source, the text lines between five and seven staff spaces above the top staff line (counts, distances, source role only), and the Lesson 4 label at 6.4 spaces.",
+        "The rotated tab clef glyph in Lesson 4 is refused under its own reason code, not pdf_text_outside_annotation_band. The band is widened only if a measured source-role rule admits no wrong read; otherwise the band is unchanged and the handback says so with the counts.",
+        "No label is guessed or copied from a reference; named mutants (drop the new reason code; widen the band without the rule) fail a public or real-file test.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "5315a7804a0b5f98a8ef5e4e25261ea92b2e65ab",
+      "merge_commit": "90ea050225eb638da20d5a3c851810d299a04edd",
+      "reconciled": true,
+      "reconciled_at": "2026-10-26T06:16:59.647459+00:00"
     }
   ],
   "backlog": [
