@@ -39,7 +39,7 @@ This is separate from FS-06 notation-OMR modularisation. FS-06 concerns
 
 ## Promotion Rule
 
-Only `projects/score2gp/prompts/NEXT.md` selects executable work. After each
+Only `projects/score2gp/ORCHESTRATION_STATE.json` selects executable work. After each
 external merge, governance must record the new product SHA, revalidate the next
 wireframe, tighten its allowlist/tests, promote exactly that prompt through
 `ACTIVE_TASK.md` and `NEXT.md`, and leave later wireframes inactive.
