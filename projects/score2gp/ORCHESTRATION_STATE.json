@@ -1,27 +1,28 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 217,
+  "authority_revision": 219,
   "task": {
-    "id": "DUR-03-FU4",
-    "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion",
-    "objective": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion. Source: authority item DUR-03-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical.",
+    "id": "OMIT-03-FU4",
+    "title": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level",
+    "objective": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level. Source: authority item OMIT-03-FU4. Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 521,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/dur-03-fu4-cleanups",
-    "prompt": "projects/score2gp/prompts/next/dur-03-fu4-cleanups.md",
+    "branch": "feat/omit-03-fu4-split-attach-pdf-text-labels",
+    "prompt": "projects/score2gp/prompts/next/omit-03-fu4-split-attach-pdf-text-labels.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first: locate the redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and every tautological mutant assertion in test_private_acceptance_lesson6_duration_and_negative_control named in the authority note.",
-      "Remove the redundant check. Each mutant assertion in that test is made able to fail and is shown failing under a named mutant; none is merely deleted unless the handback proves it is a pure duplicate of another assertion that does fail. No behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
+      "Measure first: record length and nesting depth of attach_pdf_text_labels in src/score2gp/pdf_text_labels.py, list the inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), the late import in cli.py convert_command and the test import of the private _classify.",
+      "Split into classify, locate-bar and choose-beat steps with named threshold constants and the import at module level; no behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
+      "Existing label tests pass unchanged; a named mutant (change one named threshold) fails a test.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -32,7 +33,7 @@
       "git diff --check"
     ],
     "dependencies": [
-      "DUR-03"
+      "OMIT-03"
     ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
@@ -42,7 +43,46 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "MEM-01-FU1",
+    "title": "Tighten the MEM-01 IR bytes-per-bar budget",
+    "objective": "Tighten the MEM-01 IR bytes-per-bar budget. Source: authority item MEM-01-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/mem-01-fu1-tighten-ir-bytes-per-bar-budget",
+    "prompt": "projects/score2gp/prompts/next/mem-01-fu1-tighten-ir-bytes-per-bar-budget.md",
+    "allowed_paths": [
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first: record the IR bytes per bar on every public fixture and the current bound (20,000) in tests/test_mem_01_budget.py.",
+      "The bound (or per-fixture bounds) is tightened to within about 25 percent above the measured value, so a 2x re-inflation fails; shown failing under a named mutant. The negative control that restores the full raw payload stays and must fail.",
+      "Tests only; no production change.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [
+      "MEM-01"
+    ],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -4321,6 +4361,50 @@
       "merge_commit": "3a393bfc54f47ad66c606eee90f9b6e6d8efa444",
       "reconciled": true,
       "reconciled_at": "2026-10-27T00:06:59.667609+00:00"
+    },
+    {
+      "id": "DUR-03-FU4",
+      "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion",
+      "objective": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion. Source: authority item DUR-03-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 521,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dur-03-fu4-cleanups",
+      "prompt": "projects/score2gp/prompts/next/dur-03-fu4-cleanups.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: locate the redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and every tautological mutant assertion in test_private_acceptance_lesson6_duration_and_negative_control named in the authority note.",
+        "Remove the redundant check. Each mutant assertion in that test is made able to fail and is shown failing under a named mutant; none is merely deleted unless the handback proves it is a pure duplicate of another assertion that does fail. No behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "DUR-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "a4430601d18a0f4362f0a4bb00f8c9b71b85cc54",
+      "merge_commit": "14cfe9a360f5aee407c81a53748d3500467d1fce",
+      "reconciled": true,
+      "reconciled_at": "2026-10-27T04:25:29.955607+00:00"
     }
   ],
   "backlog": [
@@ -5862,36 +5946,6 @@
       "notes": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback."
     },
     {
-      "id": "LAYOUT-01-FU2",
-      "title": "Exercise the row-layout fallback end to end from a real or engraved source",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 506,
-      "depends_on": [
-        "LAYOUT-01"
-      ],
-      "notes": "Non-blocking follow-up 2 from review 5355475879 of tticom/score2gp#471 at b612713. The fallback is tested end to end only through the helper plus a hand-set IR through write-gp; no corpus PDF reaches it, and the public fixture covers a single (2,1) split. Add a public PDF whose systems disagree with the written bars (a refused bar mid-system and a page break), and cover multi-track and 12-bars-per-row layouts once Derek Trucks BB King and Ex 2 Hands Up stop refusing in pdf-only mode."
-    },
-    {
-      "id": "MEM-01-FU1",
-      "title": "Tighten the MEM-01 IR bytes-per-bar budget once more public fixtures exist",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 515,
-      "depends_on": [
-        "MEM-01"
-      ],
-      "notes": "Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail."
-    },
-    {
       "id": "OMIT-03-FU2",
       "title": "SUPERSEDED by DUR-03: Compiler: write events for bars the PDF has but the written score lacks (21 Lesson 6 labels refused)",
       "requirements": [
@@ -5905,21 +5959,6 @@
         "OMIT-03"
       ],
       "notes": "Non-blocking follow-up 2 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Lesson 6 carries only 5 of its 26 reference labels because 21 destination bars have no written events, so the label is refused with a located beat-unavailable reason. This is a compiler gap outside OMIT-03 and changes real output, so it needs its own task: find why those bars have no events, fix it from the source, and confirm the labels then attach. Do not invent events. UPDATE 2026-09-30: the cause is upstream TAB-staff detection (only 10 of 34 Lesson 6 TAB staves are detected), not compiler events; task DUR-03 fixes it. Re-measure the 21 refused Lesson 6 labels after DUR-03 and close this item if they attach. CLOSED 2026-10-01: DUR-03 (tticom/score2gp#474) wrote Lesson 6 71 of 72 bars with 0 differences from the reference including label text, so the labels attach. DROPPED 2026-10-03 (authority revision 102)."
-    },
-    {
-      "id": "OMIT-03-FU4",
-      "title": "pdf_text_labels: split attach_pdf_text_labels and move the late import to module level",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "READY",
-      "priority": 521,
-      "depends_on": [
-        "OMIT-03"
-      ],
-      "notes": "Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical."
     },
     {
       "id": "DUR-03-FU2",
@@ -6191,6 +6230,21 @@
         "OMIT-01"
       ],
       "notes": "Parked from OMIT-01-FU2 (2026-10-25). Needs a real, approved source whose key signature has an attached accidental that also fits the next signature slot; none of the 43 approved PDFs reaches it. When one exists, re-promote using projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md (kept) and its acceptance."
+    },
+    {
+      "id": "LAYOUT-01-FU2",
+      "title": "Exercise the row-layout fallback end to end from a real or engraved source",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 506,
+      "depends_on": [
+        "LAYOUT-01"
+      ],
+      "notes": "Non-blocking follow-up 2 from review 5355475879 of tticom/score2gp#471 at b612713. The fallback is tested end to end only through the helper plus a hand-set IR through write-gp; no corpus PDF reaches it, and the public fixture covers a single (2,1) split. Add a public PDF whose systems disagree with the written bars (a refused bar mid-system and a page break), and cover multi-track and 12-bars-per-row layouts once Derek Trucks BB King and Ex 2 Hands Up stop refusing in pdf-only mode. BLOCKED by review reviewer finding on governance PR #874 (S1): a synthetic-only fixture carries no acceptance weight. Prerequisite (measurable): an approved genuine engraved source, or a provenance-bearing extract, that reaches the row-layout fallback (a refused bar mid-system and a page break) with exact final GPIF layout assertions and a negative control. Do not queue a completable synthetic-only substitute."
     }
   ],
   "registered_requirements": [
