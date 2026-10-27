@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 215,
+  "authority_revision": 216,
   "task": {
-    "id": "OMIT-04-FU4",
-    "title": "attach_pdf_arpeggios: split the long, deeply nested function",
-    "objective": "attach_pdf_arpeggios: split the long, deeply nested function. Source: authority item OMIT-04-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 520,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-04-fu4-split-attach-pdf-arpeggios",
-    "prompt": "projects/score2gp/prompts/next/omit-04-fu4-split-attach-pdf-arpeggios.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: record length and nesting depth of attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py.",
-      "Split it into smaller named functions with no behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
-      "Existing arpeggio tests pass unchanged.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-04"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "DUR-03-FU4",
     "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion",
     "objective": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion. Source: authority item DUR-03-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -83,6 +42,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -4316,6 +4276,51 @@
       "merge_commit": "1e9cf43087e039ee1a153e1d114a326ce8a84510",
       "reconciled": true,
       "reconciled_at": "2026-10-26T19:07:00.874349+00:00"
+    },
+    {
+      "id": "OMIT-04-FU4",
+      "title": "attach_pdf_arpeggios: split the long, deeply nested function",
+      "objective": "attach_pdf_arpeggios: split the long, deeply nested function. Source: authority item OMIT-04-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 520,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-04-fu4-split-attach-pdf-arpeggios",
+      "prompt": "projects/score2gp/prompts/next/omit-04-fu4-split-attach-pdf-arpeggios.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: record length and nesting depth of attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py.",
+        "Split it into smaller named functions with no behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
+        "Existing arpeggio tests pass unchanged.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-04"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "f9c26721ead50d12004812bf5b91c56f170c9b41",
+      "merge_commit": "3a393bfc54f47ad66c606eee90f9b6e6d8efa444",
+      "reconciled": true,
+      "reconciled_at": "2026-10-27T00:06:59.667609+00:00"
     }
   ],
   "backlog": [
