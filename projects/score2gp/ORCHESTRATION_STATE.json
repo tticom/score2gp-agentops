@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 216,
+  "authority_revision": 217,
   "task": {
     "id": "DUR-03-FU4",
     "title": "DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 521,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
