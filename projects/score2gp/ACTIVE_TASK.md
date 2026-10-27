@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-04-FU4 — attach_pdf_arpeggios: split the long, deeply nested function
+**Task**: DUR-03-FU4 — DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-04-fu4-split-attach-pdf-arpeggios`
+**PR Branch**: `feat/dur-03-fu4-cleanups`
 
-**Pull Request**: 520
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-attach_pdf_arpeggios: split the long, deeply nested function. Source: authority item OMIT-04-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5378371016 of tticom/score2gp#475 (OMIT-04): attach_pdf_arpeggios in src/score2gp/pdf_arpeggios.py is one long, deeply nested function. Split it into candidate selection, chord location and beat choice, and name the thresholds, keeping the written GP byte-identical.
+DUR-03 cleanups: redundant duplicate check in _recovered_segmented_tab_groups and tautological assertion. Source: authority item DUR-03-FU4. Non-blocking style follow-up from tticomgov-code's approving review 5376313575 of tticom/score2gp#474 (DUR-03): a redundant duplicate check in _recovered_segmented_tab_groups (src/score2gp/pdf.py) and a few tautological mutant assertions in the edited test_private_acceptance_lesson6_duration_and_negative_control. Remove the duplicate and make each mutant assertion able to fail. Keep the written GP byte-identical.
 
 ## Allowed paths
 
