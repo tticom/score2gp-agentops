@@ -246,6 +246,13 @@ CONTAINER = re.compile(r"\b(" + CONTAINER_WORDS + r")\b", re.I)
 AUTHORITY_REFERENCE = re.compile(r"\bauthority\b|ORCHESTRATION_STATE|next_task_proposal|queued_task_proposals|ready_frontier", re.I)
 # Queues that are product features or GitHub mechanisms, not task queues.
 NON_TASK_QUEUE = re.compile(r"\b(?:job|cloud|message|merge|conversion job) queue\b", re.I)
+# CP-12: affirmative pointer-as-selector claims need no planning-container word.
+# Whitespace includes Markdown line wraps; a pointer mention or an explicit denial
+# of selection authority does not match this affirmative clause.
+NEXT_WORK_SELECTION = re.compile(
+    r"\b(?:projects/score2gp/)?(?:prompts/)?NEXT\.md`?\s+"
+    r"(?:selects?|chooses?|determines?|authori[sz]es?)\s+"
+    r"(?:the\s+)?(?:next\s+|executable\s+)?(?:work|tasks?)\b", re.I)
 
 
 # A qualifier naming an alternative container is a claim even when the authority is also mentioned:
@@ -336,7 +343,8 @@ def queue_claim_violations(files: dict[str, str], a: dict, ledger=()) -> list[st
     list exactly as often as they occur."""
     ledger = Counter(ledger)
     return sorted(path for path, text in live_files(files, a).items()
-                  if any(claims_a_queue(line) for line in text.splitlines())
+                  if NEXT_WORK_SELECTION.search(text)
+                  or any(claims_a_queue(line) for line in text.splitlines())
                   or any(ledger[(path, line)] != n for line, n in Counter(mention_lines(text)).items()))
 
 
@@ -414,6 +422,32 @@ def test_an_allow_listed_suffix_is_skipped_only_when_its_bytes_are_not_text(tmp_
 
 def test_no_live_file_directs_work_into_a_queue_other_than_the_authority() -> None:
     assert queue_claim_violations(tracked_text_files(), authority(), load_ledger()) == []
+
+
+@pytest.mark.parametrize("line", [
+    "Only `projects/score2gp/prompts/NEXT.md` selects executable work. After each",
+    "Only `projects/score2gp/prompts/NEXT.md`\nselects executable work.",
+    "prompts/NEXT.md chooses the next task.",
+    "`NEXT.md` authorizes work.",
+])
+def test_cp12_a_next_pointer_cannot_select_work_without_a_container_word(line: str) -> None:
+    # Wrong implementation: the old container-only oracle, or a ledger entry
+    # excusing the stale promotion rule, must not make this live claim pass.
+    path = "projects/score2gp/plans/new-sequence.md"
+    assert not CONTAINER.search(line)
+    assert queue_claim_violations({path: line}, authority(), {(path, line): 1}) == [path]
+
+
+@pytest.mark.parametrize("line", [
+    "Fast-lane prompt pointer: `projects/score2gp/prompts/NEXT.md`",
+    "`prompts/NEXT.md` does not select executable work.",
+    "`NEXT.md` never selects executable work.",
+    "Only `ORCHESTRATION_STATE.json` selects executable work.",
+])
+def test_cp12_pointer_references_and_denials_do_not_grant_authority(line: str) -> None:
+    # Wrong implementation: banning every NEXT.md mention also bans safe prose.
+    path = "projects/score2gp/plans/new-sequence.md"
+    assert queue_claim_violations({path: line}, authority()) == []
 
 
 def test_every_ledger_entry_is_still_present_verbatim() -> None:
