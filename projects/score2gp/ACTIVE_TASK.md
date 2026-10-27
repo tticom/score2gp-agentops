@@ -2,25 +2,24 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: OMIT-03-FU4 — pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level
+**Task**: MEM-01-FU1 — Tighten the MEM-01 IR bytes-per-bar budget
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/omit-03-fu4-split-attach-pdf-text-labels`
+**PR Branch**: `feat/mem-01-fu1-tighten-ir-bytes-per-bar-budget`
 
-**Pull Request**: 522
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level. Source: authority item OMIT-03-FU4. Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical.
+Tighten the MEM-01 IR bytes-per-bar budget. Source: authority item MEM-01-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail.
 
 ## Allowed paths
 
-- `src/score2gp/**`
 - `tests/**`
 
 ## Validation commands

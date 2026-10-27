@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 220,
+  "authority_revision": 221,
   "task": {
-    "id": "OMIT-03-FU4",
-    "title": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level",
-    "objective": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level. Source: authority item OMIT-03-FU4. Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 522,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/omit-03-fu4-split-attach-pdf-text-labels",
-    "prompt": "projects/score2gp/prompts/next/omit-03-fu4-split-attach-pdf-text-labels.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: record length and nesting depth of attach_pdf_text_labels in src/score2gp/pdf_text_labels.py, list the inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), the late import in cli.py convert_command and the test import of the private _classify.",
-      "Split into classify, locate-bar and choose-beat steps with named threshold constants and the import at module level; no behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
-      "Existing label tests pass unchanged; a named mutant (change one named threshold) fails a test.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [
-      "OMIT-03"
-    ],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "MEM-01-FU1",
     "title": "Tighten the MEM-01 IR bytes-per-bar budget",
     "objective": "Tighten the MEM-01 IR bytes-per-bar budget. Source: authority item MEM-01-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -83,6 +42,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -4405,6 +4365,51 @@
       "merge_commit": "14cfe9a360f5aee407c81a53748d3500467d1fce",
       "reconciled": true,
       "reconciled_at": "2026-10-27T04:25:29.955607+00:00"
+    },
+    {
+      "id": "OMIT-03-FU4",
+      "title": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level",
+      "objective": "pdf_text_labels: split attach_pdf_text_labels, name the thresholds, move the late import to module level. Source: authority item OMIT-03-FU4. Non-blocking follow-up 4 from tticomgov-code's approving re-review 5365611424 of tticom/score2gp#473 (OMIT-03) at 51f8f05. Suspected smell only: attach_pdf_text_labels is one function of about 90 lines with nested branches and inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), cli.py imports pdf_text_labels inside convert_command, and a test imports the private _classify. Split into classify, locate-bar and choose-beat steps, name the thresholds, and keep the written GP byte-identical.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 522,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/omit-03-fu4-split-attach-pdf-text-labels",
+      "prompt": "projects/score2gp/prompts/next/omit-03-fu4-split-attach-pdf-text-labels.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: record length and nesting depth of attach_pdf_text_labels in src/score2gp/pdf_text_labels.py, list the inline thresholds (5 spaces, 2 pt margin, 1 pt boundary, 7/15/16 pt sizes), the late import in cli.py convert_command and the test import of the private _classify.",
+        "Split into classify, locate-bar and choose-beat steps with named threshold constants and the import at module level; no behaviour change: the whole private set gives a byte-identical GPIF before and after, shown in the handback.",
+        "Existing label tests pass unchanged; a named mutant (change one named threshold) fails a test.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [
+        "OMIT-03"
+      ],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "8655bcedb1c9f54e19b6ee7c19b5b66817e7765a",
+      "merge_commit": "1f14c4dcc5460299f40caa74ac441cc700c95161",
+      "reconciled": true,
+      "reconciled_at": "2026-10-27T13:46:59.221842+00:00"
     }
   ],
   "backlog": [
