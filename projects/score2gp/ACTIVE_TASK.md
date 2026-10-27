@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/mem-01-fu1-tighten-ir-bytes-per-bar-budget`
 
-**Pull Request**: TBD
+**Pull Request**: 523
 
 **Owner Role**: implementation
 
