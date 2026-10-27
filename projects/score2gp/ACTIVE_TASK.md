@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/cp-12-remove-stale-promotion-rule`
 
-**Pull Request**: TBD
+**Pull Request**: 879
 
 **Owner Role**: implementation
 
