@@ -15,7 +15,7 @@ One production GPIF serializer: remove the pytest-conditional writer branch. Sou
 ## Acceptance
 
 1. Measure first: describe the branch in gpif.py (around line 149) that chooses a legacy layout when pytest is in sys.modules or any argv, list every test that depends on the legacy layout, and quote the memory note that CLI-subprocess tests are affected.
-2. Exactly one production serializer remains, with no dependence on sys.modules or argv; tests that relied on the legacy layout are migrated to the production layout or deleted with a stated reason.
+2. Exactly one production serializer remains, with no dependence on sys.modules or argv; every test that relied on the legacy layout is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped.
 3. The GPIF written by the CLI for every converting private source is identical when run under pytest and outside it, shown in the handback; GP8 acceptance output does not change relative to the production layout before this task.
 4. A named mutant (reintroduce a pytest-conditional) fails a test.
 5. Nothing that worked may change; validation commands pass; handback complete.

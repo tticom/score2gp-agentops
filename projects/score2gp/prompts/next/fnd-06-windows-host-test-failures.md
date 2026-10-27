@@ -15,7 +15,7 @@ Quarantine by exact ID, or fix, the known Windows host test failures. Source: au
 ## Acceptance
 
 1. Measure first: run the full suite on this Windows host and list every failing or erroring test by exact ID with the cause; 16 were recorded in 2026-09, so state how many remain.
-2. Each is fixed, or quarantined by exact test ID with a linked reason record and an expiry condition; no wildcard or file-level skip, no weakening of an assertion.
+2. Each is fixed, or, where it cannot be fixed on this host, marked as a strict expected failure (xfail) by exact test ID with a linked reason record and an expiry condition. It still runs and is reported by name; none is skipped, deselected or matched by wildcard, and no assertion is weakened.
 3. The full suite exits zero on this host with every quarantined ID reported by name in the handback; a deliberately failing test not on the list still fails the suite.
 4. Nothing that worked may change; validation commands pass; handback complete.
 
