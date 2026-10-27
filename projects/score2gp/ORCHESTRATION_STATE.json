@@ -83,50 +83,7 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "LAYOUT-01-FU2",
-      "title": "Exercise the row-layout fallback end to end from an engraved public source",
-      "objective": "Exercise the row-layout fallback end to end from an engraved public source. Source: authority item LAYOUT-01-FU2. Non-blocking follow-up 2 from review 5355475879 of tticom/score2gp#471 at b612713. The fallback is tested end to end only through the helper plus a hand-set IR through write-gp; no corpus PDF reaches it, and the public fixture covers a single (2,1) split. Add a public PDF whose systems disagree with the written bars (a refused bar mid-system and a page break), and cover multi-track and 12-bars-per-row layouts once Derek Trucks BB King and Ex 2 Hands Up stop refusing in pdf-only mode.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/layout-01-fu2-row-layout-fallback-end-to-end",
-      "prompt": "projects/score2gp/prompts/next/layout-01-fu2-row-layout-fallback-end-to-end.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "fixtures/public/**"
-      ],
-      "acceptance": [
-        "Measure first: confirm which tests reach the row-layout fallback today and that no PDF does.",
-        "Add a public synthetic PDF whose systems disagree with the written bars (a refused bar mid-system and a page break) and convert it through the CLI to a GP file; a named mutant of the fallback fails the test. Multi-track and 12-bars-per-row layouts are covered only if a public source can show them without refusing; otherwise the handback says so.",
-        "Synthetic fixtures carry no acceptance claim; the handback states that. No production change unless a located defect is found, which is reported not fixed silently.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [
-        "LAYOUT-01"
-      ],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -6273,6 +6230,21 @@
         "OMIT-01"
       ],
       "notes": "Parked from OMIT-01-FU2 (2026-10-25). Needs a real, approved source whose key signature has an attached accidental that also fits the next signature slot; none of the 43 approved PDFs reaches it. When one exists, re-promote using projects/score2gp/prompts/next/omit-01-fu2-ambiguous-accidental-fixture.md (kept) and its acceptance."
+    },
+    {
+      "id": "LAYOUT-01-FU2",
+      "title": "Exercise the row-layout fallback end to end from a real or engraved source",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 506,
+      "depends_on": [
+        "LAYOUT-01"
+      ],
+      "notes": "Non-blocking follow-up 2 from review 5355475879 of tticom/score2gp#471 at b612713. The fallback is tested end to end only through the helper plus a hand-set IR through write-gp; no corpus PDF reaches it, and the public fixture covers a single (2,1) split. Add a public PDF whose systems disagree with the written bars (a refused bar mid-system and a page break), and cover multi-track and 12-bars-per-row layouts once Derek Trucks BB King and Ex 2 Hands Up stop refusing in pdf-only mode. BLOCKED by review reviewer finding on governance PR #874 (S1): a synthetic-only fixture carries no acceptance weight. Prerequisite (measurable): an approved genuine engraved source, or a provenance-bearing extract, that reaches the row-layout fallback (a refused bar mid-system and a page break) with exact final GPIF layout assertions and a negative control. Do not queue a completable synthetic-only substitute."
     }
   ],
   "registered_requirements": [
