@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/omit-03-fu4-split-attach-pdf-text-labels`
 
-**Pull Request**: TBD
+**Pull Request**: 522
 
 **Owner Role**: implementation
 
