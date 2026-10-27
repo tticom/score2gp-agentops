@@ -2,30 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-01-FU1 — Tighten the MEM-01 IR bytes-per-bar budget
+**Task**: CP-12 — Remove the stale promotion rule from the CR-04D refactor-sequence plan and close the oracle gap
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/mem-01-fu1-tighten-ir-bytes-per-bar-budget`
+**PR Branch**: `feat/cp-12-remove-stale-promotion-rule`
 
-**Pull Request**: 523
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Tighten the MEM-01 IR bytes-per-bar budget. Source: authority item MEM-01-FU1. Non-blocking follow-up 1 from tticomgov-code's approving review of tticom/score2gp#472 (MEM-01) at caf71f3. The budget bound in tests/test_mem_01_budget.py is 20,000 bytes per bar, but the compact IR measures about 9,040 bytes per bar on the public fixture, so a re-inflation of about 2x would not fail the test. Tighten the bound (or add per-fixture bounds) when more public engraved fixtures exist; keep the negative control that restores the full raw payload and must fail.
+Remove the stale promotion rule from the CR-04D refactor-sequence plan and close the oracle gap. Source: authority item CP-12. Found 2026-09-26 after PLAN-01 merged (the 'Promotion Rule' section, line 42). tests/test_single_backlog.py did not flag it because the line uses no planning-container word; the fix should also close that oracle gap or record why it is out of scope.
 
 ## Allowed paths
 
-- `tests/**`
+- `projects/score2gp/plans/2026-07-26-cr04d-pdf-tab-measure-assembly-refactor-sequence.md`
+- `tests/test_single_backlog.py`
+- `tests/test_cp_12_*.py`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python -m score2gp.cli export-schema --out schemas`
-- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
-- `python scripts/artifact_audit.py`
+- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
 - `git diff --check`
