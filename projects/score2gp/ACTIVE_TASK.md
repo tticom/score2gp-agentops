@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/fnd-03a-independent-oracle-repeats-sections-chords`
 
-**Pull Request**: TBD
+**Pull Request**: 527
 
 **Owner Role**: implementation
 
