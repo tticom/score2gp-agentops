@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: FND-02 — Replace silent ScoreIR clamps with rejecting validators
+**Task**: NPG-06A — One production GPIF serializer: remove the pytest-conditional writer branch
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/fnd-02-reject-instead-of-clamp`
+**PR Branch**: `feat/npg-06a-one-production-gpif-serializer`
 
-**Pull Request**: 524
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Replace silent ScoreIR clamps with rejecting validators. Source: authority item FND-02. Contradicts the L3 'no note clamping' gate; target limits belong in capability checks (ADR-008).
+One production GPIF serializer: remove the pytest-conditional writer branch. Source: authority item NPG-06A. Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01.
 
 ## Allowed paths
 
