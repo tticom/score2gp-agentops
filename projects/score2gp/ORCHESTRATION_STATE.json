@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 237,
+  "authority_revision": 238,
   "task": {
-    "id": "NPG-06A-FU1",
-    "title": "NPG-06A validation: show the production GPIF layout does not depend on pytest",
-    "objective": "Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 526,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/npg-06a-fu1-validate-pytest-independent-gpif-layout",
-    "prompt": "projects/score2gp/prompts/next/npg-06a-fu1-validate-pytest-independent-gpif-layout.md",
-    "allowed_paths": [
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: confirm src/score2gp/gpif.py and gpif_builder.py hold no sys.modules, sys.argv or other pytest detection, quoting the search; list the tests that pick a GPIF layout explicitly (information only, no change).",
-      "For every converting private source, the GPIF written by the CLI is identical when the same command runs under pytest and outside it, including an output path under pytest's tmp_path; shown in the handback with counts per source. Any difference is a located defect, reported and not fixed here.",
-      "A regression test is added that fails if layout depends on pytest detection; a named mutant (reintroduce a sys.modules or sys.argv pytest branch) fails it.",
-      "No production code, existing test or layout option changes; GP8 acceptance output does not change.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "FND-03A",
     "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
     "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,48 +43,47 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "REFUSE-01",
-      "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
-      "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/refuse-01-classify-thin-flat-band-symbols",
-      "prompt": "projects/score2gp/prompts/next/refuse-01-classify-thin-flat-band-symbols.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first, on the approved real PDFs only: across the PDFs that currently refuse bars with note_duration_event_unread, count the unread symbols whose reason is symbol_unclassified and group them by shape_class; the 2026-10-27 survey saw 799 such symbols in 9 PDFs, 751 of them constant-thickness bands about 3.9 by 0.7 staff spaces (drawn). State what the bands are, with located examples (page, system, bar) and a rendered crop for each kind kept in the handback only if it contains no private content beyond counts and codes.",
-        "Handle each kind that is a real musical symbol by classifying it (so its bar can be read) and each kind that is not by recording it as ignored for a stated reason; any kind that cannot be settled stays unread and refuses with a located reason. Nothing is invented and no duration is guessed.",
-        "On the whole private set, report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no source that converted may lose a correct bar and no bar may be written with a wrong duration (check every newly written bar against its reference where one exists, otherwise against the printed notation, and say which). Reference-less sources are labelled as not independently verified.",
-        "A named mutant (drop one new rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "REFUSE-01",
+    "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
+    "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/refuse-01-classify-thin-flat-band-symbols",
+    "prompt": "projects/score2gp/prompts/next/refuse-01-classify-thin-flat-band-symbols.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first, on the approved real PDFs only: across the PDFs that currently refuse bars with note_duration_event_unread, count the unread symbols whose reason is symbol_unclassified and group them by shape_class; the 2026-10-27 survey saw 799 such symbols in 9 PDFs, 751 of them constant-thickness bands about 3.9 by 0.7 staff spaces (drawn). State what the bands are, with located examples (page, system, bar) and a rendered crop for each kind kept in the handback only if it contains no private content beyond counts and codes.",
+      "Handle each kind that is a real musical symbol by classifying it (so its bar can be read) and each kind that is not by recording it as ignored for a stated reason; any kind that cannot be settled stays unread and refuses with a located reason. Nothing is invented and no duration is guessed.",
+      "On the whole private set, report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no source that converted may lose a correct bar and no bar may be written with a wrong duration (check every newly written bar against its reference where one exists, otherwise against the printed notation, and say which). Reference-less sources are labelled as not independently verified.",
+      "A named mutant (drop one new rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -4707,6 +4667,49 @@
       "merge_commit": "61d3065256a81fb1559eecc9f8242dc46dcd33c9",
       "reconciled": true,
       "reconciled_at": "2026-10-28T13:16:39.954240+00:00"
+    },
+    {
+      "id": "NPG-06A-FU1",
+      "title": "NPG-06A validation: show the production GPIF layout does not depend on pytest",
+      "objective": "Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 526,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/npg-06a-fu1-validate-pytest-independent-gpif-layout",
+      "prompt": "projects/score2gp/prompts/next/npg-06a-fu1-validate-pytest-independent-gpif-layout.md",
+      "allowed_paths": [
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: confirm src/score2gp/gpif.py and gpif_builder.py hold no sys.modules, sys.argv or other pytest detection, quoting the search; list the tests that pick a GPIF layout explicitly (information only, no change).",
+        "For every converting private source, the GPIF written by the CLI is identical when the same command runs under pytest and outside it, including an output path under pytest's tmp_path; shown in the handback with counts per source. Any difference is a located defect, reported and not fixed here.",
+        "A regression test is added that fails if layout depends on pytest detection; a named mutant (reintroduce a sys.modules or sys.argv pytest branch) fails it.",
+        "No production code, existing test or layout option changes; GP8 acceptance output does not change.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "429712d99f4a1aa99629f627b038d2eeefbd1b48",
+      "merge_commit": "7bfce4b58ef7ad88fe134dfaf43c0bde98b6d04f",
+      "reconciled": true,
+      "reconciled_at": "2026-10-28T20:06:39.017613+00:00"
     }
   ],
   "backlog": [

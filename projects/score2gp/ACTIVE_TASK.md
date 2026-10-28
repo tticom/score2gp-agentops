@@ -2,25 +2,26 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-06A-FU1 — NPG-06A validation: show the production GPIF layout does not depend on pytest
+**Task**: FND-03A — FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/npg-06a-fu1-validate-pytest-independent-gpif-layout`
+**PR Branch**: `feat/fnd-03a-independent-oracle-repeats-sections-chords`
 
-**Pull Request**: 526
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.
+FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.
 
 ## Allowed paths
 
 - `tests/**`
+- `scripts/**`
 
 ## Validation commands
 
