@@ -6540,7 +6540,7 @@
       "status": "NEEDS_DETAIL",
       "priority": 135,
       "depends_on": [],
-      "notes": "Residual of NPG-06A, deferred by the maintainer's rescope of NPG-06A to validation only (2026-10-28). Remaining: GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers and tests/test_gpif_layout_selection.py; one production serializer; every legacy-dependent test migrated with equivalent coverage (none deleted or skipped); CLI GPIF identical before and after for every converting private source; a mutant that reintroduces a layout switch fails a test. Promote only on the maintainer's word."
+      "notes": "Residual of NPG-06A, deferred by the maintainer's rescope of NPG-06A to validation only (2026-10-28). Remaining: GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers and tests/test_gpif_layout_selection.py; one production serializer; every legacy-dependent test migrated with equivalent coverage (none deleted or skipped); CLI GPIF identical before and after for every converting private source; a mutant that reintroduces a layout switch fails a test. If a legacy-layout consumer outside the tests exists, the task must stop and report it instead of removing the option. Promote only on the maintainer's word."
     },
     {
       "id": "CP-20",
