@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/npg-06a-fu1-validate-pytest-independent-gpif-layout`
 
-**Pull Request**: TBD
+**Pull Request**: 526
 
 **Owner Role**: implementation
 
