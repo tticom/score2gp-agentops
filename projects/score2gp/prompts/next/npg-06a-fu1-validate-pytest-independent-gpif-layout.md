@@ -1,23 +1,23 @@
-# NPG-06A-FU1: NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it
+# NPG-06A-FU1: NPG-06A validation: show the production GPIF layout does not depend on pytest
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
 - **Requirement:** REQ-0001:U13
 - **Depends on:** none
-- **Branch:** `feat/npg-06a-fu1-retire-explicit-legacy-gpif-layout`
+- **Branch:** `feat/npg-06a-fu1-validate-pytest-independent-gpif-layout`
 
 Private fixtures: the corpus is grouped by category on fixtures `main`; the author launcher flattens it into `fixtures/private/`. Verify the files named below exist there before starting; if any is missing, stop and say exactly what is missing. Every number below is a lead: re-measure it.
 
 ## Goal
 
-NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it. Source: authority item NPG-06A-FU1. Residual of NPG-06A: the author run (2026-10-28) found the sniffing already removed but explicit legacy layout selection and legacy-bound tests still present, so the original acceptance 2 to 4 (one serializer, per-test migration, corpus equivalence, mutant) remain open.
+Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.
 
 ## Acceptance
 
-1. Measure first: the pytest sniffing is already gone (NPG-06A resolved 2026-10-28). Re-locate what remains in src/score2gp/gpif.py and gpif_builder.py: the GpifLayout type with a legacy value, the layout argument of build_gpif (around lines 198-215) and the legacy writers bound by tests/gpif_test_helpers.py; list every test that selects the legacy layout (tests/test_gpif_layout_selection.py and others) and what each one covers.
-2. Exactly one production serializer remains with no legacy layout option and no dependence on sys.modules, sys.argv or any pytest detection; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.
-3. The GPIF written by the CLI for every converting private source is identical before and after, and identical when the same command runs under pytest and outside it (including an output path under pytest's tmp_path), shown in the handback; GP8 acceptance output does not change.
-4. Two named mutants fail a test: reintroduce a layout switch, and reintroduce a pytest-conditional (sys.modules or sys.argv) branch.
+1. Measure first: confirm src/score2gp/gpif.py and gpif_builder.py hold no sys.modules, sys.argv or other pytest detection, quoting the search; list the tests that pick a GPIF layout explicitly (information only, no change).
+2. For every converting private source, the GPIF written by the CLI is identical when the same command runs under pytest and outside it, including an output path under pytest's tmp_path; shown in the handback with counts per source. Any difference is a located defect, reported and not fixed here.
+3. A regression test is added that fails if layout depends on pytest detection; a named mutant (reintroduce a sys.modules or sys.argv pytest branch) fails it.
+4. No production code, existing test or layout option changes; GP8 acceptance output does not change.
 5. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)
