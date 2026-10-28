@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/fnd-02-reject-instead-of-clamp`
 
-**Pull Request**: TBD
+**Pull Request**: 524
 
 **Owner Role**: implementation
 
