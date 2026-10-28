@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 235,
+  "authority_revision": 236,
   "task": {
-    "id": "FND-06",
-    "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
-    "objective": "Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 525,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/fnd-06-windows-host-test-failures",
-    "prompt": "projects/score2gp/prompts/next/fnd-06-windows-host-test-failures.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "pyproject.toml"
-    ],
-    "acceptance": [
-      "Measure first: run the full suite on this Windows host and list every failing or erroring test by exact ID with the cause; 16 were recorded in 2026-09, so state how many remain.",
-      "Each is fixed, or, where it cannot be fixed on this host, marked as a strict expected failure (xfail) by exact test ID with a linked reason record and an expiry condition. It still runs and is reported by name; none is skipped, deselected or matched by wildcard, and no assertion is weakened.",
-      "The full suite exits zero on this host with every quarantined ID reported by name in the handback; a deliberately failing test not on the list still fails the suite.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "NPG-06A-FU1",
     "title": "NPG-06A validation: show the production GPIF layout does not depend on pytest",
     "objective": "Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -81,48 +41,48 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "FND-03A",
+    "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
+    "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/fnd-03a-independent-oracle-repeats-sections-chords",
+    "prompt": "projects/score2gp/prompts/next/fnd-03a-independent-oracle-repeats-sections-chords.md",
+    "allowed_paths": [
+      "tests/**",
+      "scripts/**"
+    ],
+    "acceptance": [
+      "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
+      "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from.",
+      "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer.",
+      "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
+      "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "FND-03A",
-      "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
-      "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/fnd-03a-independent-oracle-repeats-sections-chords",
-      "prompt": "projects/score2gp/prompts/next/fnd-03a-independent-oracle-repeats-sections-chords.md",
-      "allowed_paths": [
-        "tests/**",
-        "scripts/**"
-      ],
-      "acceptance": [
-        "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
-        "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from.",
-        "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer.",
-        "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
-        "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "REFUSE-01",
       "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
@@ -4703,6 +4663,50 @@
       "notes": "Resolved 2026-10-28 with no product PR, for the part that is done. The author run (Codex, 2026-10-28, report launchers/codex-author-logs/npg-06a/report.md) found the pytest-conditional sniffing already removed by an earlier commit: no sys.modules or sys.argv reference remains in src/score2gp/gpif.py or gpif_builder.py (supervisor re-check on origin/main bb099c4). It also found that explicit legacy layout selection remains (GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers, tests/test_gpif_layout_selection.py). That residual, including the per-test migration, corpus equivalence (including identical output under pytest and outside it) and the mutant obligations of the original acceptance, is carried in NPG-06A-FU1 with those checks restored.",
       "reconciled": true,
       "reconciled_at": "2026-10-28T07:00:59.128804+00:00"
+    },
+    {
+      "id": "FND-06",
+      "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
+      "objective": "Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 525,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/fnd-06-windows-host-test-failures",
+      "prompt": "projects/score2gp/prompts/next/fnd-06-windows-host-test-failures.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "pyproject.toml"
+      ],
+      "acceptance": [
+        "Measure first: run the full suite on this Windows host and list every failing or erroring test by exact ID with the cause; 16 were recorded in 2026-09, so state how many remain.",
+        "Each is fixed, or, where it cannot be fixed on this host, marked as a strict expected failure (xfail) by exact test ID with a linked reason record and an expiry condition. It still runs and is reported by name; none is skipped, deselected or matched by wildcard, and no assertion is weakened.",
+        "The full suite exits zero on this host with every quarantined ID reported by name in the handback; a deliberately failing test not on the list still fails the suite.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "b0b93f31c1cd5bd28ed1a9562e4b047346481efc",
+      "merge_commit": "61d3065256a81fb1559eecc9f8242dc46dcd33c9",
+      "reconciled": true,
+      "reconciled_at": "2026-10-28T13:16:39.954240+00:00"
     }
   ],
   "backlog": [
