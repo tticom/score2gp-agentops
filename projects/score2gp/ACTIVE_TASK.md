@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-06A — One production GPIF serializer: remove the pytest-conditional writer branch
+**Task**: FND-06 — Quarantine by exact ID, or fix, the known Windows host test failures
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/npg-06a-one-production-gpif-serializer`
+**PR Branch**: `feat/fnd-06-windows-host-test-failures`
 
 **Pull Request**: TBD
 
@@ -16,12 +16,13 @@
 
 ## Objective
 
-One production GPIF serializer: remove the pytest-conditional writer branch. Source: authority item NPG-06A. Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01.
+Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
+- `pyproject.toml`
 
 ## Validation commands
 

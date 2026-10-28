@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 230,
+  "authority_revision": 232,
   "task": {
-    "id": "NPG-06A",
-    "title": "One production GPIF serializer: remove the pytest-conditional writer branch",
-    "objective": "One production GPIF serializer: remove the pytest-conditional writer branch. Source: authority item NPG-06A. Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/npg-06a-one-production-gpif-serializer",
-    "prompt": "projects/score2gp/prompts/next/npg-06a-one-production-gpif-serializer.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: describe the branch in gpif.py (around line 149) that chooses a legacy layout when pytest is in sys.modules or any argv, list every test that depends on the legacy layout, and quote the memory note that CLI-subprocess tests are affected.",
-      "Exactly one production serializer remains, with no dependence on sys.modules or argv; every test that relied on the legacy layout is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped.",
-      "The GPIF written by the CLI for every converting private source is identical when run under pytest and outside it, shown in the handback; GP8 acceptance output does not change relative to the production layout before this task.",
-      "A named mutant (reintroduce a pytest-conditional) fails a test.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "FND-06",
     "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
     "objective": "Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,7 +42,129 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "NPG-06A-FU1",
+    "title": "NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it",
+    "objective": "NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it. Source: authority item NPG-06A-FU1. Residual of NPG-06A: the author run (2026-10-28) found the sniffing already removed but explicit legacy layout selection and legacy-bound tests still present, so the original acceptance 2 to 4 (one serializer, per-test migration, corpus equivalence, mutant) remain open.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/npg-06a-fu1-retire-explicit-legacy-gpif-layout",
+    "prompt": "projects/score2gp/prompts/next/npg-06a-fu1-retire-explicit-legacy-gpif-layout.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first: the pytest sniffing is already gone (NPG-06A resolved 2026-10-28). Re-locate what remains in src/score2gp/gpif.py and gpif_builder.py: the GpifLayout type with a legacy value, the layout argument of build_gpif (around lines 198-215) and the legacy writers bound by tests/gpif_test_helpers.py; list every test that selects the legacy layout (tests/test_gpif_layout_selection.py and others) and what each one covers.",
+      "Exactly one production serializer remains with no legacy layout option and no dependence on sys.modules, sys.argv or any pytest detection; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.",
+      "The GPIF written by the CLI for every converting private source is identical before and after, and identical when the same command runs under pytest and outside it (including an output path under pytest's tmp_path), shown in the handback; GP8 acceptance output does not change.",
+      "Two named mutants fail a test: reintroduce a layout switch, and reintroduce a pytest-conditional (sys.modules or sys.argv) branch.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "FND-03A",
+      "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
+      "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/fnd-03a-independent-oracle-repeats-sections-chords",
+      "prompt": "projects/score2gp/prompts/next/fnd-03a-independent-oracle-repeats-sections-chords.md",
+      "allowed_paths": [
+        "tests/**",
+        "scripts/**"
+      ],
+      "acceptance": [
+        "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
+        "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from.",
+        "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer.",
+        "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
+        "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "REFUSE-01",
+      "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
+      "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-01-classify-thin-flat-band-symbols",
+      "prompt": "projects/score2gp/prompts/next/refuse-01-classify-thin-flat-band-symbols.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first, on the approved real PDFs only: across the PDFs that currently refuse bars with note_duration_event_unread, count the unread symbols whose reason is symbol_unclassified and group them by shape_class; the 2026-10-27 survey saw 799 such symbols in 9 PDFs, 751 of them constant-thickness bands about 3.9 by 0.7 staff spaces (drawn). State what the bands are, with located examples (page, system, bar) and a rendered crop for each kind kept in the handback only if it contains no private content beyond counts and codes.",
+        "Handle each kind that is a real musical symbol by classifying it (so its bar can be read) and each kind that is not by recording it as ignored for a stated reason; any kind that cannot be settled stays unread and refuses with a located reason. Nothing is invented and no duration is guessed.",
+        "On the whole private set, report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no source that converted may lose a correct bar and no bar may be written with a wrong duration (check every newly written bar against its reference where one exists, otherwise against the printed notation, and say which). Reference-less sources are labelled as not independently verified.",
+        "A named mutant (drop one new rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -4579,6 +4661,49 @@
       "merge_commit": "bb099c4c8d00b11ea0a08f22b35f4c38b5fc794e",
       "reconciled": true,
       "reconciled_at": "2026-10-28T05:06:59.481639+00:00"
+    },
+    {
+      "id": "NPG-06A",
+      "title": "One production GPIF serializer: remove the pytest-conditional writer branch",
+      "objective": "One production GPIF serializer: remove the pytest-conditional writer branch. Source: authority item NPG-06A. Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01.",
+      "status": "RESOLVED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/npg-06a-one-production-gpif-serializer",
+      "prompt": "projects/score2gp/prompts/next/npg-06a-one-production-gpif-serializer.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: describe the branch in gpif.py (around line 149) that chooses a legacy layout when pytest is in sys.modules or any argv, list every test that depends on the legacy layout, and quote the memory note that CLI-subprocess tests are affected.",
+        "Exactly one production serializer remains, with no dependence on sys.modules or argv; every test that relied on the legacy layout is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped.",
+        "The GPIF written by the CLI for every converting private source is identical when run under pytest and outside it, shown in the handback; GP8 acceptance output does not change relative to the production layout before this task.",
+        "A named mutant (reintroduce a pytest-conditional) fails a test.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Resolved 2026-10-28 with no product PR, for the part that is done. The author run (Codex, 2026-10-28, report launchers/codex-author-logs/npg-06a/report.md) found the pytest-conditional sniffing already removed by an earlier commit: no sys.modules or sys.argv reference remains in src/score2gp/gpif.py or gpif_builder.py (supervisor re-check on origin/main bb099c4). It also found that explicit legacy layout selection remains (GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers, tests/test_gpif_layout_selection.py). That residual, including the per-test migration, corpus equivalence (including identical output under pytest and outside it) and the mutant obligations of the original acceptance, is carried in NPG-06A-FU1 with those checks restored.",
+      "reconciled": true,
+      "reconciled_at": "2026-10-28T07:00:59.128804+00:00"
     }
   ],
   "backlog": [
@@ -4709,7 +4834,7 @@
       "status": "NEEDS_DETAIL",
       "priority": 133,
       "depends_on": [],
-      "notes": "Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral."
+      "notes": "Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral. Slice FND-03A (repeats and endings, sections, chord diagrams) queued 2026-10-28; this item stays open until every other obligation in its title is met, and FND-04, BRD-01 and BRD-02 keep depending on it."
     },
     {
       "id": "FND-04",
@@ -6378,19 +6503,6 @@
       "priority": 999,
       "depends_on": [],
       "notes": "Maintainer 2026-10-27: 'I do need a list of precisely what features the required fixtures should have. But not right now.' Run at the end of the backlog. Deliverable: for each parked task (LAYOUT-01-FU2, OMIT-01-FU3, OMIT-02-FU3, DUR-03-FU2, MSG-02, MSG-03) the exact features the fixture must exhibit and the acceptance it unlocks; then re-promote each task once its fixture is approved."
-    },
-    {
-      "id": "REFUSE-01",
-      "title": "Classify the thin flat band symbols that leave note_duration_event_unread bars refused",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "NEEDS_DETAIL",
-      "priority": 141,
-      "depends_on": [],
-      "notes": "Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones."
     },
     {
       "id": "REFUSE-02",
