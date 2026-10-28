@@ -2,27 +2,25 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: FND-06 — Quarantine by exact ID, or fix, the known Windows host test failures
+**Task**: NPG-06A-FU1 — NPG-06A validation: show the production GPIF layout does not depend on pytest
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/fnd-06-windows-host-test-failures`
+**PR Branch**: `feat/npg-06a-fu1-validate-pytest-independent-gpif-layout`
 
-**Pull Request**: 525
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).
+Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.
 
 ## Allowed paths
 
-- `src/score2gp/**`
 - `tests/**`
-- `pyproject.toml`
 
 ## Validation commands
 
