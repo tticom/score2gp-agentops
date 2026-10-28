@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 238,
+  "authority_revision": 239,
   "task": {
     "id": "FND-03A",
     "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 527,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
