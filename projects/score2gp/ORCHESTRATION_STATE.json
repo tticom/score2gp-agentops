@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 232,
+  "authority_revision": 234,
   "task": {
     "id": "FND-06",
     "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
@@ -44,8 +44,8 @@
   },
   "next_task_proposal": {
     "id": "NPG-06A-FU1",
-    "title": "NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it",
-    "objective": "NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests bound to it. Source: authority item NPG-06A-FU1. Residual of NPG-06A: the author run (2026-10-28) found the sniffing already removed but explicit legacy layout selection and legacy-bound tests still present, so the original acceptance 2 to 4 (one serializer, per-test migration, corpus equivalence, mutant) remain open.",
+    "title": "NPG-06A validation: show the production GPIF layout does not depend on pytest",
+    "objective": "Validate, without changing production code, that the earlier removal of the pytest-conditional GPIF layout holds. Rescoped to validation only on the maintainer's word (2026-10-28: 'approved: rescope NPG-06A to validation only'); the explicit legacy layout option and its test migration are NPG-06A-FU2.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -53,17 +53,16 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/npg-06a-fu1-retire-explicit-legacy-gpif-layout",
-    "prompt": "projects/score2gp/prompts/next/npg-06a-fu1-retire-explicit-legacy-gpif-layout.md",
+    "branch": "feat/npg-06a-fu1-validate-pytest-independent-gpif-layout",
+    "prompt": "projects/score2gp/prompts/next/npg-06a-fu1-validate-pytest-independent-gpif-layout.md",
     "allowed_paths": [
-      "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first: the pytest sniffing is already gone (NPG-06A resolved 2026-10-28). Re-locate what remains in src/score2gp/gpif.py and gpif_builder.py: the GpifLayout type with a legacy value, the layout argument of build_gpif (around lines 198-215) and the legacy writers bound by tests/gpif_test_helpers.py; list every test that selects the legacy layout (tests/test_gpif_layout_selection.py and others) and what each one covers.",
-      "Exactly one production serializer remains with no legacy layout option and no dependence on sys.modules, sys.argv or any pytest detection; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.",
-      "The GPIF written by the CLI for every converting private source is identical before and after, and identical when the same command runs under pytest and outside it (including an output path under pytest's tmp_path), shown in the handback; GP8 acceptance output does not change.",
-      "Two named mutants fail a test: reintroduce a layout switch, and reintroduce a pytest-conditional (sys.modules or sys.argv) branch.",
+      "Measure first: confirm src/score2gp/gpif.py and gpif_builder.py hold no sys.modules, sys.argv or other pytest detection, quoting the search; list the tests that pick a GPIF layout explicitly (information only, no change).",
+      "For every converting private source, the GPIF written by the CLI is identical when the same command runs under pytest and outside it, including an output path under pytest's tmp_path; shown in the handback with counts per source. Any difference is a located defect, reported and not fixed here.",
+      "A regression test is added that fails if layout depends on pytest detection; a named mutant (reintroduce a sys.modules or sys.argv pytest branch) fails it.",
+      "No production code, existing test or layout option changes; GP8 acceptance output does not change.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -6529,6 +6528,32 @@
       "priority": 143,
       "depends_on": [],
       "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion."
+    },
+    {
+      "id": "NPG-06A-FU2",
+      "title": "Retire the explicit legacy GPIF layout option and migrate the tests bound to it",
+      "requirements": [
+        "REQ-0001:U13"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 135,
+      "depends_on": [],
+      "notes": "Residual of NPG-06A, deferred by the maintainer's rescope of NPG-06A to validation only (2026-10-28). Remaining: GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers and tests/test_gpif_layout_selection.py; one production serializer; every legacy-dependent test migrated with equivalent coverage (none deleted or skipped); CLI GPIF identical before and after for every converting private source; a mutant that reintroduces a layout switch fails a test. Promote only on the maintainer's word."
+    },
+    {
+      "id": "CP-20",
+      "title": "SkillOpt pilot on one narrow, objectively scorable skill (handback-packet generation), isolated and capped",
+      "requirements": [
+        "control-plane:review-gate"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/agentops-claude-skills",
+      "status": "NEEDS_DETAIL",
+      "priority": 196,
+      "depends_on": [],
+      "notes": "Maintainer 2026-10-28: 'queue it and execute the task list' after the SkillOpt research (https://microsoft.github.io/SkillOpt/, MIT, pip skillopt 0.2.0, Claude Code backend claude_code_exec). Scope: a measured experiment only. Needs detail before promotion: an objective scorer for the publish-pr-handback skill (publish_handback.py accepts the packet plus the schema tests), a train/validation split of real past handback situations, an isolated virtual environment, a capped rollout budget on Claude usage (Codex is scarce), and the comparison against the hand-edited skill. Nothing the optimiser produces enters the pinned skills except through a governed PR read by a human; no gate-enforcing skill (review verdicts, merge) is a target. Reported research numbers are self-reported by the authors and unreplicated."
     }
   ],
   "registered_requirements": [
