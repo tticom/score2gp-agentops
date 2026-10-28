@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 229,
+  "authority_revision": 230,
   "task": {
-    "id": "FND-02",
-    "title": "Replace silent ScoreIR clamps with rejecting validators",
-    "objective": "Replace silent ScoreIR clamps with rejecting validators. Source: authority item FND-02. Contradicts the L3 'no note clamping' gate; target limits belong in capability checks (ADR-008).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 524,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/fnd-02-reject-instead-of-clamp",
-    "prompt": "projects/score2gp/prompts/next/fnd-02-reject-instead-of-clamp.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: list every place a ScoreIR or GPIF value is silently clamped or coerced (start at ir.py around lines 99, 268 and 516-528 and gpif.py around 833; re-locate them) with the input that triggers each and what is written instead.",
-      "Each clamp becomes a validator that rejects the out-of-range value with a located reason code; target-format limits are NOT enforced in the IR (they belong to capability checks, ADR-008), and the handback names which clamp is which kind.",
-      "On the whole private set no previously converting source starts to refuse and the GPIF for every converting source is byte-identical before and after, shown in the handback; any source that would now refuse is listed, not hidden.",
-      "A named mutant (restore one clamp) fails a test; the L3 'no note clamping' statement is cited with the tests that now hold it.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "NPG-06A",
     "title": "One production GPIF serializer: remove the pytest-conditional writer branch",
     "objective": "One production GPIF serializer: remove the pytest-conditional writer branch. Source: authority item NPG-06A. Detail: plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md §16 (NPG-06A). Also the architect's FND-01.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,48 +42,47 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "FND-06",
-      "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
-      "objective": "Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/fnd-06-windows-host-test-failures",
-      "prompt": "projects/score2gp/prompts/next/fnd-06-windows-host-test-failures.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "pyproject.toml"
-      ],
-      "acceptance": [
-        "Measure first: run the full suite on this Windows host and list every failing or erroring test by exact ID with the cause; 16 were recorded in 2026-09, so state how many remain.",
-        "Each is fixed, or, where it cannot be fixed on this host, marked as a strict expected failure (xfail) by exact test ID with a linked reason record and an expiry condition. It still runs and is reported by name; none is skipped, deselected or matched by wildcard, and no assertion is weakened.",
-        "The full suite exits zero on this host with every quarantined ID reported by name in the handback; a deliberately failing test not on the list still fails the suite.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "FND-06",
+    "title": "Quarantine by exact ID, or fix, the known Windows host test failures",
+    "objective": "Quarantine by exact ID, or fix, the known Windows host test failures. Source: authority item FND-06. Blocks zero-exit local suites; devils-advocate reviewers withhold verdicts (#465 re-review, 2026-09-25).",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/fnd-06-windows-host-test-failures",
+    "prompt": "projects/score2gp/prompts/next/fnd-06-windows-host-test-failures.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "pyproject.toml"
+    ],
+    "acceptance": [
+      "Measure first: run the full suite on this Windows host and list every failing or erroring test by exact ID with the cause; 16 were recorded in 2026-09, so state how many remain.",
+      "Each is fixed, or, where it cannot be fixed on this host, marked as a strict expected failure (xfail) by exact test ID with a linked reason record and an expiry condition. It still runs and is reported by name; none is skipped, deselected or matched by wildcard, and no assertion is weakened.",
+      "The full suite exits zero on this host with every quarantined ID reported by name in the handback; a deliberately failing test not on the list still fails the suite.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -4576,6 +4535,50 @@
       "merge_commit": "f6473201718a241dd08a63e1d87a789a03f7958e",
       "reconciled": true,
       "reconciled_at": "2026-10-27T20:06:27.065500+00:00"
+    },
+    {
+      "id": "FND-02",
+      "title": "Replace silent ScoreIR clamps with rejecting validators",
+      "objective": "Replace silent ScoreIR clamps with rejecting validators. Source: authority item FND-02. Contradicts the L3 'no note clamping' gate; target limits belong in capability checks (ADR-008).",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 524,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/fnd-02-reject-instead-of-clamp",
+      "prompt": "projects/score2gp/prompts/next/fnd-02-reject-instead-of-clamp.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: list every place a ScoreIR or GPIF value is silently clamped or coerced (start at ir.py around lines 99, 268 and 516-528 and gpif.py around 833; re-locate them) with the input that triggers each and what is written instead.",
+        "Each clamp becomes a validator that rejects the out-of-range value with a located reason code; target-format limits are NOT enforced in the IR (they belong to capability checks, ADR-008), and the handback names which clamp is which kind.",
+        "On the whole private set no previously converting source starts to refuse and the GPIF for every converting source is byte-identical before and after, shown in the handback; any source that would now refuse is listed, not hidden.",
+        "A named mutant (restore one clamp) fails a test; the L3 'no note clamping' statement is cited with the tests that now hold it.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "eeee5efdd8bf717f5d92d37b311ea0b93d42a2e2",
+      "merge_commit": "bb099c4c8d00b11ea0a08f22b35f4c38b5fc794e",
+      "reconciled": true,
+      "reconciled_at": "2026-10-28T05:06:59.481639+00:00"
     }
   ],
   "backlog": [
