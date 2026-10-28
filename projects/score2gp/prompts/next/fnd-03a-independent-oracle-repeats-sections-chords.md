@@ -1,16 +1,16 @@
-# FND-03: Extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams
+# FND-03A: FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
 - **Requirement:** REQ-0001:U13
 - **Depends on:** none
-- **Branch:** `feat/fnd-03-independent-oracle-repeats-sections-chords`
+- **Branch:** `feat/fnd-03a-independent-oracle-repeats-sections-chords`
 
 Private fixtures: the corpus is grouped by category on fixtures `main`; the author launcher flattens it into `fixtures/private/`. Verify the files named below exist there before starting; if any is missing, stop and say exactly what is missing. Every number below is a lead: re-measure it.
 
 ## Goal
 
-Extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.
+FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.
 
 ## Acceptance
 
@@ -18,7 +18,8 @@ Extend the independent stdlib GP reader oracle to repeats and endings, sections 
 2. The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from.
 3. Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer.
 4. A named mutant of each new reader rule fails a test; no change to the writer in this task.
-5. Nothing that worked may change; validation commands pass; handback complete.
+5. This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.
+6. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)
 
