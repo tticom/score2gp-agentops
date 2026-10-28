@@ -15,9 +15,9 @@ NPG-06A follow-up: retire the explicit legacy GPIF layout and migrate the tests 
 ## Acceptance
 
 1. Measure first: the pytest sniffing is already gone (NPG-06A resolved 2026-10-28). Re-locate what remains in src/score2gp/gpif.py and gpif_builder.py: the GpifLayout type with a legacy value, the layout argument of build_gpif (around lines 198-215) and the legacy writers bound by tests/gpif_test_helpers.py; list every test that selects the legacy layout (tests/test_gpif_layout_selection.py and others) and what each one covers.
-2. Exactly one production serializer remains with no legacy layout option; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.
-3. The GPIF written by the CLI for every converting private source is identical before and after, shown in the handback; GP8 acceptance output does not change.
-4. A named mutant (reintroduce a layout switch) fails a test.
+2. Exactly one production serializer remains with no legacy layout option and no dependence on sys.modules, sys.argv or any pytest detection; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.
+3. The GPIF written by the CLI for every converting private source is identical before and after, and identical when the same command runs under pytest and outside it (including an output path under pytest's tmp_path), shown in the handback; GP8 acceptance output does not change.
+4. Two named mutants fail a test: reintroduce a layout switch, and reintroduce a pytest-conditional (sys.modules or sys.argv) branch.
 5. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)

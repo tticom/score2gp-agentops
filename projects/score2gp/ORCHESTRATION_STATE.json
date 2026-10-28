@@ -61,9 +61,9 @@
     ],
     "acceptance": [
       "Measure first: the pytest sniffing is already gone (NPG-06A resolved 2026-10-28). Re-locate what remains in src/score2gp/gpif.py and gpif_builder.py: the GpifLayout type with a legacy value, the layout argument of build_gpif (around lines 198-215) and the legacy writers bound by tests/gpif_test_helpers.py; list every test that selects the legacy layout (tests/test_gpif_layout_selection.py and others) and what each one covers.",
-      "Exactly one production serializer remains with no legacy layout option; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.",
-      "The GPIF written by the CLI for every converting private source is identical before and after, shown in the handback; GP8 acceptance output does not change.",
-      "A named mutant (reintroduce a layout switch) fails a test.",
+      "Exactly one production serializer remains with no legacy layout option and no dependence on sys.modules, sys.argv or any pytest detection; every legacy-dependent test is migrated to the production layout with equivalent coverage (each migrated test named in the handback); no test is deleted or skipped. If a legacy-layout consumer outside the tests exists, stop and report it instead of removing the option.",
+      "The GPIF written by the CLI for every converting private source is identical before and after, and identical when the same command runs under pytest and outside it (including an output path under pytest's tmp_path), shown in the handback; GP8 acceptance output does not change.",
+      "Two named mutants fail a test: reintroduce a layout switch, and reintroduce a pytest-conditional (sys.modules or sys.argv) branch.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -4701,7 +4701,7 @@
         "private_content_would_be_committed"
       ],
       "author_login": "tticom-codex",
-      "notes": "Resolved 2026-10-28 with no product PR, for the part that is done. The author run (Codex, 2026-10-28, report launchers/codex-author-logs/npg-06a/report.md) found the pytest-conditional sniffing already removed by an earlier commit: no sys.modules or sys.argv reference remains in src/score2gp/gpif.py or gpif_builder.py (supervisor re-check on origin/main bb099c4). It also found that explicit legacy layout selection remains (GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers, tests/test_gpif_layout_selection.py). That residual, including the per-test migration, corpus equivalence and mutant obligations of the original acceptance, is preserved unchanged in NPG-06A-FU1.",
+      "notes": "Resolved 2026-10-28 with no product PR, for the part that is done. The author run (Codex, 2026-10-28, report launchers/codex-author-logs/npg-06a/report.md) found the pytest-conditional sniffing already removed by an earlier commit: no sys.modules or sys.argv reference remains in src/score2gp/gpif.py or gpif_builder.py (supervisor re-check on origin/main bb099c4). It also found that explicit legacy layout selection remains (GpifLayout with a legacy value, the build_gpif layout argument, tests/gpif_test_helpers.py legacy writers, tests/test_gpif_layout_selection.py). That residual, including the per-test migration, corpus equivalence (including identical output under pytest and outside it) and the mutant obligations of the original acceptance, is carried in NPG-06A-FU1 with those checks restored.",
       "reconciled": true,
       "reconciled_at": "2026-10-28T07:00:59.128804+00:00"
     }
