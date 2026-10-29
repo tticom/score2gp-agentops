@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/fnd-03b-repair-writer-chord-diagram-links`
 
-**Pull Request**: TBD
+**Pull Request**: 528
 
 **Owner Role**: implementation
 
