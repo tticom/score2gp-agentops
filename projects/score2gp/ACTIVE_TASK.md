@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/trip-01-mixed-quarter-eighth-triplet-durations`
 
-**Pull Request**: TBD
+**Pull Request**: 529
 
 **Owner Role**: implementation
 
