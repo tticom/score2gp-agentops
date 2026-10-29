@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: FND-03B — Repair the GP writer's dangling chord diagram links
+**Task**: TRIP-01 — Check and fix recognition of mixed quarter, eighth and quarter-note-triplet durations
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/fnd-03b-repair-writer-chord-diagram-links`
+**PR Branch**: `feat/trip-01-mixed-quarter-eighth-triplet-durations`
 
-**Pull Request**: 528
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Repair the GP writer so every chord diagram link points at a staff-local target that exists. Found by FND-03A's independent reader on 2026-10-29 (author-reported, zero-based locations to re-measure): output 04 has 4 dangling chord targets, output 09 has 12 (for example (0,0,0,0), (2,0,0,0)). Maintainer 2026-10-29: 'Create and prioritise the task.'
+Investigate whether duration recognition handles mixed quarter notes, eighth notes and quarter-note triplets (1/4-note triplets, as the maintainer wrote; eighth-note triplets are checked as well if the score prints them), using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.
 
 ## Allowed paths
 
