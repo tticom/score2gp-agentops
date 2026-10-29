@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 239,
+  "authority_revision": 240,
   "task": {
     "id": "FND-03A",
     "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
@@ -21,8 +21,8 @@
     ],
     "acceptance": [
       "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
-      "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from.",
-      "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer.",
+      "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from. Repeat counts: the GP6 versus GP7 storage relation is inferred from the alphaTab parser code (maintainer direction 2026-10-29: 'Infer the answer to question from AlphaTab's code'), cited by file and function, and labelled in the handback as inferred from an implementation, not from a normative specification.",
+      "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer. A reference that cannot be read (Mixing Lead & Rhythm pt1.gp: score member is high-entropy, not XML, no decoding rule exists) is reported as GPIF_UNREADABLE and counted, never decoded by invention; its PDF is covered by TRIP-01. Generated outputs whose chord links point at missing staff-local targets (outputs 04 and 09) are reported as located defects; their repair is FND-03B and a refusal is not a pass.",
       "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
       "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
       "Nothing that worked may change; validation commands pass; handback complete."
@@ -44,9 +44,9 @@
     "author_login": "tticom-codex"
   },
   "next_task_proposal": {
-    "id": "REFUSE-01",
-    "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
-    "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
+    "id": "FND-03B",
+    "title": "Repair the GP writer's dangling chord diagram links",
+    "objective": "Repair the GP writer so every chord diagram link points at a staff-local target that exists. Found by FND-03A's independent reader on 2026-10-29 (author-reported, zero-based locations to re-measure): output 04 has 4 dangling chord targets, output 09 has 12 (for example (0,0,0,0), (2,0,0,0)). Maintainer 2026-10-29: 'Create and prioritise the task.'",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -54,17 +54,17 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/refuse-01-classify-thin-flat-band-symbols",
-    "prompt": "projects/score2gp/prompts/next/refuse-01-classify-thin-flat-band-symbols.md",
+    "branch": "feat/fnd-03b-repair-writer-chord-diagram-links",
+    "prompt": "projects/score2gp/prompts/next/fnd-03b-repair-writer-chord-diagram-links.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first, on the approved real PDFs only: across the PDFs that currently refuse bars with note_duration_event_unread, count the unread symbols whose reason is symbol_unclassified and group them by shape_class; the 2026-10-27 survey saw 799 such symbols in 9 PDFs, 751 of them constant-thickness bands about 3.9 by 0.7 staff spaces (drawn). State what the bands are, with located examples (page, system, bar) and a rendered crop for each kind kept in the handback only if it contains no private content beyond counts and codes.",
-      "Handle each kind that is a real musical symbol by classifying it (so its bar can be read) and each kind that is not by recording it as ignored for a stated reason; any kind that cannot be settled stays unread and refuses with a located reason. Nothing is invented and no duration is guessed.",
-      "On the whole private set, report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no source that converted may lose a correct bar and no bar may be written with a wrong duration (check every newly written bar against its reference where one exists, otherwise against the printed notation, and say which). Reference-less sources are labelled as not independently verified.",
-      "A named mutant (drop one new rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+      "Measure first: reproduce the dangling chord-diagram links in the GP files score2gp writes for every converting private source (counts per source, located by staff/bar/voice/beat); the author-reported 4 in output 04 and 12 in output 09 are leads. Find the cause in the writer by reading it.",
+      "Fix the writer so each chord diagram attached to a beat resolves to a diagram that exists in the staff-local list, with no change to diagrams already correct; the independent reader from FND-03A (tests/gp_structure_oracle.py) is the check, not the writer's own bookkeeping.",
+      "Before and after, for every converting private source: dangling links (must be zero after), and every other written bar unchanged; any other change is reported as a located difference.",
+      "A named mutant (reintroduce the wrong staff-local target or bar index) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -74,7 +74,9 @@
       "python scripts/artifact_audit.py",
       "git diff --check"
     ],
-    "dependencies": [],
+    "dependencies": [
+      "FND-03A"
+    ],
     "stop_conditions": [
       "value_invented_or_copied_from_reference",
       "gate_loosened",
@@ -83,7 +85,88 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [],
+  "queued_task_proposals": [
+    {
+      "id": "TRIP-01",
+      "title": "Check and fix recognition of mixed quarter, eighth and triplet durations",
+      "objective": "Investigate whether duration recognition handles mixed quarter notes, eighth notes and eighth-note triplets, using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/trip-01-mixed-quarter-eighth-triplet-durations",
+      "prompt": "projects/score2gp/prompts/next/trip-01-mixed-quarter-eighth-triplet-durations.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first on Mixing Lead & Rhythm pt1.pdf: per bar, which note types and tuplet groups are printed (quarter, eighth, triplet groups with their bracket or number) versus what the pipeline reads; report bars written, refused (by code) and any bar whose written duration disagrees with the printed notation, located by page, system and bar. Counts and codes only in the handback; no private content.",
+        "If triplets or mixed values are misread or silently dropped, make the reader recognise them from note type plus grouping (beams, tuplet marks) and never from spacing or counts; anything that cannot be settled stays refused with a located reason. No duration is guessed.",
+        "Across the whole private set report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no converted bar may lose correctness or gain a wrong duration (check against the reference where one is readable, otherwise against the printed notation, and say which).",
+        "A named mutant (drop the triplet rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "REFUSE-01",
+      "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
+      "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-01-classify-thin-flat-band-symbols",
+      "prompt": "projects/score2gp/prompts/next/refuse-01-classify-thin-flat-band-symbols.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first, on the approved real PDFs only: across the PDFs that currently refuse bars with note_duration_event_unread, count the unread symbols whose reason is symbol_unclassified and group them by shape_class; the 2026-10-27 survey saw 799 such symbols in 9 PDFs, 751 of them constant-thickness bands about 3.9 by 0.7 staff spaces (drawn). State what the bands are, with located examples (page, system, bar) and a rendered crop for each kind kept in the handback only if it contains no private content beyond counts and codes.",
+        "Handle each kind that is a real musical symbol by classifying it (so its bar can be read) and each kind that is not by recording it as ignored for a stated reason; any kind that cannot be settled stays unread and refuses with a located reason. Nothing is invented and no duration is guessed.",
+        "On the whole private set, report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no source that converted may lose a correct bar and no bar may be written with a wrong duration (check every newly written bar against its reference where one exists, otherwise against the printed notation, and say which). Reference-less sources are labelled as not independently verified.",
+        "A named mutant (drop one new rule) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
