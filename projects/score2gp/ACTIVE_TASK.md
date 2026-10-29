@@ -2,26 +2,26 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: FND-03A — FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams
+**Task**: FND-03B — Repair the GP writer's dangling chord diagram links
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/fnd-03a-independent-oracle-repeats-sections-chords`
+**PR Branch**: `feat/fnd-03b-repair-writer-chord-diagram-links`
 
-**Pull Request**: 527
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.
+Repair the GP writer so every chord diagram link points at a staff-local target that exists. Found by FND-03A's independent reader on 2026-10-29 (author-reported, zero-based locations to re-measure): output 04 has 4 dangling chord targets, output 09 has 12 (for example (0,0,0,0), (2,0,0,0)). Maintainer 2026-10-29: 'Create and prioritise the task.'
 
 ## Allowed paths
 
+- `src/score2gp/**`
 - `tests/**`
-- `scripts/**`
 
 ## Validation commands
 

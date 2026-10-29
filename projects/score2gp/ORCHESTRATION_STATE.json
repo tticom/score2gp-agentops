@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 240,
+  "authority_revision": 241,
   "task": {
-    "id": "FND-03A",
-    "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
-    "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 527,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/fnd-03a-independent-oracle-repeats-sections-chords",
-    "prompt": "projects/score2gp/prompts/next/fnd-03a-independent-oracle-repeats-sections-chords.md",
-    "allowed_paths": [
-      "tests/**",
-      "scripts/**"
-    ],
-    "acceptance": [
-      "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
-      "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from. Repeat counts: the GP6 versus GP7 storage relation is inferred from the alphaTab parser code (maintainer direction 2026-10-29: 'Infer the answer to question from AlphaTab's code'), cited by file and function, and labelled in the handback as inferred from an implementation, not from a normative specification.",
-      "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer. A reference that cannot be read (Mixing Lead & Rhythm pt1.gp: score member is high-entropy, not XML, no decoding rule exists) is reported as GPIF_UNREADABLE and counted, never decoded by invention; its PDF is covered by TRIP-01. Generated outputs whose chord links point at missing staff-local targets (outputs 04 and 09) are reported as located defects; their repair is FND-03B and a refusal is not a pass.",
-      "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
-      "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "FND-03B",
     "title": "Repair the GP writer's dangling chord diagram links",
     "objective": "Repair the GP writer so every chord diagram link points at a staff-local target that exists. Found by FND-03A's independent reader on 2026-10-29 (author-reported, zero-based locations to re-measure): output 04 has 4 dangling chord targets, output 09 has 12 (for example (0,0,0,0), (2,0,0,0)). Maintainer 2026-10-29: 'Create and prioritise the task.'",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -85,47 +44,47 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "TRIP-01",
+    "title": "Check and fix recognition of mixed quarter, eighth and quarter-note-triplet durations",
+    "objective": "Investigate whether duration recognition handles mixed quarter notes, eighth notes and quarter-note triplets (1/4-note triplets, as the maintainer wrote; eighth-note triplets are checked as well if the score prints them), using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/trip-01-mixed-quarter-eighth-triplet-durations",
+    "prompt": "projects/score2gp/prompts/next/trip-01-mixed-quarter-eighth-triplet-durations.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first on Mixing Lead & Rhythm pt1.pdf: per bar, which note types and tuplet groups are printed (quarter, eighth, quarter-note-triplet and any eighth-note-triplet groups, each with its bracket or number and its tuplet base value) versus what the pipeline reads; report bars written, refused (by code) and any bar whose written duration disagrees with the printed notation, located by page, system and bar. Counts and codes only in the handback; no private content.",
+      "Quarter-note triplets are explicitly in scope and are not satisfied by eighth-note-triplet support alone; state which tuplet base values the PDF actually prints before narrowing anything. If triplets or mixed values are misread or silently dropped, make the reader recognise them from note type plus grouping (beams, tuplet marks) and never from spacing or counts; anything that cannot be settled stays refused with a located reason. No duration is guessed.",
+      "Across the whole private set report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no converted bar may lose correctness or gain a wrong duration (check against the reference where one is readable, otherwise against the printed notation, and say which).",
+      "A named mutant (drop the quarter-note-triplet rule, and separately the eighth-note-triplet rule if one is added) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "TRIP-01",
-      "title": "Check and fix recognition of mixed quarter, eighth and quarter-note-triplet durations",
-      "objective": "Investigate whether duration recognition handles mixed quarter notes, eighth notes and quarter-note triplets (1/4-note triplets, as the maintainer wrote; eighth-note triplets are checked as well if the score prints them), using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/trip-01-mixed-quarter-eighth-triplet-durations",
-      "prompt": "projects/score2gp/prompts/next/trip-01-mixed-quarter-eighth-triplet-durations.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first on Mixing Lead & Rhythm pt1.pdf: per bar, which note types and tuplet groups are printed (quarter, eighth, quarter-note-triplet and any eighth-note-triplet groups, each with its bracket or number and its tuplet base value) versus what the pipeline reads; report bars written, refused (by code) and any bar whose written duration disagrees with the printed notation, located by page, system and bar. Counts and codes only in the handback; no private content.",
-        "Quarter-note triplets are explicitly in scope and are not satisfied by eighth-note-triplet support alone; state which tuplet base values the PDF actually prints before narrowing anything. If triplets or mixed values are misread or silently dropped, make the reader recognise them from note type plus grouping (beams, tuplet marks) and never from spacing or counts; anything that cannot be settled stays refused with a located reason. No duration is guessed.",
-        "Across the whole private set report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no converted bar may lose correctness or gain a wrong duration (check against the reference where one is readable, otherwise against the printed notation, and say which).",
-        "A named mutant (drop the quarter-note-triplet rule, and separately the eighth-note-triplet rule if one is added) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "REFUSE-01",
       "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
@@ -4793,6 +4752,51 @@
       "merge_commit": "7bfce4b58ef7ad88fe134dfaf43c0bde98b6d04f",
       "reconciled": true,
       "reconciled_at": "2026-10-28T20:06:39.017613+00:00"
+    },
+    {
+      "id": "FND-03A",
+      "title": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams",
+      "objective": "FND-03 slice A: extend the independent stdlib GP reader oracle to repeats and endings, sections and chord diagrams. Source: authority item FND-03A. Ex 2 Hands Up GP6 vs GP7 encode repeat counts differently (2 vs 4): raw attributes are not version-neutral.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 527,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/fnd-03a-independent-oracle-repeats-sections-chords",
+      "prompt": "projects/score2gp/prompts/next/fnd-03a-independent-oracle-repeats-sections-chords.md",
+      "allowed_paths": [
+        "tests/**",
+        "scripts/**"
+      ],
+      "acceptance": [
+        "Measure first: list what the independent reader under tests/ or scripts/ (stdlib only) reads today and which GPIF elements it ignores (repeats and alternate endings, section markers, chord diagrams); re-locate it, do not assume.",
+        "The reader gains those three element kinds, written from the GPIF/GP file specification and from the real reference .gp files, not from score2gp's own writer code, so it stays independent; the handback states what each was derived from. Repeat counts: the GP6 versus GP7 storage relation is inferred from the alphaTab parser code (maintainer direction 2026-10-29: 'Infer the answer to question from AlphaTab's code'), cited by file and function, and labelled in the handback as inferred from an implementation, not from a normative specification.",
+        "Run it on every private reference .gp and on the GP files score2gp writes for the same sources; report the agreements and disagreements by kind, and list any disagreement as a located defect rather than adjusting the oracle to match the writer. A reference that cannot be read (Mixing Lead & Rhythm pt1.gp: score member is high-entropy, not XML, no decoding rule exists) is reported as GPIF_UNREADABLE and counted, never decoded by invention; its PDF is covered by TRIP-01. Generated outputs whose chord links point at missing staff-local targets (outputs 04 and 09) are reported as located defects; their repair is FND-03B and a refusal is not a pass.",
+        "A named mutant of each new reader rule fails a test; no change to the writer in this task.",
+        "This is slice A only. The rest of FND-03 (grace notes, ties, tuplets, slides, HOPO, bends, vibrato, accents, mutes, normalized play order, retiring or rewiring scripts/oracle.py) stays open under FND-03, which FND-04, BRD-01 and BRD-02 still depend on; do not claim FND-03 complete.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "5330f3e4e7c7cfd628b66de804ad8403c57e88c6",
+      "merge_commit": "de054cc709d2009264caa279f76c46ad1dbe1917",
+      "reconciled": true,
+      "reconciled_at": "2026-10-29T11:36:37.551179+00:00"
     }
   ],
   "backlog": [
