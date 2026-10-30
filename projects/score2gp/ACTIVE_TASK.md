@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-01b-reduce-refused-bars-current-runtime`
 
-**Pull Request**: TBD
+**Pull Request**: 530
 
 **Owner Role**: implementation
 
