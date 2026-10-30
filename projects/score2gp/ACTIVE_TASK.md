@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/npg-04a-rational-meter-utility`
 
-**Pull Request**: TBD
+**Pull Request**: 531
 
 **Owner Role**: implementation
 
