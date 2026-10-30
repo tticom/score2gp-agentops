@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 244,
+  "authority_revision": 245,
   "task": {
-    "id": "TRIP-01",
-    "title": "Check and fix recognition of mixed quarter, eighth and quarter-note-triplet durations",
-    "objective": "Investigate whether duration recognition handles mixed quarter notes, eighth notes and quarter-note triplets (1/4-note triplets, as the maintainer wrote; eighth-note triplets are checked as well if the score prints them), using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 529,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/trip-01-mixed-quarter-eighth-triplet-durations",
-    "prompt": "projects/score2gp/prompts/next/trip-01-mixed-quarter-eighth-triplet-durations.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first on Mixing Lead & Rhythm pt1.pdf: per bar, which note types and tuplet groups are printed (quarter, eighth, quarter-note-triplet and any eighth-note-triplet groups, each with its bracket or number and its tuplet base value) versus what the pipeline reads; report bars written, refused (by code) and any bar whose written duration disagrees with the printed notation, located by page, system and bar. Counts and codes only in the handback; no private content.",
-      "Quarter-note triplets are explicitly in scope and are not satisfied by eighth-note-triplet support alone; state which tuplet base values the PDF actually prints before narrowing anything. If triplets or mixed values are misread or silently dropped, make the reader recognise them from note type plus grouping (beams, tuplet marks) and never from spacing or counts; anything that cannot be settled stays refused with a located reason. No duration is guessed.",
-      "Across the whole private set report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no converted bar may lose correctness or gain a wrong duration (check against the reference where one is readable, otherwise against the printed notation, and say which).",
-      "A named mutant (drop the quarter-note-triplet rule, and separately the eighth-note-triplet rule if one is added) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "REFUSE-01",
     "title": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread",
     "objective": "Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,6 +42,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -4800,6 +4761,50 @@
       "merge_commit": "9bafe6b57c4a20ca2fadd06b66534d0793db4349",
       "reconciled": true,
       "reconciled_at": "2026-10-29T19:36:58.112806+00:00"
+    },
+    {
+      "id": "TRIP-01",
+      "title": "Check and fix recognition of mixed quarter, eighth and quarter-note-triplet durations",
+      "objective": "Investigate whether duration recognition handles mixed quarter notes, eighth notes and quarter-note triplets (1/4-note triplets, as the maintainer wrote; eighth-note triplets are checked as well if the score prints them), using Mixing Lead & Rhythm pt1.pdf (the PDF, which is not corrupted). Maintainer 2026-10-29: 'The note counts are consistent, but maybe highlighting a flaw in the codes note duration recognition as there are mixed 1/4, 1/8 and 1/4 note triplets in the score. So if we can't recognise that we've found a system flaw.' Its reference .gp is unreadable (high-entropy score member), so the printed notation is the only check and results are labelled not independently verified.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 529,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/trip-01-mixed-quarter-eighth-triplet-durations",
+      "prompt": "projects/score2gp/prompts/next/trip-01-mixed-quarter-eighth-triplet-durations.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first on Mixing Lead & Rhythm pt1.pdf: per bar, which note types and tuplet groups are printed (quarter, eighth, quarter-note-triplet and any eighth-note-triplet groups, each with its bracket or number and its tuplet base value) versus what the pipeline reads; report bars written, refused (by code) and any bar whose written duration disagrees with the printed notation, located by page, system and bar. Counts and codes only in the handback; no private content.",
+        "Quarter-note triplets are explicitly in scope and are not satisfied by eighth-note-triplet support alone; state which tuplet base values the PDF actually prints before narrowing anything. If triplets or mixed values are misread or silently dropped, make the reader recognise them from note type plus grouping (beams, tuplet marks) and never from spacing or counts; anything that cannot be settled stays refused with a located reason. No duration is guessed.",
+        "Across the whole private set report before and after: bars written, bars refused by code, and every source whose written GPIF changed; no converted bar may lose correctness or gain a wrong duration (check against the reference where one is readable, otherwise against the printed notation, and say which).",
+        "A named mutant (drop the quarter-note-triplet rule, and separately the eighth-note-triplet rule if one is added) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "860a1afa21f2c315d3364d293ce47f6ead673f99",
+      "merge_commit": "019d6867ec524c622ac9465df4418d832281b310",
+      "reconciled": true,
+      "reconciled_at": "2026-10-30T00:26:56.136912+00:00"
     }
   ],
   "backlog": [
