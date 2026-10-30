@@ -2,31 +2,30 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NPG-04A — One rational meter utility replacing fixed 4/4/3840 capacity
+**Task**: CP-15 — Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/npg-04a-rational-meter-utility`
+**PR Branch**: `feat/cp-15-commented-review-keeps-earlier-approve`
 
-**Pull Request**: 531
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility driven by printed meter evidence, so 12/8, 6/8, 3/4 and other printed meters are read, not forced. Evidence: two private sources print 12/8 and the survey harness forced 4/4 and refused them with time_signature_conflict; this is the authority item NPG-04A (plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md section 16), which also absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate.
+This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three.
 
 ## Allowed paths
 
-- `src/score2gp/**`
-- `tests/**`
+- `scripts/score2gp_orca_control.py`
+- `tests/test_cp_15_*.py`
+- `tests/test_score2gp_orca_control.py`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python -m score2gp.cli export-schema --out schemas`
-- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
-- `python scripts/artifact_audit.py`
+- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
 - `git diff --check`
