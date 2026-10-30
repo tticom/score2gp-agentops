@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 251,
+  "authority_revision": 252,
   "task": {
-    "id": "NPG-04A",
-    "title": "One rational meter utility replacing fixed 4/4/3840 capacity",
-    "objective": "Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility driven by printed meter evidence, so 12/8, 6/8, 3/4 and other printed meters are read, not forced. Evidence: two private sources print 12/8 and the survey harness forced 4/4 and refused them with time_signature_conflict; this is the authority item NPG-04A (plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md section 16), which also absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 531,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/npg-04a-rational-meter-utility",
-    "prompt": "projects/score2gp/prompts/next/npg-04a-rational-meter-utility.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: list every place in src/score2gp that assumes 4/4 or the 3840-tick capacity (search and quote), and for each approved PDF the printed meter, tempo and key evidence the pipeline can read versus what it uses; report counts per source. Re-locate, do not assume.",
-      "Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it, reading the printed meter. The plan lists NPG-01C (the PDF > parameter > default field resolver) as a prerequisite and it does not exist yet, so this task adds no parameter precedence or conflict resolution: wherever a parameter or default meter is used today it keeps behaving exactly as before, and the handback names each such place as left for NPG-01C.",
-      "Over the whole private set report before and after: bars written, bars refused by code (time_signature_conflict in particular) and every source whose written GPIF changed. Bars in 4/4 sources must be byte-identical before and after; newly readable non-4/4 bars are checked against the printed notation or a readable reference, and the check named. Reference-less sources are labelled not independently verified.",
-      "Utility-level tests (the utility is a pure function, so these establish its arithmetic and not conversion correctness, and the handback says so) cover 4/4, 12/8, cut time, pickups (a short first bar), meter changes between bars, and exact and non-exact ticks-per-quarter: a bar capacity that is not a whole number of ticks is represented exactly or refused with a located reason, never rounded. A repository search shows no unapproved capacity literal remains, quoting the search. State which of these cases occur in the approved corpus and which do not.",
-      "A named mutant (hardcode 4/4 or 3840 again in one use; round a fractional capacity) fails a test; synthetic tests carry no conversion-acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-15",
     "title": "Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head",
     "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -82,46 +41,46 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "CP-16",
+    "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
+    "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-16-audit-binds-task-record-on-main",
+    "prompt": "projects/score2gp/prompts/next/cp-16-audit-binds-task-record-on-main.md",
+    "allowed_paths": [
+      "scripts/score2gp_governance_audit.py",
+      "tests/test_cp_16_*.py",
+      "tests/test_governance_audit.py"
+    ],
+    "acceptance": [
+      "Measure first: reproduce on the base an open AgentOps task PR whose number is recorded on main but still TBD on its branch, and show the audit failing; quote the lookup.",
+      "The audit takes the task record for an open task PR from origin main, not from the PR's own checkout. A record that is missing or inconsistent on main still fails; a branch that edits its own task record to pass is not trusted.",
+      "Tests cover: number recorded on main and TBD on the branch (passes), number missing on main (fails), branch rewrites its own record to match (fails); the named mutants (read the branch copy, skip the comparison) are rejected.",
+      "No audit check is removed or weakened; the audit passes on current main. No gate, role or stop-condition changes.",
+      "Validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "CP-16",
-      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
-      "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/cp-16-audit-binds-task-record-on-main",
-      "prompt": "projects/score2gp/prompts/next/cp-16-audit-binds-task-record-on-main.md",
-      "allowed_paths": [
-        "scripts/score2gp_governance_audit.py",
-        "tests/test_cp_16_*.py",
-        "tests/test_governance_audit.py"
-      ],
-      "acceptance": [
-        "Measure first: reproduce on the base an open AgentOps task PR whose number is recorded on main but still TBD on its branch, and show the audit failing; quote the lookup.",
-        "The audit takes the task record for an open task PR from origin main, not from the PR's own checkout. A record that is missing or inconsistent on main still fails; a branch that edits its own task record to pass is not trusted.",
-        "Tests cover: number recorded on main and TBD on the branch (passes), number missing on main (fails), branch rewrites its own record to match (fails); the named mutants (read the branch copy, skip the comparison) are rejected.",
-        "No audit check is removed or weakened; the audit passes on current main. No gate, role or stop-condition changes.",
-        "Validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "merge_review_or_audit_gate_weakened",
-        "identity_gate_weakened",
-        "self_review_or_self_merge_allowed",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "CP-18",
       "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
@@ -5048,6 +5007,51 @@
       "merge_commit": "76b5f195b45a30f8fe8907afee16883d7a271f86",
       "reconciled": true,
       "reconciled_at": "2026-10-30T16:26:58.395470+00:00"
+    },
+    {
+      "id": "NPG-04A",
+      "title": "One rational meter utility replacing fixed 4/4/3840 capacity",
+      "objective": "Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility driven by printed meter evidence, so 12/8, 6/8, 3/4 and other printed meters are read, not forced. Evidence: two private sources print 12/8 and the survey harness forced 4/4 and refused them with time_signature_conflict; this is the authority item NPG-04A (plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md section 16), which also absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 531,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/npg-04a-rational-meter-utility",
+      "prompt": "projects/score2gp/prompts/next/npg-04a-rational-meter-utility.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: list every place in src/score2gp that assumes 4/4 or the 3840-tick capacity (search and quote), and for each approved PDF the printed meter, tempo and key evidence the pipeline can read versus what it uses; report counts per source. Re-locate, do not assume.",
+        "Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it, reading the printed meter. The plan lists NPG-01C (the PDF > parameter > default field resolver) as a prerequisite and it does not exist yet, so this task adds no parameter precedence or conflict resolution: wherever a parameter or default meter is used today it keeps behaving exactly as before, and the handback names each such place as left for NPG-01C.",
+        "Over the whole private set report before and after: bars written, bars refused by code (time_signature_conflict in particular) and every source whose written GPIF changed. Bars in 4/4 sources must be byte-identical before and after; newly readable non-4/4 bars are checked against the printed notation or a readable reference, and the check named. Reference-less sources are labelled not independently verified.",
+        "Utility-level tests (the utility is a pure function, so these establish its arithmetic and not conversion correctness, and the handback says so) cover 4/4, 12/8, cut time, pickups (a short first bar), meter changes between bars, and exact and non-exact ticks-per-quarter: a bar capacity that is not a whole number of ticks is represented exactly or refused with a located reason, never rounded. A repository search shows no unapproved capacity literal remains, quoting the search. State which of these cases occur in the approved corpus and which do not.",
+        "A named mutant (hardcode 4/4 or 3840 again in one use; round a fractional capacity) fails a test; synthetic tests carry no conversion-acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "074b11483a2d37ac614b358305f5f7dea55cb11f",
+      "merge_commit": "efcdf9373a82d04952b304746c4e276e5a350724",
+      "reconciled": true,
+      "reconciled_at": "2026-10-30T21:46:59.517821+00:00"
     }
   ],
   "backlog": [
