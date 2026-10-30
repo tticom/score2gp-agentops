@@ -512,6 +512,8 @@ def current_head_review(pr: dict[str, Any]) -> str:
         if str(review.get("head_sha", "")) == head:
             author = review.get("author")
             state = str(review.get("state", "")).upper()
+            if state == "COMMENTED":
+                continue
             if author:
                 latest_by_author[author] = state
     verdicts = list(latest_by_author.values())
@@ -1046,6 +1048,8 @@ def _independent_approvals(authority: dict[str, Any], pr: dict[str, Any]) -> set
     latest: dict[str, str] = {}
     for review in pr.get("reviews", []):
         if str(review.get("head_sha", "")) == head and review.get("author"):
+            if str(review.get("state", "")).upper() == "COMMENTED":
+                continue
             latest[str(review["author"])] = str(review.get("state", "")).upper()
     return {
         login

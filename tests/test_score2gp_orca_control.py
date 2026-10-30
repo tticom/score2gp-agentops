@@ -307,6 +307,79 @@ def test_multiple_reviews_by_same_author_resolves_latest() -> None:
     assert current_head_review(live(reviews_reversed)["pull_request"]) == "CHANGES_REQUESTED"
 
 
+@pytest.mark.parametrize(
+    ("history", "verdict", "independent", "decision"),
+    [
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-a", "COMMENTED", "a")],
+         "APPROVED", {"reviewer-a"}, "ALLOW"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-a", "CHANGES_REQUESTED", "a")],
+         "CHANGES_REQUESTED", set(), "DENY"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-a", "DISMISSED", "a")],
+         "NONE", set(), "DENY"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-a", "CHANGES_REQUESTED", "a"),
+          ("reviewer-a", "COMMENTED", "a")], "CHANGES_REQUESTED", set(), "DENY"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-a", "DISMISSED", "a"),
+          ("reviewer-a", "COMMENTED", "a")], "NONE", set(), "DENY"),
+        ([("reviewer-a", "COMMENTED", "a")], "NONE", set(), "DENY"),
+        ([("reviewer-a", "APPROVED", "b"), ("reviewer-a", "COMMENTED", "a")],
+         "NONE", set(), "DENY"),
+        ([("worker", "APPROVED", "a"), ("worker", "COMMENTED", "a")],
+         "APPROVED", set(), "DENY"),
+        ([], "NONE", set(), "DENY"),
+        ([("outsider", "APPROVED", "a"), ("outsider", "COMMENTED", "a")],
+         "APPROVED", set(), "DENY"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-b", "CHANGES_REQUESTED", "a"),
+          ("reviewer-b", "COMMENTED", "a")], "CHANGES_REQUESTED", {"reviewer-a"}, "DENY"),
+        ([("reviewer-a", "APPROVED", "a"), ("reviewer-b", "COMMENTED", "a")],
+         "APPROVED", {"reviewer-a"}, "ALLOW"),
+    ],
+    ids=[
+        "approve-comment", "approve-changes", "approve-dismissed",
+        "approve-changes-comment", "approve-dismissed-comment",
+        "comment-only", "stale-approve-comment", "author-approve-comment",
+        "no-review", "outsider-approve-comment", "other-reviewer-changes-comment",
+        "other-reviewer-comment",
+    ],
+)
+def test_cp_15_verdict_history_through_merge_gate(history, verdict, independent, decision) -> None:
+    """Offline review-event contracts; no GitHub mutation or musical fixture needed.
+
+    Exact expectations reject comment-as-approval, stale-head approvals, skipped
+    changes/dismissals, lost approvals, and non-independent approval counting.
+    """
+    from scripts.score2gp_orca_control import _independent_approvals, derive_governance_go
+
+    config = authority()
+    config["merge_policy"]["minimum_approvals"] = 1
+    # The author must remain excluded even when it also has the reviewer role.
+    config["roles"]["reviewer"]["github_logins"].append("worker")
+    facts = merge_ready()
+    facts["pull_request"]["author"] = "worker"
+    facts["pull_request"]["reviews"] = [
+        {"author": author, "state": state, "head_sha": head * 40}
+        for author, state, head in history
+    ]
+    assert current_head_review(facts["pull_request"]) == verdict
+    assert _independent_approvals(config, facts["pull_request"]) == independent
+    facts["governance"] = derive_governance_go(config, facts)
+    expected_go = "GO" if decision == "ALLOW" else "NO_GO"
+    assert facts["governance"] == {
+        "decision": expected_go,
+        "reviewed_head_sha": "a" * 40 if expected_go == "GO" else "",
+    }
+    gate = verify_merge_gate(config, facts)
+    assert gate["decision"] == decision
+    failures = []
+    if decision == "DENY":
+        failures.append("reviewed_head_mismatch")
+        if verdict != "APPROVED":
+            failures.append("current_head_not_approved")
+        if not independent:
+            failures.append("insufficient_independent_approvals")
+        failures.append("governance_go_missing")
+    assert gate["failures"] == failures
+
+
 def test_advance_cli_uses_schema_v2_authority_without_legacy_pointer(
     tmp_path: Path,
 ) -> None:
