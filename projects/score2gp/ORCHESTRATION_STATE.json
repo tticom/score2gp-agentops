@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 252,
+  "authority_revision": 253,
   "task": {
     "id": "CP-15",
     "title": "Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 903,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
