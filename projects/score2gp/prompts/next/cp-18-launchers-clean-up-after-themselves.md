@@ -12,14 +12,14 @@ Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3
 ## Acceptance
 
 1. Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.
-2. Remove review checkouts when the review publishes and author worktrees after merge, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.
-3. A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches an open PR's worktree.
-4. Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR worktree (kept), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR worktree) are rejected.
+2. Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.
+3. A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.
+4. Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR worktree) are rejected.
 5. Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete.
 
 ## Rules
 
-- Do not weaken, skip or reorder any merge, review or audit gate, and do not change what a gate accepts; this task changes only how bytes are decoded.
+- Do not weaken, skip or reorder any merge, review or audit gate; this task touches no gate. Cleanup removes only what the acceptance names and never anything dirty, locked, unclassified or an author worktree of an open PR.
 - Tests must be able to fail: for each new test, name the wrong implementation it rejects and show that mutant failing.
 - Never edit CI, private fixtures, agent instruction files or `ORCHESTRATION_STATE.json`.
-- Stop and say so if a change to a gate is needed.
+- Stop and say so if the task needs any gate change beyond the one the acceptance names.

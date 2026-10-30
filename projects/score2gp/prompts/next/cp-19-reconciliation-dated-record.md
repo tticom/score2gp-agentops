@@ -18,7 +18,7 @@ Non-blocking process note from tticom-codex's approving review of tticom/score2g
 
 ## Rules
 
-- Do not weaken, skip or reorder any merge, review or audit gate, and do not change what a gate accepts; this task changes only how bytes are decoded.
+- Do not weaken, skip or reorder any merge, review or audit gate; this task touches no gate. It changes only how the reconciliation record is written (or, with the maintainer's quoted word, the convention).
 - Tests must be able to fail: for each new test, name the wrong implementation it rejects and show that mutant failing.
 - Never edit CI, private fixtures, agent instruction files or `ORCHESTRATION_STATE.json`.
-- Stop and say so if a change to a gate is needed.
+- Stop and say so if the task needs any gate change beyond the one the acceptance names.

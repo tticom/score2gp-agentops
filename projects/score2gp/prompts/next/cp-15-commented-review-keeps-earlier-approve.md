@@ -19,7 +19,7 @@ This task is gate-adjacent. It may only make the gate read the evidence it alrea
 
 ## Rules
 
-- Do not weaken, skip or reorder any merge, review or audit gate, and do not change what a gate accepts; this task changes only how bytes are decoded.
+- Do not weaken, skip or reorder any merge, review or audit gate. The only permitted behaviour change is the one in the acceptance: how a reviewer's latest verdict is chosen (COMMENTED skipped; CHANGES_REQUESTED and DISMISSED stay decisive). Everything else a gate accepts or denies is unchanged.
 - Tests must be able to fail: for each new test, name the wrong implementation it rejects and show that mutant failing.
 - Never edit CI, private fixtures, agent instruction files or `ORCHESTRATION_STATE.json`.
-- Stop and say so if a change to a gate is needed.
+- Stop and say so if the task needs any gate change beyond the one the acceptance names.
