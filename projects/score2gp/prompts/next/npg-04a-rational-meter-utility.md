@@ -10,12 +10,12 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility driven by printed meter evidence, so 12/8, 6/8, 3/4 and other printed meters are read, not forced. Evidence: two private sources print 12/8 and the survey harness forced 4/4 and refused them with time_signature_conflict; this is the backlog item NPG-04A (plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md section 16), which also absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate.
+Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility driven by printed meter evidence, so 12/8, 6/8, 3/4 and other printed meters are read, not forced. Evidence: two private sources print 12/8 and the survey harness forced 4/4 and refused them with time_signature_conflict; this is the authority item NPG-04A (plans/2026-08-19-native-pdf-to-gp-and-audiveris-retirement.md section 16), which also absorbs RHY-03 and the Lesson 5 tempo-mismatch candidate.
 
 ## Acceptance
 
 1. Measure first: list every place in src/score2gp that assumes 4/4 or the 3840-tick capacity (search and quote), and for each approved PDF the printed meter, tempo and key evidence the pipeline can read versus what it uses; report counts per source. Re-locate, do not assume.
-2. Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it; a printed meter wins over a parameter default, and a conflict between printed meter and a parameter is a located refusal, not a silent choice.
+2. Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it, reading the printed meter. The plan lists NPG-01C (the PDF > parameter > default field resolver) as a prerequisite and it does not exist yet, so this task adds no parameter precedence or conflict resolution: wherever a parameter or default meter is used today it keeps behaving exactly as before, and the handback names each such place as left for NPG-01C.
 3. Over the whole private set report before and after: bars written, bars refused by code (time_signature_conflict in particular) and every source whose written GPIF changed. Bars in 4/4 sources must be byte-identical before and after; newly readable non-4/4 bars are checked against the printed notation or a readable reference, and the check named. Reference-less sources are labelled not independently verified.
 4. A named mutant (hardcode 4/4 or 3840 again in one use) fails a test; synthetic tests carry no acceptance weight and the handback says so.
 5. Nothing that worked may change; validation commands pass; handback complete.
