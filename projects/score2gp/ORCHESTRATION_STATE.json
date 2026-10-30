@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 249,
+  "authority_revision": 251,
   "task": {
     "id": "NPG-04A",
     "title": "One rational meter utility replacing fixed 4/4/3840 capacity",
@@ -43,8 +43,163 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "CP-15",
+    "title": "Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head",
+    "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-15-commented-review-keeps-earlier-approve",
+    "prompt": "projects/score2gp/prompts/next/cp-15-commented-review-keeps-earlier-approve.md",
+    "allowed_paths": [
+      "scripts/score2gp_orca_control.py",
+      "tests/test_cp_15_*.py",
+      "tests/test_score2gp_orca_control.py"
+    ],
+    "acceptance": [
+      "Measure first: reproduce on the base that a reviewer's APPROVE followed by a COMMENTED review at the same head makes current_head_review return NONE and verify_merge_gate deny; quote the function and the denial codes.",
+      "Change only how each reviewer's latest verdict is chosen: COMMENTED reviews are skipped, while a later CHANGES_REQUESTED or DISMISSED from that reviewer stays decisive. An APPROVE at an older head, an APPROVE from the author, and a head with no APPROVE at all are denied exactly as before.",
+      "Tests cover APPROVE then COMMENTED (allowed), APPROVE then CHANGES_REQUESTED (denied), APPROVE then DISMISSED (denied), COMMENTED only (denied), and APPROVE at a stale head then COMMENTED (denied); each is shown failing on the base where behaviour changes, and the named mutants (treat COMMENTED as APPROVE, drop the head check, let CHANGES_REQUESTED be skipped) are rejected.",
+      "List every other caller of the verdict selection and show it is unchanged or equally correct. No gate, role or stop-condition changes.",
+      "Validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "CP-16",
+      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
+      "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-16-audit-binds-task-record-on-main",
+      "prompt": "projects/score2gp/prompts/next/cp-16-audit-binds-task-record-on-main.md",
+      "allowed_paths": [
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_cp_16_*.py",
+        "tests/test_governance_audit.py"
+      ],
+      "acceptance": [
+        "Measure first: reproduce on the base an open AgentOps task PR whose number is recorded on main but still TBD on its branch, and show the audit failing; quote the lookup.",
+        "The audit takes the task record for an open task PR from origin main, not from the PR's own checkout. A record that is missing or inconsistent on main still fails; a branch that edits its own task record to pass is not trusted.",
+        "Tests cover: number recorded on main and TBD on the branch (passes), number missing on main (fails), branch rewrites its own record to match (fails); the named mutants (read the branch copy, skip the comparison) are rejected.",
+        "No audit check is removed or weakened; the audit passes on current main. No gate, role or stop-condition changes.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "CP-18",
+      "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
+      "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-18-launchers-clean-up-after-themselves",
+      "prompt": "projects/score2gp/prompts/next/cp-18-launchers-clean-up-after-themselves.md",
+      "allowed_paths": [
+        "scripts/*.py",
+        "tests/test_cp_18_*.py"
+      ],
+      "acceptance": [
+        "Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.",
+        "Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.",
+        "A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.",
+        "Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR author worktree) are rejected.",
+        "Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "CP-19",
+      "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
+      "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-19-reconciliation-dated-record",
+      "prompt": "projects/score2gp/prompts/next/cp-19-reconciliation-dated-record.md",
+      "allowed_paths": [
+        "scripts/*.py",
+        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+        "projects/score2gp/handoffs/*.md",
+        "tests/test_cp_19_*.py"
+      ],
+      "acceptance": [
+        "Measure first: quote the convention's requirement for a dated reconciliation record and list which completed tasks since the convention have one and which (for example OMIT-01 and OMIT-02) do not.",
+        "Choose the smaller honest change and state why: either reconcile_promote writes the dated record (and OMIT-01 and OMIT-02 are backfilled), or the convention is amended to recognise the authority record plus the exact-head handback. A convention amendment is a scope change, so it is not made unless the maintainer's own word for it is quoted in the PR.",
+        "Whichever is chosen, a test that can fail covers it and the named mutant (skip the record) is rejected.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -6285,32 +6440,6 @@
       "notes": "Non-blocking follow-up from tticom-codex review 5328475963 of tticom/score2gp#466 (note_duration.py:1073): an unrecognisable glyph overlapping a notehead or stem is counted by reason instead of recorded as a located unread event. In Lessons 3-7 these are only accidentals or articulations; keep the case visible for unsupported overlapping glyph forms. DROPPED 2026-10-08 (authority revision 113): folded into UNREAD-01, which records unclassified symbols as located unread events with their class (not as counts by reason) and carries the case of an unrecognisable glyph overlapping a notehead or stem."
     },
     {
-      "id": "CP-15",
-      "title": "Merge gate: a COMMENTED review (for example a thread reply) must not displace the same reviewer's earlier APPROVE at the head",
-      "requirements": [
-        "control-plane:review-gate"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 192,
-      "depends_on": [],
-      "notes": "Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three."
-    },
-    {
-      "id": "CP-16",
-      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
-      "requirements": [
-        "control-plane:review-gate"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 193,
-      "depends_on": [],
-      "notes": "Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut."
-    },
-    {
       "id": "CFW-01",
       "title": "SUPERSEDED by CFW-04: Can't Find My Way Home: resolve or locate the 5 bars refused for bar_total_mismatch",
       "requirements": [
@@ -6339,32 +6468,6 @@
         "DUR-02"
       ],
       "notes": "Same run as CFW-01: 5 refusals are note_duration_event_unread. Identify which notation symbols are unread in each (grace notes, chord-diagram interference, multi-voice, rests), read them or record a located reason per event, with a regression per distinct cause. UPDATE 2026-10-01: measured causes are small heads (grace notes and stemless heads), wave glyphs and a dead-note head, not tuplets or missing events; task CFW-04 fixes the first two and leaves tied chords and the dead-note head refused. DROPPED 2026-10-03 (authority revision 102): superseded by CFW-04 (tticom/score2gp#476, merged), which read the small heads (grace notes, stemless heads) and wave glyphs and took Can't Find My Way Home from 9 to 18 of 21 bars written with 0 wrong pairings. The 3 bars still refused carry located reasons: bars 3 and 9 are the tied-chord case (tracked by CFW-03) and bar 6 is the dead-note head (tracked by CFW-05)."
-    },
-    {
-      "id": "CP-18",
-      "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
-      "requirements": [
-        "control-plane:review-gate"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 194,
-      "depends_on": [],
-      "notes": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does."
-    },
-    {
-      "id": "CP-19",
-      "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
-      "requirements": [
-        "control-plane:review-gate"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 195,
-      "depends_on": [],
-      "notes": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback."
     },
     {
       "id": "OMIT-03-FU2",
