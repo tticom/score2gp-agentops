@@ -63,7 +63,8 @@
       "Measure first: list every place in src/score2gp that assumes 4/4 or the 3840-tick capacity (search and quote), and for each approved PDF the printed meter, tempo and key evidence the pipeline can read versus what it uses; report counts per source. Re-locate, do not assume.",
       "Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it, reading the printed meter. The plan lists NPG-01C (the PDF > parameter > default field resolver) as a prerequisite and it does not exist yet, so this task adds no parameter precedence or conflict resolution: wherever a parameter or default meter is used today it keeps behaving exactly as before, and the handback names each such place as left for NPG-01C.",
       "Over the whole private set report before and after: bars written, bars refused by code (time_signature_conflict in particular) and every source whose written GPIF changed. Bars in 4/4 sources must be byte-identical before and after; newly readable non-4/4 bars are checked against the printed notation or a readable reference, and the check named. Reference-less sources are labelled not independently verified.",
-      "A named mutant (hardcode 4/4 or 3840 again in one use) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+      "Utility-level tests (the utility is a pure function, so these establish its arithmetic and not conversion correctness, and the handback says so) cover 4/4, 12/8, cut time, pickups (a short first bar), meter changes between bars, and exact and non-exact ticks-per-quarter: a bar capacity that is not a whole number of ticks is represented exactly or refused with a located reason, never rounded. A repository search shows no unapproved capacity literal remains, quoting the search. State which of these cases occur in the approved corpus and which do not.",
+      "A named mutant (hardcode 4/4 or 3840 again in one use; round a fractional capacity) fails a test; synthetic tests carry no conversion-acceptance weight and the handback says so.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -4886,7 +4887,7 @@
       "author_login": "tticom-codex",
       "notes": "Resolved 2026-10-30 with no product PR: the author run (Codex, report launchers/codex-author-logs/refuse-01/report.md) found the premise stale. The 751 thin flat bands were musical beams already owned by the current beam records (all 915 legacy band ids occur in current beam ownership; median 4.258 by 0.661 staff spaces); the 799/751 counts came from an old survey route, not the current event stream. Current symbol_unclassified residue in partly refused PDFs is small (straight_form 1, narrow_curved_stroke 4, rest_sized_curve 6) and the sampled kinds are arpeggio fragments, bend curves and vibrato marks. Baseline on 43 approved PDFs: 672 bars written, 134 refused (note_duration_event_unread 63, notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11, mixed_percussive_tie_ownership_unread 2). Carried by REFUSE-01B. Closed on the maintainer's word ('approved', 2026-10-30, replying to the supervisor's proposal).",
       "reconciled": true,
-      "reconciled_at": "2026-10-30T07:18:51.925535+00:00"
+      "reconciled_at": "2026-10-30T07:30:51.809585+00:00"
     }
   ],
   "backlog": [

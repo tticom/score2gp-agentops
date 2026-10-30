@@ -17,8 +17,9 @@ Replace the fixed 4/4, 3840-tick bar capacity with one rational meter utility dr
 1. Measure first: list every place in src/score2gp that assumes 4/4 or the 3840-tick capacity (search and quote), and for each approved PDF the printed meter, tempo and key evidence the pipeline can read versus what it uses; report counts per source. Re-locate, do not assume.
 2. Introduce one rational meter utility (numerator, denominator, ticks per bar derived from them) and route every bar-capacity use through it, reading the printed meter. The plan lists NPG-01C (the PDF > parameter > default field resolver) as a prerequisite and it does not exist yet, so this task adds no parameter precedence or conflict resolution: wherever a parameter or default meter is used today it keeps behaving exactly as before, and the handback names each such place as left for NPG-01C.
 3. Over the whole private set report before and after: bars written, bars refused by code (time_signature_conflict in particular) and every source whose written GPIF changed. Bars in 4/4 sources must be byte-identical before and after; newly readable non-4/4 bars are checked against the printed notation or a readable reference, and the check named. Reference-less sources are labelled not independently verified.
-4. A named mutant (hardcode 4/4 or 3840 again in one use) fails a test; synthetic tests carry no acceptance weight and the handback says so.
-5. Nothing that worked may change; validation commands pass; handback complete.
+4. Utility-level tests (the utility is a pure function, so these establish its arithmetic and not conversion correctness, and the handback says so) cover 4/4, 12/8, cut time, pickups (a short first bar), meter changes between bars, and exact and non-exact ticks-per-quarter: a bar capacity that is not a whole number of ticks is represented exactly or refused with a located reason, never rounded. A repository search shows no unapproved capacity literal remains, quoting the search. State which of these cases occur in the approved corpus and which do not.
+5. A named mutant (hardcode 4/4 or 3840 again in one use; round a fractional capacity) fails a test; synthetic tests carry no conversion-acceptance weight and the handback says so.
+6. Nothing that worked may change; validation commands pass; handback complete.
 
 ## Rules (all tasks, maintainer direction 2026-10-16)
 
