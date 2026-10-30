@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-01 — Classify the thin flat band symbols that leave bars refused as note_duration_event_unread
+**Task**: REFUSE-01B — Reduce refused bars by reading the largest honestly readable unread class, measured on the current runtime
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-01-classify-thin-flat-band-symbols`
+**PR Branch**: `feat/refuse-01b-reduce-refused-bars-current-runtime`
 
 **Pull Request**: TBD
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-Classify the thin flat band symbols that leave bars refused as note_duration_event_unread. Source: authority item REFUSE-01. Measured 2026-10-27 on the latest survey: across 9 partly refused PDFs, 799 symbols were unclassified (symbol_unclassified) and 751 of them share one shape (constant-thickness band, about 3.9 by 0.7 staff spaces, drawn). Measure first what they are on real approved sources, then classify or explicitly refuse them with a located reason. Goal: fewer refused bars with no false success. Acceptance must use real approved sources, not synthetic ones.
+Reduce refused bars on the approved private PDFs by reading the largest honestly readable class of unread symbol or bar, measured on the current runtime. Replaces REFUSE-01, whose premise (thin bands) was stale: those bands are beams already owned. Baseline from the REFUSE-01 author run (leads, re-measure): 43 PDFs, 672 bars written, 134 refused: note_duration_event_unread 63, notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11; residual unclassified symbols are arpeggio fragments, bend curves and vibrato marks. The older REFUSE-02 counts (accidental beside notehead 93, rests 37, over or under notehead 35, tuplet numbers 31) came from the same stale survey and must be re-measured too.
 
 ## Allowed paths
 
