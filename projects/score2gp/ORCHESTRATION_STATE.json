@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 253,
+  "authority_revision": 254,
   "task": {
-    "id": "CP-15",
-    "title": "Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head",
-    "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 903,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cp-15-commented-review-keeps-earlier-approve",
-    "prompt": "projects/score2gp/prompts/next/cp-15-commented-review-keeps-earlier-approve.md",
-    "allowed_paths": [
-      "scripts/score2gp_orca_control.py",
-      "tests/test_cp_15_*.py",
-      "tests/test_score2gp_orca_control.py"
-    ],
-    "acceptance": [
-      "Measure first: reproduce on the base that a reviewer's APPROVE followed by a COMMENTED review at the same head makes current_head_review return NONE and verify_merge_gate deny; quote the function and the denial codes.",
-      "Change only how each reviewer's latest verdict is chosen: COMMENTED reviews are skipped, while a later CHANGES_REQUESTED or DISMISSED from that reviewer stays decisive. An APPROVE at an older head, an APPROVE from the author, and a head with no APPROVE at all are denied exactly as before.",
-      "Tests cover APPROVE then COMMENTED (allowed), APPROVE then CHANGES_REQUESTED (denied), APPROVE then DISMISSED (denied), COMMENTED only (denied), and APPROVE at a stale head then COMMENTED (denied); each is shown failing on the base where behaviour changes, and the named mutants (treat COMMENTED as APPROVE, drop the head check, let CHANGES_REQUESTED be skipped) are rejected.",
-      "List every other caller of the verdict selection and show it is unchanged or equally correct. No gate, role or stop-condition changes.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-16",
     "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
     "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -80,45 +41,45 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "CP-18",
+    "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
+    "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-18-launchers-clean-up-after-themselves",
+    "prompt": "projects/score2gp/prompts/next/cp-18-launchers-clean-up-after-themselves.md",
+    "allowed_paths": [
+      "scripts/*.py",
+      "tests/test_cp_18_*.py"
+    ],
+    "acceptance": [
+      "Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.",
+      "Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.",
+      "A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.",
+      "Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR author worktree) are rejected.",
+      "Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "CP-18",
-      "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
-      "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/cp-18-launchers-clean-up-after-themselves",
-      "prompt": "projects/score2gp/prompts/next/cp-18-launchers-clean-up-after-themselves.md",
-      "allowed_paths": [
-        "scripts/*.py",
-        "tests/test_cp_18_*.py"
-      ],
-      "acceptance": [
-        "Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.",
-        "Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.",
-        "A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.",
-        "Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR author worktree) are rejected.",
-        "Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "merge_review_or_audit_gate_weakened",
-        "identity_gate_weakened",
-        "self_review_or_self_merge_allowed",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "CP-19",
       "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
@@ -5052,6 +5013,49 @@
       "merge_commit": "efcdf9373a82d04952b304746c4e276e5a350724",
       "reconciled": true,
       "reconciled_at": "2026-10-30T21:46:59.517821+00:00"
+    },
+    {
+      "id": "CP-15",
+      "title": "Merge gate: a COMMENTED review must not displace the same reviewer's earlier APPROVE at the head",
+      "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on tticom/score2gp#466: current_head_review keeps only each author's latest review state at the head, so the reviewer's thread reply (a COMMENTED review after its APPROVE) replaced the APPROVE; with no APPROVED or CHANGES_REQUESTED verdict left it returned NONE, and verify_merge_gate denied (current_head_not_approved and dependants) until the reviewer republished APPROVE. Fix: skip COMMENTED reviews when taking each author's latest verdict, keeping a later CHANGES_REQUESTED or DISMISSED decisive; test all three.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 903,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-15-commented-review-keeps-earlier-approve",
+      "prompt": "projects/score2gp/prompts/next/cp-15-commented-review-keeps-earlier-approve.md",
+      "allowed_paths": [
+        "scripts/score2gp_orca_control.py",
+        "tests/test_cp_15_*.py",
+        "tests/test_score2gp_orca_control.py"
+      ],
+      "acceptance": [
+        "Measure first: reproduce on the base that a reviewer's APPROVE followed by a COMMENTED review at the same head makes current_head_review return NONE and verify_merge_gate deny; quote the function and the denial codes.",
+        "Change only how each reviewer's latest verdict is chosen: COMMENTED reviews are skipped, while a later CHANGES_REQUESTED or DISMISSED from that reviewer stays decisive. An APPROVE at an older head, an APPROVE from the author, and a head with no APPROVE at all are denied exactly as before.",
+        "Tests cover APPROVE then COMMENTED (allowed), APPROVE then CHANGES_REQUESTED (denied), APPROVE then DISMISSED (denied), COMMENTED only (denied), and APPROVE at a stale head then COMMENTED (denied); each is shown failing on the base where behaviour changes, and the named mutants (treat COMMENTED as APPROVE, drop the head check, let CHANGES_REQUESTED be skipped) are rejected.",
+        "List every other caller of the verdict selection and show it is unchanged or equally correct. No gate, role or stop-condition changes.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "6e4c12697db7174be725f30b9cf699b7890de408",
+      "merge_commit": "e2e6a98114750025eab162b1441e52ebee8b8174",
+      "reconciled": true,
+      "reconciled_at": "2026-10-30T23:37:00.053374+00:00"
     }
   ],
   "backlog": [
