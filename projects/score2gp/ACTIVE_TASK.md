@@ -2,26 +2,28 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CP-18 — Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories
+**Task**: CP-19 — Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/cp-18-launchers-clean-up-after-themselves`
+**PR Branch**: `feat/cp-19-reconciliation-dated-record`
 
-**Pull Request**: 909
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.
+Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.
 
 ## Allowed paths
 
 - `scripts/*.py`
-- `tests/test_cp_18_*.py`
+- `projects/score2gp/TASK_RECORDING_CONVENTION.md`
+- `projects/score2gp/handoffs/*.md`
+- `tests/test_cp_19_*.py`
 
 ## Validation commands
 
