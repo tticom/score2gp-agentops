@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/cp-16-audit-binds-task-record-on-main`
 
-**Pull Request**: TBD
+**Pull Request**: 906
 
 **Owner Role**: implementation
 
