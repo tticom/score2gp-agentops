@@ -60,7 +60,9 @@ def real_receipt_audit():
 
 
 class RecordedSubprocessRunner:
-    def __init__(self, stdout="[]", returncode=0, stderr=""):
+    def __init__(self, stdout="[]", returncode=0, stderr="", current_branch="feat/gov-03-fixture"):
+        # CP-16-FU1: the audit asks which branch it runs on; these tests run on the task branch.
+        self.current_branch = current_branch
         self.stdout = stdout
         self.returncode = returncode
         self.stderr = stderr
@@ -72,6 +74,8 @@ class RecordedSubprocessRunner:
             # CP-16's dedicated tests supply divergent records and read errors.
             with open("projects/score2gp/ACTIVE_TASK.md", encoding="utf-8") as stream:
                 return subprocess.CompletedProcess(args, 0, stream.read(), "")
+        if args == ["git", "branch", "--show-current"]:
+            return subprocess.CompletedProcess(args, 0, self.current_branch + "\n", "")
         if args and args[0] == "gh":
             self.calls.append(list(args))
             return subprocess.CompletedProcess(
