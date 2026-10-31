@@ -67,6 +67,11 @@ class RecordedSubprocessRunner:
         self.calls = []
 
     def __call__(self, args, **kwargs):
+        if args == ["git", "show", "origin/main:projects/score2gp/ACTIVE_TASK.md"]:
+            # These pre-CP-16 tests use identical main/branch task records.
+            # CP-16's dedicated tests supply divergent records and read errors.
+            with open("projects/score2gp/ACTIVE_TASK.md", encoding="utf-8") as stream:
+                return subprocess.CompletedProcess(args, 0, stream.read(), "")
         if args and args[0] == "gh":
             self.calls.append(list(args))
             return subprocess.CompletedProcess(
@@ -1048,7 +1053,7 @@ class LimitedPrListRunner(RecordedSubprocessRunner):
             self.calls.append(list(args))
             limit = int(args[args.index("--limit") + 1]) if "--limit" in args else 30
             return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(self.stdout[:limit]), stderr="")
-        return subprocess.run(args, **kwargs)
+        return super().__call__(args, **kwargs)
 
 
 def _run_main_with_branch_history(monkeypatch, matches):
