@@ -1,50 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 257,
+  "authority_revision": 258,
   "task": {
-    "id": "CP-18",
-    "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
-    "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 909,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cp-18-launchers-clean-up-after-themselves",
-    "prompt": "projects/score2gp/prompts/next/cp-18-launchers-clean-up-after-themselves.md",
-    "allowed_paths": [
-      "scripts/*.py",
-      "tests/test_cp_18_*.py"
-    ],
-    "acceptance": [
-      "Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.",
-      "Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.",
-      "A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.",
-      "Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR author worktree) are rejected.",
-      "Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-19",
     "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
     "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -79,6 +41,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -5059,6 +5022,48 @@
       "merge_commit": "a90d8707302c58c19cb58e53b120468c51f10cd0",
       "reconciled": true,
       "reconciled_at": "2026-10-31T02:07:00.230328+00:00"
+    },
+    {
+      "id": "CP-18",
+      "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
+      "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 909,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-18-launchers-clean-up-after-themselves",
+      "prompt": "projects/score2gp/prompts/next/cp-18-launchers-clean-up-after-themselves.md",
+      "allowed_paths": [
+        "scripts/*.py",
+        "tests/test_cp_18_*.py"
+      ],
+      "acceptance": [
+        "Measure first: count and size the worktrees under worktrees/codex and worktrees/gov by kind (merged author, review checkout, empty pytest temp, dirty, locked) as they stand now; counts and sizes only.",
+        "Remove detached review checkouts (disposable, never an author worktree) once their review is published even while the PR is open, author worktrees only after their PR is merged or closed, and pytest temp directories on exit, keeping any requested deliverables. Dirty, locked or unclassified worktrees are preserved and listed, never removed.",
+        "A receipt records what was removed and what was kept and why, as the workspace-cleanup skill does. Removal never touches the author worktree of an open PR; the only open-PR path removed is a clean, unlocked, detached review checkout whose review is published.",
+        "Tests cover: merged clean worktree (removed), dirty (kept), locked (kept), open-PR author worktree (kept), published-review detached checkout of an open PR (removed), unclassified (kept); the named mutants (remove dirty, ignore lock, remove open-PR author worktree) are rejected.",
+        "Launcher scripts that live in the workstation repo are listed, not edited here. Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "e7a9f74c6029d2acd4502190742a7e09b82bc30a",
+      "merge_commit": "58a509b1b0ea988569976bc1b7846bd58713c7c7",
+      "reconciled": true,
+      "reconciled_at": "2026-10-31T07:46:59.589647+00:00"
     }
   ],
   "backlog": [
