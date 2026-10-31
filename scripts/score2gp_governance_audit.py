@@ -197,6 +197,24 @@ def parse_active_task_pull_request(content: str) -> str:
     match = re.search(r"^\*\*Pull Request\*\*:\s*`?([^`\s]+)`?\s*$", content, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
+
+def main_task_pull_request(repository: str, branch_name: str) -> str:
+    """Read the AgentOps task binding from main, never from the PR's own tree.
+
+    The caller's checkout still supplies all other audit inputs. origin/main is
+    synchronized by the control plane before audit; do not fetch or mutate refs
+    here. A missing record or a record for another task must fail closed.
+    """
+    result = subprocess.run(
+        ["git", "show", "origin/main:projects/score2gp/ACTIVE_TASK.md"],
+        capture_output=True, text=True, encoding="utf-8", errors="strict", check=True,
+    )
+    _, main_repository, main_branch = parse_active_task_state(result.stdout)
+    if (main_repository, main_branch) != (repository, branch_name):
+        raise ValueError("origin/main task record does not match the repository and branch")
+    return parse_active_task_pull_request(result.stdout)
+
+
 FULL_SHA_METADATA = re.compile(r"`?[0-9a-f]{40}`?")
 REAPPROVED_HEAD_METADATA = re.compile(
     r"`?[0-9a-f]{40}`?\s+"
@@ -327,6 +345,10 @@ def main():
                                 break
                         # GOV-03: an in-flight PR must be recorded, or only discovery can find it.
                         recorded_pr = parse_active_task_pull_request(content)
+                        if repository == "tticom/score2gp-agentops" and any(
+                            pr.get("state") == "OPEN" for pr in matches
+                        ):
+                            recorded_pr = main_task_pull_request(repository, branch_name)
                         for pr_info in matches:
                             if pr_info.get("state") == "OPEN" and recorded_pr != str(pr_info.get("number")):
                                 violations.append(
