@@ -215,6 +215,25 @@ def main_task_pull_request(repository: str, branch_name: str) -> str:
     return parse_active_task_pull_request(result.stdout)
 
 
+def checkout_branch() -> str:
+    """Branch this audit runs on, or "" when it cannot be told (detached HEAD, git error).
+
+    CP-16-FU1: only the task branch itself may not vouch for its own PR number. An unknown
+    branch is treated as the task branch, so the audit fails closed to the record on main.
+    """
+    head_ref = os.environ.get("GITHUB_HEAD_REF", "").strip()
+    if head_ref:
+        return head_ref
+    try:
+        result = subprocess.run(
+            ["git", "branch", "--show-current"],
+            capture_output=True, text=True, encoding="utf-8", errors="strict", check=True,
+        )
+    except (subprocess.CalledProcessError, OSError, UnicodeError):
+        return ""
+    return result.stdout.strip()
+
+
 FULL_SHA_METADATA = re.compile(r"`?[0-9a-f]{40}`?")
 REAPPROVED_HEAD_METADATA = re.compile(
     r"`?[0-9a-f]{40}`?\s+"
@@ -345,10 +364,16 @@ def main():
                                 break
                         # GOV-03: an in-flight PR must be recorded, or only discovery can find it.
                         recorded_pr = parse_active_task_pull_request(content)
+                        # CP-16: the task branch is bound against origin/main, never its own copy.
+                        # CP-16-FU1: a different branch (the governance bind PR that records the
+                        # number) is read from its own checkout; the number must still equal the
+                        # open PR's. An unidentifiable branch is bound against main.
                         if repository == "tticom/score2gp-agentops" and any(
                             pr.get("state") == "OPEN" for pr in matches
                         ):
-                            recorded_pr = main_task_pull_request(repository, branch_name)
+                            current_branch = checkout_branch()
+                            if not current_branch or current_branch == branch_name:
+                                recorded_pr = main_task_pull_request(repository, branch_name)
                         for pr_info in matches:
                             if pr_info.get("state") == "OPEN" and recorded_pr != str(pr_info.get("number")):
                                 violations.append(

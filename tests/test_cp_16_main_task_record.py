@@ -15,6 +15,8 @@ from scripts import score2gp_governance_audit as audit
 
 BRANCH = "feat/cp-13-codex-author-lane"
 MAIN_RECORD = "git", "show", "origin/main:projects/score2gp/ACTIVE_TASK.md"
+BRANCH_COMMAND = ["git", "branch", "--show-current"]
+BIND_BRANCH = "governance/reconcile-bind-cp-13-pr713"
 
 
 def record(number="TBD", branch=BRANCH, repository="tticom/score2gp-agentops"):
@@ -27,7 +29,7 @@ def record(number="TBD", branch=BRANCH, repository="tticom/score2gp-agentops"):
 
 
 def run_audit(monkeypatch, tmp_path, branch_record, main_record, *, git_error=False,
-              state="OPEN"):
+              state="OPEN", current_branch=BRANCH, branch_error=False, head_ref=None):
     """Drive all of main(); only external Git/GitHub replies are substituted."""
     monkeypatch.chdir(tmp_path)
     for name in (
@@ -42,6 +44,9 @@ def run_audit(monkeypatch, tmp_path, branch_record, main_record, *, git_error=Fa
         path.write_text("agent_verify.py artifact_audit.py pr_body.py", encoding="utf-8")
     Path("projects/score2gp/ACTIVE_TASK.md").write_text(branch_record, encoding="utf-8")
     monkeypatch.delenv("SCORE2GP_GOVERNANCE_AUDIT_OFFLINE", raising=False)
+    monkeypatch.delenv("GITHUB_HEAD_REF", raising=False)
+    if head_ref is not None:
+        monkeypatch.setenv("GITHUB_HEAD_REF", head_ref)
     calls = []
 
     def run(command, **kwargs):
@@ -49,6 +54,10 @@ def run_audit(monkeypatch, tmp_path, branch_record, main_record, *, git_error=Fa
         assert kwargs["encoding"] == "utf-8" and kwargs["errors"] == "strict"
         if command == ["git", "ls-files"]:
             stdout = "AGENT-RULES.md"
+        elif command == BRANCH_COMMAND:
+            if branch_error:
+                raise subprocess.CalledProcessError(128, command, stderr="not a repository")
+            stdout = current_branch + "\n"
         elif tuple(command) == MAIN_RECORD:
             if git_error:
                 raise subprocess.CalledProcessError(128, command, stderr="missing main record")
@@ -123,3 +132,43 @@ def test_product_pr_binding_is_unchanged(monkeypatch, tmp_path, branch_number,
     )
     assert code == expected
     assert list(MAIN_RECORD) not in calls
+
+
+# CP-16-FU1: the governance bind PR records the number, so it cannot be bound against main.
+def test_bind_pr_on_another_branch_passes_with_the_open_prs_number(monkeypatch, tmp_path, capsys):
+    # Rejects the named mutant: always read origin/main (the deadlock).
+    code, calls = run_audit(monkeypatch, tmp_path, record("713"), record(),
+                            current_branch=BIND_BRANCH)
+    assert code == 0
+    assert "GOVERNANCE AUDIT PASS" in capsys.readouterr().out
+    assert list(MAIN_RECORD) not in calls
+
+
+@pytest.mark.parametrize("bind_number", ["TBD", "714"])
+def test_bind_pr_must_record_the_open_prs_number(monkeypatch, tmp_path, capsys, bind_number):
+    # Rejects the named mutant: trust any other branch without comparing the number.
+    code, _ = run_audit(monkeypatch, tmp_path, record(bind_number), record(),
+                        current_branch=BIND_BRANCH)
+    assert code == 1
+    assert "OPEN PR #713" in capsys.readouterr().out
+
+
+def test_task_branch_in_ci_still_cannot_record_itself(monkeypatch, tmp_path):
+    # Rejects the named mutant: trust the checkout whenever GITHUB_HEAD_REF is set.
+    code, _ = run_audit(monkeypatch, tmp_path, record("713"), record(),
+                        current_branch="", head_ref=BRANCH)
+    assert code == 1
+
+
+def test_bind_pr_in_ci_is_recognised_by_its_head_ref(monkeypatch, tmp_path):
+    code, _ = run_audit(monkeypatch, tmp_path, record("713"), record(),
+                        current_branch="", head_ref=BIND_BRANCH)
+    assert code == 0
+
+
+@pytest.mark.parametrize("kwargs", [{"current_branch": ""}, {"branch_error": True}])
+def test_unidentifiable_branch_fails_closed_to_main(monkeypatch, tmp_path, kwargs):
+    # Rejects the named mutant: treat an unknown branch as a governance branch.
+    code, calls = run_audit(monkeypatch, tmp_path, record("713"), record(), **kwargs)
+    assert code == 1
+    assert list(MAIN_RECORD) in calls

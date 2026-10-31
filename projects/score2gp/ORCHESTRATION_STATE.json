@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 256,
+  "authority_revision": 257,
   "task": {
     "id": "CP-18",
     "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 909,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
