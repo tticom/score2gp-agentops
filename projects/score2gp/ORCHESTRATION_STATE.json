@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 255,
+  "authority_revision": 256,
   "task": {
-    "id": "CP-16",
-    "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
-    "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
-    "base_branch": "main",
-    "pull_request": 906,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/cp-16-audit-binds-task-record-on-main",
-    "prompt": "projects/score2gp/prompts/next/cp-16-audit-binds-task-record-on-main.md",
-    "allowed_paths": [
-      "scripts/score2gp_governance_audit.py",
-      "tests/test_cp_16_*.py",
-      "tests/test_governance_audit.py"
-    ],
-    "acceptance": [
-      "Measure first: reproduce on the base an open AgentOps task PR whose number is recorded on main but still TBD on its branch, and show the audit failing; quote the lookup.",
-      "The audit takes the task record for an open task PR from origin main, not from the PR's own checkout. A record that is missing or inconsistent on main still fails; a branch that edits its own task record to pass is not trusted.",
-      "Tests cover: number recorded on main and TBD on the branch (passes), number missing on main (fails), branch rewrites its own record to match (fails); the named mutants (read the branch copy, skip the comparison) are rejected.",
-      "No audit check is removed or weakened; the audit passes on current main. No gate, role or stop-condition changes.",
-      "Validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "CP-18",
     "title": "Launchers clean up after themselves: remove merged author worktrees, review checkouts and pytest temp directories",
     "objective": "Measured by governance on 2026-09-29 at product main 2e8c00b (worktree at d7eef3f) on this Windows host. worktrees/codex holds about 60 entries: 3 merged author worktrees (3-5 GB each, mostly gitignored work/), about 30 review checkouts (up to 231 MB each) and about 12 empty pytest temp directories; worktrees/gov holds 6 review checkouts of about 217 MB each. Remove review checkouts when the review publishes, author worktrees after merge (keeping any requested deliverables), and temp directories on exit; preserve dirty or locked worktrees and record a receipt, as the workspace-cleanup skill does.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
@@ -79,47 +40,46 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "CP-19",
-      "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
-      "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp-agentops",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/cp-19-reconciliation-dated-record",
-      "prompt": "projects/score2gp/prompts/next/cp-19-reconciliation-dated-record.md",
-      "allowed_paths": [
-        "scripts/*.py",
-        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
-        "projects/score2gp/handoffs/*.md",
-        "tests/test_cp_19_*.py"
-      ],
-      "acceptance": [
-        "Measure first: quote the convention's requirement for a dated reconciliation record and list which completed tasks since the convention have one and which (for example OMIT-01 and OMIT-02) do not.",
-        "Choose the smaller honest change and state why: either reconcile_promote writes the dated record (and OMIT-01 and OMIT-02 are backfilled), or the convention is amended to recognise the authority record plus the exact-head handback. A convention amendment is a scope change, so it is not made unless the maintainer's own word for it is quoted in the PR.",
-        "Whichever is chosen, a test that can fail covers it and the named mutant (skip the record) is rejected.",
-        "Validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "merge_review_or_audit_gate_weakened",
-        "identity_gate_weakened",
-        "self_review_or_self_merge_allowed",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "CP-19",
+    "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
+    "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp-agentops",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/cp-19-reconciliation-dated-record",
+    "prompt": "projects/score2gp/prompts/next/cp-19-reconciliation-dated-record.md",
+    "allowed_paths": [
+      "scripts/*.py",
+      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+      "projects/score2gp/handoffs/*.md",
+      "tests/test_cp_19_*.py"
+    ],
+    "acceptance": [
+      "Measure first: quote the convention's requirement for a dated reconciliation record and list which completed tasks since the convention have one and which (for example OMIT-01 and OMIT-02) do not.",
+      "Choose the smaller honest change and state why: either reconcile_promote writes the dated record (and OMIT-01 and OMIT-02 are backfilled), or the convention is amended to recognise the authority record plus the exact-head handback. A convention amendment is a scope change, so it is not made unless the maintainer's own word for it is quoted in the PR.",
+      "Whichever is chosen, a test that can fail covers it and the named mutant (skip the record) is rejected.",
+      "Validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
+      "self_review_or_self_merge_allowed",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -5056,6 +5016,49 @@
       "merge_commit": "e2e6a98114750025eab162b1441e52ebee8b8174",
       "reconciled": true,
       "reconciled_at": "2026-10-30T23:37:00.053374+00:00"
+    },
+    {
+      "id": "CP-16",
+      "title": "Governance audit binds an open task PR against the task record on main, not the copy on the PR's own branch",
+      "objective": "This task is gate-adjacent. It may only make the gate read the evidence it already reads more correctly; no review, merge or audit check may be removed, loosened or reordered, and anything that was denied for a real reason stays denied. Seen 2026-09-27 on #713 (CP-13): governance recorded pull_request 713 on main (#714), but the audit reads the authority in the checkout, so at the PR head it still saw TBD and failed until the author merged origin/main into the branch. Every AgentOps task PR hits this, because the PR number exists only after the branch is cut.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 906,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-16-audit-binds-task-record-on-main",
+      "prompt": "projects/score2gp/prompts/next/cp-16-audit-binds-task-record-on-main.md",
+      "allowed_paths": [
+        "scripts/score2gp_governance_audit.py",
+        "tests/test_cp_16_*.py",
+        "tests/test_governance_audit.py"
+      ],
+      "acceptance": [
+        "Measure first: reproduce on the base an open AgentOps task PR whose number is recorded on main but still TBD on its branch, and show the audit failing; quote the lookup.",
+        "The audit takes the task record for an open task PR from origin main, not from the PR's own checkout. A record that is missing or inconsistent on main still fails; a branch that edits its own task record to pass is not trusted.",
+        "Tests cover: number recorded on main and TBD on the branch (passes), number missing on main (fails), branch rewrites its own record to match (fails); the named mutants (read the branch copy, skip the comparison) are rejected.",
+        "No audit check is removed or weakened; the audit passes on current main. No gate, role or stop-condition changes.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "f2aba3de1a1e1c26501ff5c90a7a82fc1e6f0b45",
+      "merge_commit": "a90d8707302c58c19cb58e53b120468c51f10cd0",
+      "reconciled": true,
+      "reconciled_at": "2026-10-31T02:07:00.230328+00:00"
     }
   ],
   "backlog": [
