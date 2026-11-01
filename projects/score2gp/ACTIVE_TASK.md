@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/short-01a-close-fail-closed-silent-gaps`
 
-**Pull Request**: TBD
+**Pull Request**: 534
 
 **Owner Role**: implementation
 

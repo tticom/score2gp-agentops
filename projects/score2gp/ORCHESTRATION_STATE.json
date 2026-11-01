@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 267,
+  "authority_revision": 268,
   "task": {
     "id": "SHORT-01A",
     "title": "Close the REQ-0005 silent gaps that contradict fail-closed rules (G5, G7, G8)",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 534,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
