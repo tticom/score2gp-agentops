@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/tabrhy-01-read-rhythm-printed-under-staffless-tab`
 
-**Pull Request**: TBD
+**Pull Request**: 533
 
 **Owner Role**: implementation
 
