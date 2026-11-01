@@ -1,47 +1,88 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 259,
+  "authority_revision": 260,
   "task": {
-    "id": "CP-19",
-    "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
-    "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
+    "id": "TABONLY-01",
+    "title": "TAB-only sources: infer rhythm from horizontal spacing as a labelled guess instead of refusing",
+    "objective": "TAB-only PDFs (the no-score category) are mostly refused: on the 2026-10-30 survey 6 of 7 refused, 4 with pdf_only_tab_no_notation_bars (12 Bar Blues Solo Guitar Jam, 5 MUST KNOW Pentatonic Licks In Em, 7_Grateful_Dead_Melodies, Finger position tips TAB) and 2 with pdf_only_tab_grouping_unsafe (5_Grateful_Dead_Intros, PARANOID - BLACK SABBATH); No Notes converts (9 bars). Maintainer decision 2026-10-27, option B (infer rhythm from horizontal spacing as a labelled guess instead of refusing), and 2026-11-01: 'The no-score refusals are concerning, keep me informed on how that work proceeds. Possibly I can help determine what the system should do with a given no-score fixture and from that you can infer the rule?'. Rhythm without notation is never a read result: every inferred duration is a labelled guess. ASCII and hand-written TAB are separate input classes (IN-02, IN-03).",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 912,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/cp-19-reconciliation-dated-record",
-    "prompt": "projects/score2gp/prompts/next/cp-19-reconciliation-dated-record.md",
+    "branch": "feat/tabonly-01-labelled-spacing-guess-for-tab-only-pdfs",
+    "prompt": "projects/score2gp/prompts/next/tabonly-01-labelled-spacing-guess-for-tab-only-pdfs.md",
     "allowed_paths": [
-      "scripts/*.py",
-      "projects/score2gp/TASK_RECORDING_CONVENTION.md",
-      "projects/score2gp/handoffs/*.md",
-      "tests/test_cp_19_*.py"
+      "src/score2gp/**",
+      "tests/**"
     ],
     "acceptance": [
-      "Measure first: quote the convention's requirement for a dated reconciliation record and list which completed tasks since the convention have one and which (for example OMIT-01 and OMIT-02) do not.",
-      "Choose the smaller honest change and state why: either reconcile_promote writes the dated record (and OMIT-01 and OMIT-02 are backfilled), or the convention is amended to recognise the authority record plus the exact-head handback. A convention amendment is a scope change, so it is not made unless the maintainer's own word for it is quoted in the PR.",
-      "Whichever is chosen, a test that can fail covers it and the named mutant (skip the record) is rejected.",
-      "Validation commands pass; handback complete."
+      "Measure first, per no-score PDF (and the ASCII and hand-written ones only to confirm they are out of scope, IN-02 and IN-03): the refusal code and its located reason, the number of TAB systems and bars found, whether bars and note groups can be separated at all, and what horizontal-spacing evidence exists (note-column positions per bar, with the spread). Counts and codes only in the handback, no private content. Say which files are not music at all (for example a finger-position diagram) and must stay refused with a plain reason.",
+      "Where bars and columns can be located, write the bar with durations inferred from horizontal spacing under one stated model (state the model, its tolerances and what makes it refuse a bar), and mark every such bar as a GUESS both in the conversion report and inside the GP file (a text annotation per bar). Guessed durations are never counted as read results, never mixed into the read-bar totals, and real note-type reading always wins wherever notation exists. A bar whose spacing is ambiguous stays refused with a located reason; no duration is invented to fill a bar, and no spacing or count inference is used outside the TAB-only path.",
+      "Where bars or groups cannot be separated (pdf_only_tab_grouping_unsafe), measure why and say whether spacing can safely help; if it cannot, they stay refused with a clearer reason and the handback says so. Do not loosen the grouping safety check to get more bars.",
+      "Across the whole private set report before and after: bars written (read), bars written (guessed, separately), bars refused by code, and every source whose written GPIF changed. Every source that converted before must be byte-identical, and the guessed-bar count must be zero outside the no-score category. There is no reference for these sources: label every result NOT independently verified and make no accuracy claim. The maintainer will judge named fixtures separately, so the handback lists, for each no-score PDF, what a reader should open and look at; it does not assert the rhythm is right.",
+      "A named mutant (drop the GUESS label from the report, and separately from the GP file; infer durations on a source that has notation) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
       "git diff --check"
     ],
     "dependencies": [],
     "stop_conditions": [
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
-      "self_review_or_self_merge_allowed",
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "REFUSE-02",
+    "title": "Read the remaining unread-symbol classes: accidental beside notehead, rests, marks over and under noteheads, tuplets, parenthesised heads",
+    "objective": "Read the next largest honestly readable unread-symbol class, measured on the current runtime. REFUSE-01B (natural signs, merged as #530) moved the 43-PDF baseline from 672 written and 134 refused to 682 and 124, and its report lists what still occurs (leads, re-measure): accidental beside notehead (38 unread, many as rest_sized_curve), over or under notehead (17 unread, 87 ignored), rests (9 unread), tuplet numbers (2 unread). Also diagnose Hey Joe and Pride and Joy (pdf_only_tab_grouping_unsafe with a score) and Black Dog (every bar refused). Real approved sources carry acceptance.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/refuse-02-read-next-unread-symbol-class",
+    "prompt": "projects/score2gp/prompts/next/refuse-02-read-next-unread-symbol-class.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: for each bar refused with note_duration_event_unread (and the other located codes), record the located reason (page, system, bar, event, reason code, shape class) and rank by bar count. Counts and codes only in the handback. State which classes in the leads still occur at all, and separately what blocks Hey Joe, Pride and Joy and Black Dog.",
+      "Pick the largest class that can be read honestly from note type plus grouping or from a symbol that is unambiguously musical, and read it; anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used (rhythm comes from notation).",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. No source that converted may lose a correct bar and no bar may be written with a wrong duration; check each newly written bar against its reference where a readable one exists, otherwise against the printed notation, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -5064,6 +5105,48 @@
       "merge_commit": "58a509b1b0ea988569976bc1b7846bd58713c7c7",
       "reconciled": true,
       "reconciled_at": "2026-10-31T07:46:59.589647+00:00"
+    },
+    {
+      "id": "CP-19",
+      "title": "Align reconciliation PRs with TASK_RECORDING_CONVENTION.md: dated reconciliation record",
+      "objective": "Non-blocking process note from tticom-codex's approving review of tticom/score2gp-agentops#730 (thread at ORCHESTRATION_STATE.json:1749): the convention calls for a dated reconciliation record alongside a completed task, while #726 and #730 record completion only in the authority and the exact-head handback. Either add the dated record to reconcile_promote (and backfill OMIT-01 and OMIT-02) or amend the convention to recognise the authority record plus the handback.",
+      "status": "RESOLVED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/cp-19-reconciliation-dated-record",
+      "prompt": "projects/score2gp/prompts/next/cp-19-reconciliation-dated-record.md",
+      "allowed_paths": [
+        "scripts/*.py",
+        "projects/score2gp/TASK_RECORDING_CONVENTION.md",
+        "projects/score2gp/handoffs/*.md",
+        "tests/test_cp_19_*.py"
+      ],
+      "acceptance": [
+        "Measure first: quote the convention's requirement for a dated reconciliation record and list which completed tasks since the convention have one and which (for example OMIT-01 and OMIT-02) do not.",
+        "Choose the smaller honest change and state why: either reconcile_promote writes the dated record (and OMIT-01 and OMIT-02 are backfilled), or the convention is amended to recognise the authority record plus the exact-head handback. A convention amendment is a scope change, so it is not made unless the maintainer's own word for it is quoted in the PR.",
+        "Whichever is chosen, a test that can fail covers it and the named mutant (skip the record) is rejected.",
+        "Validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "self_review_or_self_merge_allowed",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Dropped 2026-11-01 on the maintainer's word: 'if all cp-19 does is add a timestamp, drop it.' CP-19 would only add a dated reconciliation note that the authority record (PR, head, merge commit, timestamp) and the exact-head handback already carry. The author run (report launchers/codex-author-logs/cp-19/report.md) stopped at its scope limit: the writer is launchers/reconcile_promote.py, outside the AgentOps repo. PR #912 is closed unmerged; the TASK_RECORDING_CONVENTION.md is unchanged.",
+      "reconciled": true,
+      "reconciled_at": "2026-11-01T08:43:30.921632+00:00"
     }
   ],
   "backlog": [
@@ -6798,32 +6881,6 @@
       "priority": 999,
       "depends_on": [],
       "notes": "Maintainer 2026-10-27: 'I do need a list of precisely what features the required fixtures should have. But not right now.' Run at the end of the backlog. Deliverable: for each parked task (LAYOUT-01-FU2, OMIT-01-FU3, OMIT-02-FU3, DUR-03-FU2, MSG-02, MSG-03) the exact features the fixture must exhibit and the acceptance it unlocks; then re-promote each task once its fixture is approved."
-    },
-    {
-      "id": "REFUSE-02",
-      "title": "Read the remaining unread-symbol classes: accidental beside notehead, rests, marks over and under noteheads, tuplets, parenthesised heads",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "NEEDS_DETAIL",
-      "priority": 142,
-      "depends_on": [],
-      "notes": "Measured 2026-10-27 (9 PDFs): accidental_beside_notehead 93, rest_glyph_unidentified 37, over_or_under_notehead 35, tuplet_number_unassociated 31, parenthesized_head_unrepresented 16, overlapping_tuplets 12. Do after REFUSE-01 and re-measure first; also diagnose Hey Joe and Pride and Joy (pdf_only_tab_grouping_unsafe with a score) and Black Dog (every bar refused). Real approved sources carry acceptance. Update 2026-10-30: the counts above came from a stale survey (REFUSE-01 premise proved stale); REFUSE-01B re-measures every class on the current runtime and reads the largest. Keep this item for what REFUSE-01B leaves, and for Hey Joe, Pride and Joy and Black Dog."
-    },
-    {
-      "id": "TABONLY-01",
-      "title": "TAB-only sources: infer rhythm from horizontal spacing as a labelled guess instead of refusing",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "implementation",
-      "repository": "tticom/score2gp",
-      "status": "NEEDS_DETAIL",
-      "priority": 143,
-      "depends_on": [],
-      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion."
     },
     {
       "id": "NPG-06A-FU2",
