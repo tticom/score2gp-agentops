@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-02-read-next-unread-symbol-class`
 
-**Pull Request**: TBD
+**Pull Request**: 532
 
 **Owner Role**: implementation
 
