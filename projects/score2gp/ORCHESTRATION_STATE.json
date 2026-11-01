@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 261,
+  "authority_revision": 262,
   "task": {
     "id": "REFUSE-02",
     "title": "Read the remaining unread-symbol classes: accidental beside notehead, rests, marks over and under noteheads, tuplets, parenthesised heads",
@@ -43,9 +43,9 @@
     "author_login": "tticom-codex"
   },
   "next_task_proposal": {
-    "id": "SHORT-01A",
-    "title": "Close the REQ-0005 silent gaps that contradict fail-closed rules (G5, G7, G8)",
-    "objective": "First slice of the accepted REQ-0005 (explained shortfalls): the three silent gaps that its research map (projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md, section 'silent gaps named') says already contradict existing fail-closed rules, as measured at product SHA 3af1925 in September: G7 inferred rhythm reported as `success`, G8 synthesised rests carried at confidence 1.0, and G5 `generate-sidecar` crashing without a reason code. They may already be fixed or changed since; re-measure each on the current runtime.",
+    "id": "TABRHY-01",
+    "title": "Read the rhythm printed under staffless TAB (stems, beams, flags, dots, ties, rests, triplets, whole-note chords)",
+    "objective": "Read the rhythm that staffless TAB prints under the strings. Six of the seven no-score PDFs are refused (4 with pdf_only_tab_no_notation_bars, 2 with pdf_only_tab_grouping_unsafe; one converts). The supervisor viewed one of each refusal code: they are Guitar-Pro-style TAB with printed rhythm below the strings, so the durations are READ from it (strategy 2 below), never counted or guessed. The maintainer judged both: both should convert, and for the grouping_unsafe one \"the tab grouping safety or resolution needs to be increased until the tab is safely determinable\". The maintainer's judgements on the two named fixtures are in the private-fixtures file `fixtures/no-score/MAINTAINER-JUDGEMENTS-2026-11-01.md` (it reaches you as `fixtures/private/MAINTAINER-JUDGEMENTS-2026-11-01.md`); read it first. It is private: never copy its content into the repository, the PR or the handback.\n\n## Reading order (maintainer, 2026-11-01: \"it should not guessed until no other reading strategy produces a plausible rhythm\")\n\nTry these in order, per bar; the first that gives a plausible rhythm wins. A rhythm is plausible only if the bar's durations total exactly the printed meter's capacity (the rational meter utility) and nothing printed contradicts it.\n\n1. **Printed notation staff**, where one exists: note types win (the existing reader).\n2. **Rhythm marks printed under the TAB** (staffless TAB, as Guitar-Pro-style exports print it): stems, beams, flags, augmentation dots, tie arcs, rest glyphs, tuplet brackets with their numbers, and circled stemless chords.\n3. **Printed beat-count text** under or over the TAB, where there is any.\n4. **Last resort, a labelled guess:** infer the rhythm from the TAB itself (equal column spacing, count of columns). Every such duration is labelled GUESS in the report and in the GP file and is never counted as a read result. This is the separate authority item TABONLY-01 and is not part of this task.\n\nIf no strategy gives a plausible rhythm, the bar is refused with a located reason, as now.\n\n## Musician knowledge (general; recorded from the maintainer and standard notation practice)\n\n- A chord is the digits stacked on different strings at one horizontal position.\n- In TAB-only notation a circle around stemless fret digits marks a whole note (one chord filling a bar in 4/4). The supervisor believes this; the author must show from a real PDF what the circle means before relying on it.\n- A stem with no beam and no flag is a quarter note (when the beat unit is a quarter); one beam or one flag is an eighth; two are a sixteenth; a dot adds half the note's value; a bracket with a number groups a tuplet.\n- A tie or slur arc between two notes of the same pitch holds the first for the length of both; a note that ends a tie carries on into the next beat.\n- A rest glyph is a rest of its printed type.\n- Where the printed notes in a bar total less than the meter and nothing else is printed for the remainder, the maintainer reads the remainder as a rest (\"a missing rest\"). Treat this as an implied rest: write it as a rest, but label it IMPLIED in the report, count it separately from printed rests and never use it to make a bar that otherwise disagrees (too many notes, or a contradicting mark) pass.\n- Bends, slides, hammer-ons, pull-offs, vibrato, palm-mute spans, repeat signs and chord names are separate features and are not rhythm.\n\nThe same reading order and knowledge are recorded in projects/score2gp/knowledge/tab-rhythm-reading-strategy.md of the governance repository.",
     "status": "PROPOSED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
@@ -53,17 +53,19 @@
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/short-01a-close-fail-closed-silent-gaps",
-    "prompt": "projects/score2gp/prompts/next/short-01a-close-fail-closed-silent-gaps.md",
+    "branch": "feat/tabrhy-01-read-rhythm-printed-under-staffless-tab",
+    "prompt": "projects/score2gp/prompts/next/tabrhy-01-read-rhythm-printed-under-staffless-tab.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first: for each of G5, G7 and G8, reproduce or refute it on the current runtime with the normal CLI over the approved sources that exercise it, quoting the code path and the exact output (status, exit code, reason code). Counts and codes only in the handback. State for each whether it still occurs.",
-      "For each gap that still occurs, close it without loosening any fail-closed rule: a located reason code for the crash (G5); a result that is not `success` and says the rhythm was inferred, with the located bars, for inferred rhythm (G7); no synthesised rest carried at full confidence, with the confidence and provenance recorded honestly (G8). Anything that cannot be settled stays refused with a located reason. No duration is guessed.",
-      "Over the whole private set report before and after: bars written, bars refused by code, the status and exit code of every run whose status changes, and every source whose written GPIF changed. No source that converted may lose a correct bar and no bar may be written with a wrong duration. Newly changed statuses must be explained, not just counted.",
-      "A named mutant per fixed gap (restore the old behaviour) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so. If a gap no longer occurs, say so and add a guard test only if a real source can exercise it.",
+      "Measure first, per no-score PDF (and the ASCII and hand-written ones only to confirm they stay out of scope, IN-02 and IN-03): the refusal code and the exact check that raises it (quote the code); the number of TAB systems and bars found; and per printed rhythm-mark class under the TAB (stems, beams by level, flags, dots, tie or slur arcs, rest glyphs, tuplet brackets and numbers, circled or stemless chords) a count. Counts and codes only in the handback, no private content. For each file say whether it is music the system can read, and for Finger position tips TAB whether it is music at all.",
+      "Implement reading strategy 2 and the order above: durations only from printed marks; each bar's total must equal the printed meter's capacity (use the NPG-04A rational meter utility, which exists) and a bar whose marks do not add up stays refused with a located reason and its numbers. Show from a real PDF what the circle around stemless digits means before using it. Implied rests (printed notes totalling less than the meter, nothing else printed) are written but labelled IMPLIED in the report and counted separately. No duration is guessed, counted from the number of columns, or taken from horizontal spacing in this task.",
+      "pdf_only_tab_grouping_unsafe: measure why bars or note groups are unsafe to separate, and raise the grouping resolution (use the stems and beams under the TAB to separate groups) until the TAB is safely determinable; do not loosen or bypass the safety check. A group or bar that the evidence still cannot settle stays refused with a located reason.",
+      "Held-out check: design and tune only on the two maintainer-judged fixtures, 5 MUST KNOW Pentatonic Licks In Em and Finger position tips TAB. Hold out 7_Grateful_Dead_Melodies (no_notation_bars) and 5_Grateful_Dead_Intros (grouping_unsafe): never use them to design or tune; apply the finished reader to them once and report bar by bar against the printed notation. Where the held-out result disagrees with the printed notation, say so and do not tune on it.",
+      "Report before and after over the whole private set: bars written (printed rhythm, implied rests, separately), bars refused by code, and every source whose written GPIF changed. Every source that converted before must be byte-identical. There is no reference .gp for these sources: check each newly written bar against the printed notation (note-type counts, rests, ties, tuplets), say that was the check, and label every result NOT independently verified. List which output files the maintainer should open and check. Record which printed features were left unread (bends, slides, vibrato, repeats, chord names).",
+      "A named mutant (drop the beam and stem reader; drop tie handling; drop the whole-note chord rule; count implied rests as printed) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -83,6 +85,46 @@
     "author_login": "tticom-codex"
   },
   "queued_task_proposals": [
+    {
+      "id": "SHORT-01A",
+      "title": "Close the REQ-0005 silent gaps that contradict fail-closed rules (G5, G7, G8)",
+      "objective": "First slice of the accepted REQ-0005 (explained shortfalls): the three silent gaps that its research map (projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md, section 'silent gaps named') says already contradict existing fail-closed rules, as measured at product SHA 3af1925 in September: G7 inferred rhythm reported as `success`, G8 synthesised rests carried at confidence 1.0, and G5 `generate-sidecar` crashing without a reason code. They may already be fixed or changed since; re-measure each on the current runtime.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/short-01a-close-fail-closed-silent-gaps",
+      "prompt": "projects/score2gp/prompts/next/short-01a-close-fail-closed-silent-gaps.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: for each of G5, G7 and G8, reproduce or refute it on the current runtime with the normal CLI over the approved sources that exercise it, quoting the code path and the exact output (status, exit code, reason code). Counts and codes only in the handback. State for each whether it still occurs.",
+        "For each gap that still occurs, close it without loosening any fail-closed rule: a located reason code for the crash (G5); a result that is not `success` and says the rhythm was inferred, with the located bars, for inferred rhythm (G7); no synthesised rest carried at full confidence, with the confidence and provenance recorded honestly (G8). Anything that cannot be settled stays refused with a located reason. No duration is guessed.",
+        "Over the whole private set report before and after: bars written, bars refused by code, the status and exit code of every run whose status changes, and every source whose written GPIF changed. No source that converted may lose a correct bar and no bar may be written with a wrong duration. Newly changed statuses must be explained, not just counted.",
+        "A named mutant per fixed gap (restore the old behaviour) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so. If a gap no longer occurs, say so and add a guard test only if a real source can exercise it.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
     {
       "id": "REFUSE-03",
       "title": "Measure and reduce alignment and total-mismatch bar refusals",
@@ -6931,9 +6973,9 @@
       "kind": "implementation",
       "repository": "tticom/score2gp",
       "status": "NEEDS_DETAIL",
-      "priority": 110,
+      "priority": 144,
       "depends_on": [],
-      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion. Update 2026-11-01: not promoted yet, because it still needs its detail first (review of the governance PR, held-out gate). The maintainer called the no-score refusals concerning and offered to judge named no-score fixtures; the supervisor measures spacing evidence with the maintainer, fixes the spacing model, the guess label format and a held-out pair (one per refusal code) before any promotion, then writes the prompt. No code until then."
+      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion. Update 2026-11-01: not promoted yet, because it still needs its detail first (review of the governance PR, held-out gate). The maintainer called the no-score refusals concerning and offered to judge named no-score fixtures; the supervisor measures spacing evidence with the maintainer, fixes the spacing model, the guess label format and a held-out pair (one per refusal code) before any promotion, then writes the prompt. No code until then. Update 2026-11-01 (second): the maintainer judged 12 Bar Blues and PARANOID and said rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. TABRHY-01 reads the rhythm printed under staffless TAB first. This item is now the LAST strategy in projects/score2gp/knowledge/tab-rhythm-reading-strategy.md (spacing or count as a labelled guess, option B), for TAB with no printed rhythm and no beat-count text, and still needs its model, label format and held-out check before promotion."
     },
     {
       "id": "NPG-06A-FU2",
