@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TABONLY-01 — TAB-only sources: infer rhythm from horizontal spacing as a labelled guess instead of refusing
+**Task**: REFUSE-02 — Read the remaining unread-symbol classes: accidental beside notehead, rests, marks over and under noteheads, tuplets, parenthesised heads
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tabonly-01-labelled-spacing-guess-for-tab-only-pdfs`
+**PR Branch**: `feat/refuse-02-read-next-unread-symbol-class`
 
 **Pull Request**: TBD
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-TAB-only PDFs (the no-score category) are mostly refused: on the 2026-10-30 survey 6 of 7 refused, 4 with pdf_only_tab_no_notation_bars (12 Bar Blues Solo Guitar Jam, 5 MUST KNOW Pentatonic Licks In Em, 7_Grateful_Dead_Melodies, Finger position tips TAB) and 2 with pdf_only_tab_grouping_unsafe (5_Grateful_Dead_Intros, PARANOID - BLACK SABBATH); No Notes converts (9 bars). Maintainer decision 2026-10-27, option B (infer rhythm from horizontal spacing as a labelled guess instead of refusing), and 2026-11-01: 'The no-score refusals are concerning, keep me informed on how that work proceeds. Possibly I can help determine what the system should do with a given no-score fixture and from that you can infer the rule?'. Rhythm without notation is never a read result: every inferred duration is a labelled guess. ASCII and hand-written TAB are separate input classes (IN-02, IN-03).
+Read the next largest honestly readable unread-symbol class, measured on the current runtime. REFUSE-01B (natural signs, merged as #530) moved the 43-PDF baseline from 672 written and 134 refused to 682 and 124, and its report lists what still occurs (leads, re-measure): accidental beside notehead (38 unread, many as rest_sized_curve), over or under notehead (17 unread, 87 ignored), rests (9 unread), tuplet numbers (2 unread). Also diagnose Hey Joe and Pride and Joy (pdf_only_tab_grouping_unsafe with a score) and Black Dog (every bar refused). Real approved sources carry acceptance.
 
 ## Allowed paths
 

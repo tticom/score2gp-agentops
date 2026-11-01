@@ -3,52 +3,10 @@
   "project": "score2gp",
   "authority_revision": 260,
   "task": {
-    "id": "TABONLY-01",
-    "title": "TAB-only sources: infer rhythm from horizontal spacing as a labelled guess instead of refusing",
-    "objective": "TAB-only PDFs (the no-score category) are mostly refused: on the 2026-10-30 survey 6 of 7 refused, 4 with pdf_only_tab_no_notation_bars (12 Bar Blues Solo Guitar Jam, 5 MUST KNOW Pentatonic Licks In Em, 7_Grateful_Dead_Melodies, Finger position tips TAB) and 2 with pdf_only_tab_grouping_unsafe (5_Grateful_Dead_Intros, PARANOID - BLACK SABBATH); No Notes converts (9 bars). Maintainer decision 2026-10-27, option B (infer rhythm from horizontal spacing as a labelled guess instead of refusing), and 2026-11-01: 'The no-score refusals are concerning, keep me informed on how that work proceeds. Possibly I can help determine what the system should do with a given no-score fixture and from that you can infer the rule?'. Rhythm without notation is never a read result: every inferred duration is a labelled guess. ASCII and hand-written TAB are separate input classes (IN-02, IN-03).",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/tabonly-01-labelled-spacing-guess-for-tab-only-pdfs",
-    "prompt": "projects/score2gp/prompts/next/tabonly-01-labelled-spacing-guess-for-tab-only-pdfs.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first, per no-score PDF (and the ASCII and hand-written ones only to confirm they are out of scope, IN-02 and IN-03): the refusal code and its located reason, the number of TAB systems and bars found, whether bars and note groups can be separated at all, and what horizontal-spacing evidence exists (note-column positions per bar, with the spread). Counts and codes only in the handback, no private content. Say which files are not music at all (for example a finger-position diagram) and must stay refused with a plain reason.",
-      "Where bars and columns can be located, write the bar with durations inferred from horizontal spacing under one stated model (state the model, its tolerances and what makes it refuse a bar), and mark every such bar as a GUESS both in the conversion report and inside the GP file (a text annotation per bar). Guessed durations are never counted as read results, never mixed into the read-bar totals, and real note-type reading always wins wherever notation exists. A bar whose spacing is ambiguous stays refused with a located reason; no duration is invented to fill a bar, and no spacing or count inference is used outside the TAB-only path.",
-      "Where bars or groups cannot be separated (pdf_only_tab_grouping_unsafe), measure why and say whether spacing can safely help; if it cannot, they stay refused with a clearer reason and the handback says so. Do not loosen the grouping safety check to get more bars.",
-      "Held-out check, required before any result is described as more than a guess: before measuring any spacing, choose and record which no-score PDFs are held out (at least one per refusal code, so at least two) and never use them to design or tune the model. Decide the spacing model, its tolerances and the guess label format on the remaining files and state all three in the handback before applying the model to the held-out files, then apply it once and report the outcome. The maintainer has offered to judge named fixtures: where the maintainer's judgement of a held-out file is available it is the oracle and is quoted in the handback; otherwise the held-out result is labelled NOT independently verified and no accuracy claim is made. A model that only reproduces the files it was built on does not satisfy this item.",
-      "Across the whole private set report before and after: bars written (read), bars written (guessed, separately), bars refused by code, and every source whose written GPIF changed. Every source that converted before must be byte-identical, and the guessed-bar count must be zero outside the no-score category. There is no reference for these sources: label every result NOT independently verified and make no accuracy claim. The maintainer will judge named fixtures separately, so the handback lists, for each no-score PDF, what a reader should open and look at; it does not assert the rhythm is right.",
-      "A named mutant (drop the GUESS label from the report, and separately from the GP file; infer durations on a source that has notation) fails a test; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "REFUSE-02",
     "title": "Read the remaining unread-symbol classes: accidental beside notehead, rests, marks over and under noteheads, tuplets, parenthesised heads",
     "objective": "Read the next largest honestly readable unread-symbol class, measured on the current runtime. REFUSE-01B (natural signs, merged as #530) moved the 43-PDF baseline from 672 written and 134 refused to 682 and 124, and its report lists what still occurs (leads, re-measure): accidental beside notehead (38 unread, many as rest_sized_curve), over or under notehead (17 unread, 87 ignored), rests (9 unread), tuplet numbers (2 unread). Also diagnose Hey Joe and Pride and Joy (pdf_only_tab_grouping_unsafe with a score) and Black Dog (every bar refused). Real approved sources carry acceptance.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -84,6 +42,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -5147,7 +5106,7 @@
       "author_login": "tticom-codex",
       "notes": "Dropped 2026-11-01 on the maintainer's word: 'if all cp-19 does is add a timestamp, drop it.' CP-19 would only add a dated reconciliation note that the authority record (PR, head, merge commit, timestamp) and the exact-head handback already carry. The author run (report launchers/codex-author-logs/cp-19/report.md) stopped at its scope limit: the writer is launchers/reconcile_promote.py, outside the AgentOps repo. PR #912 is closed unmerged; the TASK_RECORDING_CONVENTION.md is unchanged.",
       "reconciled": true,
-      "reconciled_at": "2026-11-01T08:54:39.626901+00:00"
+      "reconciled_at": "2026-11-01T09:06:06.015514+00:00"
     }
   ],
   "backlog": [
@@ -6882,6 +6841,19 @@
       "priority": 999,
       "depends_on": [],
       "notes": "Maintainer 2026-10-27: 'I do need a list of precisely what features the required fixtures should have. But not right now.' Run at the end of the backlog. Deliverable: for each parked task (LAYOUT-01-FU2, OMIT-01-FU3, OMIT-02-FU3, DUR-03-FU2, MSG-02, MSG-03) the exact features the fixture must exhibit and the acceptance it unlocks; then re-promote each task once its fixture is approved."
+    },
+    {
+      "id": "TABONLY-01",
+      "title": "TAB-only sources: infer rhythm from horizontal spacing as a labelled guess instead of refusing",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 110,
+      "depends_on": [],
+      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion. Update 2026-11-01: not promoted yet, because it still needs its detail first (review of the governance PR, held-out gate). The maintainer called the no-score refusals concerning and offered to judge named no-score fixtures; the supervisor measures spacing evidence with the maintainer, fixes the spacing model, the guess label format and a held-out pair (one per refusal code) before any promotion, then writes the prompt. No code until then."
     },
     {
       "id": "NPG-06A-FU2",
