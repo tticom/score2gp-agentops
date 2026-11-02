@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-06 — Reduce the largest remaining unread-symbol class
+**Task**: GROUP-01 — Raise the TAB grouping resolution for sources refused at grouping
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-06-next-unread-symbol-class-after-tabrhy`
+**PR Branch**: `feat/group-01-raise-grouping-resolution-refused-sources`
 
-**Pull Request**: 538
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Measure and reduce the largest remaining class of note_duration_event_unread, which after REFUSE-04 stands at 107 bars (leads from earlier measurement, re-measure): symbol_unclassified, grace_note_in_tuplet, rest_glyph_unidentified, unclassified_same_position_arc, parenthesized_head_unrepresented, rest_glyph_beside_note, accidental beside a notehead (non-natural), flag_glyph_unidentified. Pick by bar count and by whether the symbol is unambiguously musical.
+Nine private sources produce no route because they are refused at grouping (pdf_only_tab_grouping_unsafe, ambiguous_bar_assignment), including two that carry a score. REFUSE-02 found these are a grouping problem, not an unread symbol, and TABRHY-01 raised the grouping resolution for staffless TAB only. This task measures the rest. Raise the grouping resolution only where the evidence (staff and TAB line geometry, barlines, digit positions) makes the grouping safely determinable; do not loosen or bypass the safety check. The maintainer's standing view: the grouping safety or resolution needs to be increased until the TAB is safely determinable.
 
 ## Allowed paths
 
