@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-04 — Settle the alignment and total-mismatch refusals REFUSE-03 left unknown
+**Task**: REFUSE-05 — Read augmentation dots painted in the page but absent from the reader's inputs
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-04-settle-remaining-alignment-refusals`
+**PR Branch**: `feat/refuse-05-read-painted-augmentation-dots`
 
-**Pull Request**: 536
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Continue REFUSE-03. After it, 186 bars of the 43-PDF set are refused (leads, re-measure): note_duration_event_unread 107 (REFUSE-02 scope), bar_without_notation_event 26 (19 in one source whose detected staff has zero height, 5 blank stubs after a closing repeat barline or before the first barline, 2 elsewhere), notation_note_without_tab_digit 29 (11 with no TAB digit placed in the bar, 18 with differing counts), bar_total_mismatch 12, notehead_digit_count_mismatch 10, mixed_percussive_tie_ownership_unread 2. REFUSE-03 left these classified unknown. Settle them: for each class decide, from the printed notation and TAB together, whether the refusal is correct or a reader gap, and fix the largest reader gap. Refusals that are correct (blank stubs, evidence that really disagrees) stay refused with a clearer located reason.
+Read the augmentation dot that is painted in the page but absent from the drawings, text characters and font outlines the duration reader uses. REFUSE-04 (merged) found this is the largest suspected reader gap behind the short bar totals: in at least two sources a dotted rest or dotted eighth is painted, the reader counts no dot, the bar totals short (bar_total_mismatch, 12 bars, 10 short) and the following tied bar cascades into notation_note_without_tab_digit (29 bars, 10 of them cascades). Leads, not facts: re-measure on the current runtime. Read the dot from the rendered page (raster or font level) only where it is unambiguous; never infer it from the bar total.
 
 ## Allowed paths
 
