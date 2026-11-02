@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: SHORT-01A — Close the REQ-0005 silent gaps that contradict fail-closed rules (G5, G7, G8)
+**Task**: REFUSE-03 — Measure and reduce alignment and total-mismatch bar refusals
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/short-01a-close-fail-closed-silent-gaps`
+**PR Branch**: `feat/refuse-03-alignment-and-total-mismatch-refusals`
 
-**Pull Request**: 534
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-First slice of the accepted REQ-0005 (explained shortfalls): the three silent gaps that its research map (projects/score2gp/research/2026-09-26-res-req-0005-explained-shortfalls/01-current-state-map.md, section 'silent gaps named') says already contradict existing fail-closed rules, as measured at product SHA 3af1925 in September: G7 inferred rhythm reported as `success`, G8 synthesised rests carried at confidence 1.0, and G5 `generate-sidecar` crashing without a reason code. They may already be fixed or changed since; re-measure each on the current runtime.
+Measure and reduce the refused bars that REFUSE-02 does not cover. On the 43-PDF baseline the refusals by code were (leads, re-measure): notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11, mixed_percussive_tie_ownership_unread 2. REFUSE-02 handles note_duration_event_unread (unread symbols); this task handles the alignment and total-mismatch classes, where notation and TAB disagree or a bar has no notation event. Some refusals may be correct (the source is wrong, ambiguous or not music); those stay refused with a clearer reason.
 
 ## Allowed paths
 
