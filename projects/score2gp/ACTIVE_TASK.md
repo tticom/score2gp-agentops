@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-05 — Read augmentation dots painted in the page but absent from the reader's inputs
+**Task**: REFUSE-06 — Reduce the largest remaining unread-symbol class
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-05-read-painted-augmentation-dots`
+**PR Branch**: `feat/refuse-06-next-unread-symbol-class-after-tabrhy`
 
-**Pull Request**: 537
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Read the augmentation dot that is painted in the page but absent from the drawings, text characters and font outlines the duration reader uses. REFUSE-04 (merged) found this is the largest suspected reader gap behind the short bar totals: in at least two sources a dotted rest or dotted eighth is painted, the reader counts no dot, the bar totals short (bar_total_mismatch, 12 bars, 10 short) and the following tied bar cascades into notation_note_without_tab_digit (29 bars, 10 of them cascades). Leads, not facts: re-measure on the current runtime. Read the dot from the rendered page (raster or font level) only where it is unambiguous; never infer it from the bar total.
+Measure and reduce the largest remaining class of note_duration_event_unread, which after REFUSE-04 stands at 107 bars (leads from earlier measurement, re-measure): symbol_unclassified, grace_note_in_tuplet, rest_glyph_unidentified, unclassified_same_position_arc, parenthesized_head_unrepresented, rest_glyph_beside_note, accidental beside a notehead (non-natural), flag_glyph_unidentified. Pick by bar count and by whether the symbol is unambiguously musical.
 
 ## Allowed paths
 
