@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-04-settle-remaining-alignment-refusals`
 
-**Pull Request**: TBD
+**Pull Request**: 536
 
 **Owner Role**: implementation
 
