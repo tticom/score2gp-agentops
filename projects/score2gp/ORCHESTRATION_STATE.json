@@ -1,29 +1,29 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 270,
+  "authority_revision": 272,
   "task": {
-    "id": "REFUSE-03",
-    "title": "Measure and reduce alignment and total-mismatch bar refusals",
-    "objective": "Measure and reduce the refused bars that REFUSE-02 does not cover. On the 43-PDF baseline the refusals by code were (leads, re-measure): notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11, mixed_percussive_tie_ownership_unread 2. REFUSE-02 handles note_duration_event_unread (unread symbols); this task handles the alignment and total-mismatch classes, where notation and TAB disagree or a bar has no notation event. Some refusals may be correct (the source is wrong, ambiguous or not music); those stay refused with a clearer reason.",
+    "id": "REFUSE-04",
+    "title": "Settle the alignment and total-mismatch refusals REFUSE-03 left unknown",
+    "objective": "Continue REFUSE-03. After it, 186 bars of the 43-PDF set are refused (leads, re-measure): note_duration_event_unread 107 (REFUSE-02 scope), bar_without_notation_event 26 (19 in one source whose detected staff has zero height, 5 blank stubs after a closing repeat barline or before the first barline, 2 elsewhere), notation_note_without_tab_digit 29 (11 with no TAB digit placed in the bar, 18 with differing counts), bar_total_mismatch 12, notehead_digit_count_mismatch 10, mixed_percussive_tie_ownership_unread 2. REFUSE-03 left these classified unknown. Settle them: for each class decide, from the printed notation and TAB together, whether the refusal is correct or a reader gap, and fix the largest reader gap. Refusals that are correct (blank stubs, evidence that really disagrees) stay refused with a clearer located reason.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 535,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/refuse-03-alignment-and-total-mismatch-refusals",
-    "prompt": "projects/score2gp/prompts/next/refuse-03-alignment-and-total-mismatch-refusals.md",
+    "branch": "feat/refuse-04-settle-remaining-alignment-refusals",
+    "prompt": "projects/score2gp/prompts/next/refuse-04-settle-remaining-alignment-refusals.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: for each bar refused with one of these codes, record the located reason (page, system, bar, event, reason code and the disagreement: which side has the extra or missing item), and rank classes by bar count. Counts and codes only in the handback. For each class say whether the refusal is correct (the evidence really disagrees), a reader gap, or unknown.",
-      "Pick the largest class that is a reader gap and can be settled honestly from the printed notation and TAB together (never from counts or spacing), and fix it; anything not settled stays refused with its located reason. Do not loosen the alignment or total checks to write more bars.",
+      "Measure first with the normal CLI over every approved PDF on the current runtime: for each refused bar in the classes above (excluding note_duration_event_unread), record page, system, bar, event, reason code and the disagreement (which side has the extra or missing item). View the printed page for a sample of every class and say what is actually printed. Counts and codes only in the handback. Rank classes by bar count and label each correct refusal, reader gap, or still unknown.",
+      "Fix the largest class that is a reader gap and can be settled honestly from the printed notation and TAB together (never from counts or spacing). Specifically examine the zero-height detected staff source (19 bars): decide whether the staff detection is wrong (reader gap) or the source is staffless-TAB style that TABRHY-01 already covers. Anything not settled stays refused with its located reason. Do not loosen the alignment or total checks to write more bars.",
       "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. No source that converted may lose a correct bar and no bar may be written with a wrong duration; check each newly written bar against its reference where a readable one exists, otherwise against the printed notation, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so. If no class is a settleable reader gap, say so with the evidence and change nothing but clearer located reasons.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -5242,6 +5242,50 @@
       "merge_commit": "881b099e599d1fec0ec9ab670529d0ddd13a8de1",
       "reconciled": true,
       "reconciled_at": "2026-11-02T02:26:37.793105+00:00"
+    },
+    {
+      "id": "REFUSE-03",
+      "title": "Measure and reduce alignment and total-mismatch bar refusals",
+      "objective": "Measure and reduce the refused bars that REFUSE-02 does not cover. On the 43-PDF baseline the refusals by code were (leads, re-measure): notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11, mixed_percussive_tie_ownership_unread 2. REFUSE-02 handles note_duration_event_unread (unread symbols); this task handles the alignment and total-mismatch classes, where notation and TAB disagree or a bar has no notation event. Some refusals may be correct (the source is wrong, ambiguous or not music); those stay refused with a clearer reason.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 535,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-03-alignment-and-total-mismatch-refusals",
+      "prompt": "projects/score2gp/prompts/next/refuse-03-alignment-and-total-mismatch-refusals.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: for each bar refused with one of these codes, record the located reason (page, system, bar, event, reason code and the disagreement: which side has the extra or missing item), and rank classes by bar count. Counts and codes only in the handback. For each class say whether the refusal is correct (the evidence really disagrees), a reader gap, or unknown.",
+        "Pick the largest class that is a reader gap and can be settled honestly from the printed notation and TAB together (never from counts or spacing), and fix it; anything not settled stays refused with its located reason. Do not loosen the alignment or total checks to write more bars.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. No source that converted may lose a correct bar and no bar may be written with a wrong duration; check each newly written bar against its reference where a readable one exists, otherwise against the printed notation, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "9b7994f6819767d6e6582f665e795c2e3cf834ee",
+      "merge_commit": "2e7fa8ff9a9575d9547f3898ba8920b69df6753f",
+      "reconciled": true,
+      "reconciled_at": "2026-11-02T07:58:06.675805+00:00"
     }
   ],
   "backlog": [

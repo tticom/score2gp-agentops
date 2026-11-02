@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-03 — Measure and reduce alignment and total-mismatch bar refusals
+**Task**: REFUSE-04 — Settle the alignment and total-mismatch refusals REFUSE-03 left unknown
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-03-alignment-and-total-mismatch-refusals`
+**PR Branch**: `feat/refuse-04-settle-remaining-alignment-refusals`
 
-**Pull Request**: 535
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Measure and reduce the refused bars that REFUSE-02 does not cover. On the 43-PDF baseline the refusals by code were (leads, re-measure): notation_note_without_tab_digit 25, bar_total_mismatch 18, bar_without_notation_event 15, notehead_digit_count_mismatch 11, mixed_percussive_tie_ownership_unread 2. REFUSE-02 handles note_duration_event_unread (unread symbols); this task handles the alignment and total-mismatch classes, where notation and TAB disagree or a bar has no notation event. Some refusals may be correct (the source is wrong, ambiguous or not music); those stay refused with a clearer reason.
+Continue REFUSE-03. After it, 186 bars of the 43-PDF set are refused (leads, re-measure): note_duration_event_unread 107 (REFUSE-02 scope), bar_without_notation_event 26 (19 in one source whose detected staff has zero height, 5 blank stubs after a closing repeat barline or before the first barline, 2 elsewhere), notation_note_without_tab_digit 29 (11 with no TAB digit placed in the bar, 18 with differing counts), bar_total_mismatch 12, notehead_digit_count_mismatch 10, mixed_percussive_tie_ownership_unread 2. REFUSE-03 left these classified unknown. Settle them: for each class decide, from the printed notation and TAB together, whether the refusal is correct or a reader gap, and fix the largest reader gap. Refusals that are correct (blank stubs, evidence that really disagrees) stay refused with a clearer located reason.
 
 ## Allowed paths
 
