@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: GROUP-02 — Accept repeat-sign start barlines as system barlines where the evidence is unambiguous
+**Task**: REFUSE-07 — Reduce the unread-duration refusals left in the newly routed sources
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/group-02-repeat-sign-start-barlines`
+**PR Branch**: `feat/refuse-07-hey-joe-pride-and-joy-refused-bars`
 
-**Pull Request**: 540
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-GROUP-01 (merged) left 5_Grateful_Dead_Intros refused at grouping (missing_pdf_barlines): 5 systems, one with a single barline because a repeat-sign start barline is classed as floating. It is readable music. Measure the remaining grouping refusals on the current runtime, then let repeat-sign (thick-thin or dotted) start and end barlines count as system barlines only where the drawn evidence makes it unambiguous. Do not loosen or bypass a safety check; a barline the evidence cannot settle stays refused with a located reason.
+After GROUP-01, Hey Joe and Pride and Joy write only part of their bars: the rest are refused with note_duration_event_unread (12 bars) and bar_total_mismatch / mixed_percussive_tie_ownership_unread. Measure the refusal reasons on those two sources and the whole set, and read the largest class that is unambiguously musical from note type plus grouping. Leads, not facts: re-measure.
 
 ## Allowed paths
 
