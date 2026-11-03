@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/group-01-raise-grouping-resolution-refused-sources`
 
-**Pull Request**: TBD
+**Pull Request**: 539
 
 **Owner Role**: implementation
 
