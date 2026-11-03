@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: GROUP-01 — Raise the TAB grouping resolution for sources refused at grouping
+**Task**: GROUP-02 — Accept repeat-sign start barlines as system barlines where the evidence is unambiguous
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/group-01-raise-grouping-resolution-refused-sources`
+**PR Branch**: `feat/group-02-repeat-sign-start-barlines`
 
-**Pull Request**: 539
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Nine private sources produce no route because they are refused at grouping (pdf_only_tab_grouping_unsafe, ambiguous_bar_assignment), including two that carry a score. REFUSE-02 found these are a grouping problem, not an unread symbol, and TABRHY-01 raised the grouping resolution for staffless TAB only. This task measures the rest. Raise the grouping resolution only where the evidence (staff and TAB line geometry, barlines, digit positions) makes the grouping safely determinable; do not loosen or bypass the safety check. The maintainer's standing view: the grouping safety or resolution needs to be increased until the TAB is safely determinable.
+GROUP-01 (merged) left 5_Grateful_Dead_Intros refused at grouping (missing_pdf_barlines): 5 systems, one with a single barline because a repeat-sign start barline is classed as floating. It is readable music. Measure the remaining grouping refusals on the current runtime, then let repeat-sign (thick-thin or dotted) start and end barlines count as system barlines only where the drawn evidence makes it unambiguous. Do not loosen or bypass a safety check; a barline the evidence cannot settle stays refused with a located reason.
 
 ## Allowed paths
 
