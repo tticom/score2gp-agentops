@@ -1,29 +1,29 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 280,
+  "authority_revision": 282,
   "task": {
-    "id": "GROUP-01",
-    "title": "Raise the TAB grouping resolution for sources refused at grouping",
-    "objective": "Nine private sources produce no route because they are refused at grouping (pdf_only_tab_grouping_unsafe, ambiguous_bar_assignment), including two that carry a score. REFUSE-02 found these are a grouping problem, not an unread symbol, and TABRHY-01 raised the grouping resolution for staffless TAB only. This task measures the rest. Raise the grouping resolution only where the evidence (staff and TAB line geometry, barlines, digit positions) makes the grouping safely determinable; do not loosen or bypass the safety check. The maintainer's standing view: the grouping safety or resolution needs to be increased until the TAB is safely determinable.",
+    "id": "GROUP-02",
+    "title": "Accept repeat-sign start barlines as system barlines where the evidence is unambiguous",
+    "objective": "GROUP-01 (merged) left 5_Grateful_Dead_Intros refused at grouping (missing_pdf_barlines): 5 systems, one with a single barline because a repeat-sign start barline is classed as floating. It is readable music. Measure the remaining grouping refusals on the current runtime, then let repeat-sign (thick-thin or dotted) start and end barlines count as system barlines only where the drawn evidence makes it unambiguous. Do not loosen or bypass a safety check; a barline the evidence cannot settle stays refused with a located reason.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 539,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/group-01-raise-grouping-resolution-refused-sources",
-    "prompt": "projects/score2gp/prompts/next/group-01-raise-grouping-resolution-refused-sources.md",
+    "branch": "feat/group-02-repeat-sign-start-barlines",
+    "prompt": "projects/score2gp/prompts/next/group-02-repeat-sign-start-barlines.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first, per grouping-refused source: the refusal code, the exact check that raises it (quote the code), the systems and bars found, and the warning that blocks it (barline, line spacing, digit-interrupted lines, bar assignment). Counts and codes only in the handback. Say for each source whether it is music the system can read.",
-      "Pick the largest cause the page evidence can settle safely and fix the resolution, not the threshold: a group or bar that the evidence still cannot settle stays refused with a located reason. Do not loosen or bypass a safety check. Design and tune on some sources and hold out at least two: apply the finished reader to them once and report bar by bar against the printed notation, without tuning on them.",
-      "Report before and after over the whole private set: bars written, bars refused by code, sources newly producing a route, and every source whose written GPIF changed. Every source that converted before must be byte-identical. Label each newly written bar not independently verified unless a reference exists, and list which output files the maintainer should open and check.",
-      "A named mutant (drop the new resolution rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Measure first with the normal CLI over every approved PDF: per grouping-refused source state the refusal code, the exact check that raises it (quote the code) and whether the source is readable music. Counts and codes only in the handback.",
+      "Fix the barline classification, not a threshold: a repeat-sign barline is accepted only when it is a drawn vertical spanning the whole TAB staff with the repeat marks beside it. Hold out at least one other source with repeat signs, apply the finished rule once and report it bar by bar against the printed page.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
       "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
@@ -42,7 +42,46 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
+  "next_task_proposal": {
+    "id": "REFUSE-07",
+    "title": "Reduce the unread-duration refusals left in the newly routed sources",
+    "objective": "After GROUP-01, Hey Joe and Pride and Joy write only part of their bars: the rest are refused with note_duration_event_unread (12 bars) and bar_total_mismatch / mixed_percussive_tie_ownership_unread. Measure the refusal reasons on those two sources and the whole set, and read the largest class that is unambiguously musical from note type plus grouping. Leads, not facts: re-measure.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/refuse-07-hey-joe-pride-and-joy-refused-bars",
+    "prompt": "projects/score2gp/prompts/next/refuse-07-hey-joe-pride-and-joy-refused-bars.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: for Hey Joe and Pride and Joy record per refused bar the located reason (page, system, bar, event, code, shape class) and rank classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
+      "Read the largest class that can be read honestly from note type plus grouping, or from a symbol that is unambiguously musical; anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -5418,6 +5457,50 @@
       "merge_commit": "d37241cef53051d5e1efab09d1d1fd017dc15631",
       "reconciled": true,
       "reconciled_at": "2026-11-02T22:26:38.407095+00:00"
+    },
+    {
+      "id": "GROUP-01",
+      "title": "Raise the TAB grouping resolution for sources refused at grouping",
+      "objective": "Nine private sources produce no route because they are refused at grouping (pdf_only_tab_grouping_unsafe, ambiguous_bar_assignment), including two that carry a score. REFUSE-02 found these are a grouping problem, not an unread symbol, and TABRHY-01 raised the grouping resolution for staffless TAB only. This task measures the rest. Raise the grouping resolution only where the evidence (staff and TAB line geometry, barlines, digit positions) makes the grouping safely determinable; do not loosen or bypass the safety check. The maintainer's standing view: the grouping safety or resolution needs to be increased until the TAB is safely determinable.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 539,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/group-01-raise-grouping-resolution-refused-sources",
+      "prompt": "projects/score2gp/prompts/next/group-01-raise-grouping-resolution-refused-sources.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first, per grouping-refused source: the refusal code, the exact check that raises it (quote the code), the systems and bars found, and the warning that blocks it (barline, line spacing, digit-interrupted lines, bar assignment). Counts and codes only in the handback. Say for each source whether it is music the system can read.",
+        "Pick the largest cause the page evidence can settle safely and fix the resolution, not the threshold: a group or bar that the evidence still cannot settle stays refused with a located reason. Do not loosen or bypass a safety check. Design and tune on some sources and hold out at least two: apply the finished reader to them once and report bar by bar against the printed notation, without tuning on them.",
+        "Report before and after over the whole private set: bars written, bars refused by code, sources newly producing a route, and every source whose written GPIF changed. Every source that converted before must be byte-identical. Label each newly written bar not independently verified unless a reference exists, and list which output files the maintainer should open and check.",
+        "A named mutant (drop the new resolution rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "57b3496b58c0aa3b0a046ac2445dc86cf52731e0",
+      "merge_commit": "8cae39846a4cca47a22d7ee89c52553326120fbf",
+      "reconciled": true,
+      "reconciled_at": "2026-11-03T05:20:27.234665+00:00"
     }
   ],
   "backlog": [
