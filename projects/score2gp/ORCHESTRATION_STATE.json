@@ -1,27 +1,27 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 285,
+  "authority_revision": 287,
   "task": {
-    "id": "REFUSE-07",
-    "title": "Reduce the unread-duration refusals left in the newly routed sources",
-    "objective": "After GROUP-01, Hey Joe and Pride and Joy write only part of their bars: the rest are refused with note_duration_event_unread (12 bars) and bar_total_mismatch / mixed_percussive_tie_ownership_unread. Measure the refusal reasons on those two sources and the whole set, and read the largest class that is unambiguously musical from note type plus grouping. Leads, not facts: re-measure.",
+    "id": "REFUSE-08",
+    "title": "Read rest glyphs that the unread-duration refusals leave behind",
+    "objective": "REFUSE-07 measured the whole-set note_duration_event_unread ranking. Rests are unambiguous musical symbols: rest_glyph_beside_note (6 bars) and rest_glyph_unidentified (4 bars) are refused today. Measure why each rest glyph is not identified or is refused beside a note, and read rests whose glyph shape fixes their value (whole, half, quarter, eighth, sixteenth, with dots). Never read a rest from spacing. Leads, not facts: re-measure on the current runtime.",
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 541,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/refuse-07-hey-joe-pride-and-joy-refused-bars",
-    "prompt": "projects/score2gp/prompts/next/refuse-07-hey-joe-pride-and-joy-refused-bars.md",
+    "branch": "feat/refuse-08-rest-glyphs",
+    "prompt": "projects/score2gp/prompts/next/refuse-08-rest-glyphs.md",
     "allowed_paths": [
       "src/score2gp/**",
       "tests/**"
     ],
     "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: for Hey Joe and Pride and Joy record per refused bar the located reason (page, system, bar, event, code, shape class) and rank classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
-      "Read the largest class that can be read honestly from note type plus grouping, or from a symbol that is unambiguously musical; anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+      "Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) for the class named in the objective and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
+      "Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
       "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
       "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
       "Nothing that worked may change; validation commands pass; handback complete."
@@ -42,8 +42,88 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "REFUSE-09",
+    "title": "Read stem flags that are unread or unidentified",
+    "objective": "REFUSE-07 measured flag_glyph_unread (6 bars), flag_glyph_unidentified (3 bars) and grace_note_unsupported_flag_count (1 bar) among the refusals. A flag count on a stem fixes the note type. Measure why the flags are unread or unidentified (overlap with beams, glyph variants, stem geometry) and read the flags only where the count is unambiguous from the drawn glyphs. Leads, not facts: re-measure on the current runtime.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/refuse-09-flag-glyphs",
+    "prompt": "projects/score2gp/prompts/next/refuse-09-flag-glyphs.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) for the class named in the objective and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
+      "Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "REFUSE-10",
+      "title": "Stop duration-free marks (arcs, overlapping forms, marks below strings) refusing whole bars",
+      "objective": "REFUSE-07 measured unsupported_overlapping_form (5 bars), unclassified_same_position_arc (4), unclassified_mark_below_strings (4) and remaining symbol_unclassified (6) among the refusals. Measure which of these are ties/slurs, bend or technique marks, or other unambiguous symbols that carry no duration and are wrongly refusing the whole bar, and record them as located non-events only where the shape settles it. Leads, not facts: re-measure on the current runtime.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-10-duration-free-marks",
+      "prompt": "projects/score2gp/prompts/next/refuse-10-duration-free-marks.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) for the class named in the objective and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
+        "Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -5506,6 +5586,50 @@
       "merge_commit": "d870445b4441d068d0a1dfa54fd78edb5cc942f3",
       "reconciled": true,
       "reconciled_at": "2026-11-03T11:56:38.007060+00:00"
+    },
+    {
+      "id": "REFUSE-07",
+      "title": "Reduce the unread-duration refusals left in the newly routed sources",
+      "objective": "After GROUP-01, Hey Joe and Pride and Joy write only part of their bars: the rest are refused with note_duration_event_unread (12 bars) and bar_total_mismatch / mixed_percussive_tie_ownership_unread. Measure the refusal reasons on those two sources and the whole set, and read the largest class that is unambiguously musical from note type plus grouping. Leads, not facts: re-measure.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 541,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-07-hey-joe-pride-and-joy-refused-bars",
+      "prompt": "projects/score2gp/prompts/next/refuse-07-hey-joe-pride-and-joy-refused-bars.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: for Hey Joe and Pride and Joy record per refused bar the located reason (page, system, bar, event, code, shape class) and rank classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown.",
+        "Read the largest class that can be read honestly from note type plus grouping, or from a symbol that is unambiguously musical; anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "a38110020641180119808b0965a445fee1d514bf",
+      "merge_commit": "c36c8b2afc76e005fdf5076fd517ec3e5b7607f8",
+      "reconciled": true,
+      "reconciled_at": "2026-11-03T16:24:06.525399+00:00"
     }
   ],
   "backlog": [
