@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-12 — Read the next remaining reader-gap refusal class after REFUSE-11
+**Task**: REFUSE-13 — Read bend-target heads that carry no TAB digit
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-12-next-remaining-refusal-class`
+**PR Branch**: `feat/refuse-13-bend-target-heads`
 
-**Pull Request**: 546
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Same method as REFUSE-11, one class further: after REFUSE-11 lands, re-measure the whole-set ranking of remaining refusal codes and take the largest remaining class that is a reader gap with unambiguous musical symbols. If the largest remaining classes are all representation gaps or unknown, stop and report the located ranking instead of guessing. Leads, not facts.
+REFUSE-12's whole-set measurement left this class unread: notation_note_without_tab_digit / no_tab_column_at_notation_event, about 15 bars across 4 sources, mostly bend-target heads. Check the bend acceptance recorded in TABRHY-01 and reuse its representation. Re-measure on the current runtime first. Read the class only where the drawn notation settles it (note type, grouping, a glyph whose meaning is fixed); extend the score model and writer only as far as the printed symbol requires, and leave everything else refused with its located reason. If the class cannot be read without counting or spacing inference, stop and report the located evidence. Leads, not facts.
 
 ## Allowed paths
 
