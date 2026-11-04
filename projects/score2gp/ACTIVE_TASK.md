@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-13-bend-target-heads`
 
-**Pull Request**: TBD
+**Pull Request**: 547
 
 **Owner Role**: implementation
 
