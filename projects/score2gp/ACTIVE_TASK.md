@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-10 — Stop duration-free marks (arcs, overlapping forms, marks below strings) refusing whole bars
+**Task**: REFUSE-11 — Read the largest remaining reader-gap refusal class after REFUSE-10
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-10-duration-free-marks`
+**PR Branch**: `feat/refuse-11-largest-remaining-refusal-class`
 
-**Pull Request**: 544
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-07 measured unsupported_overlapping_form (5 bars), unclassified_same_position_arc (4), unclassified_mark_below_strings (4) and remaining symbol_unclassified (6) among the refusals. Measure which of these are ties/slurs, bend or technique marks, or other unambiguous symbols that carry no duration and are wrongly refusing the whole bar, and record them as located non-events only where the shape settles it. Leads, not facts: re-measure on the current runtime.
+REFUSE-07 to REFUSE-10 each read one measured class of refused bars. Re-run the whole-set measurement on the current runtime (after REFUSE-08, -09 and -10) and rank every remaining refusal code by bar count over all approved PDFs. Take the single largest class that is a reader gap and whose symbols are unambiguously musical, and read it only where the drawn notation settles it. Leads, not facts: do not trust older rankings.
 
 ## Allowed paths
 
