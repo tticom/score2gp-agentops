@@ -10,11 +10,11 @@ Private fixtures: the corpus is grouped by category on fixtures `main`; the auth
 
 ## Goal
 
-Same method as REFUSE-11, one class further: after REFUSE-11 lands, re-measure the whole-set ranking of remaining refusal codes and take the largest remaining class that is a reader gap with unambiguous musical symbols. If the largest remaining classes are all correct refusals or unknown, stop and report the located ranking instead of guessing. Leads, not facts.
+Same method as REFUSE-11, one class further: after REFUSE-11 lands, re-measure the whole-set ranking of remaining refusal codes and take the largest remaining class that is a reader gap with unambiguous musical symbols. If the largest remaining classes are all representation gaps or unknown, stop and report the located ranking instead of guessing. Leads, not facts.
 
 ## Acceptance
 
-1. Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a correct refusal, or unknown, and name the class chosen and why.
+1. Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a representation gap or unknown (never a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from), and name the class chosen and why.
 2. Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.
 3. Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.
 4. A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.
