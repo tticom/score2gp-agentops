@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-14-ghost-and-parenthesized-heads`
 
-**Pull Request**: TBD
+**Pull Request**: 548
 
 **Owner Role**: implementation
 
