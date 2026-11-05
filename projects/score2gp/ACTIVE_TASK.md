@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-16-read-accidental-and-curved-forms`
 
-**Pull Request**: TBD
+**Pull Request**: 551
 
 **Owner Role**: implementation
 

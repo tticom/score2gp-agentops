@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 309,
+  "authority_revision": 310,
   "task": {
     "id": "REFUSE-16",
     "title": "Read the accidental and curved forms beside and over or under noteheads",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 551,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
