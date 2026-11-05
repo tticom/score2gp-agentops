@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/tieown-01-per-head-tie-ownership`
 
-**Pull Request**: TBD
+**Pull Request**: 552
 
 **Owner Role**: implementation
 
