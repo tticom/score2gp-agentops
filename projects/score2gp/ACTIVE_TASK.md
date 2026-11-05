@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-15 — Read hammer-on / pull-off clusters of adjacent heads
+**Task**: TABEXT-01 — Read the fret digits that TAB extraction excludes before the route
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-15-hammer-pull-clusters`
+**PR Branch**: `feat/tabext-01-read-fret-digits-excluded-before-the-route`
 
-**Pull Request**: 549
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-12's whole-set measurement left this class unread: notehead_digit_count_mismatch (about 11 bars after REFUSE-12), mostly hammer-on/pull-off clusters of adjacent heads. The slur arc between adjacent heads fixes the technique; Lesson-5.gp and other readable references are the check. Re-measure on the current runtime first. Read the class only where the drawn notation settles it (note type, grouping, a glyph whose meaning is fixed); extend the score model and writer only as far as the printed symbol requires, and leave everything else refused with its located reason. If the class cannot be read without counting or spacing inference, stop and report the located evidence. Leads, not facts.
+REFUSE-13's whole-set measurement (46 PDFs, 863 bars written) found that the largest honest part of notation_note_without_tab_digit / no_tab_column_at_notation_event is not a notation problem: about 8 bars in 4 sources print ordinary fret digits (chords and single notes) that TabRaw excluded before the route, under pdf_fret_page_or_legend_number_excluded, pdf_fret_multidigit_extracted, pdf_fret_digits_not_merged_exceeds_max_fret and pdf_fret_digit_symbol_overlap_ambiguous. One more bar is a tied chord whose TAB digits are bracketed at a system start, and one TAB row of a staffless source loses its digits the same way. Leads, not facts: re-measure. Read a digit as a fret only where its position on a string line and its size make it unambiguous; a number that is a page number, a legend or a tempo mark must stay excluded.
 
 ## Allowed paths
 
