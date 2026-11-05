@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/tabext-01-read-fret-digits-excluded-before-the-route`
 
-**Pull Request**: TBD
+**Pull Request**: 550
 
 **Owner Role**: implementation
 
