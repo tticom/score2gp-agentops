@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 303,
+  "authority_revision": 304,
   "task": {
-    "id": "REFUSE-14",
-    "title": "Read ghost (parenthesized) heads and slurs over heads",
-    "objective": "REFUSE-12's whole-set measurement left this class unread: parenthesized_head_unrepresented (6 bars), unsupported_overlapping_form (9) and symbol_unclassified (6). Ghost notes are drawn as a parenthesized head; decide per sub-class which are reader gaps. Re-measure on the current runtime first. Read the class only where the drawn notation settles it (note type, grouping, a glyph whose meaning is fixed); extend the score model and writer only as far as the printed symbol requires, and leave everything else refused with its located reason. If the class cannot be read without counting or spacing inference, stop and report the located evidence. Leads, not facts.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 548,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/refuse-14-ghost-and-parenthesized-heads",
-    "prompt": "projects/score2gp/prompts/next/refuse-14-ghost-and-parenthesized-heads.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a representation gap or unknown (never a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from), and name the class chosen and why.",
-      "Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "REFUSE-15",
     "title": "Read hammer-on / pull-off clusters of adjacent heads",
     "objective": "REFUSE-12's whole-set measurement left this class unread: notehead_digit_count_mismatch (about 11 bars after REFUSE-12), mostly hammer-on/pull-off clusters of adjacent heads. The slur arc between adjacent heads fixes the technique; Lesson-5.gp and other readable references are the check. Re-measure on the current runtime first. Read the class only where the drawn notation settles it (note type, grouping, a glyph whose meaning is fixed); extend the score model and writer only as far as the printed symbol requires, and leave everything else refused with its located reason. If the class cannot be read without counting or spacing inference, stop and report the located evidence. Leads, not facts.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,6 +42,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -5853,6 +5814,50 @@
       "merge_commit": "7d59219f33f4bf92f368cc8463f37f26fe19f4a5",
       "reconciled": true,
       "reconciled_at": "2026-11-04T19:56:38.950342+00:00"
+    },
+    {
+      "id": "REFUSE-14",
+      "title": "Read ghost (parenthesized) heads and slurs over heads",
+      "objective": "REFUSE-12's whole-set measurement left this class unread: parenthesized_head_unrepresented (6 bars), unsupported_overlapping_form (9) and symbol_unclassified (6). Ghost notes are drawn as a parenthesized head; decide per sub-class which are reader gaps. Re-measure on the current runtime first. Read the class only where the drawn notation settles it (note type, grouping, a glyph whose meaning is fixed); extend the score model and writer only as far as the printed symbol requires, and leave everything else refused with its located reason. If the class cannot be read without counting or spacing inference, stop and report the located evidence. Leads, not facts.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 548,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-14-ghost-and-parenthesized-heads",
+      "prompt": "projects/score2gp/prompts/next/refuse-14-ghost-and-parenthesized-heads.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per refused bar the located reason (page, system, bar, event, code, shape class) and rank the classes over the whole set by bar count. Counts and codes only in the handback. For each class say whether it is a reader gap, a representation gap or unknown (never a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from), and name the class chosen and why.",
+        "Read the class only where the symbol is unambiguously musical (note type plus grouping, or a glyph whose meaning is fixed by notation); anything not settled stays refused with its located reason. No duration is guessed and no spacing or count inference is used.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "1ccff69d17424b3ec9f9cf8edd9e47f5338ee1ef",
+      "merge_commit": "a6774254fec73a549804bd2bbf66bb4f07681b7c",
+      "reconciled": true,
+      "reconciled_at": "2026-11-05T00:56:38.867285+00:00"
     }
   ],
   "backlog": [
