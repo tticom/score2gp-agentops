@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 308,
+  "authority_revision": 309,
   "task": {
-    "id": "TABEXT-01",
-    "title": "Read the fret digits that TAB extraction excludes before the route",
-    "objective": "REFUSE-13's whole-set measurement (46 PDFs, 863 bars written) found that the largest honest part of notation_note_without_tab_digit / no_tab_column_at_notation_event is not a notation problem: about 8 bars in 4 sources print ordinary fret digits (chords and single notes) that TabRaw excluded before the route, under pdf_fret_page_or_legend_number_excluded, pdf_fret_multidigit_extracted, pdf_fret_digits_not_merged_exceeds_max_fret and pdf_fret_digit_symbol_overlap_ambiguous. One more bar is a tied chord whose TAB digits are bracketed at a system start, and one TAB row of a staffless source loses its digits the same way. Leads, not facts: re-measure. Read a digit as a fret only where its position on a string line and its size make it unambiguous; a number that is a page number, a legend or a tempo mark must stay excluded.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 550,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/tabext-01-read-fret-digits-excluded-before-the-route",
-    "prompt": "projects/score2gp/prompts/next/tabext-01-read-fret-digits-excluded-before-the-route.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each excluded digit group say why it was excluded and what it is on the printed page (view the page).",
-      "Fix the extraction so a real fret digit is kept: separate it from page numbers and legends by position, size and line membership, and merge adjacent digits into one fret only where they sit on one string line within the glyph spacing. Never loosen a maximum-fret or overlap guard to write more bars: a digit that the evidence cannot settle stays excluded with its located reason.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "REFUSE-16",
     "title": "Read the accidental and curved forms beside and over or under noteheads",
     "objective": "After REFUSE-14, the largest group of refused bars with printed notes is unsupported_overlapping_form (9 bars) plus 8 more bars counted under notehead_digit_count_mismatch that carry the same unread accidental_beside_notehead / over_or_under_notehead curved forms (5 sources). These are accidentals other than naturals and curves that are neither ties nor slurs. Leads, not facts: re-measure. Extend the score model only where a glyph's meaning is fixed by notation (sharp, flat, double sharp, courtesy accidental, slide or articulation curve); keep the pitch honest because the TAB digit is the authority for string and fret.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,47 +42,47 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "TIEOWN-01",
+    "title": "Read which head of a chord owns a tie",
+    "objective": "REFUSE-12 deliberately excludes tie.start when it ties one head of a chord to the note before it, because copying would invent ties on other heads. The rest of the class is per-head tie ownership: a chord that is both a tie stop on one head and a tie start (a tied chain), a 6-head chord with 4 digits whose two heads are tie stops from a previous 2-head chord, the mixed_percussive_tie_ownership_unread bars (3), and the tie_stop_without_written_predecessor bars that cascade from them (10 at the last measurement). Leads, not facts: re-measure. Settle ownership from the tie arc's end points against each head's own position, never from counts.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/tieown-01-per-head-tie-ownership",
+    "prompt": "projects/score2gp/prompts/next/tieown-01-per-head-tie-ownership.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Separate the cascade bars (their predecessor is refused) from the ownership bars, and say which refused predecessor each cascade waits for.",
+      "Read a tie's owner per head from the arc's start and end positions against the head positions, requiring exactly one head at each end; anything ambiguous stays refused with its located reason. Unlock the cascade bars only through this reading, never by writing a tie with no printed arc.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "TIEOWN-01",
-      "title": "Read which head of a chord owns a tie",
-      "objective": "REFUSE-12 deliberately excludes tie.start when it ties one head of a chord to the note before it, because copying would invent ties on other heads. The rest of the class is per-head tie ownership: a chord that is both a tie stop on one head and a tie start (a tied chain), a 6-head chord with 4 digits whose two heads are tie stops from a previous 2-head chord, the mixed_percussive_tie_ownership_unread bars (3), and the tie_stop_without_written_predecessor bars that cascade from them (10 at the last measurement). Leads, not facts: re-measure. Settle ownership from the tie arc's end points against each head's own position, never from counts.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/tieown-01-per-head-tie-ownership",
-      "prompt": "projects/score2gp/prompts/next/tieown-01-per-head-tie-ownership.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Separate the cascade bars (their predecessor is refused) from the ownership bars, and say which refused predecessor each cascade waits for.",
-        "Read a tie's owner per head from the arc's start and end positions against the head positions, requiring exactly one head at each end; anything ambiguous stays refused with its located reason. Unlock the cascade bars only through this reading, never by writing a tie with no printed arc.",
-        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "NOROUTE-01",
       "title": "Diagnose the PDFs that end without a route record",
@@ -6063,6 +6023,50 @@
       "merge_commit": "a53b74a96984a73358e77584ce54dfd8f9b4c1ee",
       "reconciled": true,
       "reconciled_at": "2026-11-05T06:07:05.481464+00:00"
+    },
+    {
+      "id": "TABEXT-01",
+      "title": "Read the fret digits that TAB extraction excludes before the route",
+      "objective": "REFUSE-13's whole-set measurement (46 PDFs, 863 bars written) found that the largest honest part of notation_note_without_tab_digit / no_tab_column_at_notation_event is not a notation problem: about 8 bars in 4 sources print ordinary fret digits (chords and single notes) that TabRaw excluded before the route, under pdf_fret_page_or_legend_number_excluded, pdf_fret_multidigit_extracted, pdf_fret_digits_not_merged_exceeds_max_fret and pdf_fret_digit_symbol_overlap_ambiguous. One more bar is a tied chord whose TAB digits are bracketed at a system start, and one TAB row of a staffless source loses its digits the same way. Leads, not facts: re-measure. Read a digit as a fret only where its position on a string line and its size make it unambiguous; a number that is a page number, a legend or a tempo mark must stay excluded.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 550,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tabext-01-read-fret-digits-excluded-before-the-route",
+      "prompt": "projects/score2gp/prompts/next/tabext-01-read-fret-digits-excluded-before-the-route.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each excluded digit group say why it was excluded and what it is on the printed page (view the page).",
+        "Fix the extraction so a real fret digit is kept: separate it from page numbers and legends by position, size and line membership, and merge adjacent digits into one fret only where they sit on one string line within the glyph spacing. Never loosen a maximum-fret or overlap guard to write more bars: a digit that the evidence cannot settle stays excluded with its located reason.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "79342a16c04d8c26b862adba5235ae805eb95eca",
+      "merge_commit": "3f07d4c13f6263cedc53d5da95281eeee8fa1825",
+      "reconciled": true,
+      "reconciled_at": "2026-11-05T11:06:42.449823+00:00"
     }
   ],
   "backlog": [

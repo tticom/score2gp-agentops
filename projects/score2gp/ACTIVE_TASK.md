@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TABEXT-01 — Read the fret digits that TAB extraction excludes before the route
+**Task**: REFUSE-16 — Read the accidental and curved forms beside and over or under noteheads
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tabext-01-read-fret-digits-excluded-before-the-route`
+**PR Branch**: `feat/refuse-16-read-accidental-and-curved-forms`
 
-**Pull Request**: 550
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-13's whole-set measurement (46 PDFs, 863 bars written) found that the largest honest part of notation_note_without_tab_digit / no_tab_column_at_notation_event is not a notation problem: about 8 bars in 4 sources print ordinary fret digits (chords and single notes) that TabRaw excluded before the route, under pdf_fret_page_or_legend_number_excluded, pdf_fret_multidigit_extracted, pdf_fret_digits_not_merged_exceeds_max_fret and pdf_fret_digit_symbol_overlap_ambiguous. One more bar is a tied chord whose TAB digits are bracketed at a system start, and one TAB row of a staffless source loses its digits the same way. Leads, not facts: re-measure. Read a digit as a fret only where its position on a string line and its size make it unambiguous; a number that is a page number, a legend or a tempo mark must stay excluded.
+After REFUSE-14, the largest group of refused bars with printed notes is unsupported_overlapping_form (9 bars) plus 8 more bars counted under notehead_digit_count_mismatch that carry the same unread accidental_beside_notehead / over_or_under_notehead curved forms (5 sources). These are accidentals other than naturals and curves that are neither ties nor slurs. Leads, not facts: re-measure. Extend the score model only where a glyph's meaning is fixed by notation (sharp, flat, double sharp, courtesy accidental, slide or articulation curve); keep the pitch honest because the TAB digit is the authority for string and fret.
 
 ## Allowed paths
 
