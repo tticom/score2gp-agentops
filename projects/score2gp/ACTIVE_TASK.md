@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/percx-01-read-x-strikes-in-tab-only-systems`
 
-**Pull Request**: TBD
+**Pull Request**: 556
 
 **Owner Role**: implementation
 
