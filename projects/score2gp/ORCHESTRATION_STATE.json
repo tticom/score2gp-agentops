@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 312,
+  "authority_revision": 313,
   "task": {
-    "id": "TIEOWN-01",
-    "title": "Read which head of a chord owns a tie",
-    "objective": "REFUSE-12 deliberately excludes tie.start when it ties one head of a chord to the note before it, because copying would invent ties on other heads. The rest of the class is per-head tie ownership: a chord that is both a tie stop on one head and a tie start (a tied chain), a 6-head chord with 4 digits whose two heads are tie stops from a previous 2-head chord, the mixed_percussive_tie_ownership_unread bars (3), and the tie_stop_without_written_predecessor bars that cascade from them (10 at the last measurement). Leads, not facts: re-measure. Settle ownership from the tie arc's end points against each head's own position, never from counts.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 552,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/tieown-01-per-head-tie-ownership",
-    "prompt": "projects/score2gp/prompts/next/tieown-01-per-head-tie-ownership.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Separate the cascade bars (their predecessor is refused) from the ownership bars, and say which refused predecessor each cascade waits for.",
-      "Read a tie's owner per head from the arc's start and end positions against the head positions, requiring exactly one head at each end; anything ambiguous stays refused with its located reason. Unlock the cascade bars only through this reading, never by writing a tie with no printed arc.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "NOROUTE-01",
     "title": "Diagnose the PDFs that end without a route record",
     "objective": "REFUSE-15's measurement found 6 of 46 PDFs end without a route record because the CLI refuses before any bar is produced (4 with exit 4, 1 with exit 1, 1 with exit 2). REFUSE-02 and GROUP-01 turned two of the earlier grouping refusals into routes; these six remain. They are real teaching material (maintainer, 2026-11-04). Leads, not facts: re-measure.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,49 +42,48 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "TABGUESS-01",
-      "title": "Design and score the spacing model for TAB that prints no rhythm",
-      "objective": "The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/tabguess-01-design-and-score-the-spacing-model",
-      "prompt": "projects/score2gp/prompts/next/tabguess-01-design-and-score-the-spacing-model.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**"
-      ],
-      "acceptance": [
-        "Measure first and write docs/tabguess-01-spacing-model.md: for each source that prints no rhythm, the number of TAB columns per bar, the column-spacing statistics, and the bars counts by code. Counts only; no private content. Then fix the model on paper before scoring it: what it infers from spacing, how it reaches a bar total equal to the meter, and the label format (GUESS in the report and in any output).",
-        "Score the model: take the sources whose rhythm is printed and read, hide the printed rhythm, infer from spacing alone, and report per source and in total the share of bars whose inferred rhythm equals the read rhythm, split by meter and by how regular the printed spacing is. Design on some sources and hold out at least two: score them once and do not tune on them. State what accuracy would make a labelled guess worth offering to the maintainer; this is a recommendation for the maintainer's decision, not a promotion.",
-        "No guessed duration is written to any output, report-as-read or counted as a read result in this task; the only change to src is whatever the scorer needs behind a test hook, and every source stays byte-identical. Reference-less sources are labelled not independently verified.",
-        "A named mutant (change the spacing rule; drop the meter-total check) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "TABGUESS-01",
+    "title": "Design and score the spacing model for TAB that prints no rhythm",
+    "objective": "The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/tabguess-01-design-and-score-the-spacing-model",
+    "prompt": "projects/score2gp/prompts/next/tabguess-01-design-and-score-the-spacing-model.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**"
+    ],
+    "acceptance": [
+      "Measure first and write docs/tabguess-01-spacing-model.md: for each source that prints no rhythm, the number of TAB columns per bar, the column-spacing statistics, and the bars counts by code. Counts only; no private content. Then fix the model on paper before scoring it: what it infers from spacing, how it reaches a bar total equal to the meter, and the label format (GUESS in the report and in any output).",
+      "Score the model: take the sources whose rhythm is printed and read, hide the printed rhythm, infer from spacing alone, and report per source and in total the share of bars whose inferred rhythm equals the read rhythm, split by meter and by how regular the printed spacing is. Design on some sources and hold out at least two: score them once and do not tune on them. State what accuracy would make a labelled guess worth offering to the maintainer; this is a recommendation for the maintainer's decision, not a promotion.",
+      "No guessed duration is written to any output, report-as-read or counted as a read result in this task; the only change to src is whatever the scorer needs behind a test hook, and every source stays byte-identical. Reference-less sources are labelled not independently verified.",
+      "A named mutant (change the spacing rule; drop the meter-total check) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -6071,6 +6030,50 @@
       "merge_commit": "e9137ae992e38855346d82beb8a920cf6607de61",
       "reconciled": true,
       "reconciled_at": "2026-11-05T18:46:40.042525+00:00"
+    },
+    {
+      "id": "TIEOWN-01",
+      "title": "Read which head of a chord owns a tie",
+      "objective": "REFUSE-12 deliberately excludes tie.start when it ties one head of a chord to the note before it, because copying would invent ties on other heads. The rest of the class is per-head tie ownership: a chord that is both a tie stop on one head and a tie start (a tied chain), a 6-head chord with 4 digits whose two heads are tie stops from a previous 2-head chord, the mixed_percussive_tie_ownership_unread bars (3), and the tie_stop_without_written_predecessor bars that cascade from them (10 at the last measurement). Leads, not facts: re-measure. Settle ownership from the tie arc's end points against each head's own position, never from counts.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 552,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tieown-01-per-head-tie-ownership",
+      "prompt": "projects/score2gp/prompts/next/tieown-01-per-head-tie-ownership.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Separate the cascade bars (their predecessor is refused) from the ownership bars, and say which refused predecessor each cascade waits for.",
+        "Read a tie's owner per head from the arc's start and end positions against the head positions, requiring exactly one head at each end; anything ambiguous stays refused with its located reason. Unlock the cascade bars only through this reading, never by writing a tie with no printed arc.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "19fa43d7fabdab5fdd55c9f51a6c62019166f797",
+      "merge_commit": "a68ef10497543fe2ab1ddc73f1e75d0d37e9abdb",
+      "reconciled": true,
+      "reconciled_at": "2026-11-05T23:56:39.066579+00:00"
     }
   ],
   "backlog": [

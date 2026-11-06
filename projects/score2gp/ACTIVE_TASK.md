@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TIEOWN-01 — Read which head of a chord owns a tie
+**Task**: NOROUTE-01 — Diagnose the PDFs that end without a route record
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tieown-01-per-head-tie-ownership`
+**PR Branch**: `feat/noroute-01-diagnose-pdfs-with-no-route-record`
 
-**Pull Request**: 552
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-12 deliberately excludes tie.start when it ties one head of a chord to the note before it, because copying would invent ties on other heads. The rest of the class is per-head tie ownership: a chord that is both a tie stop on one head and a tie start (a tied chain), a 6-head chord with 4 digits whose two heads are tie stops from a previous 2-head chord, the mixed_percussive_tie_ownership_unread bars (3), and the tie_stop_without_written_predecessor bars that cascade from them (10 at the last measurement). Leads, not facts: re-measure. Settle ownership from the tie arc's end points against each head's own position, never from counts.
+REFUSE-15's measurement found 6 of 46 PDFs end without a route record because the CLI refuses before any bar is produced (4 with exit 4, 1 with exit 1, 1 with exit 2). REFUSE-02 and GROUP-01 turned two of the earlier grouping refusals into routes; these six remain. They are real teaching material (maintainer, 2026-11-04). Leads, not facts: re-measure.
 
 ## Allowed paths
 
