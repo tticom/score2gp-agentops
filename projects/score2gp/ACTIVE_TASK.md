@@ -2,27 +2,26 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TABGUESS-01 — Design and score the spacing model for TAB that prints no rhythm
+**Task**: TSIG-01 — Read the cut-time meter glyph that stops a TAB-only source before any bar
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tabguess-01-design-and-score-the-spacing-model`
+**PR Branch**: `feat/tsig-01-read-cut-time-glyph`
 
-**Pull Request**: 554
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.
+NOROUTE-01 found that one three-page TAB-only source with printed rhythm stops with pdf_only_tab_time_signature_unread (38 bars, first bar 0): the meter printed after the TAB clef is a 'C' with a vertical stroke, one contour about 1.9 by 3.5 staff spaces. The TAB rhythm reader reads stacked numerals only, and the notation reader's classify_common_cut rejects the contour (common_time_not_an_open_c). In standard engraving that glyph is cut time (2/2); the maintainer's expectation of that source is 4/4. Both have the same bar capacity, so the bar totals cannot tell them apart. Leads, not facts: re-measure.
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
-- `docs/**`
 
 ## Validation commands
 

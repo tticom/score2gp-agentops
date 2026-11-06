@@ -1,53 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 317,
+  "authority_revision": 318,
   "task": {
-    "id": "TABGUESS-01",
-    "title": "Design and score the spacing model for TAB that prints no rhythm",
-    "objective": "The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 554,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/tabguess-01-design-and-score-the-spacing-model",
-    "prompt": "projects/score2gp/prompts/next/tabguess-01-design-and-score-the-spacing-model.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**",
-      "docs/**"
-    ],
-    "acceptance": [
-      "Measure first and write docs/tabguess-01-spacing-model.md: for each source that prints no rhythm, the number of TAB columns per bar, the column-spacing statistics, and the bars counts by code. Counts only; no private content. Then fix the model on paper before scoring it: what it infers from spacing, how it reaches a bar total equal to the meter, and the label format (GUESS in the report and in any output).",
-      "Score the model: take the sources whose rhythm is printed and read, hide the printed rhythm, infer from spacing alone, and report per source and in total the share of bars whose inferred rhythm equals the read rhythm, split by meter and by how regular the printed spacing is. Design on some sources and hold out at least two: score them once and do not tune on them. State what accuracy would make a labelled guess worth offering to the maintainer; this is a recommendation for the maintainer's decision, not a promotion.",
-      "No guessed duration is written to any output, report-as-read or counted as a read result in this task; the only change to src is whatever the scorer needs behind a test hook, and every source stays byte-identical. Reference-less sources are labelled not independently verified.",
-      "A named mutant (change the spacing rule; drop the meter-total check) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "TSIG-01",
     "title": "Read the cut-time meter glyph that stops a TAB-only source before any bar",
     "objective": "NOROUTE-01 found that one three-page TAB-only source with printed rhythm stops with pdf_only_tab_time_signature_unread (38 bars, first bar 0): the meter printed after the TAB clef is a 'C' with a vertical stroke, one contour about 1.9 by 3.5 staff spaces. The TAB rhythm reader reads stacked numerals only, and the notation reader's classify_common_cut rejects the contour (common_time_not_an_open_c). In standard engraving that glyph is cut time (2/2); the maintainer's expectation of that source is 4/4. Both have the same bar capacity, so the bar totals cannot tell them apart. Leads, not facts: re-measure.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -83,47 +42,47 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "PERCX-01",
+    "title": "Read X percussive strikes in TAB that has no notation staff",
+    "objective": "NOROUTE-01 found that a one-page TAB-only source (five systems, printed 4/4, chord names, no stems, beams or flags) stops with percussive_strike_without_owning_note: 0 notation bars, 82 TAB digits unplaced and 6 X strikes (system 4, bar 6). The maintainer decided the terminology and storage of X heads (percussive strikes) in UNREAD-02 (see the percussive-strike memory). Without a notation staff an X strike has no owning note, so the route refuses before any bar. The source prints no rhythm marks, so its durations are TABGUESS-01 territory; this task is only about letting a strike without an owning note be read and carried, so that the layer below rhythm is complete. Leads, not facts: re-measure.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/percx-01-read-x-strikes-in-tab-only-systems",
+    "prompt": "projects/score2gp/prompts/next/percx-01-read-x-strikes-in-tab-only-systems.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each X strike say what it is on the printed page (view it), which system and bar it is in, and what the UNREAD-02 convention would store.",
+      "Read an X strike in TAB-only input as a percussive strike under the UNREAD-02 convention, owned by its own TAB column, and let the route continue to the rhythm stage. The strike must never become a fret digit or a note with a pitch. The source still has no rhythm (it prints none), so it must still stay refused for that with a located reason and no guessed duration; the visible change is the refusal moving from the strike to the missing rhythm. Check this on a source that does print rhythm and has X strikes, where bars should now be written.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "PERCX-01",
-      "title": "Read X percussive strikes in TAB that has no notation staff",
-      "objective": "NOROUTE-01 found that a one-page TAB-only source (five systems, printed 4/4, chord names, no stems, beams or flags) stops with percussive_strike_without_owning_note: 0 notation bars, 82 TAB digits unplaced and 6 X strikes (system 4, bar 6). The maintainer decided the terminology and storage of X heads (percussive strikes) in UNREAD-02 (see the percussive-strike memory). Without a notation staff an X strike has no owning note, so the route refuses before any bar. The source prints no rhythm marks, so its durations are TABGUESS-01 territory; this task is only about letting a strike without an owning note be read and carried, so that the layer below rhythm is complete. Leads, not facts: re-measure.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/percx-01-read-x-strikes-in-tab-only-systems",
-      "prompt": "projects/score2gp/prompts/next/percx-01-read-x-strikes-in-tab-only-systems.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each X strike say what it is on the printed page (view it), which system and bar it is in, and what the UNREAD-02 convention would store.",
-        "Read an X strike in TAB-only input as a percussive strike under the UNREAD-02 convention, owned by its own TAB column, and let the route continue to the rhythm stage. The strike must never become a fret digit or a note with a pitch. The source still has no rhythm (it prints none), so it must still stay refused for that with a located reason and no guessed duration; the visible change is the refusal moving from the strike to the missing rhythm. Check this on a source that does print rhythm and has X strikes, where bars should now be written.",
-        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "REFUSE-17",
       "title": "Explain and read the bars that have no notation event and no TAB item",
@@ -6319,6 +6278,51 @@
       "merge_commit": "04e77d55ce688014c7758763a8ff6b885b8b5936",
       "reconciled": true,
       "reconciled_at": "2026-11-06T04:46:37.581476+00:00"
+    },
+    {
+      "id": "TABGUESS-01",
+      "title": "Design and score the spacing model for TAB that prints no rhythm",
+      "objective": "The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 554,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tabguess-01-design-and-score-the-spacing-model",
+      "prompt": "projects/score2gp/prompts/next/tabguess-01-design-and-score-the-spacing-model.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**"
+      ],
+      "acceptance": [
+        "Measure first and write docs/tabguess-01-spacing-model.md: for each source that prints no rhythm, the number of TAB columns per bar, the column-spacing statistics, and the bars counts by code. Counts only; no private content. Then fix the model on paper before scoring it: what it infers from spacing, how it reaches a bar total equal to the meter, and the label format (GUESS in the report and in any output).",
+        "Score the model: take the sources whose rhythm is printed and read, hide the printed rhythm, infer from spacing alone, and report per source and in total the share of bars whose inferred rhythm equals the read rhythm, split by meter and by how regular the printed spacing is. Design on some sources and hold out at least two: score them once and do not tune on them. State what accuracy would make a labelled guess worth offering to the maintainer; this is a recommendation for the maintainer's decision, not a promotion.",
+        "No guessed duration is written to any output, report-as-read or counted as a read result in this task; the only change to src is whatever the scorer needs behind a test hook, and every source stays byte-identical. Reference-less sources are labelled not independently verified.",
+        "A named mutant (change the spacing rule; drop the meter-total check) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "37aede53946de6325c83aafbdcf4158f2ef30e5a",
+      "merge_commit": "4701ecc2c820d9bc869c471333d3c56e3afcdea2",
+      "reconciled": true,
+      "reconciled_at": "2026-11-06T09:46:38.594582+00:00"
     }
   ],
   "backlog": [
