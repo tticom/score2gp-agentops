@@ -2,26 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NOROUTE-01 — Diagnose the PDFs that end without a route record
+**Task**: TABGUESS-01 — Design and score the spacing model for TAB that prints no rhythm
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/noroute-01-diagnose-pdfs-with-no-route-record`
+**PR Branch**: `feat/tabguess-01-design-and-score-the-spacing-model`
 
-**Pull Request**: 553
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-15's measurement found 6 of 46 PDFs end without a route record because the CLI refuses before any bar is produced (4 with exit 4, 1 with exit 1, 1 with exit 2). REFUSE-02 and GROUP-01 turned two of the earlier grouping refusals into routes; these six remain. They are real teaching material (maintainer, 2026-11-04). Leads, not facts: re-measure.
+The 53 bars refused as note_duration_event_unread / tab_column_without_rhythm_mark and most of the 29 bars refused as bar_without_notation_or_tab_item are TAB that prints no rhythm at all (no stems, beams, flags, notation staff or beat counts), so reading strategies 1 to 3 in knowledge/tab-rhythm-reading-strategy.md produce nothing. The maintainer decided on 2026-10-27 (option B) that a labelled guess is the last strategy, and on 2026-11-01 that rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. This task designs that last strategy and SCORES it; it does not write guessed bars into any output. The central difficulty is that nothing in these sources can show a guess is right, so score the model on sources where the rhythm is printed and read (strategies 1 and 2 give the truth) by hiding the printed rhythm, then apply it to the no-rhythm sources only as a labelled report.
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
+- `docs/**`
 
 ## Validation commands
 
