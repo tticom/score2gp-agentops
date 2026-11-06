@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-17-bars-with-no-notation-and-no-tab-item`
 
-**Pull Request**: TBD
+**Pull Request**: 557
 
 **Owner Role**: implementation
 
