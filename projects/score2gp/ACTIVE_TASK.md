@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/tabguess-01-design-and-score-the-spacing-model`
 
-**Pull Request**: TBD
+**Pull Request**: 554
 
 **Owner Role**: implementation
 
