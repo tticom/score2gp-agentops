@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TSIG-01 — Read the cut-time meter glyph that stops a TAB-only source before any bar
+**Task**: PERCX-01 — Read X percussive strikes in TAB that has no notation staff
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tsig-01-read-cut-time-glyph`
+**PR Branch**: `feat/percx-01-read-x-strikes-in-tab-only-systems`
 
-**Pull Request**: 555
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-NOROUTE-01 found that one three-page TAB-only source with printed rhythm stops with pdf_only_tab_time_signature_unread (38 bars, first bar 0): the meter printed after the TAB clef is a 'C' with a vertical stroke, one contour about 1.9 by 3.5 staff spaces. The TAB rhythm reader reads stacked numerals only, and the notation reader's classify_common_cut rejects the contour (common_time_not_an_open_c). In standard engraving that glyph is cut time (2/2); the maintainer's expectation of that source is 4/4. Both have the same bar capacity, so the bar totals cannot tell them apart. Leads, not facts: re-measure.
+NOROUTE-01 found that a one-page TAB-only source (five systems, printed 4/4, chord names, no stems, beams or flags) stops with percussive_strike_without_owning_note: 0 notation bars, 82 TAB digits unplaced and 6 X strikes (system 4, bar 6). The maintainer decided the terminology and storage of X heads (percussive strikes) in UNREAD-02 (see the percussive-strike memory). Without a notation staff an X strike has no owning note, so the route refuses before any bar. The source prints no rhythm marks, so its durations are TABGUESS-01 territory; this task is only about letting a strike without an owning note be read and carried, so that the layer below rhythm is complete. Leads, not facts: re-measure.
 
 ## Allowed paths
 
