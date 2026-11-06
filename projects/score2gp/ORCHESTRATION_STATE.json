@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 316,
+  "authority_revision": 317,
   "task": {
     "id": "TABGUESS-01",
     "title": "Design and score the spacing model for TAB that prints no rhythm",
@@ -43,8 +43,248 @@
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": null,
-  "queued_task_proposals": [],
+  "next_task_proposal": {
+    "id": "TSIG-01",
+    "title": "Read the cut-time meter glyph that stops a TAB-only source before any bar",
+    "objective": "NOROUTE-01 found that one three-page TAB-only source with printed rhythm stops with pdf_only_tab_time_signature_unread (38 bars, first bar 0): the meter printed after the TAB clef is a 'C' with a vertical stroke, one contour about 1.9 by 3.5 staff spaces. The TAB rhythm reader reads stacked numerals only, and the notation reader's classify_common_cut rejects the contour (common_time_not_an_open_c). In standard engraving that glyph is cut time (2/2); the maintainer's expectation of that source is 4/4. Both have the same bar capacity, so the bar totals cannot tell them apart. Leads, not facts: re-measure.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/tsig-01-read-cut-time-glyph",
+    "prompt": "projects/score2gp/prompts/next/tsig-01-read-cut-time-glyph.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. View the printed glyph and say which meter symbol it is, and list every other approved source that prints a common-time or cut-time glyph (not stacked numerals) and how each is read today.",
+      "Read the meter glyph in the TAB rhythm reader: recognise common time (C) and cut time (C with a stroke) by shape, with the stroke checked against the contour, and never from the bar totals. Write the meter as printed (cut time is 2/2) and report plainly in the handback that the maintainer expected 4/4 for this source and that the two have equal bar capacity, so the maintainer can choose; do not silently convert one to the other. A glyph that is neither stays unread with its located reason.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [
+    {
+      "id": "PERCX-01",
+      "title": "Read X percussive strikes in TAB that has no notation staff",
+      "objective": "NOROUTE-01 found that a one-page TAB-only source (five systems, printed 4/4, chord names, no stems, beams or flags) stops with percussive_strike_without_owning_note: 0 notation bars, 82 TAB digits unplaced and 6 X strikes (system 4, bar 6). The maintainer decided the terminology and storage of X heads (percussive strikes) in UNREAD-02 (see the percussive-strike memory). Without a notation staff an X strike has no owning note, so the route refuses before any bar. The source prints no rhythm marks, so its durations are TABGUESS-01 territory; this task is only about letting a strike without an owning note be read and carried, so that the layer below rhythm is complete. Leads, not facts: re-measure.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/percx-01-read-x-strikes-in-tab-only-systems",
+      "prompt": "projects/score2gp/prompts/next/percx-01-read-x-strikes-in-tab-only-systems.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each X strike say what it is on the printed page (view it), which system and bar it is in, and what the UNREAD-02 convention would store.",
+        "Read an X strike in TAB-only input as a percussive strike under the UNREAD-02 convention, owned by its own TAB column, and let the route continue to the rhythm stage. The strike must never become a fret digit or a note with a pitch. The source still has no rhythm (it prints none), so it must still stay refused for that with a located reason and no guessed duration; the visible change is the refusal moving from the strike to the missing rhythm. Check this on a source that does print rhythm and has X strikes, where bars should now be written.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "REFUSE-17",
+      "title": "Explain and read the bars that have no notation event and no TAB item",
+      "objective": "29 bars across the approved sources are refused as bar_without_notation_event / bar_without_notation_or_tab_item, and TABGUESS-01's measurement found 0 TAB columns in all of them (22 + 4 + 2 + 1 by source), so no spacing model can reach them. They are bars of real teaching material. Leads, not facts: re-measure, view the page for every bar, and decide per group what it is: a printed rest bar, a repeat or volta bar, a bar with only chord names or text, a bar whose TAB the extraction missed (see TABEXT-01 and TABEXT-02), a stub, or something else.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-17-bars-with-no-notation-and-no-tab-item",
+      "prompt": "projects/score2gp/prompts/next/refuse-17-bars-with-no-notation-and-no-tab-item.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For every bar say what is printed in it (view the page), and group the bars by what they are. Do not assume stubs: a bar may carry a rest or a repeat.",
+        "Read the groups whose content is a printed musical symbol with a fixed meaning (for example a whole-bar rest) and that the output can express; every other group stays refused with a located reason that says what the bar contains. A bar is never written empty just to remove a refusal, and no rest is invented where nothing is printed.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "TABEXT-02",
+      "title": "Read the remaining bars that still lack a TAB column",
+      "objective": "TABEXT-01 (merged) left 9 no_tab_column bars unfinished: adjacent-fret glyph runs, a tied chord with an empty bracket, a grace-note bend target, and 4 unsettled. REFUSE-13 split the class the same way: the extraction excludes digits before the route (pdf_fret_digits_not_merged_exceeds_max_fret, pdf_fret_digit_symbol_overlap_ambiguous, pdf_fret_multidigit_extracted). Leads, not facts: re-measure. TABEXT-01 also added about 120 s over 73 pages for its extra pass; keep any further pass off sources that do not need it.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tabext-02-read-the-remaining-no-tab-column-bars",
+      "prompt": "projects/score2gp/prompts/next/tabext-02-read-the-remaining-no-tab-column-bars.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each remaining bar say what is printed (view the page) and whether the digits are readable by a person from the glyph shapes alone.",
+        "Fix the extraction for the glyph runs that are readable: split a run of adjacent frets where the glyph spacing and widths settle it, and keep a number that is a page number, legend or tempo mark excluded. A bar the evidence cannot settle stays refused with its located reason. No maximum-fret or overlap guard is loosened.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified. Report the conversion-time change over the whole set; the new pass must not slow sources that do not need it.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "PERF-02",
+      "title": "Reduce retained inspection data so a long source fits the existing resource budget",
+      "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/perf-02-reduce-retained-inspection-data",
+      "prompt": "projects/score2gp/prompts/next/perf-02-reduce-retained-inspection-data.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: for the failing source and two others of different size, the page nodes retained per page, by structure, and the peak memory and time of the inspection stage. Counts and numbers only. State which structures are needed after their page is processed and which can be released or summarised.",
+        "Release or summarise the retained structures that no later stage needs, without changing any output: every source that converts must keep a byte-identical inner Content/score.gpif, the budget value and its check stay exactly as they are, and the failing source must now fit under the unchanged budget or the handback says what still holds it. Report conversion time and peak memory before and after over the whole set.",
+        "A named mutant (retain the released structure again) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    },
+    {
+      "id": "RASTER-00",
+      "title": "Scope the scanned and hand-drawn sources that need raster reading",
+      "objective": "NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.",
+      "status": "PROPOSED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/raster-00-scope-the-scanned-and-hand-drawn-sources",
+      "prompt": "projects/score2gp/prompts/next/raster-00-scope-the-scanned-and-hand-drawn-sources.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**",
+        "docs/**"
+      ],
+      "acceptance": [
+        "Measure first and write docs/raster-00-scoping.md: for each of the three sources, pages, image resolution, whether the notation and TAB staves can be located at all by the existing raster code (the repository already has raster diagnostics and Audiveris-based paths: list exactly what exists and what each does today), and the share of staves found. Counts and located reasons only; no private content.",
+        "Recommend the smallest honest first slice, measured on the one-page hand-drawn source and one page of each scanned book: which stage fails first (staff location, TAB digit reading, rhythm), how far a staff and digit read gets, and what each stage would cost to own in Python against replacing Audiveris. State the dependencies on DEC-01 and the REC items. No source's output changes in this task.",
+        "Every source stays byte-identical; only docs and a test hook for the scoring may change. Reference-less results are labelled not independently verified.",
+        "A named mutant (drop the staff-location measurement) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex"
+    }
+  ],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -7825,7 +8065,7 @@
       "status": "NEEDS_DETAIL",
       "priority": 144,
       "depends_on": [],
-      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion. Update 2026-11-01: not promoted yet, because it still needs its detail first (review of the governance PR, held-out gate). The maintainer called the no-score refusals concerning and offered to judge named no-score fixtures; the supervisor measures spacing evidence with the maintainer, fixes the spacing model, the guess label format and a held-out pair (one per refusal code) before any promotion, then writes the prompt. No code until then. Update 2026-11-01 (second): the maintainer judged 12 Bar Blues and PARANOID and said rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. TABRHY-01 reads the rhythm printed under staffless TAB first. This item is now the LAST strategy in projects/score2gp/knowledge/tab-rhythm-reading-strategy.md (spacing or count as a labelled guess, option B), for TAB with no printed rhythm and no beat-count text, and still needs its model, label format and held-out check before promotion. Update 2026-11-05: TABGUESS-01 queued as the measure-and-score first slice (no guessed bar written); this item stays for the promotion decision once the model, label format and held-out score exist."
+      "notes": "Maintainer decision 2026-10-27, option B, quoted: 'B' (chosen from: A write unknown rhythm, B infer rhythm from horizontal spacing as a labelled guess, C keep refusing). Applies to printed TAB-only PDFs (the no-score category: 6 of 7 refused on the 2026-10-27 survey, codes pdf_only_tab_no_notation_bars and pdf_only_tab_grouping_unsafe). Every inferred duration must be labelled as a guess in the report and in the GP file (for example a text annotation per bar) and never counted as a read result; real note-type reading still wins whenever notation exists. ASCII and hand-written TAB are separate input classes (IN-02, IN-03). Needs detail: the spacing model, the label format and a held-out check before promotion. Update 2026-11-01: not promoted yet, because it still needs its detail first (review of the governance PR, held-out gate). The maintainer called the no-score refusals concerning and offered to judge named no-score fixtures; the supervisor measures spacing evidence with the maintainer, fixes the spacing model, the guess label format and a held-out pair (one per refusal code) before any promotion, then writes the prompt. No code until then. Update 2026-11-01 (second): the maintainer judged 12 Bar Blues and PARANOID and said rhythm 'should not guessed until no other reading strategy produces a plausible rhythm'. TABRHY-01 reads the rhythm printed under staffless TAB first. This item is now the LAST strategy in projects/score2gp/knowledge/tab-rhythm-reading-strategy.md (spacing or count as a labelled guess, option B), for TAB with no printed rhythm and no beat-count text, and still needs its model, label format and held-out check before promotion. Update 2026-11-05: TABGUESS-01 queued as the measure-and-score first slice (no guessed bar written); this item stays for the promotion decision once the model, label format and held-out score exist. Update 2026-11-06: TABGUESS-01 scored the spacing guess at 0.62 exact on held-out bars (equal-division 0.31) against a proposed bar of 0.90, so a labelled guess is not yet offered; the item stays unpromoted and the decision is the maintainer's."
     },
     {
       "id": "NPG-06A-FU2",
