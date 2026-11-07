@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/perf-02-reduce-retained-inspection-data`
 
-**Pull Request**: TBD
+**Pull Request**: 559
 
 **Owner Role**: implementation
 
