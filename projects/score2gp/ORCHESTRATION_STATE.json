@@ -1,51 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 327,
+  "authority_revision": 328,
   "task": {
-    "id": "PERF-02",
-    "title": "Reduce retained inspection data so a long source fits the existing resource budget",
-    "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 559,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/perf-02-reduce-retained-inspection-data",
-    "prompt": "projects/score2gp/prompts/next/perf-02-reduce-retained-inspection-data.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first: for the failing source and two others of different size, the page nodes retained per page, by structure, and the peak memory and time of the inspection stage. Counts and numbers only. State which structures are needed after their page is processed and which can be released or summarised.",
-      "Release or summarise the retained structures that no later stage needs, without changing any output: every source that converts must keep a byte-identical inner Content/score.gpif, the budget value and its check stay exactly as they are, and the failing source must now fit under the unchanged budget or the handback says what still holds it. Report conversion time and peak memory before and after over the whole set.",
-      "A named mutant (retain the released structure again) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "RASTER-00",
     "title": "Scope the scanned and hand-drawn sources that need raster reading",
     "objective": "NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,6 +43,7 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": null,
   "queued_task_proposals": [],
   "incidents": [
     {
@@ -6338,6 +6300,49 @@
       "merge_commit": "f65aedac345cb472c2468c7d6e10f659d3db4697",
       "reconciled": true,
       "reconciled_at": "2026-11-07T06:16:37.624495+00:00"
+    },
+    {
+      "id": "PERF-02",
+      "title": "Reduce retained inspection data so a long source fits the existing resource budget",
+      "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 559,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/perf-02-reduce-retained-inspection-data",
+      "prompt": "projects/score2gp/prompts/next/perf-02-reduce-retained-inspection-data.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first: for the failing source and two others of different size, the page nodes retained per page, by structure, and the peak memory and time of the inspection stage. Counts and numbers only. State which structures are needed after their page is processed and which can be released or summarised.",
+        "Release or summarise the retained structures that no later stage needs, without changing any output: every source that converts must keep a byte-identical inner Content/score.gpif, the budget value and its check stay exactly as they are, and the failing source must now fit under the unchanged budget or the handback says what still holds it. Report conversion time and peak memory before and after over the whole set.",
+        "A named mutant (retain the released structure again) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "ae62326c32b6aa05b3005eacc0f219d3c5140410",
+      "merge_commit": "4b4f5c9e2d3e24cc00651ece832cea15f954d340",
+      "reconciled": true,
+      "reconciled_at": "2026-11-07T16:26:37.763046+00:00"
     }
   ],
   "backlog": [
