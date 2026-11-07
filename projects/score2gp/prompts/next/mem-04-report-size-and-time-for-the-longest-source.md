@@ -1,10 +1,10 @@
-# MEM-03: Bring the longest source's report and conversion time inside the existing allowances
+# MEM-04: Bring the longest source's report and conversion time inside the existing allowances
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
 - **Requirement:** REQ-0001
 - **Depends on:** none
-- **Branch:** `feat/mem-03-report-size-and-time-for-the-longest-source`
+- **Branch:** `feat/mem-04-report-size-and-time-for-the-longest-source`
 
 Private fixtures: the corpus is grouped by category on fixtures `main`; the author launcher flattens it into `fixtures/private/`. Verify the files named below exist there before starting; if any is missing, stop and say exactly what is missing. Every number below is a lead: re-measure it on the current runtime, and do not trust an older survey.
 

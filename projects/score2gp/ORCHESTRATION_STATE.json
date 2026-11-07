@@ -165,7 +165,7 @@
       "author_login": "tticom-codex"
     },
     {
-      "id": "GROUP-02",
+      "id": "GROUP-03",
       "title": "Resolve the sources that are still refused at TAB grouping",
       "objective": "Four sources remain refused with pdf_only_tab_grouping_unsafe after GROUP-01 and TABRHY-01. They are real teaching material. Leads, not facts: re-measure which check raises the refusal per source (quote the code), the systems and bars found, and which warning blocks it. Raise the grouping resolution where the geometry makes the grouping determinable; never loosen the safety check.",
       "status": "PROPOSED",
@@ -175,8 +175,8 @@
       "owner_role": "implementation",
       "reviewer_role": "reviewer",
       "delivery_action": "pull_request",
-      "branch": "feat/group-02-remaining-grouping-unsafe-sources",
-      "prompt": "projects/score2gp/prompts/next/group-02-remaining-grouping-unsafe-sources.md",
+      "branch": "feat/group-03-remaining-grouping-unsafe-sources",
+      "prompt": "projects/score2gp/prompts/next/group-03-remaining-grouping-unsafe-sources.md",
       "allowed_paths": [
         "src/score2gp/**",
         "tests/**"
@@ -245,7 +245,7 @@
       "author_login": "tticom-codex"
     },
     {
-      "id": "MEM-03",
+      "id": "MEM-04",
       "title": "Bring the longest source's report and conversion time inside the existing allowances",
       "objective": "PERF-02 let the 34-page source convert but it takes about 780 s and 1.8 GB, and its report is about 40.8 MB, 1.7 MB over the existing size allowance (tests/test_mem_02_report.py is a strict xfail for it). The allowance and the PERF-01 budget are protected and are not touched: the fix is to write less report and spend less time. Leads, not facts: re-measure by stage.",
       "status": "PROPOSED",
@@ -255,8 +255,8 @@
       "owner_role": "implementation",
       "reviewer_role": "reviewer",
       "delivery_action": "pull_request",
-      "branch": "feat/mem-03-report-size-and-time-for-the-longest-source",
-      "prompt": "projects/score2gp/prompts/next/mem-03-report-size-and-time-for-the-longest-source.md",
+      "branch": "feat/mem-04-report-size-and-time-for-the-longest-source",
+      "prompt": "projects/score2gp/prompts/next/mem-04-report-size-and-time-for-the-longest-source.md",
       "allowed_paths": [
         "src/score2gp/**",
         "tests/**"

@@ -1,10 +1,10 @@
-# GROUP-02: Resolve the sources that are still refused at TAB grouping
+# GROUP-03: Resolve the sources that are still refused at TAB grouping
 
 - **Repository:** `tticom/score2gp`
 - **Author:** `tticom-codex` (CP-13 author lane)
 - **Requirement:** REQ-0001
 - **Depends on:** none
-- **Branch:** `feat/group-02-remaining-grouping-unsafe-sources`
+- **Branch:** `feat/group-03-remaining-grouping-unsafe-sources`
 
 Private fixtures: the corpus is grouped by category on fixtures `main`; the author launcher flattens it into `fixtures/private/`. Verify the files named below exist there before starting; if any is missing, stop and say exactly what is missing. Every number below is a lead: re-measure it on the current runtime, and do not trust an older survey.
 
@@ -28,4 +28,4 @@ Four sources remain refused with pdf_only_tab_grouping_unsafe after GROUP-01 and
 - **Scope.** `allowed_paths` is the expected area, not a wall. Edit what the task needs and list each path outside the area, with the reason, in the handback. Never edit CI, private fixtures or reference files, agent instruction files or the control plane (`scripts/score2gp_*`, `ORCHESTRATION_STATE.json`, prompts, skills): stop and name the path if one is needed.
 - **Private content** is never committed. Report counts, codes, sizes and times only.
 - **Validation:** `python -m pytest` (list the known Windows baseline failures by ID if they fail locally), export-schema, validate-ir, `scripts/artifact_audit.py`, `git diff --check`.
-- **Protect what already works:** DUR-02/03, OMIT-01 to OMIT-05, LAYOUT-01, MEM-01, CFW-04, PARTIAL-01, SCALE-01, TUPLET-TAB-01, PDF-GROUP-02, UNREAD-01/02, PERF-01.
+- **Protect what already works:** DUR-02/03, OMIT-01 to OMIT-05, LAYOUT-01, MEM-01, CFW-04, PARTIAL-01, SCALE-01, TUPLET-TAB-01, PDF-GROUP-03, UNREAD-01/02, PERF-01.
