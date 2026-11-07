@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/tabext-02-read-the-remaining-no-tab-column-bars`
 
-**Pull Request**: TBD
+**Pull Request**: 558
 
 **Owner Role**: implementation
 
