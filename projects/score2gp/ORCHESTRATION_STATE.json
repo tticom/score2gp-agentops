@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 325,
+  "authority_revision": 326,
   "task": {
-    "id": "TABEXT-02",
-    "title": "Read the remaining bars that still lack a TAB column",
-    "objective": "TABEXT-01 (merged) left 9 no_tab_column bars unfinished: adjacent-fret glyph runs, a tied chord with an empty bracket, a grace-note bend target, and 4 unsettled. REFUSE-13 split the class the same way: the extraction excludes digits before the route (pdf_fret_digits_not_merged_exceeds_max_fret, pdf_fret_digit_symbol_overlap_ambiguous, pdf_fret_multidigit_extracted). Leads, not facts: re-measure. TABEXT-01 also added about 120 s over 73 pages for its extra pass; keep any further pass off sources that do not need it.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 558,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/tabext-02-read-the-remaining-no-tab-column-bars",
-    "prompt": "projects/score2gp/prompts/next/tabext-02-read-the-remaining-no-tab-column-bars.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each remaining bar say what is printed (view the page) and whether the digits are readable by a person from the glyph shapes alone.",
-      "Fix the extraction for the glyph runs that are readable: split a run of adjacent frets where the glyph spacing and widths settle it, and keep a number that is a page number, legend or tempo mark excluded. A bar the evidence cannot settle stays refused with its located reason. No maximum-fret or overlap guard is loosened.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified. Report the conversion-time change over the whole set; the new pass must not slow sources that do not need it.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "PERF-02",
     "title": "Reduce retained inspection data so a long source fits the existing resource budget",
     "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -81,49 +41,48 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "RASTER-00",
-      "title": "Scope the scanned and hand-drawn sources that need raster reading",
-      "objective": "NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/raster-00-scope-the-scanned-and-hand-drawn-sources",
-      "prompt": "projects/score2gp/prompts/next/raster-00-scope-the-scanned-and-hand-drawn-sources.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**",
-        "docs/**"
-      ],
-      "acceptance": [
-        "Measure first and write docs/raster-00-scoping.md: for each of the three sources, pages, image resolution, whether the notation and TAB staves can be located at all by the existing raster code (the repository already has raster diagnostics and Audiveris-based paths: list exactly what exists and what each does today), and the share of staves found. Counts and located reasons only; no private content.",
-        "Recommend the smallest honest first slice, measured on the one-page hand-drawn source and one page of each scanned book: which stage fails first (staff location, TAB digit reading, rhythm), how far a staff and digit read gets, and what each stage would cost to own in Python against replacing Audiveris. State the dependencies on DEC-01 and the REC items. No source's output changes in this task.",
-        "Every source stays byte-identical; only docs and a test hook for the scoring may change. Reference-less results are labelled not independently verified.",
-        "A named mutant (drop the staff-location measurement) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "RASTER-00",
+    "title": "Scope the scanned and hand-drawn sources that need raster reading",
+    "objective": "NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/raster-00-scope-the-scanned-and-hand-drawn-sources",
+    "prompt": "projects/score2gp/prompts/next/raster-00-scope-the-scanned-and-hand-drawn-sources.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**",
+      "docs/**"
+    ],
+    "acceptance": [
+      "Measure first and write docs/raster-00-scoping.md: for each of the three sources, pages, image resolution, whether the notation and TAB staves can be located at all by the existing raster code (the repository already has raster diagnostics and Audiveris-based paths: list exactly what exists and what each does today), and the share of staves found. Counts and located reasons only; no private content.",
+      "Recommend the smallest honest first slice, measured on the one-page hand-drawn source and one page of each scanned book: which stage fails first (staff location, TAB digit reading, rhythm), how far a staff and digit read gets, and what each stage would cost to own in Python against replacing Audiveris. State the dependencies on DEC-01 and the REC items. No source's output changes in this task.",
+      "Every source stays byte-identical; only docs and a test hook for the scoring may change. Reference-less results are labelled not independently verified.",
+      "A named mutant (drop the staff-location measurement) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -6335,6 +6294,50 @@
       "merge_commit": "35e0b823fceeba7b4892ba2ce9a40c5bfd7dc8c6",
       "reconciled": true,
       "reconciled_at": "2026-11-07T01:56:37.492687+00:00"
+    },
+    {
+      "id": "TABEXT-02",
+      "title": "Read the remaining bars that still lack a TAB column",
+      "objective": "TABEXT-01 (merged) left 9 no_tab_column bars unfinished: adjacent-fret glyph runs, a tied chord with an empty bracket, a grace-note bend target, and 4 unsettled. REFUSE-13 split the class the same way: the extraction excludes digits before the route (pdf_fret_digits_not_merged_exceeds_max_fret, pdf_fret_digit_symbol_overlap_ambiguous, pdf_fret_multidigit_extracted). Leads, not facts: re-measure. TABEXT-01 also added about 120 s over 73 pages for its extra pass; keep any further pass off sources that do not need it.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 558,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tabext-02-read-the-remaining-no-tab-column-bars",
+      "prompt": "projects/score2gp/prompts/next/tabext-02-read-the-remaining-no-tab-column-bars.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each remaining bar say what is printed (view the page) and whether the digits are readable by a person from the glyph shapes alone.",
+        "Fix the extraction for the glyph runs that are readable: split a run of adjacent frets where the glyph spacing and widths settle it, and keep a number that is a page number, legend or tempo mark excluded. A bar the evidence cannot settle stays refused with its located reason. No maximum-fret or overlap guard is loosened.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified. Report the conversion-time change over the whole set; the new pass must not slow sources that do not need it.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "2e2e8be6e11a36f20f1f55e124561b88230ee7d2",
+      "merge_commit": "f65aedac345cb472c2468c7d6e10f659d3db4697",
+      "reconciled": true,
+      "reconciled_at": "2026-11-07T06:16:37.624495+00:00"
     }
   ],
   "backlog": [
