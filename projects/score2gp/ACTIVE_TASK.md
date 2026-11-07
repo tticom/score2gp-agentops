@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-17 — Explain and read the bars that have no notation event and no TAB item
+**Task**: TABEXT-02 — Read the remaining bars that still lack a TAB column
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-17-bars-with-no-notation-and-no-tab-item`
+**PR Branch**: `feat/tabext-02-read-the-remaining-no-tab-column-bars`
 
-**Pull Request**: 557
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-29 bars across the approved sources are refused as bar_without_notation_event / bar_without_notation_or_tab_item, and TABGUESS-01's measurement found 0 TAB columns in all of them (22 + 4 + 2 + 1 by source), so no spacing model can reach them. They are bars of real teaching material. Leads, not facts: re-measure, view the page for every bar, and decide per group what it is: a printed rest bar, a repeat or volta bar, a bar with only chord names or text, a bar whose TAB the extraction missed (see TABEXT-01 and TABEXT-02), a stub, or something else.
+TABEXT-01 (merged) left 9 no_tab_column bars unfinished: adjacent-fret glyph runs, a tied chord with an empty bracket, a grace-note bend target, and 4 unsettled. REFUSE-13 split the class the same way: the extraction excludes digits before the route (pdf_fret_digits_not_merged_exceeds_max_fret, pdf_fret_digit_symbol_overlap_ambiguous, pdf_fret_multidigit_extracted). Leads, not facts: re-measure. TABEXT-01 also added about 120 s over 73 pages for its extra pass; keep any further pass off sources that do not need it.
 
 ## Allowed paths
 

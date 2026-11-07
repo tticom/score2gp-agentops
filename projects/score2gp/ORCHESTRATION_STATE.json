@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 323,
+  "authority_revision": 324,
   "task": {
-    "id": "REFUSE-17",
-    "title": "Explain and read the bars that have no notation event and no TAB item",
-    "objective": "29 bars across the approved sources are refused as bar_without_notation_event / bar_without_notation_or_tab_item, and TABGUESS-01's measurement found 0 TAB columns in all of them (22 + 4 + 2 + 1 by source), so no spacing model can reach them. They are bars of real teaching material. Leads, not facts: re-measure, view the page for every bar, and decide per group what it is: a printed rest bar, a repeat or volta bar, a bar with only chord names or text, a bar whose TAB the extraction missed (see TABEXT-01 and TABEXT-02), a stub, or something else.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 557,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/refuse-17-bars-with-no-notation-and-no-tab-item",
-    "prompt": "projects/score2gp/prompts/next/refuse-17-bars-with-no-notation-and-no-tab-item.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For every bar say what is printed in it (view the page), and group the bars by what they are. Do not assume stubs: a bar may carry a rest or a repeat.",
-      "Read the groups whose content is a printed musical symbol with a fixed meaning (for example a whole-bar rest) and that the output can express; every other group stays refused with a located reason that says what the bar contains. A bar is never written empty just to remove a refusal, and no rest is invented where nothing is printed.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "TABEXT-02",
     "title": "Read the remaining bars that still lack a TAB column",
     "objective": "TABEXT-01 (merged) left 9 no_tab_column bars unfinished: adjacent-fret glyph runs, a tied chord with an empty bracket, a grace-note bend target, and 4 unsettled. REFUSE-13 split the class the same way: the extraction excludes digits before the route (pdf_fret_digits_not_merged_exceeds_max_fret, pdf_fret_digit_symbol_overlap_ambiguous, pdf_fret_multidigit_extracted). Leads, not facts: re-measure. TABEXT-01 also added about 120 s over 73 pages for its extra pass; keep any further pass off sources that do not need it.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,46 +42,46 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "PERF-02",
+    "title": "Reduce retained inspection data so a long source fits the existing resource budget",
+    "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/perf-02-reduce-retained-inspection-data",
+    "prompt": "projects/score2gp/prompts/next/perf-02-reduce-retained-inspection-data.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first: for the failing source and two others of different size, the page nodes retained per page, by structure, and the peak memory and time of the inspection stage. Counts and numbers only. State which structures are needed after their page is processed and which can be released or summarised.",
+      "Release or summarise the retained structures that no later stage needs, without changing any output: every source that converts must keep a byte-identical inner Content/score.gpif, the budget value and its check stay exactly as they are, and the failing source must now fit under the unchanged budget or the handback says what still holds it. Report conversion time and peak memory before and after over the whole set.",
+      "A named mutant (retain the released structure again) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "PERF-02",
-      "title": "Reduce retained inspection data so a long source fits the existing resource budget",
-      "objective": "NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/perf-02-reduce-retained-inspection-data",
-      "prompt": "projects/score2gp/prompts/next/perf-02-reduce-retained-inspection-data.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first: for the failing source and two others of different size, the page nodes retained per page, by structure, and the peak memory and time of the inspection stage. Counts and numbers only. State which structures are needed after their page is processed and which can be released or summarised.",
-        "Release or summarise the retained structures that no later stage needs, without changing any output: every source that converts must keep a byte-identical inner Content/score.gpif, the budget value and its check stay exactly as they are, and the failing source must now fit under the unchanged budget or the handback says what still holds it. Report conversion time and peak memory before and after over the whole set.",
-        "A named mutant (retain the released structure again) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "RASTER-00",
       "title": "Scope the scanned and hand-drawn sources that need raster reading",
@@ -6331,6 +6291,50 @@
       "merge_commit": "bb09e4a8868ab652cae93a921bda9650a29b5b7f",
       "reconciled": true,
       "reconciled_at": "2026-11-06T19:16:39.232045+00:00"
+    },
+    {
+      "id": "REFUSE-17",
+      "title": "Explain and read the bars that have no notation event and no TAB item",
+      "objective": "29 bars across the approved sources are refused as bar_without_notation_event / bar_without_notation_or_tab_item, and TABGUESS-01's measurement found 0 TAB columns in all of them (22 + 4 + 2 + 1 by source), so no spacing model can reach them. They are bars of real teaching material. Leads, not facts: re-measure, view the page for every bar, and decide per group what it is: a printed rest bar, a repeat or volta bar, a bar with only chord names or text, a bar whose TAB the extraction missed (see TABEXT-01 and TABEXT-02), a stub, or something else.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 557,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-17-bars-with-no-notation-and-no-tab-item",
+      "prompt": "projects/score2gp/prompts/next/refuse-17-bars-with-no-notation-and-no-tab-item.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For every bar say what is printed in it (view the page), and group the bars by what they are. Do not assume stubs: a bar may carry a rest or a repeat.",
+        "Read the groups whose content is a printed musical symbol with a fixed meaning (for example a whole-bar rest) and that the output can express; every other group stays refused with a located reason that says what the bar contains. A bar is never written empty just to remove a refusal, and no rest is invented where nothing is printed.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "8dc5435022213c6db90af8faecf1afc2c91f9850",
+      "merge_commit": "35e0b823fceeba7b4892ba2ce9a40c5bfd7dc8c6",
+      "reconciled": true,
+      "reconciled_at": "2026-11-07T01:56:37.492687+00:00"
     }
   ],
   "backlog": [
