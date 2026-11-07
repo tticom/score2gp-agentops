@@ -2,26 +2,27 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: PERF-02 — Reduce retained inspection data so a long source fits the existing resource budget
+**Task**: RASTER-00 — Scope the scanned and hand-drawn sources that need raster reading
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/perf-02-reduce-retained-inspection-data`
+**PR Branch**: `feat/raster-00-scope-the-scanned-and-hand-drawn-sources`
 
-**Pull Request**: 559
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-NOROUTE-01 found that a 34-page notation-and-TAB source stops with pdf_resource_inspection_page_nodes_exceeded (2,060,433 nodes against the 2,000,000 PERF-01 budget, at page index 10). PERF-01 is a protected resource limit and is not touched: the fix is to retain less inspection data, not to raise or bypass the budget. Leads, not facts: re-measure which structures hold the nodes (per-page drawing, glyph and text objects kept after they are no longer needed) and how much each contributes. This is also a first measured step toward the Rust bottleneck list.
+NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
+- `docs/**`
 
 ## Validation commands
 
