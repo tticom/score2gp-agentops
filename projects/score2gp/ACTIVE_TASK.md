@@ -2,27 +2,26 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: RASTER-00 — Scope the scanned and hand-drawn sources that need raster reading
+**Task**: REFUSE-18 — Reduce the largest remaining unread-duration class
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/raster-00-scope-the-scanned-and-hand-drawn-sources`
+**PR Branch**: `feat/refuse-18-largest-unread-duration-class-after-tsig`
 
-**Pull Request**: 560
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-NOROUTE-01 found three approved sources that are images, not vector pages: two scanned books (177 and 105 pages, notation and TAB staves, 0 vector drawings and 1 image per page) and a one-page hand-drawn source. They are real teaching material and the largest unread share of the corpus. Reading them needs raster recognition, which is the territory of the REC recognition items and DEC-01 (still undecided), so this task scopes and measures; it does not build the recogniser. Leads, not facts: re-measure.
+After TSIG-01 to PERF-02 the whole-set ranking is led by note_duration_event_unread at 88 bars (reader gap), including tab_column_without_rhythm_mark and unclassified_mark_below_strings in the newly routed TAB-only source. Leads, not facts: re-measure on the current runtime and pick by bar count and by whether the symbol is unambiguously musical.
 
 ## Allowed paths
 
 - `src/score2gp/**`
 - `tests/**`
-- `docs/**`
 
 ## Validation commands
 
