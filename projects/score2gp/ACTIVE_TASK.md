@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-18 — Reduce the largest remaining unread-duration class
+**Task**: TABEXT-03 — Group the TAB digits that are printed but never reach a bar
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-18-largest-unread-duration-class-after-tsig`
+**PR Branch**: `feat/tabext-03-digits-printed-but-not-grouped`
 
-**Pull Request**: 561
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-After TSIG-01 to PERF-02 the whole-set ranking is led by note_duration_event_unread at 88 bars (reader gap), including tab_column_without_rhythm_mark and unclassified_mark_below_strings in the newly routed TAB-only source. Leads, not facts: re-measure on the current runtime and pick by bar count and by whether the symbol is unambiguously musical.
+REFUSE-17 found 7 bars (6 in one TAB-only source, 1 in another) that print digits TabRaw holds only as ungrouped text (tab_digits_printed_but_not_grouped), and 23 bars refused as bar_without_notation_or_tab_item where digits are printed that TabRaw never saw. Both are TAB extraction gaps in real teaching material. Leads, not facts: re-measure, view each bar.
 
 ## Allowed paths
 
