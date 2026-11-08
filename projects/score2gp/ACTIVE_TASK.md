@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: TABEXT-03 — Group the TAB digits that are printed but never reach a bar
+**Task**: NOTAB-01 — Explain and read notation notes that have no TAB digit
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/tabext-03-digits-printed-but-not-grouped`
+**PR Branch**: `feat/notab-01-notes-without-a-tab-digit`
 
-**Pull Request**: 562
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-17 found 7 bars (6 in one TAB-only source, 1 in another) that print digits TabRaw holds only as ungrouped text (tab_digits_printed_but_not_grouped), and 23 bars refused as bar_without_notation_or_tab_item where digits are printed that TabRaw never saw. Both are TAB extraction gaps in real teaching material. Leads, not facts: re-measure, view each bar.
+After PERF-02 the whole-set ranking holds notation_note_without_tab_digit at 23 bars and notehead_digit_count_mismatch at 9 bars (both unknown). Part may be cascades from tied or unread neighbours, part rests or grace notes with no digit, part extraction gaps. Leads, not facts: re-measure, view each bar, and separate cascades from root causes.
 
 ## Allowed paths
 
