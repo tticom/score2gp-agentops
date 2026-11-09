@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: NOTAB-01 — Explain and read notation notes that have no TAB digit
+**Task**: GROUP-03 — Resolve the sources that are still refused at TAB grouping
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/notab-01-notes-without-a-tab-digit`
+**PR Branch**: `feat/group-03-remaining-grouping-unsafe-sources`
 
-**Pull Request**: 563
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-After PERF-02 the whole-set ranking holds notation_note_without_tab_digit at 23 bars and notehead_digit_count_mismatch at 9 bars (both unknown). Part may be cascades from tied or unread neighbours, part rests or grace notes with no digit, part extraction gaps. Leads, not facts: re-measure, view each bar, and separate cascades from root causes.
+Four sources remain refused with pdf_only_tab_grouping_unsafe after GROUP-01 and TABRHY-01. They are real teaching material. Leads, not facts: re-measure which check raises the refusal per source (quote the code), the systems and bars found, and which warning blocks it. Raise the grouping resolution where the geometry makes the grouping determinable; never loosen the safety check.
 
 ## Allowed paths
 
