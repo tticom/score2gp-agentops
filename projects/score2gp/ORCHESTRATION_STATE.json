@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 336,
+  "authority_revision": 337,
   "task": {
-    "id": "NOTAB-01",
-    "title": "Explain and read notation notes that have no TAB digit",
-    "objective": "After PERF-02 the whole-set ranking holds notation_note_without_tab_digit at 23 bars and notehead_digit_count_mismatch at 9 bars (both unknown). Part may be cascades from tied or unread neighbours, part rests or grace notes with no digit, part extraction gaps. Leads, not facts: re-measure, view each bar, and separate cascades from root causes.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 563,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/notab-01-notes-without-a-tab-digit",
-    "prompt": "projects/score2gp/prompts/next/notab-01-notes-without-a-tab-digit.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each bar say whether it is a cascade (name the root bar) or a root cause, and what is printed (view the page).",
-      "Read the root-cause classes that the printed page settles (the note's TAB digit exists and its owner is unambiguous); cascades follow their root. Everything else stays refused with a located reason. A note is never given a fret from its pitch alone where the page prints a different TAB position (observed TAB is authoritative).",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "GROUP-03",
     "title": "Resolve the sources that are still refused at TAB grouping",
     "objective": "Four sources remain refused with pdf_only_tab_grouping_unsafe after GROUP-01 and TABRHY-01. They are real teaching material. Leads, not facts: re-measure which check raises the refusal per source (quote the code), the systems and bars found, and which warning blocks it. Raise the grouping resolution where the geometry makes the grouping determinable; never loosen the safety check.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,47 +42,47 @@
     ],
     "author_login": "tticom-codex"
   },
+  "next_task_proposal": {
+    "id": "DUR-04",
+    "title": "Settle the remaining bars whose durations do not total the meter",
+    "objective": "After REFUSE-05 and TABRHY-01 the whole-set ranking holds bar_total_mismatch at 6 bars (reader gap) and tie_head_ownership_unconfirmed at 1. The total is the check, never the evidence. Leads, not facts: re-measure, say per bar whether a printed symbol (dot, rest, tuplet, tie) is unread, and view the page.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/dur-04-remaining-bar-total-mismatches",
+    "prompt": "projects/score2gp/prompts/next/dur-04-remaining-bar-total-mismatches.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each short or long bar say which printed symbol the reader lacks.",
+      "Read the missing symbol from the page where it is unambiguous and attached to exactly one note or rest; never adjust a duration to make a total fit. Bars not settled stay refused with their located reason.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
   "queued_task_proposals": [
-    {
-      "id": "DUR-04",
-      "title": "Settle the remaining bars whose durations do not total the meter",
-      "objective": "After REFUSE-05 and TABRHY-01 the whole-set ranking holds bar_total_mismatch at 6 bars (reader gap) and tie_head_ownership_unconfirmed at 1. The total is the check, never the evidence. Leads, not facts: re-measure, say per bar whether a printed symbol (dot, rest, tuplet, tie) is unread, and view the page.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/dur-04-remaining-bar-total-mismatches",
-      "prompt": "projects/score2gp/prompts/next/dur-04-remaining-bar-total-mismatches.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each short or long bar say which printed symbol the reader lacks.",
-        "Read the missing symbol from the page where it is unambiguous and attached to exactly one note or rest; never adjust a duration to make a total fit. Bars not settled stay refused with their located reason.",
-        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    },
     {
       "id": "MEM-04",
       "title": "Bring the longest source's report and conversion time inside the existing allowances",
@@ -6594,6 +6554,50 @@
       "merge_commit": "edb101af6ba229672f9de90609c185db6d3e3f6f",
       "reconciled": true,
       "reconciled_at": "2026-11-08T23:36:38.591308+00:00"
+    },
+    {
+      "id": "NOTAB-01",
+      "title": "Explain and read notation notes that have no TAB digit",
+      "objective": "After PERF-02 the whole-set ranking holds notation_note_without_tab_digit at 23 bars and notehead_digit_count_mismatch at 9 bars (both unknown). Part may be cascades from tied or unread neighbours, part rests or grace notes with no digit, part extraction gaps. Leads, not facts: re-measure, view each bar, and separate cascades from root causes.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 563,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/notab-01-notes-without-a-tab-digit",
+      "prompt": "projects/score2gp/prompts/next/notab-01-notes-without-a-tab-digit.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. For each bar say whether it is a cascade (name the root bar) or a root cause, and what is printed (view the page).",
+        "Read the root-cause classes that the printed page settles (the note's TAB digit exists and its owner is unambiguous); cascades follow their root. Everything else stays refused with a located reason. A note is never given a fret from its pitch alone where the page prints a different TAB position (observed TAB is authoritative).",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "61ff29480ea6c9d0877d30a2ee87a52f02acd55b",
+      "merge_commit": "a2fc60c131ea51a851585377ddecf6f7ba29b736",
+      "reconciled": true,
+      "reconciled_at": "2026-11-09T11:26:39.518472+00:00"
     }
   ],
   "backlog": [
