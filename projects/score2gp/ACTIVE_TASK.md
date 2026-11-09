@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: GROUP-03 — Resolve the sources that are still refused at TAB grouping
+**Task**: DUR-04 — Settle the remaining bars whose durations do not total the meter
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/group-03-remaining-grouping-unsafe-sources`
+**PR Branch**: `feat/dur-04-remaining-bar-total-mismatches`
 
-**Pull Request**: 564
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Four sources remain refused with pdf_only_tab_grouping_unsafe after GROUP-01 and TABRHY-01. They are real teaching material. Leads, not facts: re-measure which check raises the refusal per source (quote the code), the systems and bars found, and which warning blocks it. Raise the grouping resolution where the geometry makes the grouping determinable; never loosen the safety check.
+After REFUSE-05 and TABRHY-01 the whole-set ranking holds bar_total_mismatch at 6 bars (reader gap) and tie_head_ownership_unconfirmed at 1. The total is the check, never the evidence. Leads, not facts: re-measure, say per bar whether a printed symbol (dot, rest, tuplet, tie) is unread, and view the page.
 
 ## Allowed paths
 
