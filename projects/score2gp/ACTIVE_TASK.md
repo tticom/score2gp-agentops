@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DUR-04 — Settle the remaining bars whose durations do not total the meter
+**Task**: MEM-04 — Bring the longest source's report and conversion time inside the existing allowances
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dur-04-remaining-bar-total-mismatches`
+**PR Branch**: `feat/mem-04-report-size-and-time-for-the-longest-source`
 
-**Pull Request**: 565
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-After REFUSE-05 and TABRHY-01 the whole-set ranking holds bar_total_mismatch at 6 bars (reader gap) and tie_head_ownership_unconfirmed at 1. The total is the check, never the evidence. Leads, not facts: re-measure, say per bar whether a printed symbol (dot, rest, tuplet, tie) is unread, and view the page.
+PERF-02 let the 34-page source convert but it takes about 780 s and 1.8 GB, and its report is about 40.8 MB, 1.7 MB over the existing size allowance (tests/test_mem_02_report.py is a strict xfail for it). The allowance and the PERF-01 budget are protected and are not touched: the fix is to write less report and spend less time. Leads, not facts: re-measure by stage.
 
 ## Allowed paths
 
