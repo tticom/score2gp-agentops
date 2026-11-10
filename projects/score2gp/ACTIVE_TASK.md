@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-19-largest-refused-class-after-mem-04`
 
-**Pull Request**: TBD
+**Pull Request**: 567
 
 **Owner Role**: implementation
 
