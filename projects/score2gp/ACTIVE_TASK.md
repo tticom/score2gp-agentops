@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: MEM-04 — Bring the longest source's report and conversion time inside the existing allowances
+**Task**: REFUSE-19 — Reduce the largest remaining refused-bar class
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/mem-04-report-size-and-time-for-the-longest-source`
+**PR Branch**: `feat/refuse-19-largest-refused-class-after-mem-04`
 
-**Pull Request**: 566
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-PERF-02 let the 34-page source convert but it takes about 780 s and 1.8 GB, and its report is about 40.8 MB, 1.7 MB over the existing size allowance (tests/test_mem_02_report.py is a strict xfail for it). The allowance and the PERF-01 budget are protected and are not touched: the fix is to write less report and spend less time. Leads, not facts: re-measure by stage.
+REFUSE-18, TABEXT-03, NOTAB-01, GROUP-03 and DUR-04 have landed since the last whole-set ranking. Re-rank every refused bar over the whole private set on the current runtime, then take the largest class that is a reader or representation gap and that the printed page settles. Leads, not facts: do not trust older counts.
 
 ## Allowed paths
 
