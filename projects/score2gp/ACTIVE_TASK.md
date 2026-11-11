@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-19 — Reduce the largest remaining refused-bar class
+**Task**: REFUSE-20 — Reduce the next-largest remaining refused-bar class
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-19-largest-refused-class-after-mem-04`
+**PR Branch**: `feat/refuse-20-next-refused-class-after-refuse-19`
 
-**Pull Request**: 567
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-REFUSE-18, TABEXT-03, NOTAB-01, GROUP-03 and DUR-04 have landed since the last whole-set ranking. Re-rank every refused bar over the whole private set on the current runtime, then take the largest class that is a reader or representation gap and that the printed page settles. Leads, not facts: do not trust older counts.
+After REFUSE-19, re-rank every refused bar over the whole private set and take the largest remaining reader or representation class that the printed page settles and that REFUSE-19 did not address. Leads, not facts: re-measure on the current runtime.
 
 ## Allowed paths
 

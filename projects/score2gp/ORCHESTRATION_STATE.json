@@ -1,52 +1,12 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 346,
+  "authority_revision": 347,
   "task": {
-    "id": "REFUSE-19",
-    "title": "Reduce the largest remaining refused-bar class",
-    "objective": "REFUSE-18, TABEXT-03, NOTAB-01, GROUP-03 and DUR-04 have landed since the last whole-set ranking. Re-rank every refused bar over the whole private set on the current runtime, then take the largest class that is a reader or representation gap and that the printed page settles. Leads, not facts: do not trust older counts.",
-    "status": "PROMOTED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": 567,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/refuse-19-largest-refused-class-after-mem-04",
-    "prompt": "projects/score2gp/prompts/next/refuse-19-largest-refused-class-after-mem-04.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Include a sample page view for each of the five largest classes. Maintainer decision (2026-11-11, real session turn: chose \"Exclude, measure at source level\"): a source that produces no bar inventory at all (the two scanned books, the hand-drawn page and the ASCII-TAB source with no barlines or rhythm) is not required to have per-bar located reasons for the ranking; measure each such source at source level (refusal code and located cause), list it in the handback as unfinished outstanding work (reader or representation gap, never a correct refusal), and keep it out of the bar-count ranking. Every source that does produce a bar inventory is still measured bar by bar.",
-      "Read the largest class that note type plus grouping, or an unambiguously musical symbol, or the printed TAB, settles; the rest stay refused with their located reasons. No duration or position is guessed and no spacing or count inference is used.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "next_task_proposal": {
     "id": "REFUSE-20",
     "title": "Reduce the next-largest remaining refused-bar class",
     "objective": "After REFUSE-19, re-rank every refused bar over the whole private set and take the largest remaining reader or representation class that the printed page settles and that REFUSE-19 did not address. Leads, not facts: re-measure on the current runtime.",
-    "status": "PROPOSED",
+    "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
     "pull_request": null,
@@ -82,47 +42,46 @@
     ],
     "author_login": "tticom-codex"
   },
-  "queued_task_proposals": [
-    {
-      "id": "PERF-03",
-      "title": "Cut the longest source's conversion time further without changing any output",
-      "objective": "MEM-04 cut the 34-page source from about 1500 s to about 546 s (duration stage about 305 s) and left peak memory near 1.8 GB. The PERF-01 budget and report allowance are protected and are not touched. Leads, not facts: re-measure by stage on the current runtime, then reduce the slowest stage and peak memory.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/perf-03-longest-source-conversion-time",
-      "prompt": "projects/score2gp/prompts/next/perf-03-longest-source-conversion-time.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first: for the 34-page source and two others of different size, time and peak memory by stage. Numbers only in the handback.",
-        "Reduce the slowest stage's time and, if the measurement shows it, peak memory without changing any output: every converting source keeps a byte-identical inner Content/score.gpif, durations JSON and TabRaw, statuses and refusals; allowances and budgets stay exactly as they are. Report before and after over the whole set and list the remaining Rust-replacement candidates by measured share.",
-        "A named mutant (revert the optimisation) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": {
+    "id": "PERF-03",
+    "title": "Cut the longest source's conversion time further without changing any output",
+    "objective": "MEM-04 cut the 34-page source from about 1500 s to about 546 s (duration stage about 305 s) and left peak memory near 1.8 GB. The PERF-01 budget and report allowance are protected and are not touched. Leads, not facts: re-measure by stage on the current runtime, then reduce the slowest stage and peak memory.",
+    "status": "PROPOSED",
+    "repository": "tticom/score2gp",
+    "base_branch": "main",
+    "pull_request": null,
+    "owner_role": "implementation",
+    "reviewer_role": "reviewer",
+    "delivery_action": "pull_request",
+    "branch": "feat/perf-03-longest-source-conversion-time",
+    "prompt": "projects/score2gp/prompts/next/perf-03-longest-source-conversion-time.md",
+    "allowed_paths": [
+      "src/score2gp/**",
+      "tests/**"
+    ],
+    "acceptance": [
+      "Measure first: for the 34-page source and two others of different size, time and peak memory by stage. Numbers only in the handback.",
+      "Reduce the slowest stage's time and, if the measurement shows it, peak memory without changing any output: every converting source keeps a byte-identical inner Content/score.gpif, durations JSON and TabRaw, statuses and refusals; allowances and budgets stay exactly as they are. Report before and after over the whole set and list the remaining Rust-replacement candidates by measured share.",
+      "A named mutant (revert the optimisation) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+      "Nothing that worked may change; validation commands pass; handback complete."
+    ],
+    "validation_commands": [
+      "python -m pytest",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
+      "git diff --check"
+    ],
+    "dependencies": [],
+    "stop_conditions": [
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
+      "private_content_would_be_committed"
+    ],
+    "author_login": "tticom-codex"
+  },
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -6729,6 +6688,50 @@
       "merge_commit": "6512eb80bdd3463465c6127f36d0fa9a975ac290",
       "reconciled": true,
       "reconciled_at": "2026-11-10T12:46:39.895106+00:00"
+    },
+    {
+      "id": "REFUSE-19",
+      "title": "Reduce the largest remaining refused-bar class",
+      "objective": "REFUSE-18, TABEXT-03, NOTAB-01, GROUP-03 and DUR-04 have landed since the last whole-set ranking. Re-rank every refused bar over the whole private set on the current runtime, then take the largest class that is a reader or representation gap and that the printed page settles. Leads, not facts: do not trust older counts.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 567,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-19-largest-refused-class-after-mem-04",
+      "prompt": "projects/score2gp/prompts/next/refuse-19-largest-refused-class-after-mem-04.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Include a sample page view for each of the five largest classes. Maintainer decision (2026-11-11, real session turn: chose \"Exclude, measure at source level\"): a source that produces no bar inventory at all (the two scanned books, the hand-drawn page and the ASCII-TAB source with no barlines or rhythm) is not required to have per-bar located reasons for the ranking; measure each such source at source level (refusal code and located cause), list it in the handback as unfinished outstanding work (reader or representation gap, never a correct refusal), and keep it out of the bar-count ranking. Every source that does produce a bar inventory is still measured bar by bar.",
+        "Read the largest class that note type plus grouping, or an unambiguously musical symbol, or the printed TAB, settles; the rest stay refused with their located reasons. No duration or position is guessed and no spacing or count inference is used.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "c4ca0c60a01409d685315f575d3b52ab92457192",
+      "merge_commit": "d1076ab23ab09e4e469b476d3c48007264ec5139",
+      "reconciled": true,
+      "reconciled_at": "2026-11-11T13:36:39.730388+00:00"
     }
   ],
   "backlog": [
