@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-20 — Reduce the next-largest remaining refused-bar class
+**Task**: PERF-03 — Cut the longest source's conversion time further without changing any output
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-20-next-refused-class-after-refuse-19`
+**PR Branch**: `feat/perf-03-longest-source-conversion-time`
 
-**Pull Request**: 568
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-After REFUSE-19, re-rank every refused bar over the whole private set and take the largest remaining reader or representation class that the printed page settles and that REFUSE-19 did not address. Leads, not facts: re-measure on the current runtime.
+MEM-04 cut the 34-page source from about 1500 s to about 546 s (duration stage about 305 s) and left peak memory near 1.8 GB. The PERF-01 budget and report allowance are protected and are not touched. Leads, not facts: re-measure by stage on the current runtime, then reduce the slowest stage and peak memory.
 
 ## Allowed paths
 
