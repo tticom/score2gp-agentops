@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/refuse-24-next-refused-class-after-refuse-23`
 
-**Pull Request**: TBD
+**Pull Request**: 573
 
 **Owner Role**: implementation
 
