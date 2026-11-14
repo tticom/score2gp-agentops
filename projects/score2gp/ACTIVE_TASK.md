@@ -2,21 +2,21 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-23 — Reduce the next-largest remaining refused-bar class
+**Task**: REFUSE-24 — Reduce the next-largest remaining refused-bar class
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/refuse-23-next-refused-class-after-refuse-22`
+**PR Branch**: `feat/refuse-24-next-refused-class-after-refuse-23`
 
-**Pull Request**: 572
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-After REFUSE-22, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.
+After REFUSE-23, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.
 
 ## Allowed paths
 
