@@ -4,7 +4,7 @@
 
 **Task**: REFUSE-24 — Reduce the next-largest remaining refused-bar class
 
-**Status**: PROMOTED
+**Status**: RESOLVED
 
 **Repository**: tticom/score2gp
 
