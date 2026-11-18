@@ -1,129 +1,49 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 372,
+  "authority_revision": 373,
   "task": {
-    "id": "REFUSE-27",
-    "title": "Reduce the next-largest remaining refused-bar class",
-    "objective": "After REFUSE-26, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
+    "id": "DEC-02",
+    "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
+    "objective": "Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
     "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/refuse-27-next-refused-class-after-refuse-26",
-    "prompt": "projects/score2gp/prompts/next/refuse-27-next-refused-class-after-refuse-26.md",
+    "branch": "feat/dec-02-reconcile-position-adr",
+    "prompt": "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md",
     "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
+      "projects/score2gp/ARCHITECTURE_DECISIONS.md",
+      "projects/score2gp/decisions/**",
+      "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md"
     ],
     "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Name the classes earlier REFUSE tasks addressed and show them excluded or reduced in the ranking.",
-      "Read the largest remaining class that the page evidence settles; the rest stay refused with located reasons. Design on some sources and keep a positive separate-source holdout (a holdout source on which the reader writes at least one bar), applying the finished reader to it once and reporting bar by bar against the printed page. If no such source exists, report the task blocked, not complete; this gate is not waived.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
+      "A current-state section sourced to product main with a revision and file references: where observed TAB string and fret enter the pipeline, whether TAB fusion is now implemented (ADR-0004's premise was that it was not), where BiomechanicalPositionOptimizer exists and is called, and how observed versus inferred provenance is or is not recorded.",
+      "One new decision record with status Proposed (never marked Accepted or Approved by the author), stating the rule or the closest rule the current-state facts support, its reason and consequences, and registered in ARCHITECTURE_DECISIONS.md with the next free ADR number.",
+      "A supersession proposal naming ADR-006 and product ADR-0004 and what changes in each, written in the new record only: no edit to ADR-006's text and no edit to the product repository (DEC-03 owns migration).",
+      "Divergences between the current code and the proposed rule are listed as located findings, none fixed.",
+      "No private musical content committed; every claim cites a file, document or executed probe a reviewer can reproduce."
     ],
     "validation_commands": [
       "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
       "git diff --check"
     ],
     "dependencies": [],
     "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
+      "product_repository_edited",
+      "decision_marked_accepted_without_maintainer",
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
   },
-  "next_task_proposal": {
-    "id": "REFUSE-28",
-    "title": "Reduce the next-largest remaining refused-bar class",
-    "objective": "After REFUSE-27, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
-    "status": "PROPOSED",
-    "repository": "tticom/score2gp",
-    "base_branch": "main",
-    "pull_request": null,
-    "owner_role": "implementation",
-    "reviewer_role": "reviewer",
-    "delivery_action": "pull_request",
-    "branch": "feat/refuse-28-next-refused-class-after-refuse-27",
-    "prompt": "projects/score2gp/prompts/next/refuse-28-next-refused-class-after-refuse-27.md",
-    "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
-    ],
-    "acceptance": [
-      "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Name the classes earlier REFUSE tasks addressed and show them excluded or reduced in the ranking.",
-      "Read the largest remaining class that the page evidence settles; the rest stay refused with located reasons. Design on some sources and keep a positive separate-source holdout (a holdout source on which the reader writes at least one bar), applying the finished reader to it once and reporting bar by bar against the printed page. If no such source exists, report the task blocked, not complete; this gate is not waived.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-      "Nothing that worked may change; validation commands pass; handback complete."
-    ],
-    "validation_commands": [
-      "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
-      "git diff --check"
-    ],
-    "dependencies": [],
-    "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
-      "private_content_would_be_committed"
-    ],
-    "author_login": "tticom-codex"
-  },
-  "queued_task_proposals": [
-    {
-      "id": "REFUSE-29",
-      "title": "Reduce the next-largest remaining refused-bar class",
-      "objective": "After REFUSE-28, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
-      "status": "PROPOSED",
-      "repository": "tticom/score2gp",
-      "base_branch": "main",
-      "pull_request": null,
-      "owner_role": "implementation",
-      "reviewer_role": "reviewer",
-      "delivery_action": "pull_request",
-      "branch": "feat/refuse-29-next-refused-class-after-refuse-28",
-      "prompt": "projects/score2gp/prompts/next/refuse-29-next-refused-class-after-refuse-28.md",
-      "allowed_paths": [
-        "src/score2gp/**",
-        "tests/**"
-      ],
-      "acceptance": [
-        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Name the classes earlier REFUSE tasks addressed and show them excluded or reduced in the ranking.",
-        "Read the largest remaining class that the page evidence settles; the rest stay refused with located reasons. Design on some sources and keep a positive separate-source holdout (a holdout source on which the reader writes at least one bar), applying the finished reader to it once and reporting bar by bar against the printed page. If no such source exists, report the task blocked, not complete; this gate is not waived.",
-        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
-        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
-        "Nothing that worked may change; validation commands pass; handback complete."
-      ],
-      "validation_commands": [
-        "python -m pytest",
-        "python -m score2gp.cli export-schema --out schemas",
-        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-        "python scripts/artifact_audit.py",
-        "git diff --check"
-      ],
-      "dependencies": [],
-      "stop_conditions": [
-        "value_invented_or_copied_from_reference",
-        "gate_loosened",
-        "written_bar_regression",
-        "private_content_would_be_committed"
-      ],
-      "author_login": "tticom-codex"
-    }
-  ],
+  "next_task_proposal": null,
+  "queued_task_proposals": [],
   "incidents": [
     {
       "id": "unauthorized-merge-2026-07-20",
@@ -7128,6 +7048,49 @@
       "reconciled": true,
       "reconciled_at": "2026-11-18T04:58:08.921702+00:00",
       "notes": "Ended blocked (no holdout). Docs-only product PR tticom/score2gp#575 (docs/measurements/refuse-26-refused-bar-ranking.md; head 3ee377a90680aaed9014f951ef73213140cd63f8) was approved by tticomgov-code and merged as 16414f9278dcf3dca5886fc15019b849da7358b3. The measurement document is titled 'task blocked, no reader change' and reports 1441 bars written and 210 refused, the same totals and top codes as REFUSE-24 and REFUSE-25. The REFUSE-26 review accepted the blocked outcome under acceptance 2; unlike the REFUSE-25 review, governance did not verify that it independently re-ran the 43-PDF measurement. No source, gate, test or schema changed. Recorded RESOLVED, not COMPLETED, because the task's acceptance 2 (a positive separate-source holdout) was not met and the task's own handback reports it blocked. It was first recorded COMPLETED by a mechanical reconcile (reconcile_task hardcodes COMPLETED); this follows the REFUSE-24 precedent (AgentOps #1014). Corrected 2026-11-18 at the maintainer's instruction."
+    },
+    {
+      "id": "REFUSE-27",
+      "title": "Reduce the next-largest remaining refused-bar class",
+      "objective": "After REFUSE-26, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
+      "status": "RESOLVED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": null,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/refuse-27-next-refused-class-after-refuse-26",
+      "prompt": "projects/score2gp/prompts/next/refuse-27-next-refused-class-after-refuse-26.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI over every approved PDF: record per affected bar the located reason (page, system, bar, event, code, cause) and rank the causes by bar count. Counts and codes only in the handback. Classify every refused class as a reader gap, a representation gap or unknown, never as a correct refusal: every approved fixture except the blank No Notes file is real teaching material a human can play from (maintainer, 2026-11-04). A bar the evidence cannot yet settle stays refused with a located reason, never guessed, and is reported as unfinished. Name the classes earlier REFUSE tasks addressed and show them excluded or reduced in the ranking.",
+        "Read the largest remaining class that the page evidence settles; the rest stay refused with located reasons. Design on some sources and keep a positive separate-source holdout (a holdout source on which the reader writes at least one bar), applying the finished reader to it once and reporting bar by bar against the printed page. If no such source exists, report the task blocked, not complete; this gate is not waived.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before must keep a byte-identical inner Content/score.gpif unless a refused bar became written, which the handback lists. Check each newly written bar against its reference where a readable one exists, otherwise against the printed page, and say which. Reference-less sources are labelled not independently verified.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so.",
+        "Nothing that worked may change; validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "notes": "Resolved 2026-11-18 with no product PR: ended blocked, the same gate as REFUSE-24 to 26 (acceptance 2: no class the printed page settles has a positive separate-source holdout). Per the author's report (launchers/codex-author-logs/refuse-27/report.md, not independently verified): 42 music PDFs measured through the normal CLI, 210 refused bars (the 1432 written count differs from REFUSE-26's 1441 only by a tally difference), ranking identical to REFUSE-26; the largest class (73 bars) has no printed rhythm, the no_tab_column class is 37 bars in one source, and tie_stop_without_written_predecessor (8) cascades from refused predecessors. The author launcher stopped before committing, so no branch, PR or merge exists; the measurement document stays uncommitted in worktrees/codex/author-refuse-27. Closed by the maintainer's decision (2026-11-18) that the REFUSE series has no further value as scoped after four blocked results.",
+      "reconciled": true,
+      "reconciled_at": "2026-11-18T16:19:31.971995+00:00"
     }
   ],
   "backlog": [
@@ -7341,19 +7304,6 @@
       "priority": 101,
       "depends_on": [],
       "notes": "Architect recommendation: wrap first (TOP-01) to avoid a double migration."
-    },
-    {
-      "id": "DEC-02",
-      "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
-      "requirements": [
-        "REQ-0001:U04"
-      ],
-      "kind": "decision",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 527,
-      "depends_on": [],
-      "notes": "Maintainer 2026-09-25: 'Position is the TAB's super power'."
     },
     {
       "id": "DEC-03",
@@ -8901,6 +8851,32 @@
       "priority": 196,
       "depends_on": [],
       "notes": "Maintainer 2026-10-28: 'queue it and execute the task list' after the SkillOpt research (https://microsoft.github.io/SkillOpt/, MIT, pip skillopt 0.2.0, Claude Code backend claude_code_exec). Scope: a measured experiment only. Needs detail before promotion: an objective scorer for the publish-pr-handback skill (publish_handback.py accepts the packet plus the schema tests), a train/validation split of real past handback situations, an isolated virtual environment, a capped rollout budget on Claude usage (Codex is scarce), and the comparison against the hand-edited skill. Nothing the optimiser produces enters the pinned skills except through a governed PR read by a human; no gate-enforcing skill (review verdicts, merge) is a target. Reported research numbers are self-reported by the authors and unreplicated."
+    },
+    {
+      "id": "REFUSE-28",
+      "title": "Reduce the next-largest remaining refused-bar class",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 60,
+      "depends_on": [],
+      "notes": "Moved from the proposal queue 2026-11-18 on the maintainer's decision. Blocked on the positive separate-source holdout gate: REFUSE-24, 25, 26 and 27 each ended blocked with identical totals. Needs a changed objective, a source with a positive holdout, or a maintainer amendment of the gate before it can be promoted. Prompt kept at projects/score2gp/prompts/next/refuse-28-next-refused-class-after-refuse-27.md."
+    },
+    {
+      "id": "REFUSE-29",
+      "title": "Reduce the next-largest remaining refused-bar class",
+      "requirements": [
+        "REQ-0001"
+      ],
+      "kind": "implementation",
+      "repository": "tticom/score2gp",
+      "status": "NEEDS_DETAIL",
+      "priority": 59,
+      "depends_on": [],
+      "notes": "Moved from the proposal queue 2026-11-18 on the maintainer's decision. Blocked on the positive separate-source holdout gate: REFUSE-24, 25, 26 and 27 each ended blocked with identical totals. Needs a changed objective, a source with a positive holdout, or a maintainer amendment of the gate before it can be promoted. Prompt kept at projects/score2gp/prompts/next/refuse-29-next-refused-class-after-refuse-28.md."
     }
   ],
   "registered_requirements": [

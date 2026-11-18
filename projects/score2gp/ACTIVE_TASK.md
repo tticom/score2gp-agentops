@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: REFUSE-27 — Reduce the next-largest remaining refused-bar class
+**Task**: DEC-02 — Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp
+**Repository**: tticom/score2gp-agentops
 
-**PR Branch**: `feat/refuse-27-next-refused-class-after-refuse-26`
+**PR Branch**: `feat/dec-02-reconcile-position-adr`
 
 **Pull Request**: TBD
 
@@ -16,17 +16,16 @@
 
 ## Objective
 
-After REFUSE-26, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.
+Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.
 
 ## Allowed paths
 
-- `src/score2gp/**`
-- `tests/**`
+- `projects/score2gp/ARCHITECTURE_DECISIONS.md`
+- `projects/score2gp/decisions/**`
+- `projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md`
 
 ## Validation commands
 
 - `python -m pytest`
-- `python -m score2gp.cli export-schema --out schemas`
-- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
-- `python scripts/artifact_audit.py`
+- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
 - `git diff --check`
