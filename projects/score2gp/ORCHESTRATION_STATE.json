@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 371,
+  "authority_revision": 372,
   "task": {
     "id": "REFUSE-27",
     "title": "Reduce the next-largest remaining refused-bar class",
@@ -7043,7 +7043,7 @@
       "id": "REFUSE-25",
       "title": "Reduce the next-largest remaining refused-bar class",
       "objective": "After REFUSE-24, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
-      "status": "COMPLETED",
+      "status": "RESOLVED",
       "repository": "tticom/score2gp",
       "base_branch": "main",
       "pull_request": 574,
@@ -7081,13 +7081,14 @@
       "head_sha": "48aaf65f2d0db32c26c0c76b0c08c028acd157cc",
       "merge_commit": "545f9e7a7e8d074916501a39d8065330e857d310",
       "reconciled": true,
-      "reconciled_at": "2026-11-17T03:50:55.928550+00:00"
+      "reconciled_at": "2026-11-17T03:50:55.928550+00:00",
+      "notes": "Ended blocked (no holdout). Docs-only product PR tticom/score2gp#574 (docs/measurements/refuse-25-refused-bar-ranking.md; head 48aaf65f2d0db32c26c0c76b0c08c028acd157cc) was approved by tticomgov-code (BASIC review that re-ran the normal CLI over the 43 approved PDFs and matched the per-code and per-source counts: 1441 bars written, 210 refused) and merged as 545f9e7a7e8d074916501a39d8065330e857d310. The review reports the largest class (73 bars, tab_column_without_rhythm_mark) as strategy 4 of the maintainer's tab-rhythm reading order under separate TABONLY-01 authority, and the single-rule classes as lacking a separate-source holdout. The totals repeat the REFUSE-24 baseline. No source, gate, test or schema changed. Recorded RESOLVED, not COMPLETED, because the task's acceptance 2 (a positive separate-source holdout) was not met and the task's own handback reports it blocked. It was first recorded COMPLETED by a mechanical reconcile (reconcile_task hardcodes COMPLETED); this follows the REFUSE-24 precedent (AgentOps #1014). Corrected 2026-11-18 at the maintainer's instruction."
     },
     {
       "id": "REFUSE-26",
       "title": "Reduce the next-largest remaining refused-bar class",
       "objective": "After REFUSE-25, re-rank every refused bar over the whole private set on the current runtime and take the largest remaining reader or representation class that the printed page settles and that earlier REFUSE tasks did not address. Leads, not facts: re-measure.",
-      "status": "COMPLETED",
+      "status": "RESOLVED",
       "repository": "tticom/score2gp",
       "base_branch": "main",
       "pull_request": 575,
@@ -7125,7 +7126,8 @@
       "head_sha": "3ee377a90680aaed9014f951ef73213140cd63f8",
       "merge_commit": "16414f9278dcf3dca5886fc15019b849da7358b3",
       "reconciled": true,
-      "reconciled_at": "2026-11-18T04:58:08.921702+00:00"
+      "reconciled_at": "2026-11-18T04:58:08.921702+00:00",
+      "notes": "Ended blocked (no holdout). Docs-only product PR tticom/score2gp#575 (docs/measurements/refuse-26-refused-bar-ranking.md; head 3ee377a90680aaed9014f951ef73213140cd63f8) was approved by tticomgov-code and merged as 16414f9278dcf3dca5886fc15019b849da7358b3. The measurement document is titled 'task blocked, no reader change' and reports 1441 bars written and 210 refused, the same totals and top codes as REFUSE-24 and REFUSE-25. The REFUSE-26 review accepted the blocked outcome under acceptance 2; unlike the REFUSE-25 review, governance did not verify that it independently re-ran the 43-PDF measurement. No source, gate, test or schema changed. Recorded RESOLVED, not COMPLETED, because the task's acceptance 2 (a positive separate-source holdout) was not met and the task's own handback reports it blocked. It was first recorded COMPLETED by a mechanical reconcile (reconcile_task hardcodes COMPLETED); this follows the REFUSE-24 precedent (AgentOps #1014). Corrected 2026-11-18 at the maintainer's instruction."
     }
   ],
   "backlog": [
