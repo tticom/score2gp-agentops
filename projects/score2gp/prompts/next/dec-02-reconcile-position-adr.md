@@ -1,6 +1,6 @@
 # DEC-02 — Reconcile ADR-006 and product ADR-0004 into one position ADR
 
-- **Kind:** decision (authority backlog item `DEC-02`, promoted to a task 2026-11-18 on the maintainer's instruction)
+- **Kind:** decision (authority item `DEC-02`, promoted to a task 2026-11-18 on the maintainer's instruction)
 - **Repository:** `tticom/score2gp-agentops` (records only); read-only inspection of `tticom/score2gp`
 - **Requirement:** `REQ-0001:U04`
 - **Maintainer position (2026-09-25):** "Position is the TAB's super power."
