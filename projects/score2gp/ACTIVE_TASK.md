@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DEC-02 — Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance
+**Task**: CASCADE-01 — Refused bars that follow a refused bar: fix the root refusal in Black Dog (design), prove it on Crossroads (holdout)
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dec-02-reconcile-position-adr`
+**PR Branch**: `feat/cascade-01-tie-stop-cascade-black-dog-crossroads`
 
 **Pull Request**: TBD
 
@@ -16,16 +16,17 @@
 
 ## Objective
 
-Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.
+Measure which refused bars are refused only because an earlier bar was refused (tie_stop_without_written_predecessor), fix the root refusal in the Black Dog chain using page evidence, and apply the finished reader once to Crossroads as the pre-named positive holdout. A bar the evidence cannot settle stays refused. Leads, not facts: re-measure.
 
 ## Allowed paths
 
-- `projects/score2gp/ARCHITECTURE_DECISIONS.md`
-- `projects/score2gp/decisions/**`
-- `projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md`
+- `src/score2gp/**`
+- `tests/**`
 
 ## Validation commands
 
 - `python -m pytest`
-- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
+- `python -m score2gp.cli export-schema --out schemas`
+- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
+- `python scripts/artifact_audit.py`
 - `git diff --check`
