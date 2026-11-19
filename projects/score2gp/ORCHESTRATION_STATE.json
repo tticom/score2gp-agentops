@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 376,
+  "authority_revision": 377,
   "task": {
     "id": "TECH-01",
     "title": "Slides the reference files have and the product does not write: design on Melodic Soloing Masterclass, holdout on Can't Find My Way Home, Bebop and Ex 2 Hands Up",
@@ -9,7 +9,7 @@
     "status": "PROMOTED",
     "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": null,
+    "pull_request": 578,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
