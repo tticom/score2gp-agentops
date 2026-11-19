@@ -2,13 +2,13 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: CASCADE-01 — Refused bars that follow a refused bar: fix the root refusal in Black Dog (design), prove it on Crossroads (holdout)
+**Task**: TECH-01 — Slides the reference files have and the product does not write: design on Melodic Soloing Masterclass, holdout on Can't Find My Way Home, Bebop and Ex 2 Hands Up
 
 **Status**: PROMOTED
 
 **Repository**: tticom/score2gp
 
-**PR Branch**: `feat/cascade-01-tie-stop-cascade-black-dog-crossroads`
+**PR Branch**: `feat/tech-01-slide-misses-against-references`
 
 **Pull Request**: TBD
 
@@ -16,7 +16,7 @@
 
 ## Objective
 
-Measure which refused bars are refused only because an earlier bar was refused (tie_stop_without_written_predecessor), fix the root refusal in the Black Dog chain using page evidence, and apply the finished reader once to Crossroads as the pre-named positive holdout. A bar the evidence cannot settle stays refused. Leads, not facts: re-measure.
+Find why slides the .gp references contain are not written for Melodic Soloing Masterclass (design source), make the existing slide reader write them from printed-page evidence, and apply it once to the pre-named holdouts (Can't Find My Way Home, Bebop Licks in Am, Ex 2 Hands Up), verified against the references with the independent oracle. Other reference differences are findings only. Leads, not facts: re-measure.
 
 ## Allowed paths
 
