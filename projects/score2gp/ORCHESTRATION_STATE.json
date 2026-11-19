@@ -1,43 +1,43 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 377,
+  "authority_revision": 378,
   "task": {
-    "id": "TECH-01",
-    "title": "Slides the reference files have and the product does not write: design on Melodic Soloing Masterclass, holdout on Can't Find My Way Home, Bebop and Ex 2 Hands Up",
-    "objective": "Find why slides the .gp references contain are not written for Melodic Soloing Masterclass (design source), make the existing slide reader write them from printed-page evidence, and apply it once to the pre-named holdouts (Can't Find My Way Home, Bebop Licks in Am, Ex 2 Hands Up), verified against the references with the independent oracle. Other reference differences are findings only. Leads, not facts: re-measure.",
+    "id": "DEC-02",
+    "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
+    "objective": "Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp",
+    "repository": "tticom/score2gp-agentops",
     "base_branch": "main",
-    "pull_request": 578,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/tech-01-slide-misses-against-references",
-    "prompt": "projects/score2gp/prompts/next/tech-01-slide-misses-against-references.md",
+    "branch": "feat/dec-02-reconcile-position-adr",
+    "prompt": "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md",
     "allowed_paths": [
-      "src/score2gp/**",
-      "tests/**"
+      "projects/score2gp/ARCHITECTURE_DECISIONS.md",
+      "projects/score2gp/decisions/**",
+      "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md"
     ],
     "acceptance": [
-      "Measure first with the normal CLI and the independent oracle over every source that has a .gp reference: list each reference slide the output lacks or writes differently (source, bar, event, string, fret, expected flag, actual) and which printed mark the page shows for it. Counts, positions and codes only.",
-      "Design on Melodic Soloing Masterclass only; Can't Find My Way Home, Bebop Licks in Am and Ex 2 Hands Up are the holdouts, named in advance and not tuned on. The reader writes the design source's slides as the reference does, and at least one more reference slide newly matches in a holdout, compared with the oracle, with the mechanism stated. Otherwise report the task blocked, not complete: the gate is not waived and no other holdout may be substituted after the result is seen.",
-      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before keeps a byte-identical inner Content/score.gpif unless a named slide became correct, which the handback lists with the oracle result. Newly written slides are checked against the references.",
-      "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so. Never copy a slide type or position from a reference into code. Other reference differences (vibrato, repeat count, grace, tie, double bar) are listed as located findings, not fixed.",
-      "Nothing that worked may change (Lesson-5's slide must not get worse); validation commands pass; handback complete."
+      "A current-state section sourced to product main with a revision and file references: where observed TAB string and fret enter the pipeline, whether TAB fusion is now implemented (ADR-0004's premise was that it was not), where BiomechanicalPositionOptimizer exists and is called, and how observed versus inferred provenance is or is not recorded.",
+      "One new decision record with status Proposed (never marked Accepted or Approved by the author), stating the rule or the closest rule the current-state facts support, its reason and consequences, and registered in ARCHITECTURE_DECISIONS.md with the next free ADR number.",
+      "A supersession proposal naming ADR-006 and product ADR-0004 and what changes in each, written in the new record only: no edit to ADR-006's text and no edit to the product repository (DEC-03 owns migration).",
+      "Divergences between the current code and the proposed rule are listed as located findings, none fixed.",
+      "No private musical content committed; every claim cites a file, document or executed probe a reviewer can reproduce."
     ],
     "validation_commands": [
       "python -m pytest",
-      "python -m score2gp.cli export-schema --out schemas",
-      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
-      "python scripts/artifact_audit.py",
+      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
       "git diff --check"
     ],
     "dependencies": [],
     "stop_conditions": [
-      "value_invented_or_copied_from_reference",
-      "gate_loosened",
-      "written_bar_regression",
+      "product_repository_edited",
+      "decision_marked_accepted_without_maintainer",
+      "merge_review_or_audit_gate_weakened",
+      "identity_gate_weakened",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
@@ -7134,6 +7134,51 @@
       "reconciled": true,
       "reconciled_at": "2026-11-19T06:45:05.805363+00:00",
       "notes": "Resolved 2026-11-19 with no merged PR: ended blocked at acceptance 2 (no same-mechanism positive holdout), not complete. Per the author's report (launchers/codex-author-logs/cascade-01/report.md, not independently verified): 43 PDFs measured through the normal CLI, 1441 bars written and 210 refused; 8 refused bars are cascade-only (Black Dog 2 to 4, Crossroads 6, 7, 26, 29, Melodic Expressions 132) and 202 are refused on their own evidence across many causes. Black Dog's root bar 1 holds tie arcs and bend-and-release shapes, and the product has no release representation; Crossroads' cascade roots are other classes, so no holdout bar exists. The maintainer confirmed (2026-11-19) that Lessons 3 to 7 and Bebop contain a release but no string bend, so no reference source can verify a bend-release reader and it is not promoted. No source change; every written score.gpif was byte-identical. Product PR #577 (docs-only measurement, handback unpublished because full pytest did not complete on the author host) was closed unmerged; the measurement stays on branch feat/cascade-01-tie-stop-cascade-black-dog-crossroads."
+    },
+    {
+      "id": "TECH-01",
+      "title": "Slides the reference files have and the product does not write: design on Melodic Soloing Masterclass, holdout on Can't Find My Way Home, Bebop and Ex 2 Hands Up",
+      "objective": "Find why slides the .gp references contain are not written for Melodic Soloing Masterclass (design source), make the existing slide reader write them from printed-page evidence, and apply it once to the pre-named holdouts (Can't Find My Way Home, Bebop Licks in Am, Ex 2 Hands Up), verified against the references with the independent oracle. Other reference differences are findings only. Leads, not facts: re-measure.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp",
+      "base_branch": "main",
+      "pull_request": 578,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/tech-01-slide-misses-against-references",
+      "prompt": "projects/score2gp/prompts/next/tech-01-slide-misses-against-references.md",
+      "allowed_paths": [
+        "src/score2gp/**",
+        "tests/**"
+      ],
+      "acceptance": [
+        "Measure first with the normal CLI and the independent oracle over every source that has a .gp reference: list each reference slide the output lacks or writes differently (source, bar, event, string, fret, expected flag, actual) and which printed mark the page shows for it. Counts, positions and codes only.",
+        "Design on Melodic Soloing Masterclass only; Can't Find My Way Home, Bebop Licks in Am and Ex 2 Hands Up are the holdouts, named in advance and not tuned on. The reader writes the design source's slides as the reference does, and at least one more reference slide newly matches in a holdout, compared with the oracle, with the mechanism stated. Otherwise report the task blocked, not complete: the gate is not waived and no other holdout may be substituted after the result is seen.",
+        "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before keeps a byte-identical inner Content/score.gpif unless a named slide became correct, which the handback lists with the oracle result. Newly written slides are checked against the references.",
+        "A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight and the handback says so. Never copy a slide type or position from a reference into code. Other reference differences (vibrato, repeat count, grace, tie, double bar) are listed as located findings, not fixed.",
+        "Nothing that worked may change (Lesson-5's slide must not get worse); validation commands pass; handback complete."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "python -m score2gp.cli export-schema --out schemas",
+        "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+        "python scripts/artifact_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "value_invented_or_copied_from_reference",
+        "gate_loosened",
+        "written_bar_regression",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "c75816a8220e789032bc18016241a75488120aab",
+      "merge_commit": "577ff5acb400a4f086432b66d49406d3eb92ab94",
+      "reconciled": true,
+      "reconciled_at": "2026-11-19T22:29:03.831763+00:00",
+      "notes": "Merged as product PR 578. Gate met on oracle: design source Melodic Soloing 6 -> 0 slide differences; holdout Bebop 2 -> 1 (Can't Find My Way Home, Ex 2 Hands Up, Lesson-5 unchanged, no extra slide). Open risk: about 77 added slides in sources the oracle cannot check (two oracle refusals, five without a reference) rest on printed pages only; slide-in from above (flag 32) has no reference. Follow-ons: bend support needs an oracle bend field first; vibrato, repeat count, grace, tie, double bar differences recorded as findings."
     }
   ],
   "backlog": [
@@ -8920,19 +8965,6 @@
       "priority": 59,
       "depends_on": [],
       "notes": "Moved from the proposal queue 2026-11-18 on the maintainer's decision. Blocked on the positive separate-source holdout gate: REFUSE-24, 25, 26 and 27 each ended blocked with identical totals. Needs a changed objective, a source with a positive holdout, or a maintainer amendment of the gate before it can be promoted. Prompt kept at projects/score2gp/prompts/next/refuse-29-next-refused-class-after-refuse-28.md."
-    },
-    {
-      "id": "DEC-02",
-      "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
-      "requirements": [
-        "REQ-0001"
-      ],
-      "kind": "decision",
-      "repository": "tticom/score2gp-agentops",
-      "status": "READY",
-      "priority": 540,
-      "depends_on": [],
-      "notes": "Promoted 2026-11-18, deferred unstarted on the maintainer's instruction (it changes no conversion output). Prompt kept at projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md; allowed paths and acceptance as in the deferred task record."
     }
   ],
   "registered_requirements": [
