@@ -59,3 +59,10 @@ This document records the architectural decisions governing agent workflows and 
   - The current adapter's GP6/GP8 paths must be contained (REQ-0002 OUT-01) before the interface exists.
   - Target acceptance requires access to each Guitar Pro version and licensing decisions per dependency.
   - The pytest-conditional serializer and the canonical clamps must be removed first, so that target tests exercise production output and target limits are enforced by capability checks rather than by silent clamping.
+
+## ADR-009: Observed TAB Positions Are Authoritative; Inference Only for Notation-Only Notes, Always Labelled
+- **Status**: **Proposed (2026-11-20)**. Awaits maintainer acceptance.
+- **Requirement**: `REQ-0001:U04` (authority item DEC-02). Full record, current-state facts at product `main` `42acd81`, supersession proposal and findings: [decisions/2026-11-20-dec-02-position-authority-adr.md](decisions/2026-11-20-dec-02-position-authority-adr.md).
+- **Decision**: Observed TAB string and fret are the output; inference is permitted only for notes with no observed TAB, and every inferred position carries machine-readable provenance and is never presented as observed. No synthetic fallback positions.
+- **Reason**: Reconciles ADR-006 (no inference without TAB evidence) with product ADR-0004 (retains the optimizer for notation-only notes).
+- **Supersession proposal (on acceptance)**: ADR-006 becomes "Amended by ADR-009"; product ADR-0004 becomes "Superseded by ADR-009". Product migration is DEC-03.
