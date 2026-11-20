@@ -1,43 +1,43 @@
 {
   "schema_version": 2,
   "project": "score2gp",
-  "authority_revision": 379,
+  "authority_revision": 380,
   "task": {
-    "id": "DEC-02",
-    "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
-    "objective": "Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.",
+    "id": "TECH-02",
+    "title": "Bends the reference files have: add bends to the independent oracle, design on Melodic Soloing Masterclass, holdout on Ex 2 Hands Up",
+    "objective": "Add bends to the independent oracle, measure bend differences against the .gp references, make the product write the design source's bends (Melodic Soloing Masterclass) from printed-page evidence, and apply it once to the pre-named holdout (Ex 2 Hands Up). Oracle extension and measurement stand on their own. Other reference differences are findings only. Leads, not facts: re-measure.",
     "status": "PROMOTED",
-    "repository": "tticom/score2gp-agentops",
+    "repository": "tticom/score2gp",
     "base_branch": "main",
-    "pull_request": 1026,
+    "pull_request": null,
     "owner_role": "implementation",
     "reviewer_role": "reviewer",
     "delivery_action": "pull_request",
-    "branch": "feat/dec-02-reconcile-position-adr",
-    "prompt": "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md",
+    "branch": "feat/tech-02-bends-against-references",
+    "prompt": "projects/score2gp/prompts/next/tech-02-bends-against-references.md",
     "allowed_paths": [
-      "projects/score2gp/ARCHITECTURE_DECISIONS.md",
-      "projects/score2gp/decisions/**",
-      "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md"
+      "src/score2gp/**",
+      "tests/**"
     ],
     "acceptance": [
-      "A current-state section sourced to product main with a revision and file references: where observed TAB string and fret enter the pipeline, whether TAB fusion is now implemented (ADR-0004's premise was that it was not), where BiomechanicalPositionOptimizer exists and is called, and how observed versus inferred provenance is or is not recorded.",
-      "One new decision record with status Proposed (never marked Accepted or Approved by the author), stating the rule or the closest rule the current-state facts support, its reason and consequences, and registered in ARCHITECTURE_DECISIONS.md with the next free ADR number.",
-      "A supersession proposal naming ADR-006 and product ADR-0004 and what changes in each, written in the new record only: no edit to ADR-006's text and no edit to the product repository (DEC-03 owns migration).",
-      "Divergences between the current code and the proposed rule are listed as located findings, none fixed.",
-      "No private musical content committed; every claim cites a file, document or executed probe a reviewer can reproduce."
+      "The independent oracle compares bends as a field of its own, located by bar and event, without importing score2gp; tests fail on a changed bend value, a dropped bend and an extra bend, each shown failing against a named mutant; existing oracle tests pass unchanged.",
+      "Measure first with the normal CLI and the oracle over every source that has a .gp reference: list each reference bend the output lacks, writes differently or adds (source, bar, event, string, expected, actual) and which printed mark the page shows. Counts, positions and codes only.",
+      "Design on Melodic Soloing Masterclass only; Ex 2 Hands Up is the holdout, named in advance and not tuned on. The reader writes the design source's bends as the reference does from printed evidence, and at least one more reference bend newly matches in the holdout, compared with the oracle, with the mechanism stated. Otherwise report goal 3 blocked, not complete (oracle and measurement still delivered, labelled): the gate is not waived and no other holdout may be substituted after the result is seen.",
+      "Report before and after over the whole private set: bars written, bars refused by code, and every source whose written GPIF changed. Every source that converted before keeps a byte-identical inner Content/score.gpif unless a named bend became correct, which the handback lists with the oracle result; bends added where no reference can check are listed as a stated risk. A named mutant (drop the new rule) fails a test on a real source; synthetic tests carry no acceptance weight. Never copy a bend value or position from a reference into code.",
+      "Nothing that worked may change; validation commands pass; handback complete."
     ],
     "validation_commands": [
       "python -m pytest",
-      "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+      "python -m score2gp.cli export-schema --out schemas",
+      "python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json",
+      "python scripts/artifact_audit.py",
       "git diff --check"
     ],
     "dependencies": [],
     "stop_conditions": [
-      "product_repository_edited",
-      "decision_marked_accepted_without_maintainer",
-      "merge_review_or_audit_gate_weakened",
-      "identity_gate_weakened",
+      "value_invented_or_copied_from_reference",
+      "gate_loosened",
+      "written_bar_regression",
       "private_content_would_be_committed"
     ],
     "author_login": "tticom-codex"
@@ -7179,6 +7179,51 @@
       "reconciled": true,
       "reconciled_at": "2026-11-19T22:29:03.831763+00:00",
       "notes": "Merged as product PR 578. Gate met on oracle: design source Melodic Soloing 6 -> 0 slide differences; holdout Bebop 2 -> 1 (Can't Find My Way Home, Ex 2 Hands Up, Lesson-5 unchanged, no extra slide). Open risk: about 77 added slides in sources the oracle cannot check (two oracle refusals, five without a reference) rest on printed pages only; slide-in from above (flag 32) has no reference. Follow-ons: bend support needs an oracle bend field first; vibrato, repeat count, grace, tie, double bar differences recorded as findings."
+    },
+    {
+      "id": "DEC-02",
+      "title": "Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance",
+      "objective": "Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.",
+      "status": "COMPLETED",
+      "repository": "tticom/score2gp-agentops",
+      "base_branch": "main",
+      "pull_request": 1026,
+      "owner_role": "implementation",
+      "reviewer_role": "reviewer",
+      "delivery_action": "pull_request",
+      "branch": "feat/dec-02-reconcile-position-adr",
+      "prompt": "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md",
+      "allowed_paths": [
+        "projects/score2gp/ARCHITECTURE_DECISIONS.md",
+        "projects/score2gp/decisions/**",
+        "projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md"
+      ],
+      "acceptance": [
+        "A current-state section sourced to product main with a revision and file references: where observed TAB string and fret enter the pipeline, whether TAB fusion is now implemented (ADR-0004's premise was that it was not), where BiomechanicalPositionOptimizer exists and is called, and how observed versus inferred provenance is or is not recorded.",
+        "One new decision record with status Proposed (never marked Accepted or Approved by the author), stating the rule or the closest rule the current-state facts support, its reason and consequences, and registered in ARCHITECTURE_DECISIONS.md with the next free ADR number.",
+        "A supersession proposal naming ADR-006 and product ADR-0004 and what changes in each, written in the new record only: no edit to ADR-006's text and no edit to the product repository (DEC-03 owns migration).",
+        "Divergences between the current code and the proposed rule are listed as located findings, none fixed.",
+        "No private musical content committed; every claim cites a file, document or executed probe a reviewer can reproduce."
+      ],
+      "validation_commands": [
+        "python -m pytest",
+        "PYTHONUTF8=1 python scripts/score2gp_governance_audit.py",
+        "git diff --check"
+      ],
+      "dependencies": [],
+      "stop_conditions": [
+        "product_repository_edited",
+        "decision_marked_accepted_without_maintainer",
+        "merge_review_or_audit_gate_weakened",
+        "identity_gate_weakened",
+        "private_content_would_be_committed"
+      ],
+      "author_login": "tticom-codex",
+      "head_sha": "47e1d060408707facb22a772b16b582677a7c056",
+      "merge_commit": "d29e0bc2bc811d2d478505059340d27876755782",
+      "reconciled": true,
+      "reconciled_at": "2026-11-20T05:33:04.173209+00:00",
+      "notes": "Merged as AgentOps PR 1026: ADR-009 is Proposed (the maintainer accepts it) and registered; ADR-006 and product ADR-0004 text untouched; findings F-1 to F-6 and questions Q-1 to Q-4 recorded, none fixed. Reviewer nit: section 1.2 cites warning-provenance lines rather than note construction; the claim holds through other cited lines. DEC-03 (migrate product ADRs) waits on the maintainer accepting ADR-009."
     }
   ],
   "backlog": [

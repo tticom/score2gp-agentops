@@ -2,30 +2,31 @@
 
 <!-- Generated from ORCHESTRATION_STATE.json; do not edit directly. -->
 
-**Task**: DEC-02 — Reconcile ADR-006 and product ADR-0004 into one ADR: observed TAB positions are authoritative; inference only for notation-only notes, labelled with provenance
+**Task**: TECH-02 — Bends the reference files have: add bends to the independent oracle, design on Melodic Soloing Masterclass, holdout on Ex 2 Hands Up
 
 **Status**: PROMOTED
 
-**Repository**: tticom/score2gp-agentops
+**Repository**: tticom/score2gp
 
-**PR Branch**: `feat/dec-02-reconcile-position-adr`
+**PR Branch**: `feat/tech-02-bends-against-references`
 
-**Pull Request**: 1026
+**Pull Request**: TBD
 
 **Owner Role**: implementation
 
 ## Objective
 
-Reconcile ADR-006 (forbids biomechanical position inference) and product ADR-0004 (retains the position optimizer) into one decision record with status Proposed: observed TAB positions are authoritative, inference only for notation-only notes and labelled with provenance. Records only: no product edit; migrating product ADRs is DEC-03. Leads, not facts: re-read the code and both ADRs.
+Add bends to the independent oracle, measure bend differences against the .gp references, make the product write the design source's bends (Melodic Soloing Masterclass) from printed-page evidence, and apply it once to the pre-named holdout (Ex 2 Hands Up). Oracle extension and measurement stand on their own. Other reference differences are findings only. Leads, not facts: re-measure.
 
 ## Allowed paths
 
-- `projects/score2gp/ARCHITECTURE_DECISIONS.md`
-- `projects/score2gp/decisions/**`
-- `projects/score2gp/prompts/next/dec-02-reconcile-position-adr.md`
+- `src/score2gp/**`
+- `tests/**`
 
 ## Validation commands
 
 - `python -m pytest`
-- `PYTHONUTF8=1 python scripts/score2gp_governance_audit.py`
+- `python -m score2gp.cli export-schema --out schemas`
+- `python -m score2gp.cli validate-ir fixtures/public/tiny_score.ir.json`
+- `python scripts/artifact_audit.py`
 - `git diff --check`
