@@ -10,7 +10,7 @@
 
 **PR Branch**: `feat/dec-02-reconcile-position-adr`
 
-**Pull Request**: TBD
+**Pull Request**: 1026
 
 **Owner Role**: implementation
 
